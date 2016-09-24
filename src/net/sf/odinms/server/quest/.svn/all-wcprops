@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest
+END
+MapleQuest.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest/MapleQuest.java
+END
+MapleQuestActionType.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest/MapleQuestActionType.java
+END
+MapleQuestRequirement.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest/MapleQuestRequirement.java
+END
+MapleQuestRequirementType.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest/MapleQuestRequirementType.java
+END
+MapleCustomQuestData.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest/MapleCustomQuestData.java
+END
+MapleCustomQuest.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest/MapleCustomQuest.java
+END
+MapleQuestAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/quest/MapleQuestAction.java
+END

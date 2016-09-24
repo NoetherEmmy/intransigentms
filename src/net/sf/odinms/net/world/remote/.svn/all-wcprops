@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/world/remote
+END
+WorldLocation.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/world/remote/WorldLocation.java
+END
+WorldRegistry.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/world/remote/WorldRegistry.java
+END
+WorldChannelInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/world/remote/WorldChannelInterface.java
+END
+WorldLoginInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/world/remote/WorldLoginInterface.java
+END
+CheaterData.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/world/remote/CheaterData.java
+END
+WorldChannelCommonOperations.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/world/remote/WorldChannelCommonOperations.java
+END

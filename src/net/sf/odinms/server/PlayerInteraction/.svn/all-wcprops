@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/PlayerInteraction
+END
+IPlayerInteractionManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/PlayerInteraction/IPlayerInteractionManager.java
+END
+MaplePlayerShopItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/PlayerInteraction/MaplePlayerShopItem.java
+END
+MapleMiniGame.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/PlayerInteraction/MapleMiniGame.java
+END
+MaplePlayerShop.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/server/PlayerInteraction/MaplePlayerShop.java
+END
+PlayerInteractionManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/PlayerInteraction/PlayerInteractionManager.java
+END
+HiredMerchant.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/server/PlayerInteraction/HiredMerchant.java
+END

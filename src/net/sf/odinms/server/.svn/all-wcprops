@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server
+END
+ShutdownServer.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/ShutdownServer.java
+END
+DueyPackages.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/DueyPackages.java
+END
+MapleShopItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleShopItem.java
+END
+MapleStatEffect.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleStatEffect.java
+END
+CashItemInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/CashItemInfo.java
+END
+TimerManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/TimerManager.java
+END
+ClanHolder.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/ClanHolder.java
+END
+PublicChatHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/PublicChatHandler.java
+END
+AutoRegister.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/server/AutoRegister.java
+END
+TimerManagerMBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/TimerManagerMBean.java
+END
+MapleTrade.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleTrade.java
+END
+MaplePortal.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MaplePortal.java
+END
+MapleShopFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleShopFactory.java
+END
+MapleStorage.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleStorage.java
+END
+AutobanManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/server/AutobanManager.java
+END
+CashItemFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/CashItemFactory.java
+END
+MapleShop.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleShop.java
+END
+MapleInventoryManipulator.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/server/MapleInventoryManipulator.java
+END
+PortalFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/PortalFactory.java
+END
+MapleSquad.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleSquad.java
+END
+MapleSquadType.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleSquadType.java
+END
+MapleItemInformationProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MapleItemInformationProvider.java
+END
+MTSItemInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/MTSItemInfo.java
+END

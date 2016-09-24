@@ -1,0 +1,209 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/XiuzSource/!svn/ver/23/src/net/sf/odinms/client
+END
+SkillMacro.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/SkillMacro.java
+END
+RunnableWithResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/RunnableWithResult.java
+END
+MapleKeyBinding.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleKeyBinding.java
+END
+ExpTable.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/client/ExpTable.java
+END
+MaplePet.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MaplePet.java
+END
+LoginCrypto.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/XiuzSource/!svn/ver/23/src/net/sf/odinms/client/LoginCrypto.java
+END
+PetDataFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/PetDataFactory.java
+END
+MapleCharacter.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/client/MapleCharacter.java
+END
+MapleInventory.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleInventory.java
+END
+InventoryException.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/InventoryException.java
+END
+Skill.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/Skill.java
+END
+MapleRing.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/client/MapleRing.java
+END
+MapleSkinColor.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleSkinColor.java
+END
+Equip.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/Equip.java
+END
+MapleQuestStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleQuestStatus.java
+END
+BuddylistEntry.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/BuddylistEntry.java
+END
+ISkill.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/ISkill.java
+END
+MapleStat.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleStat.java
+END
+IEquip.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/IEquip.java
+END
+CharacterNameAndId.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/CharacterNameAndId.java
+END
+InventoryContainer.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/InventoryContainer.java
+END
+BuddyList.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/BuddyList.java
+END
+SkillFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/SkillFactory.java
+END
+IItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/IItem.java
+END
+MapleCharacterUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/client/MapleCharacterUtil.java
+END
+MapleWeaponType.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleWeaponType.java
+END
+MapleInventoryType.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleInventoryType.java
+END
+MapleMount.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/client/MapleMount.java
+END
+PetCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/PetCommand.java
+END
+MapleJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleJob.java
+END
+MapleDisease.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleDisease.java
+END
+MapleBuffStat.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/MapleBuffStat.java
+END
+MapleClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/client/MapleClient.java
+END
+Item.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/Item.java
+END

@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/life
+END
+MapleNPC.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MapleNPC.java
+END
+SpawnPoint.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/SpawnPoint.java
+END
+MobSkillFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MobSkillFactory.java
+END
+MapleMonster.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/life/MapleMonster.java
+END
+MobAttackInfoFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MobAttackInfoFactory.java
+END
+MobSkill.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MobSkill.java
+END
+MapleNPCStats.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MapleNPCStats.java
+END
+ElementalEffectiveness.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/ElementalEffectiveness.java
+END
+MobAttackInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MobAttackInfo.java
+END
+MapleMonsterStats.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/life/MapleMonsterStats.java
+END
+MapleLifeFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/life/MapleLifeFactory.java
+END
+MapleMonsterInformationProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MapleMonsterInformationProvider.java
+END
+Element.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/Element.java
+END
+AbstractLoadedMapleLife.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/AbstractLoadedMapleLife.java
+END
+MonsterListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/life/MonsterListener.java
+END

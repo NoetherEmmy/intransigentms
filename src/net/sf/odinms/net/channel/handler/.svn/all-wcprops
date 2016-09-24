@@ -1,0 +1,563 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/XiuzSource/!svn/ver/23/src/net/sf/odinms/net/channel/handler
+END
+CharInfoRequestHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CharInfoRequestHandler.java
+END
+UseChairHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/net/channel/handler/UseChairHandler.java
+END
+DoorHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/DoorHandler.java
+END
+MTSHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/net/channel/handler/MTSHandler.java
+END
+NoteActionHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/NoteActionHandler.java
+END
+ReactorHitHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/ReactorHitHandler.java
+END
+EnterCashShopHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/net/channel/handler/EnterCashShopHandler.java
+END
+MapleTVHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MapleTVHandler.java
+END
+ItemPickupHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/ItemPickupHandler.java
+END
+ReportHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/net/channel/handler/ReportHandler.java
+END
+BuddylistModifyHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/BuddylistModifyHandler.java
+END
+FaceExpressionHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/FaceExpressionHandler.java
+END
+CloseChalkboardHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CloseChalkboardHandler.java
+END
+PartyOperationHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PartyOperationHandler.java
+END
+DistributeSPHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/DistributeSPHandler.java
+END
+NPCAnimation.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/NPCAnimation.java
+END
+GiveFameHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/GiveFameHandler.java
+END
+HealOvertimeHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/HealOvertimeHandler.java
+END
+BBSOperationHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/BBSOperationHandler.java
+END
+MessengerHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MessengerHandler.java
+END
+SkillBookHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/SkillBookHandler.java
+END
+CancelChairHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CancelChairHandler.java
+END
+ScrollHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/ScrollHandler.java
+END
+PartychatHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PartychatHandler.java
+END
+CancelDebuffHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CancelDebuffHandler.java
+END
+EnterMTSHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/net/channel/handler/EnterMTSHandler.java
+END
+SpawnPetHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/net/channel/handler/SpawnPetHandler.java
+END
+PetAutoPotHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PetAutoPotHandler.java
+END
+BuyCSItemHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/net/channel/handler/BuyCSItemHandler.java
+END
+ItemSortHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/ItemSortHandler.java
+END
+UseItemHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/UseItemHandler.java
+END
+SummonDamageHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/net/channel/handler/SummonDamageHandler.java
+END
+DamageSummonHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/DamageSummonHandler.java
+END
+MovePetHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MovePetHandler.java
+END
+WhisperHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/WhisperHandler.java
+END
+CancelItemEffectHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CancelItemEffectHandler.java
+END
+MovePlayerHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/19/src/net/sf/odinms/net/channel/handler/MovePlayerHandler.java
+END
+PartySearchHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PartySearchHandler.java
+END
+MonsterBombHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/1/src/net/sf/odinms/net/channel/handler/MonsterBombHandler.java
+END
+PetCommandHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PetCommandHandler.java
+END
+AbstractDealDamageHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/AbstractDealDamageHandler.java
+END
+AutoAggroHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/AutoAggroHandler.java
+END
+HiredMerchantRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/HiredMerchantRequest.java
+END
+ItemSortHandler2.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/ItemSortHandler2.java
+END
+SkillEffectHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/SkillEffectHandler.java
+END
+RingActionHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/RingActionHandler.java
+END
+CouponCodeHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CouponCodeHandler.java
+END
+DistributeAPHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/DistributeAPHandler.java
+END
+StorageHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/StorageHandler.java
+END
+VIPAddMapHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/VIPAddMapHandler.java
+END
+PlayerLoggedinHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/net/channel/handler/PlayerLoggedinHandler.java
+END
+DueyHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/XiuzSource/!svn/ver/19/src/net/sf/odinms/net/channel/handler/DueyHandler.java
+END
+AbstractMovementPacketHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/AbstractMovementPacketHandler.java
+END
+MoveLifeHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MoveLifeHandler.java
+END
+SpecialMoveHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/SpecialMoveHandler.java
+END
+TouchingCashShopHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/TouchingCashShopHandler.java
+END
+NPCShopHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/NPCShopHandler.java
+END
+GeneralchatHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/GeneralchatHandler.java
+END
+ChangeChannelHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/net/channel/handler/ChangeChannelHandler.java
+END
+CloseRangeDamageHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CloseRangeDamageHandler.java
+END
+GuildOperationHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/net/channel/handler/GuildOperationHandler.java
+END
+ItemMoveHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/ItemMoveHandler.java
+END
+PetLootHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PetLootHandler.java
+END
+UseMountFoodHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/UseMountFoodHandler.java
+END
+PetChatHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PetChatHandler.java
+END
+MesoDropHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MesoDropHandler.java
+END
+CancelBuffHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/CancelBuffHandler.java
+END
+DenyPartyRequestHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/DenyPartyRequestHandler.java
+END
+RangedAttackHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/RangedAttackHandler.java
+END
+DenyGuildRequestHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/DenyGuildRequestHandler.java
+END
+SkillMacroHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/SkillMacroHandler.java
+END
+useSolomonHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/useSolomonHandler.java
+END
+MoveSummonHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/net/channel/handler/MoveSummonHandler.java
+END
+MonsterCarnivalHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MonsterCarnivalHandler.java
+END
+UseSummonBag.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/UseSummonBag.java
+END
+MobDamageMobHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MobDamageMobHandler.java
+END
+UseCashItemHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/21/src/net/sf/odinms/net/channel/handler/UseCashItemHandler.java
+END
+UseCatchItemHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/UseCatchItemHandler.java
+END
+NPCMoreTalkHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/NPCMoreTalkHandler.java
+END
+MagicDamageHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/MagicDamageHandler.java
+END
+ChangeMapHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/23/src/net/sf/odinms/net/channel/handler/ChangeMapHandler.java
+END
+TakeDamageHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/24/src/net/sf/odinms/net/channel/handler/TakeDamageHandler.java
+END
+ChangeMapSpecialHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/net/channel/handler/ChangeMapSpecialHandler.java
+END
+UseItemEffectHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/UseItemEffectHandler.java
+END
+AllianceOperationHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/AllianceOperationHandler.java
+END
+EnergyOrbDamageHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/EnergyOrbDamageHandler.java
+END
+NPCTalkHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/NPCTalkHandler.java
+END
+KeymapChangeHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/KeymapChangeHandler.java
+END
+PlayerInteractionHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/XiuzSource/!svn/ver/20/src/net/sf/odinms/net/channel/handler/PlayerInteractionHandler.java
+END
+InnerPortalHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/InnerPortalHandler.java
+END
+PlayerUpdateHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PlayerUpdateHandler.java
+END
+QuestActionHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/QuestActionHandler.java
+END
+PetFoodHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/channel/handler/PetFoodHandler.java
+END

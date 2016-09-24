@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/maps
+END
+MapleReactorFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleReactorFactory.java
+END
+AbstractMapleMapObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/AbstractMapleMapObject.java
+END
+MapleMapEffect.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMapEffect.java
+END
+AbstractAnimatedMapleMapObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/AbstractAnimatedMapleMapObject.java
+END
+MapleMapItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMapItem.java
+END
+BossMapMonitor.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/BossMapMonitor.java
+END
+MapleGenericPortal.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleGenericPortal.java
+END
+MapleFootholdTree.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleFootholdTree.java
+END
+MapleMapPortal.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMapPortal.java
+END
+MapleReactor.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleReactor.java
+END
+PlayerNPCs.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/PlayerNPCs.java
+END
+MapleDoor.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleDoor.java
+END
+MapleMapObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMapObject.java
+END
+FakeCharacter.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/FakeCharacter.java
+END
+MapleMapFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMapFactory.java
+END
+MapleMapObjectType.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMapObjectType.java
+END
+MapleTVEffect.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleTVEffect.java
+END
+AnimatedMapleMapObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/AnimatedMapleMapObject.java
+END
+MapleMist.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMist.java
+END
+SummonMovementType.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/SummonMovementType.java
+END
+MapleMap.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/server/maps/MapleMap.java
+END
+MapleFoothold.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleFoothold.java
+END
+MapleMapTimer.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleMapTimer.java
+END
+MapleReactorStats.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleReactorStats.java
+END
+MapleSummon.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/MapleSummon.java
+END
+SavedLocationType.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/maps/SavedLocationType.java
+END

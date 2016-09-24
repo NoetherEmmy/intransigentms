@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/net/login
+END
+LoginServer.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/net/login/LoginServer.java
+END
+LoginServerMBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/login/LoginServerMBean.java
+END
+LoginWorker.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/login/LoginWorker.java
+END
+LoginWorldInterfaceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/login/LoginWorldInterfaceImpl.java
+END
+RankingWorker.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/login/RankingWorker.java
+END

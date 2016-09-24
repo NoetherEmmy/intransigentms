@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/20/src/net/sf/odinms/client/messages/commands
+END
+GM.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/XiuzSource/!svn/ver/19/src/net/sf/odinms/client/messages/commands/GM.java
+END
+Donator.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/XiuzSource/!svn/ver/17/src/net/sf/odinms/client/messages/commands/Donator.java
+END
+Extras.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/messages/commands/Extras.java
+END
+Admins.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/client/messages/commands/Admins.java
+END
+PlayerCommands.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/XiuzSource/!svn/ver/20/src/net/sf/odinms/client/messages/commands/PlayerCommands.java
+END

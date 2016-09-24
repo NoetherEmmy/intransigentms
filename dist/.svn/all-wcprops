@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 32
+/svn/XiuzSource/!svn/ver/23/dist
+END
+slf4j-api.jar
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/XiuzSource/!svn/ver/1/dist/slf4j-api.jar
+END
+mina-core.jar
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/XiuzSource/!svn/ver/1/dist/mina-core.jar
+END
+jpcap.jar
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/XiuzSource/!svn/ver/1/dist/jpcap.jar
+END
+slf4j-jdk14.jar
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/XiuzSource/!svn/ver/1/dist/slf4j-jdk14.jar
+END
+XiuzSource.jar
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/XiuzSource/!svn/ver/24/dist/XiuzSource.jar
+END
+exttools.jar
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/XiuzSource/!svn/ver/1/dist/exttools.jar
+END
+mysql-connector-java-bin.jar
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/XiuzSource/!svn/ver/1/dist/mysql-connector-java-bin.jar
+END

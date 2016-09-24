@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/XiuzSource/!svn/ver/23/src/net/sf/odinms/net
+END
+WritableIntValueHolder.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/WritableIntValueHolder.java
+END
+ExternalCodeTableGetter.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/ExternalCodeTableGetter.java
+END
+StringValueHolder.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/StringValueHolder.java
+END
+RecvPacketOpcode.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/RecvPacketOpcode.java
+END
+MapleServerHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/net/MapleServerHandler.java
+END
+MaplePacketHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/MaplePacketHandler.java
+END
+IntValueHolder.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/IntValueHolder.java
+END
+MaplePacket.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/MaplePacket.java
+END
+PacketProcessor.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/22/src/net/sf/odinms/net/PacketProcessor.java
+END
+AbstractMaplePacketHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/AbstractMaplePacketHandler.java
+END
+ByteArrayMaplePacket.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/ByteArrayMaplePacket.java
+END
+LongValueHolder.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/LongValueHolder.java
+END
+SendPacketOpcode.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/SendPacketOpcode.java
+END

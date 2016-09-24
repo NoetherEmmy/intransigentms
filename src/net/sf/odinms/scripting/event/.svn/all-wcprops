@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/scripting/event
+END
+EventInstanceManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/scripting/event/EventInstanceManager.java
+END
+EventScriptManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/scripting/event/EventScriptManager.java
+END
+EventManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/scripting/event/EventManager.java
+END

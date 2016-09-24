@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/handler
+END
+KeepAliveHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/handler/KeepAliveHandler.java
+END
+LoginRequiringNoOpHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/handler/LoginRequiringNoOpHandler.java
+END
+NoOpHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/net/handler/NoOpHandler.java
+END

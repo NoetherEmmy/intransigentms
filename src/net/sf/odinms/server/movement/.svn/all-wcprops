@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement
+END
+ChairMovement.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/ChairMovement.java
+END
+RelativeLifeMovement.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/RelativeLifeMovement.java
+END
+AbsoluteLifeMovement.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/AbsoluteLifeMovement.java
+END
+TeleportMovement.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/TeleportMovement.java
+END
+LifeMovement.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/LifeMovement.java
+END
+ChangeEquipSpecialAwesome.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/ChangeEquipSpecialAwesome.java
+END
+AbstractLifeMovement.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/AbstractLifeMovement.java
+END
+JumpDownMovement.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/JumpDownMovement.java
+END
+LifeMovementFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/XiuzSource/!svn/ver/18/src/net/sf/odinms/server/movement/LifeMovementFragment.java
+END
