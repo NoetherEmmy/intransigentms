@@ -5,7 +5,7 @@ Repository for the IntransigentMS Maplestory private server:
 
 - Maplestory base version: **GMS v62**
 - Source used: **XiuzSource**
-- Java version: **8u91**
+- Java version: **openSDK 8u91**
 
 ---
 
