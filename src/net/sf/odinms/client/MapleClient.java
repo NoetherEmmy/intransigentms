@@ -56,9 +56,9 @@ public class MapleClient {
     public static final int LOGIN_WAITING = 3;
     public static final String CLIENT_KEY = "CLIENT";
     private static final Logger log = LoggerFactory.getLogger(MapleClient.class);
-    private MapleAESOFB send;
-    private MapleAESOFB receive;
-    private IoSession session;
+    private final MapleAESOFB send;
+    private final MapleAESOFB receive;
+    private final IoSession session;
     private MapleCharacter player;
     private int channel = 1;
     private int accId = 1;
@@ -73,9 +73,9 @@ public class MapleClient {
     private boolean gm = false;
     private byte greason = 1;
     private boolean guest;
-    private Map<Pair<MapleCharacter, Integer>, Integer> timesTalked = new HashMap<Pair<MapleCharacter, Integer>, Integer>(); //npcid, times
-    private Set<String> macs = new HashSet<String>();
-    private Map<String, ScriptEngine> engines = new HashMap<String, ScriptEngine>();
+    private final Map<Pair<MapleCharacter, Integer>, Integer> timesTalked = new HashMap<>(); //npcid, times
+    private final Set<String> macs = new HashSet<>();
+    private final Map<String, ScriptEngine> engines = new HashMap<>();
     private ScheduledFuture<?> idleTask = null;
     private int attemptedLogins = 0;
 
@@ -111,7 +111,7 @@ public class MapleClient {
 
     public List<MapleCharacter> loadCharacters(int serverId) {
 
-        List<MapleCharacter> chars = new LinkedList<MapleCharacter>();
+        List<MapleCharacter> chars = new LinkedList<>();
         for (CharNameAndId cni : loadCharactersInternal(serverId)) {
             try {
                 chars.add(MapleCharacter.loadCharFromDB(cni.id, this, false));
@@ -123,7 +123,7 @@ public class MapleClient {
     }
 
     public List<String> loadCharacterNames(int serverId) {
-        List<String> chars = new LinkedList<String>();
+        List<String> chars = new LinkedList<>();
         for (CharNameAndId cni : loadCharactersInternal(serverId)) {
             chars.add(cni.name);
         }
@@ -133,7 +133,7 @@ public class MapleClient {
     private List<CharNameAndId> loadCharactersInternal(int serverId) {
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps;
-        List<CharNameAndId> chars = new LinkedList<CharNameAndId>();
+        List<CharNameAndId> chars = new LinkedList<>();
         try {
             ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
             ps.setInt(1, this.accId);
@@ -257,7 +257,7 @@ public class MapleClient {
         Connection con = DatabaseConnection.getConnection();
         try {
             loadMacsIfNescessary();
-            List<String> filtered = new LinkedList<String>();
+            List<String> filtered = new LinkedList<>();
             PreparedStatement ps = con.prepareStatement("SELECT filter FROM macfilters");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -278,7 +278,7 @@ public class MapleClient {
                     ps.setString(1, mac);
                     try {
                         ps.executeUpdate();
-                    } catch (SQLException e) {
+                    } catch (SQLException ignored) {
                     }
                 }
             }
@@ -366,7 +366,7 @@ public class MapleClient {
                                 ps.setString(1, login);
                                 ps.executeUpdate();
                                 ps.close();
-                            } catch (SQLException se) {
+                            } catch (SQLException ignored) {
                             }
                         }
                     } else {
@@ -466,9 +466,7 @@ public class MapleClient {
     }
 
     public void updateMacs(String macData) {
-        for (String mac : macData.split(", ")) {
-            macs.add(mac);
-        }
+        Collections.addAll(macs, macData.split(", "));
         StringBuilder newMacData = new StringBuilder();
         Iterator<String> iter = macs.iterator();
         while (iter.hasNext()) {
@@ -553,11 +551,7 @@ public class MapleClient {
             }
             rs.close();
             ps.close();
-            if (state == LOGIN_LOGGEDIN) {
-                loggedIn = true;
-            } else {
-                loggedIn = false;
-            }
+            loggedIn = state == LOGIN_LOGGEDIN;
             return state;
         } catch (SQLException e) {
             loggedIn = false;
@@ -584,7 +578,7 @@ public class MapleClient {
                 MapleTrade.cancelTrade(chr);
             }
             List<PlayerCoolDownValueHolder> cooldowns = chr.getAllCooldowns();
-            if (cooldowns != null && cooldowns.size() > 0) {
+            if (cooldowns != null && !cooldowns.isEmpty()) {
                 Connection con = DatabaseConnection.getConnection();
                 for (PlayerCoolDownValueHolder cooling : cooldowns) {
                     try {
@@ -703,18 +697,17 @@ public class MapleClient {
     }
 
     public void dropDebugMessage(MessageCallback mc) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Connected: ");
-        builder.append(getSession().isConnected());
-        builder.append(" Closing: ");
-        builder.append(getSession().isClosing());
-        builder.append(" ClientKeySet: ");
-        builder.append(getSession().getAttribute(CLIENT_KEY) != null);
-        builder.append(" loggedin: ");
-        builder.append(isLoggedIn());
-        builder.append(" has char: ");
-        builder.append(getPlayer() != null);
-        mc.dropMessage(builder.toString());
+        String builder = "Connected: " +
+                getSession().isConnected() +
+                " Closing: " +
+                getSession().isClosing() +
+                " ClientKeySet: " +
+                (getSession().getAttribute(CLIENT_KEY) != null) +
+                " loggedin: " +
+                isLoggedIn() +
+                " has char: " +
+                (getPlayer() != null);
+        mc.dropMessage(builder);
     }
 
     public int getChannel() {
@@ -796,18 +789,15 @@ public class MapleClient {
     public void sendPing() {
         final long then = System.currentTimeMillis();
         getSession().write(MaplePacketCreator.getPing());
-        TimerManager.getInstance().schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (lastPong - then < 0) {
-                        if (getSession().isConnected()) {
-                            System.out.println("Auto DC : " + session.getRemoteAddress().toString() + " : Ping Timeout.");
-                            getSession().close();
-                        }
+        TimerManager.getInstance().schedule(() -> {
+            try {
+                if (lastPong - then < 0) {
+                    if (getSession().isConnected()) {
+                        System.out.println("Auto DC : " + session.getRemoteAddress().toString() + " : Ping Timeout.");
+                        getSession().close();
                     }
-                } catch (NullPointerException e) {
                 }
+            } catch (NullPointerException ignored) {
             }
         }, 15000);
 
@@ -924,20 +914,20 @@ public class MapleClient {
     }
 
     public void setTimesTalked(int n, int t) {
-        timesTalked.remove(new Pair<MapleCharacter, Integer>(getPlayer(), n));
-        timesTalked.put(new Pair<MapleCharacter, Integer>(getPlayer(), n), t);
+        timesTalked.remove(new Pair<>(getPlayer(), n));
+        timesTalked.put(new Pair<>(getPlayer(), n), t);
     }
 
     public int getTimesTalked(int n) {
-        if (timesTalked.get(new Pair<MapleCharacter, Integer>(getPlayer(), n)) == null) {
+        if (timesTalked.get(new Pair<>(getPlayer(), n)) == null) {
             setTimesTalked(n, 0);
         }
-        return timesTalked.get(new Pair<MapleCharacter, Integer>(getPlayer(), n));
+        return timesTalked.get(new Pair<>(getPlayer(), n));
     }
 
     private static class CharNameAndId {
-        public String name;
-        public int id;
+        public final String name;
+        public final int id;
         public CharNameAndId(String name, int id) {
             super();
             this.name = name;

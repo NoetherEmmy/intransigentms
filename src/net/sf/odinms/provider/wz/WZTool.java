@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 public class WZTool {
 
     @SuppressWarnings("unused")
-    private static Logger log = LoggerFactory.getLogger(WZTool.class);
+    private static final Logger log = LoggerFactory.getLogger(WZTool.class);
 
     private WZTool() {
 
@@ -18,7 +18,7 @@ public class WZTool {
 
     public static char[] xorCharArray(char[] cypher, char[] key) {
         char[] ret = new char[cypher.length];
-        for (int i = 0; i < cypher.length; i++) {
+        for (int i = 0; i < cypher.length; ++i) {
             ret[i] = (char) (cypher[i] ^ key[i]);
         }
         return ret;
@@ -34,11 +34,11 @@ public class WZTool {
         return ret;
     }
 
-    public static void writeEncodedString(LittleEndianWriter leo, String s) throws IOException {
+    public static void writeEncodedString(LittleEndianWriter leo, String s) {
         writeEncodedString(leo, s, true);
     }
 
-    public static void writeEncodedString(LittleEndianWriter leo, String s, boolean unicode) throws IOException {
+    public static void writeEncodedString(LittleEndianWriter leo, String s, boolean unicode) {
         if (s.equals("")) {
             leo.write(0);
             return;
@@ -52,7 +52,7 @@ public class WZTool {
                 leo.write(0x7F);
                 leo.writeInt(s.length());
             }
-            for (int i = 0; i < s.length(); i++) {
+            for (int i = 0; i < s.length(); ++i) {
                 char chr = s.charAt(i);
                 chr ^= umask;
                 umask++;
@@ -66,7 +66,7 @@ public class WZTool {
             else
                 leo.writeInt(s.length());
             char str[] = new char[s.length()];
-            for (int i = 0; i < s.length(); i++) {
+            for (int i = 0; i < s.length(); ++i) {
                 byte b2 = (byte) s.charAt(i);
                 b2 ^= mask;
                 mask++;
@@ -75,32 +75,32 @@ public class WZTool {
         }
     }
 
-    public static String readDecodedString(LittleEndianAccessor llea) {
+    public static String readDecodedString() {
         return "";
     }
-    public static String transStr(byte[] input) {
+    public static String transStr() {
         return "";
     }
-    public static String transStr16KMST(byte[] input) {
+    public static String transStr16KMST() {
         return "";
     }
-    public static int getBytes(byte[] input, int pos, int len) {
+    public static int getBytes() {
         return 9001;
     }
-    public static byte[] decrypt(byte[] input) {
+    public static byte[] decrypt() {
         return new byte[0];
     }
 
-    public static String readDecodedStringAtOffset(SeekableLittleEndianAccessor slea, int offset, boolean pft) {
+    public static String readDecodedStringAtOffset(SeekableLittleEndianAccessor slea, int offset) {
         slea.seek(offset);
-        return readDecodedString(slea);
+        return readDecodedString();
     }
 
     public static String readDecodedStringAtOffsetAndReset(SeekableLittleEndianAccessor slea, int offset) {
         long pos = 0;
         pos = slea.getPosition();
         slea.seek(offset);
-        String ret = readDecodedString(slea);
+        String ret = readDecodedString();
         slea.seek(pos);
         return ret;
     }
@@ -114,7 +114,7 @@ public class WZTool {
         }
     }
 
-    public static void writeValue(LittleEndianWriter lew, int val) throws IOException {
+    public static void writeValue(LittleEndianWriter lew, int val) {
         if (val <= 127)
             lew.write(val);
         else {
@@ -132,7 +132,7 @@ public class WZTool {
         }
     }
 
-    public static void writeFloatValue(LittleEndianWriter leo, float val) throws IOException {
+    public static void writeFloatValue(LittleEndianWriter leo, float val) {
         if (val == 0) {
             leo.write(-128);
         } else {

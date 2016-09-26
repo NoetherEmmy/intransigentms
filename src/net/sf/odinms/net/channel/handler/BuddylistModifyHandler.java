@@ -23,11 +23,11 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BuddylistModifyHandler.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BuddylistModifyHandler.class);
 
     private static class CharacterIdNameBuddyCapacity extends CharacterNameAndId {
 
-        private int buddyCapacity;
+        private final int buddyCapacity;
 
         public CharacterIdNameBuddyCapacity(int id, String name, int buddyCapacity) {
             super(id, name);

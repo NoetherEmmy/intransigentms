@@ -9,7 +9,7 @@ public enum CheatingOffense {
     FAST_MP_REGEN(1, 60000, 500),
     SAME_DAMAGE(10, 300000, 20),
     ATTACK_WITHOUT_GETTING_HIT,
-    HIGH_DAMAGE(10, 300000l),
+    HIGH_DAMAGE(10, 300000L),
     ATTACK_FARAWAY_MONSTER(5),
     REGEN_HIGH_HP(50),
     REGEN_HIGH_MP(50),
@@ -58,23 +58,23 @@ public enum CheatingOffense {
         return enabled;
     }
 
-    private CheatingOffense() {
+    CheatingOffense() {
         this(1);
     }
 
-    private CheatingOffense(int points) {
+    CheatingOffense(int points) {
         this(points, 60000);
     }
 
-    private CheatingOffense(int points, long validityDuration) {
+    CheatingOffense(int points, long validityDuration) {
         this(points, validityDuration, -1);
     }
 
-    private CheatingOffense(int points, long validityDuration, int autobancount) {
+    CheatingOffense(int points, long validityDuration, int autobancount) {
         this(points, validityDuration, autobancount, true);
     }
 
-    private CheatingOffense(int points, long validityDuration, int autobancount, boolean enabled) {
+    CheatingOffense(int points, long validityDuration, int autobancount, boolean enabled) {
         this.points = points;
         this.validityDuration = validityDuration;
         this.autobancount = autobancount;

@@ -80,7 +80,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
 
             rs.close();
             ps.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         return valid;
     }
@@ -98,7 +98,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
 
             rs.close();
             ps.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         return type;
     }
@@ -115,7 +115,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
             }
             rs.close();
             ps.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         return item;
     }
@@ -131,7 +131,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
             ps.setString(2, code);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
     }
 }

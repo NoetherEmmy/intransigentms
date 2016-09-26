@@ -22,9 +22,9 @@ public class BuddyList {
         BUDDYLIST_FULL, ALREADY_ON_LIST, OK
     }
 
-    private Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<Integer, BuddylistEntry>();
+    private final Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<>();
     private int capacity;
-    private Deque<CharacterNameAndId> pendingRequests = new LinkedList<CharacterNameAndId>();
+    private final Deque<CharacterNameAndId> pendingRequests = new LinkedList<>();
 
     public BuddyList(int capacity) {
         super();
@@ -32,7 +32,7 @@ public class BuddyList {
     }
 
     public boolean contains(int characterId) {
-        return buddies.containsKey(Integer.valueOf(characterId));
+        return buddies.containsKey(characterId);
     }
 
     public boolean containsVisible(int characterId) {
@@ -56,7 +56,7 @@ public class BuddyList {
     }
 
     public BuddylistEntry get(int characterId) {
-        return buddies.get(Integer.valueOf(characterId));
+        return buddies.get(characterId);
     }
 
     public BuddylistEntry get(String characterName) {
@@ -70,11 +70,11 @@ public class BuddyList {
     }
 
     public void put(BuddylistEntry entry) {
-        buddies.put(Integer.valueOf(entry.getCharacterId()), entry);
+        buddies.put(entry.getCharacterId(), entry);
     }
 
     public void remove(int characterId) {
-        buddies.remove(Integer.valueOf(characterId));
+        buddies.remove(characterId);
     }
 
     public Collection<BuddylistEntry> getBuddies() {

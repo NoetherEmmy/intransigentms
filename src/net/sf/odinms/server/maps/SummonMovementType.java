@@ -7,7 +7,7 @@ public enum SummonMovementType implements IntValueHolder {
 
     private final int val;
 
-    private SummonMovementType(int val) {
+    SummonMovementType(int val) {
         this.val = val;
     }
 

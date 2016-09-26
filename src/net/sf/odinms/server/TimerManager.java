@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TimerManager implements TimerManagerMBean {
-    private static Logger log = LoggerFactory.getLogger(TimerManager.class);
-    private static TimerManager instance = new TimerManager();
+    private static final Logger log = LoggerFactory.getLogger(TimerManager.class);
+    private static final TimerManager instance = new TimerManager();
     private ScheduledThreadPoolExecutor ses;
 
     private TimerManager() {
@@ -123,7 +123,7 @@ public class TimerManager implements TimerManagerMBean {
     }
 
     private static class LoggingSaveRunnable implements Runnable {
-        Runnable r;
+        final Runnable r;
         public LoggingSaveRunnable(Runnable r) {
             this.r = r;
         }

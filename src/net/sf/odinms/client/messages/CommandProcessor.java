@@ -31,7 +31,7 @@ import net.sf.odinms.tools.StringUtil;
 public class CommandProcessor implements CommandProcessorMBean {
 
     private static final List<Pair<MapleCharacter, String>> gmlog = Collections.synchronizedList(new LinkedList<Pair<MapleCharacter, String>>());
-    private Map<String, DefinitionCommandPair> commands = new LinkedHashMap<>();
+    private final Map<String, DefinitionCommandPair> commands = new LinkedHashMap<>();
     private static CommandProcessor instance = new CommandProcessor();
     private static final Runnable persister;
 
@@ -113,7 +113,7 @@ public class CommandProcessor implements CommandProcessorMBean {
         if (arg != null) {
             try {
                 return Integer.parseInt(arg);
-            } catch (NumberFormatException nfe) {
+            } catch (NumberFormatException ignored) {
             }
         }
         return null;
@@ -132,7 +132,7 @@ public class CommandProcessor implements CommandProcessorMBean {
         if (arg != null) {
             try {
                 return Double.parseDouble(arg);
-            } catch (NumberFormatException nfe) {
+            } catch (NumberFormatException ignored) {
             }
         }
         return null;

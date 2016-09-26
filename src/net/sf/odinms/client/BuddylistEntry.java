@@ -2,8 +2,8 @@ package net.sf.odinms.client;
 
 public class BuddylistEntry {
 
-    private String name;
-    private int cid;
+    private final String name;
+    private final int cid;
     private int channel;
     private boolean visible;
 
@@ -77,9 +77,6 @@ public class BuddylistEntry {
             return false;
         }
         final BuddylistEntry other = (BuddylistEntry) obj;
-        if (cid != other.cid) {
-            return false;
-        }
-        return true;
+        return cid == other.cid;
     }
 }

@@ -5,7 +5,7 @@ import net.sf.odinms.client.MapleCharacter;
 
 public class MapleMessengerCharacter implements Serializable {
     private static final long serialVersionUID = 6215463252132450750L;
-    private String name;
+    private final String name;
     private int id;
     private int channel;
     private boolean online;

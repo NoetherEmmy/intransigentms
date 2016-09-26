@@ -60,7 +60,7 @@ public enum MapleBuffStat implements LongValueHolder, Serializable {
     static final long serialVersionUID = 0L;
     private final long i;
 
-    private MapleBuffStat(long i) {
+    MapleBuffStat(long i) {
         this.i = i;
     }
 

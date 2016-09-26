@@ -24,13 +24,13 @@ import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleMapFactory;
 
 public class EventInstanceManager {
-    private List<MapleCharacter> chars = new LinkedList<MapleCharacter>();
-    private List<MapleMonster> mobs = new LinkedList<MapleMonster>();
-    private Map<MapleCharacter,Integer> killCount = new HashMap<MapleCharacter,Integer>();
+    private final List<MapleCharacter> chars = new LinkedList<>();
+    private final List<MapleMonster> mobs = new LinkedList<>();
+    private final Map<MapleCharacter,Integer> killCount = new HashMap<>();
     private EventManager em;
     private MapleMapFactory mapFactory;
-    private String name;
-    private Properties props = new Properties();
+    private final String name;
+    private final Properties props = new Properties();
     private long timeStarted = 0;
     private long eventTime = 0;
 
@@ -46,9 +46,7 @@ public class EventInstanceManager {
             chars.add(chr);
             chr.setEventInstance(this);
             em.getIv().invokeFunction("playerEntry", this, chr);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -83,7 +81,7 @@ public class EventInstanceManager {
     }
 
     public List<MapleCharacter> getPlayers() {
-        return new ArrayList<MapleCharacter>(chars);
+        return new ArrayList<>(chars);
     }
 
     public void registerMonster(MapleMonster mob) {
@@ -94,12 +92,10 @@ public class EventInstanceManager {
     public void unregisterMonster(MapleMonster mob) {
         mobs.remove(mob);
         mob.setEventInstance(null);
-        if (mobs.size() == 0) {
+        if (mobs.isEmpty()) {
             try {
                     em.getIv().invokeFunction("allMonstersDead", this);
-            } catch (ScriptException ex) {
-                    Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchMethodException ex) {
+            } catch (ScriptException | NoSuchMethodException ex) {
                     Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -108,9 +104,7 @@ public class EventInstanceManager {
     public void playerKilled(MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("playerDead", this, chr);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -121,9 +115,7 @@ public class EventInstanceManager {
             if (b instanceof Boolean) {
                 return (Boolean) b;
             }
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
@@ -132,9 +124,7 @@ public class EventInstanceManager {
     public void playerDisconnected(MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("playerDisconnected", this, chr);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -154,9 +144,7 @@ public class EventInstanceManager {
                 kc += inc;
             }
             killCount.put(chr, kc);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -183,16 +171,12 @@ public class EventInstanceManager {
     }
 
     public void schedule(final String methodName, long delay) {
-        TimerManager.getInstance().schedule(new Runnable() {
-            public void run() {
-                try {
-                    em.getIv().invokeFunction(methodName, EventInstanceManager.this);
-                } catch (NullPointerException npe) {
-                } catch (ScriptException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        TimerManager.getInstance().schedule(() -> {
+            try {
+                em.getIv().invokeFunction(methodName, EventInstanceManager.this);
+            } catch (NullPointerException ignored) {
+            } catch (ScriptException | NoSuchMethodException ex) {
+                Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }, delay);
     }
@@ -204,9 +188,7 @@ public class EventInstanceManager {
     public void killByCount(MapleCharacter player) {
         try {
             em.getIv().invokeFunction("addKillCount", this, player);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -241,6 +223,7 @@ public class EventInstanceManager {
         props.setProperty(key, value);
     }
 
+    @SuppressWarnings("UnusedParameters")
     public Object setProperty(String key, String value, boolean prev) {
         return props.setProperty(key, value);
     }
@@ -252,9 +235,7 @@ public class EventInstanceManager {
     public void leftParty(MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("leftParty", this, chr);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -262,9 +243,7 @@ public class EventInstanceManager {
     public void disbandParty() {
         try {
             em.getIv().invokeFunction("disbandParty", this);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -273,9 +252,7 @@ public class EventInstanceManager {
     public void finishPQ() {
         try {
             em.getIv().invokeFunction("clearPQ", this);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -283,9 +260,7 @@ public class EventInstanceManager {
     public void removePlayer(MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("playerExit", this, chr);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

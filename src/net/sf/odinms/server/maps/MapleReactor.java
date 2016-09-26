@@ -11,8 +11,8 @@ import net.sf.odinms.tools.Pair;
 public class MapleReactor extends AbstractMapleMapObject {
     //private static Logger log = LoggerFactory.getLogger(MapleReactor.class);
 
-    private int rid;
-    private MapleReactorStats stats;
+    private final int rid;
+    private final MapleReactorStats stats;
     private byte state;
     private int delay;
     private MapleMap map;
@@ -106,13 +106,7 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     public void delayedHitReactor(final MapleClient c, long delay) {
-        TimerManager.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                hitReactor(c);
-            }
-        }, delay);
+        TimerManager.getInstance().schedule(() -> hitReactor(c), delay);
     }
 
     // hitReactor command for item-triggered reactors

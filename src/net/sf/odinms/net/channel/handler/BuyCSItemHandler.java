@@ -41,7 +41,7 @@ public class BuyCSItemHandler extends AbstractMaplePacketHandler {
             int snCS = slea.readInt();
             CashItemInfo item = CashItemFactory.getItem(snCS);
             int itemID = item.getId();
-            if((itemID >= 5390000 && itemID <= 5430000) || itemID == 1812006 || itemID == 1812002 || itemID == 1812003 || (itemID >= 5030000 && itemID <= 5076000) || (itemID >= 5130000 && itemID <= 5154000) || (itemID >= 5210000 && itemID <= 5230000)){
+            if((itemID >= 5390000 && itemID <= 5430000) || itemID == 1812006 || itemID == 1812002 || itemID == 1812003 || (itemID >= 5030000 && itemID <= 5076000 && itemID != 5060000) || (itemID >= 5130000 && itemID <= 5154000) || (itemID >= 5210000 && itemID <= 5230000)){
                 //c.getSession().write(MaplePacketCreator.enableActions());
                 c.getPlayer().dropMessage(1, "You may not purchase this item.");
                 return;
@@ -84,7 +84,7 @@ public class BuyCSItemHandler extends AbstractMaplePacketHandler {
                     }
                     i--;
                 }
-            } catch (SQLException se) {
+            } catch (SQLException ignored) {
             }
             c.getSession().write(MaplePacketCreator.sendWishList(c.getPlayer().getId(), true));
         } else if (action == 7) {
@@ -132,7 +132,6 @@ public class BuyCSItemHandler extends AbstractMaplePacketHandler {
             } else {
                 c.getSession().write(MaplePacketCreator.enableActions());
                 AutobanManager.getInstance().autoban(c, "Trying to purchase from the CS with an insufficient amount.");
-                return;
             }
         }
     }

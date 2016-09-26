@@ -2,10 +2,10 @@ package net.sf.odinms.client;
 
 public class Item implements IItem {
 
-    private int id;
+    private final int id;
     private byte position;
     private short quantity;
-    private int petid;
+    private final int petid;
     private String owner = "";
 
     public Item(int id, byte position, short quantity) {

@@ -11,9 +11,9 @@ import net.sf.odinms.provider.MapleDataEntry;
 import net.sf.odinms.provider.MapleDataFileEntry;
 
 public class WZDirectoryEntry extends WZEntry implements MapleDataDirectoryEntry {
-    private List<MapleDataDirectoryEntry> subdirs = new ArrayList<MapleDataDirectoryEntry>();
-    private List<MapleDataFileEntry> files = new ArrayList<MapleDataFileEntry>();
-    private Map<String, MapleDataEntry> entries = new HashMap<String, MapleDataEntry>();
+    private final List<MapleDataDirectoryEntry> subdirs = new ArrayList<>();
+    private final List<MapleDataFileEntry> files = new ArrayList<>();
+    private final Map<String, MapleDataEntry> entries = new HashMap<>();
 
     public WZDirectoryEntry(String name, int size, int checksum, MapleDataEntity parent) {
         super(name, size, checksum, parent);

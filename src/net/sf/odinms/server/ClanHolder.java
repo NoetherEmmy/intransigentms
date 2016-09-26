@@ -13,11 +13,11 @@ import net.sf.odinms.database.DatabaseConnection;
 
 public class ClanHolder {
 
-    private Map<MapleCharacter, Integer> online = new LinkedHashMap<MapleCharacter, Integer>(); // Only for each channel sadly..
-    private static Map<String, Integer> offline = new LinkedHashMap<String, Integer>(); // Only contains name..
+    private final Map<MapleCharacter, Integer> online = new LinkedHashMap<>(); // Only for each channel sadly
+    private static final Map<String, Integer> offline = new LinkedHashMap<>(); // Only contains name
 
     public void registerPlayer(MapleCharacter chr) {
-        if (!offline.containsKey(chr)) {
+        if (!offline.containsKey(chr.getName())) {
             offline.put(chr.getName(), chr.getClan());
         }
         if (!online.containsKey(chr)) {
@@ -54,7 +54,7 @@ public class ClanHolder {
     }
 
     public List<MapleCharacter> getAllOnlinePlayersFromClan(int clan) {
-        List<MapleCharacter> players = new LinkedList<MapleCharacter>();
+        List<MapleCharacter> players = new LinkedList<>();
         for (MapleCharacter player : online.keySet()) {
             if (online.get(player) == clan) {
                 players.add(player);
@@ -64,7 +64,7 @@ public class ClanHolder {
     }
 
     public List<String> getAllOfflinePlayersFromClan(int clan) {
-        List<String> players = new LinkedList<String>();
+        List<String> players = new LinkedList<>();
         for (String name : offline.keySet()) {
             if (offline.get(name) == clan) {
                 players.add(name);

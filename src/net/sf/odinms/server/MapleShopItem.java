@@ -2,10 +2,9 @@ package net.sf.odinms.server;
 
 public class MapleShopItem {
 
-    private short buyable;
-    private int itemId;
-    private int price;
-    private long refreshTime = 0;
+    private final short buyable;
+    private final int itemId;
+    private final int price;
     private short availible;
 
     /** Creates a new instance of MapleShopItem */
@@ -44,6 +43,6 @@ public class MapleShopItem {
     }
 
     public long getRefresh() {
-        return refreshTime;
+        return (long) 0;
     }
 }

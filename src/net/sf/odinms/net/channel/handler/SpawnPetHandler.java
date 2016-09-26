@@ -52,7 +52,7 @@ public class SpawnPetHandler extends AbstractMaplePacketHandler {
         }
         MaplePet pet = MaplePet.loadFromDb(player.getInventory(MapleInventoryType.CASH).getItem(slot).getItemId(), slot, player.getInventory(MapleInventoryType.CASH).getItem(slot).getPetId());
         if (pet == null) {
-            MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, item.getItemId(), (short) item.getQuantity(), false, false);
+            MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, item.getItemId(), item.getQuantity(), false, false);
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }

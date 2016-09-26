@@ -47,7 +47,7 @@ public enum MapleJob {
     SUPERGM(910);
     final int jobid;
 
-    private MapleJob(int id) {
+    MapleJob(int id) {
         jobid = id;
     }
 

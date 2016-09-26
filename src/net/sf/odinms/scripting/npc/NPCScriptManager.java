@@ -11,11 +11,11 @@ import net.sf.odinms.tools.Pair;
 
 public class NPCScriptManager extends AbstractScriptManager {
     
-    private Map<MapleClient, NPCConversationManager> cms = new HashMap<MapleClient, NPCConversationManager>();
-    private Map<MapleClient, NPCScript> scripts = new HashMap<MapleClient, NPCScript>();
-    private static NPCScriptManager instance = new NPCScriptManager();
+    private final Map<MapleClient, NPCConversationManager> cms = new HashMap<>();
+    private final Map<MapleClient, NPCScript> scripts = new HashMap<>();
+    private static final NPCScriptManager instance = new NPCScriptManager();
     
-    public synchronized static NPCScriptManager getInstance() {
+    public static synchronized NPCScriptManager getInstance() {
         return instance;
     }
     
@@ -87,10 +87,10 @@ public class NPCScriptManager extends AbstractScriptManager {
         return cms.get(c);
     }
     
-    private Map<Pair<Integer, Integer>, Integer> npcTalk = new HashMap<Pair<Integer, Integer>, Integer>();
+    private final Map<Pair<Integer, Integer>, Integer> npcTalk = new HashMap<>();
     
     public int getNpcTalkTimes(int chrid, int npc) {
-        Pair<Integer, Integer> pplayer = new Pair<Integer, Integer>(chrid, npc); // first time <3 looks wrong.
+        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc); // first time <3 looks wrong.
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }
@@ -98,7 +98,7 @@ public class NPCScriptManager extends AbstractScriptManager {
     }
     
     public void addNpcTalkTimes(int chrid, int npc) {
-        Pair<Integer, Integer> pplayer = new Pair<Integer, Integer>(chrid, npc);
+        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }
@@ -108,7 +108,7 @@ public class NPCScriptManager extends AbstractScriptManager {
     }
     
     public void setNpcTalkTimes(int chrid, int npc, int amount) {
-        Pair<Integer, Integer> pplayer = new Pair<Integer, Integer>(chrid, npc);
+        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }
@@ -117,7 +117,7 @@ public class NPCScriptManager extends AbstractScriptManager {
     }
     
     public List<Integer> listTalkedNpcsByID(int chrid) {
-        List<Integer> npcs = new ArrayList<Integer>();
+        List<Integer> npcs = new ArrayList<>();
         for (Pair<Integer, Integer> rawr : npcTalk.keySet()) {
             if (rawr.getLeft().equals(chrid)) {
                 npcs.add(rawr.getRight());
@@ -127,7 +127,7 @@ public class NPCScriptManager extends AbstractScriptManager {
     }
     
     public List<Integer> listAllTalkedNpcs() {
-        List<Integer> npcs = new ArrayList<Integer>();
+        List<Integer> npcs = new ArrayList<>();
         for (Pair<Integer, Integer> rawr : npcTalk.keySet()) {
             npcs.add(rawr.getRight());
         }

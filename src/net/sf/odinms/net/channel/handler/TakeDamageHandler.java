@@ -1,6 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import net.sf.odinms.client.IEquip;
@@ -87,10 +86,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 // if (monsteridfrom != 0 && damage != -1) {
                 try {
                     attacker = (MapleMonster) player.getMap().getMapObject(oid);
-                } catch (ClassCastException cce) {
+                } catch (ClassCastException ignored) {
                 }
                 try {
-                    player.setLastDamageSource((MapleMonster) MapleLifeFactory.getMonster(monsteridfrom));
+                    player.setLastDamageSource(MapleLifeFactory.getMonster(monsteridfrom));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -141,17 +140,17 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             //System.out.print("4deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
             //System.out.print("5deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
             boolean smokescreened = false;
-            Collection<MapleMapObject> mmocollection = player.getMap().getMapObjects();
-            synchronized (mmocollection) {
+            //Collection<MapleMapObject> mmocollection = player.getMap().getMapObjects();
+            synchronized (player.getMap().getMapObjects()) {
                 try {
-                    Iterator<MapleMapObject> mmoiter = mmocollection.iterator();
+                    Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
                     while (mmoiter.hasNext()) {
                         MapleMapObject mmo = mmoiter.next();
                         if (mmo instanceof MapleMist) {
                             MapleMist mist = (MapleMist) mmo;
                             if (mist.getSourceSkill().getId() == 4221006) { // Smokescreen
                                 for (MapleMapObject mmoplayer : player.getMap().getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
-                                    if (player == (MapleCharacter) mmoplayer) {
+                                    if (player == mmoplayer) {
                                         damage = -1;
                                         smokescreened = true;
                                     }
@@ -165,7 +164,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 }
             }
             if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got damage removed by smokescreen don't get to stun mobs
-                int job = (int) (player.getJob().getId() / 10 - 40);
+                int job = player.getJob().getId() / 10 - 40;
                 fake = 4020002 + (job * 100000);
                 if (damagefrom == -1 && damagefrom != -2 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
                     int[] guardianSkillId = {1120005, 1220006};
@@ -218,7 +217,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 }
                             }
                             if (iswearingshield) {
-                                int bouncedamage = (int) ((double) damage * (((double) 10.0 * (double) player.getSkillLevel(SkillFactory.getSkill(2310000))) / (double) 100.0));
+                                int bouncedamage = (int) ((double) damage * ((10.0 * (double) player.getSkillLevel(SkillFactory.getSkill(2310000))) / 100.0));
                                 //System.out.print("raw bouncedamage: " + bouncedamage + "\n");
                                 bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 2);
                                 player.getMap().damageMonster(player, attacker, bouncedamage);
@@ -231,7 +230,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             for (int manaReflect : manaReflectSkillId) {
                                 ISkill manaReflectSkill = SkillFactory.getSkill(manaReflect);
                                 if (player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, manaReflectSkill) && player.getSkillLevel(manaReflectSkill) > 0 && manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).makeChanceResult()) {
-                                    int bouncedamage = (int) (damage * (manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).getX() / 100));
+                                    int bouncedamage = damage * (manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).getX() / 100);
                                     if (bouncedamage > attacker.getMaxHp() * .2) {
                                         bouncedamage = (int) (attacker.getMaxHp() * .2);
                                     }

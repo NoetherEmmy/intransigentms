@@ -4,9 +4,9 @@ import java.awt.Point;
 
 public class MapleFoothold implements Comparable<MapleFoothold> {
 
-    private Point p1;
-    private Point p2;
-    private int id;
+    private final Point p1;
+    private final Point p2;
+    private final int id;
     private int next, prev;
 
     public MapleFoothold(Point p1, Point p2, int id) {
@@ -37,14 +37,15 @@ public class MapleFoothold implements Comparable<MapleFoothold> {
         return p2.y;
     }
 
-    public int compareTo(MapleFoothold o) {
-        MapleFoothold other = (MapleFoothold) o;
-        if (p2.y < other.getY1())
+    @Override
+    public int compareTo(MapleFoothold other) {
+        if (p2.y < other.getY1()) {
             return -1;
-        else if (p1.y > other.getY2())
+        } else if (p1.y > other.getY2()) {
             return 1;
-        else
+        } else {
             return 0;
+        }
     }
 
     public int getId() {

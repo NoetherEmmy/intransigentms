@@ -10,12 +10,12 @@ public class MapleCustomEncryption {
      */
     public static byte[] encryptData(byte data[]) {
 
-        for (int j = 0; j < 6; j++) {
+        for (int j = 0; j < 6; ++j) {
             byte remember = 0;
             byte dataLength = (byte) (data.length & 0xFF);
             // printByteArray(data);
             if (j % 2 == 0) {
-                for (int i = 0; i < data.length; i++) {
+                for (int i = 0; i < data.length; ++i) {
                     byte cur = data[i];
                     cur = BitTools.rollLeft(cur, 3);
                     cur += dataLength;
@@ -28,7 +28,7 @@ public class MapleCustomEncryption {
                     data[i] = cur;
                 }
             } else {
-                for (int i = data.length - 1; i >= 0; i--) {
+                for (int i = data.length - 1; i >= 0; --i) {
                     byte cur = data[i];
                     cur = BitTools.rollLeft(cur, 4);
                     cur += dataLength;
@@ -52,13 +52,13 @@ public class MapleCustomEncryption {
      * @return The decrypted data.
      */
     public static byte[] decryptData(byte data[]) {
-        for (int j = 1; j <= 6; j++) {
+        for (int j = 1; j <= 6; ++j) {
             byte remember = 0;
             byte dataLength = (byte) (data.length & 0xFF);
-            byte nextRemember = 0;
+            byte nextRemember;
 
             if (j % 2 == 0) {
-                for (int i = 0; i < data.length; i++) {
+                for (int i = 0; i < data.length; ++i) {
                     byte cur = data[i];
                     cur -= 0x48;
                     cur = ((byte) ((~cur) & 0xFF));
@@ -72,7 +72,7 @@ public class MapleCustomEncryption {
                     dataLength--;
                 }
             } else {
-                for (int i = data.length - 1; i >= 0; i--) {
+                for (int i = data.length - 1; i >= 0; --i) {
                     byte cur = data[i];
                     cur = BitTools.rollLeft(cur, 3);
                     cur ^= 0x13;

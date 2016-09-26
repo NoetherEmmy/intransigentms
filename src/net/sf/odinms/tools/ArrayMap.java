@@ -32,7 +32,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      */
     static class Entry<K, V> implements Map.Entry<K, V>, Serializable {
         static final long serialVersionUID = 9179541993413738569L;
-        protected K key;
+        protected final K key;
         protected V value;
 
         /**
@@ -113,13 +113,13 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
 
     private Set<? extends java.util.Map.Entry<K, V>> entries = null;
 
-    private ArrayList<Entry<K, V>> list;
+    private final ArrayList<Entry<K, V>> list;
 
     /**
      * Class constructor
      */
     public ArrayMap() {
-        list = new ArrayList<Entry<K, V>>();
+        list = new ArrayList<>();
     }
 
     /**
@@ -129,7 +129,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      *            import.
      */
     public ArrayMap(Map<K, V> map) {
-        list = new ArrayList<Entry<K, V>>();
+        list = new ArrayList<>();
         putAll(map);
     }
 
@@ -139,7 +139,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      * @param initialCapacity The initial size of the ArrayMap.
      */
     public ArrayMap(int initialCapacity) {
-        list = new ArrayList<Entry<K, V>>(initialCapacity);
+        list = new ArrayList<>(initialCapacity);
     }
 
     /**
@@ -186,14 +186,14 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
         Entry<K, V> entry = null;
         int i;
         if (key == null) {
-            for (i = 0; i < size; i++) {
+            for (i = 0; i < size; ++i) {
                 entry = (list.get(i));
                 if (entry.getKey() == null) {
                     break;
                 }
             }
         } else {
-            for (i = 0; i < size; i++) {
+            for (i = 0; i < size; ++i) {
                 entry = (list.get(i));
                 if (key.equals(entry.getKey())) {
                     break;
@@ -205,7 +205,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
             oldValue = entry.getValue();
             entry.setValue(value);
         } else {
-            list.add(new Entry<K, V>(key, value));
+            list.add(new Entry<>(key, value));
         }
         return oldValue;
     }

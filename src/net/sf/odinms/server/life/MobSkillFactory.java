@@ -13,28 +13,28 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.tools.Pair;
 
 public class MobSkillFactory {
-    private static Map<Pair<Integer, Integer>, MobSkill> mobSkills = new HashMap<Pair<Integer, Integer>, MobSkill>();
-    private static MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
-    private static MapleData skillRoot = dataSource.getData("MobSkill.img");
+    private static final Map<Pair<Integer, Integer>, MobSkill> mobSkills = new HashMap<>();
+    private static final MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
+    private static final MapleData skillRoot = dataSource.getData("MobSkill.img");
 
     public static MobSkill getMobSkill(int skillId, int level) {
-        MobSkill ret = mobSkills.get(new Pair<Integer, Integer>(Integer.valueOf(skillId), Integer.valueOf(level)));
+        MobSkill ret = mobSkills.get(new Pair<>(skillId, level));
         if (ret != null) {
             return ret;
         }
         synchronized (mobSkills) {
             // see if someone else that's also synchronized has loaded the skill by now
-            ret = mobSkills.get(new Pair<Integer, Integer>(Integer.valueOf(skillId), Integer.valueOf(level)));
+            ret = mobSkills.get(new Pair<>(skillId, level));
             if (ret == null) {
                 MapleData skillData = skillRoot.getChildByPath(skillId + "/level/" + level);
                 if (skillData != null) {
                     int mpCon = MapleDataTool.getInt(skillData.getChildByPath("mpCon"), 0);
-                    List<Integer> toSummon = new ArrayList<Integer>();
-                    for (int i = 0; i > -1; i++) {
+                    List<Integer> toSummon = new ArrayList<>();
+                    for (int i = 0; i > -1; ++i) {
                         if (skillData.getChildByPath(String.valueOf(i)) == null) {
                             break;
                         }
-                        toSummon.add(Integer.valueOf(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0)));
+                        toSummon.add(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
                     }
                     int effect = MapleDataTool.getInt("summonEffect", skillData, 0);
                     int hp = MapleDataTool.getInt("hp", skillData, 100);
@@ -65,7 +65,7 @@ public class MobSkillFactory {
                     ret.setLimit(limit);
                     ret.setLtRb(lt, rb);
                 }
-                mobSkills.put(new Pair<Integer, Integer>(Integer.valueOf(skillId), Integer.valueOf(level)), ret);
+                mobSkills.put(new Pair<>(skillId, level), ret);
             }
             return ret;
         }

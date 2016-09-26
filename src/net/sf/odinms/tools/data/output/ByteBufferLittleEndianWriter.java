@@ -3,7 +3,7 @@ package net.sf.odinms.tools.data.output;
 import org.apache.mina.common.ByteBuffer;
 
 public class ByteBufferLittleEndianWriter extends GenericLittleEndianWriter {
-    private ByteBuffer bb;
+    private final ByteBuffer bb;
 
     /**
      * Constructor - Constructs this object as fixed at the default size.

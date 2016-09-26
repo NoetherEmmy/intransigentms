@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,7 @@ import net.sf.odinms.tools.Pair;
 public class MapleStatEffect implements Serializable {
 
     static final long serialVersionUID = 9179541993413738569L;
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleStatEffect.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleStatEffect.class);
     private short watk,  matk,  wdef,  mdef,  acc,  avoid,  hands,  speed,  jump;
     private short hp,  mp;
     private double hpR,  mpR;
@@ -129,14 +128,14 @@ public class MapleStatEffect implements Serializable {
         ret.speed = (short) MapleDataTool.getInt("speed", source, 0);
         ret.jump = (short) MapleDataTool.getInt("jump", source, 0);
         if (ret.overTime && ret.getSummonMovementType() == null) {
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WATK, Integer.valueOf(ret.watk));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WDEF, Integer.valueOf(ret.wdef));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MATK, Integer.valueOf(ret.matk));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MDEF, Integer.valueOf(ret.mdef));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ACC, Integer.valueOf(ret.acc));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.AVOID, Integer.valueOf(ret.avoid));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.SPEED, Integer.valueOf(ret.speed));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.JUMP, Integer.valueOf(ret.jump));
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WATK, (int) ret.watk);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WDEF, (int) ret.wdef);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MATK, (int) ret.matk);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MDEF, (int) ret.mdef);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ACC, (int) ret.acc);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.AVOID, (int) ret.avoid);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.SPEED, (int) ret.speed);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.JUMP, (int) ret.jump);
         }
 
         MapleData ltd = source.getChildByPath("lt");
@@ -250,45 +249,45 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 5111005: // transformation
                 case 5121003: // super transformation
-                    statups.add(new Pair<>(MapleBuffStat.WDEF, Integer.valueOf(ret.wdef)));
-                    statups.add(new Pair<>(MapleBuffStat.MDEF, Integer.valueOf(ret.mdef)));
-                    statups.add(new Pair<>(MapleBuffStat.SPEED, Integer.valueOf(ret.speed)));
-                    statups.add(new Pair<>(MapleBuffStat.JUMP, Integer.valueOf(ret.jump)));
+                    statups.add(new Pair<>(MapleBuffStat.WDEF, (int) ret.wdef));
+                    statups.add(new Pair<>(MapleBuffStat.MDEF, (int) ret.mdef));
+                    statups.add(new Pair<>(MapleBuffStat.SPEED, (int) ret.speed));
+                    statups.add(new Pair<>(MapleBuffStat.JUMP, (int) ret.jump));
                     break;
                 case 1101006: // rage
-                    statups.add(new Pair<>(MapleBuffStat.WDEF, Integer.valueOf(ret.wdef)));
+                    statups.add(new Pair<>(MapleBuffStat.WDEF, (int) ret.wdef));
                 case 1121010: // enrage
-                    statups.add(new Pair<>(MapleBuffStat.WATK, Integer.valueOf(ret.watk)));
+                    statups.add(new Pair<>(MapleBuffStat.WATK, (int) ret.watk));
                     break;
                 case 1301006: // iron will
-                    statups.add(new Pair<>(MapleBuffStat.MDEF, Integer.valueOf(ret.mdef)));
+                    statups.add(new Pair<>(MapleBuffStat.MDEF, (int) ret.mdef));
                 case 1001003: // iron body
-                    statups.add(new Pair<>(MapleBuffStat.WDEF, Integer.valueOf(ret.wdef)));
+                    statups.add(new Pair<>(MapleBuffStat.WDEF, (int) ret.wdef));
                     break;
                 case 2001003: // magic armor
-                    statups.add(new Pair<>(MapleBuffStat.WDEF, Integer.valueOf(ret.wdef)));
+                    statups.add(new Pair<>(MapleBuffStat.WDEF, (int) ret.wdef));
                     break;
                 case 2101001: // meditation
                 case 2201001: // meditation
-                    statups.add(new Pair<>(MapleBuffStat.MATK, Integer.valueOf(ret.matk)));
+                    statups.add(new Pair<>(MapleBuffStat.MATK, (int) ret.matk));
                     break;
                 case 4101004: // haste
                 case 4201003: // haste
                 case 9101001: // gm haste
-                    statups.add(new Pair<>(MapleBuffStat.SPEED, Integer.valueOf(ret.speed)));
-                    statups.add(new Pair<>(MapleBuffStat.JUMP, Integer.valueOf(ret.jump)));
+                    statups.add(new Pair<>(MapleBuffStat.SPEED, (int) ret.speed));
+                    statups.add(new Pair<>(MapleBuffStat.JUMP, (int) ret.jump));
                     break;
                 case 2301004: // bless
-                    statups.add(new Pair<>(MapleBuffStat.WDEF, Integer.valueOf(ret.wdef)));
-                    statups.add(new Pair<>(MapleBuffStat.MDEF, Integer.valueOf(ret.mdef)));
+                    statups.add(new Pair<>(MapleBuffStat.WDEF, (int) ret.wdef));
+                    statups.add(new Pair<>(MapleBuffStat.MDEF, (int) ret.mdef));
                 case 3001003: // focus
-                    statups.add(new Pair<>(MapleBuffStat.ACC, Integer.valueOf(ret.acc)));
-                    statups.add(new Pair<>(MapleBuffStat.AVOID, Integer.valueOf(ret.avoid)));
+                    statups.add(new Pair<>(MapleBuffStat.ACC, (int) ret.acc));
+                    statups.add(new Pair<>(MapleBuffStat.AVOID, (int) ret.avoid));
                     break;
                 case 9101003: // gm bless
-                    statups.add(new Pair<>(MapleBuffStat.MATK, Integer.valueOf(ret.matk)));
+                    statups.add(new Pair<>(MapleBuffStat.MATK, (int) ret.matk));
                 case 3121008: // concentrate
-                    statups.add(new Pair<>(MapleBuffStat.WATK, Integer.valueOf(ret.watk)));
+                    statups.add(new Pair<>(MapleBuffStat.WATK, (int) ret.watk));
                     break;
                 case 5001005: // Dash
                     statups.add(new Pair<>(MapleBuffStat.DASH, 1));
@@ -313,8 +312,8 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 5221006: // 4th Job - Pirate riding
                     statups.add(new Pair<>(MapleBuffStat.MONSTER_RIDING, 1));
-                    statups.add(new Pair<>(MapleBuffStat.WDEF, Integer.valueOf(ret.wdef)));
-                    statups.add(new Pair<>(MapleBuffStat.MDEF, Integer.valueOf(ret.mdef)));
+                    statups.add(new Pair<>(MapleBuffStat.WDEF, (int) ret.wdef));
+                    statups.add(new Pair<>(MapleBuffStat.MDEF, (int) ret.mdef));
                     //System.out.print("statups WDEF: " + ret.wdef + "\n");
                     //System.out.print("statups MDEF: " + ret.mdef + "\n");
                     break;
@@ -494,9 +493,8 @@ public class MapleStatEffect implements Serializable {
     /**
      * @param applyto
      * @param obj
-     * @param attack damage done by the skill
      */
-    public void applyPassive(MapleCharacter applyto, MapleMapObject obj, int attack) {
+    public void applyPassive(MapleCharacter applyto, MapleMapObject obj) {
         if (makeChanceResult()) {
             switch (sourceid) {
                 // MP eater
@@ -563,7 +561,7 @@ public class MapleStatEffect implements Serializable {
                 mpchange = (int) ((double) applyfrom.getMaxMp() * (y / 100.0));
             }
         }
-        if (cureDebuffs.size() > 0) {
+        if (!cureDebuffs.isEmpty()) {
             for (MapleDisease debuff : cureDebuffs) {
                 applyfrom.dispelDebuff(debuff);
             }
@@ -575,7 +573,7 @@ public class MapleStatEffect implements Serializable {
         }
         if (isDispel() && makeChanceResult()) {
             MonsterStatus[] remove = {MonsterStatus.ACC, MonsterStatus.AVOID, MonsterStatus.WEAPON_IMMUNITY, MonsterStatus.MAGIC_IMMUNITY, MonsterStatus.SPEED};
-            for (MapleMapObject _mob : applyfrom.getMap().getMapObjectsInRange(applyfrom.getPosition(), 30000 + applyfrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 1000, Arrays.asList(MapleMapObjectType.MONSTER))) {
+            for (MapleMapObject _mob : applyfrom.getMap().getMapObjectsInRange(applyfrom.getPosition(), 30000 + applyfrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 1000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster mob = (MapleMonster) _mob;
                 if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
                     for (int i = 0; i < remove.length; ++i) {
@@ -608,7 +606,7 @@ public class MapleStatEffect implements Serializable {
                     remove = MonsterStatus.STUN;
                     break;
             }
-            for (MapleMapObject _mob : applyfrom.getMap().getMapObjectsInRange(applyfrom.getPosition(), 30000 + applyfrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 3000, Arrays.asList(MapleMapObjectType.MONSTER))) {
+            for (MapleMapObject _mob : applyfrom.getMap().getMapObjectsInRange(applyfrom.getPosition(), 30000 + applyfrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 3000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster mob = (MapleMonster) _mob;
                 if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
                     if (mob.getMonsterBuffs().contains(remove)) {
@@ -762,7 +760,7 @@ public class MapleStatEffect implements Serializable {
     private void applyBuff(MapleCharacter applyfrom) {
         if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
+            List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Collections.singletonList(MapleMapObjectType.PLAYER));
             List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
             MapleCharacter closestplayer = null;
             double closestdistance = Double.MAX_VALUE;
@@ -823,7 +821,7 @@ public class MapleStatEffect implements Serializable {
 
     private void applyMonsterBuff(MapleCharacter applyfrom) {
         Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
+        List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Collections.singletonList(MapleMapObjectType.MONSTER));
         ISkill skill_ = SkillFactory.getSkill(sourceid);
         Map<MonsterStatus, Integer> localmonsterstatus = getMonsterStati();
         // /*
@@ -864,8 +862,7 @@ public class MapleStatEffect implements Serializable {
             myrb = new Point(lt.x * -1 + posFrom.x, rb.y + posFrom.y);
             mylt = new Point(rb.x * -1 + posFrom.x, lt.y + posFrom.y);
         }
-        Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
-        return bounds;
+        return new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
     }
 
     public void silentApplyBuff(MapleCharacter chr, long starttime) {
@@ -998,7 +995,7 @@ public class MapleStatEffect implements Serializable {
         if (primary) {
             localDuration = alchemistModifyVal(applyfrom, localDuration, false);
         }
-        if (localstatups.size() > 0) {
+        if (!localstatups.isEmpty()) {
             if (isDash()) {
                 if (!applyto.getJob().isA(MapleJob.PIRATE)) {
                     applyto.changeSkillLevel(SkillFactory.getSkill(sourceid), 0, 10);
@@ -1068,7 +1065,7 @@ public class MapleStatEffect implements Serializable {
                 }
             }
         }
-        if (localstatups.size() > 0) {
+        if (!localstatups.isEmpty()) {
             long starttime = System.currentTimeMillis();
             CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
             ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
@@ -1095,7 +1092,7 @@ public class MapleStatEffect implements Serializable {
                     hpchange += hp;
                 }
             } else { // Assumption: this is heal.
-                hpchange += makeHealHP((double) hp / 100.0, (double) applyfrom.getTotalMagic(), (double) 3.0, (double) 5.0);
+                hpchange += makeHealHP((double) hp / 100.0, (double) applyfrom.getTotalMagic(), 3.0, 5.0);
             }
         }
         if (hpR != 0) {
@@ -1218,10 +1215,7 @@ public class MapleStatEffect implements Serializable {
         if (lt == null || rb == null) {
             return false;
         }
-        if ((sourceid >= 1211003 && sourceid <= 1211008) || sourceid == 1221003 || sourceid == 1221004) { // wk charges have lt and rb set but are neither player nor monster buffs
-            return false;
-        }
-        return true;
+        return !((sourceid >= 1211003 && sourceid <= 1211008) || sourceid == 1221003 || sourceid == 1221004);
     }
 
     public boolean isHeal() {
@@ -1435,7 +1429,7 @@ public class MapleStatEffect implements Serializable {
     //
 
     public boolean isInfusion() {
-        return skill && sourceid == 0000000;
+        return skill && sourceid == 0;
     }
 
     public boolean isMorph() {
@@ -1507,9 +1501,9 @@ public class MapleStatEffect implements Serializable {
 
     public static class CancelEffectAction implements Runnable {
 
-        private MapleStatEffect effect;
-        private WeakReference<MapleCharacter> target;
-        private long startTime;
+        private final MapleStatEffect effect;
+        private final WeakReference<MapleCharacter> target;
+        private final long startTime;
 
         public CancelEffectAction(MapleCharacter target, MapleStatEffect effect, long startTime) {
             this.effect = effect;

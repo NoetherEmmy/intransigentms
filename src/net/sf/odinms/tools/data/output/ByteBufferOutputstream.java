@@ -3,7 +3,7 @@ package net.sf.odinms.tools.data.output;
 import org.apache.mina.common.ByteBuffer;
 
 public class ByteBufferOutputstream implements ByteOutputStream {
-    private ByteBuffer bb;
+    private final ByteBuffer bb;
 
     /**
      * Class constructor - Wraps this instance around ByteBuffer <code>bb</code>

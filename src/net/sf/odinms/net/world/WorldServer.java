@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 public class WorldServer {
 
     private static WorldServer instance = null;
-    private static Logger log = LoggerFactory.getLogger(WorldServer.class);
+    private static final Logger log = LoggerFactory.getLogger(WorldServer.class);
     private int worldId;
-    private Properties dbProp = new Properties();
-    private Properties worldProp = new Properties();
+    private final Properties dbProp = new Properties();
+    private final Properties worldProp = new Properties();
 
     private WorldServer() {
         try {
@@ -35,7 +35,7 @@ public class WorldServer {
         }
     }
 
-    public synchronized static WorldServer getInstance() {
+    public static synchronized WorldServer getInstance() {
         if (instance == null) {
             instance = new WorldServer();
         }

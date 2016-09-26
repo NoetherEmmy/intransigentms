@@ -6,7 +6,7 @@ import net.sf.odinms.provider.wz.WZFile;
 import net.sf.odinms.provider.xmlwz.XMLWZFile;
 
 public class MapleDataProviderFactory {
-    private final static String wzPath = System.getProperty("net.sf.odinms.wzpath");
+    private static final String wzPath = System.getProperty("net.sf.odinms.wzpath");
 
     private static MapleDataProvider getWZ(Object in, boolean provideImages) {
         if (in instanceof File) {

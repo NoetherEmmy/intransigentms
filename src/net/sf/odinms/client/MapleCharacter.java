@@ -1643,7 +1643,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             } 
             sb.append(first_num).append(",");  
             left_num += num.substring(first_num.length(), num.length());  
-            for (int x = 0; x < repeat; x++) {  
+            for (int x = 0; x < repeat; ++x) {
                 sb.append(left_num.substring((3 * x), (3 * x) + 3)).append(","); 
             } 
             readable = sb.toString().substring(0, sb.toString().length() - 1);         
@@ -1741,12 +1741,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         quests.put(quest.getQuest(), quest);
         if (!(quest.getQuest() instanceof MapleCustomQuest)) {
             if (quest.getStatus().equals(MapleQuestStatus.Status.STARTED)) {
-                client.getSession().write(MaplePacketCreator.startQuest(this, (short) quest.getQuest().getId()));
-                client.getSession().write(MaplePacketCreator.updateQuestInfo(this, (short) quest.getQuest().getId(), quest.getNpc(), (byte) 8));
+                client.getSession().write(MaplePacketCreator.startQuest((short) quest.getQuest().getId()));
+                client.getSession().write(MaplePacketCreator.updateQuestInfo((short) quest.getQuest().getId(), quest.getNpc(), (byte) 8));
             } else if (quest.getStatus().equals(MapleQuestStatus.Status.COMPLETED)) {
-                client.getSession().write(MaplePacketCreator.completeQuest(this, (short) quest.getQuest().getId()));
+                client.getSession().write(MaplePacketCreator.completeQuest((short) quest.getQuest().getId()));
             } else if (quest.getStatus().equals(MapleQuestStatus.Status.NOT_STARTED)) {
-                client.getSession().write(MaplePacketCreator.forfeitQuest(this, (short) quest.getQuest().getId()));
+                client.getSession().write(MaplePacketCreator.forfeitQuest((short) quest.getQuest().getId()));
             }
         }
     }
@@ -2210,7 +2210,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             setHp(getHp());
             stats.add(new Pair<>(MapleStat.HP, getHp()));
         }
-        if (stats.size() > 0) {
+        if (!stats.isEmpty()) {
             getClient().getSession().write(MaplePacketCreator.updatePlayerStats(stats));
         }
     }
@@ -2562,7 +2562,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                         updatePartyMemberHP();
                     }
                     if (getMap().getHPDec() > 0 && !inCS() && isAlive()) {
-                        hpDecreaseTask = TimerManager.getInstance().schedule(() -> doHurtHp(), 10000);
+                        hpDecreaseTask = TimerManager.getInstance().schedule(this::doHurtHp, 10000);
                     }
                     if (to.getId() == 980000301) {
                         setTeam(MapleCharacter.rand(0, 1));
@@ -2604,7 +2604,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             return;
         }
         addHP(-getMap().getHPDec());
-        hpDecreaseTask = TimerManager.getInstance().schedule(() -> doHurtHp(), 10000);
+        hpDecreaseTask = TimerManager.getInstance().schedule(this::doHurtHp, 10000);
     }
     
     private void setDefaultCoreSkillMasterLevels() {
@@ -5599,7 +5599,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public boolean hasFakeChar() {
-        return fakes.size() > 0;
+        return !fakes.isEmpty();
     }
 
     public List<FakeCharacter> getFakeChars() {

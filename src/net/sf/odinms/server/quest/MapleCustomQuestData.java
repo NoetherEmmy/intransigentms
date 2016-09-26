@@ -13,10 +13,10 @@ import net.sf.odinms.provider.wz.MapleDataType;
 public class MapleCustomQuestData implements MapleData, Serializable {
     private static final long serialVersionUID = -8600005891655365066L;
 
-    private List<MapleCustomQuestData> children = new LinkedList<MapleCustomQuestData>();
-    private String name;
-    private Object data;
-    private MapleDataEntity parent;
+    private final List<MapleCustomQuestData> children = new LinkedList<>();
+    private final String name;
+    private final Object data;
+    private final MapleDataEntity parent;
 
     public MapleCustomQuestData(String name, Object data, MapleDataEntity parent) {
         this.name = name;
@@ -39,14 +39,14 @@ public class MapleCustomQuestData implements MapleData, Serializable {
     public List<MapleData> getChildren() {
         MapleData[] ret = new MapleData[children.size()];
         ret = children.toArray(ret);
-        return new ArrayList<MapleData>(Arrays.asList(ret));
+        return new ArrayList<>(Arrays.asList(ret));
     }
 
     public MapleData getChildByPath(String name) {
         if (name.equals(this.name)) return this;
         String lookup;
         String nextName;
-        if (name.indexOf("/") == -1) {
+        if (!name.contains("/")) {
             lookup = name;
             nextName = name;
         } else {

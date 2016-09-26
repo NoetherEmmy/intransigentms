@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class MoveLifeHandler extends AbstractMovementPacketHandler {
 
-    private static Logger log = LoggerFactory.getLogger(MoveLifeHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(MoveLifeHandler.class);
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -48,7 +48,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
             int random = rand.nextInt(monster.getNoSkills());
             Pair<Integer, Integer> skillToUse = monster.getSkills().get(random);
             toUse = MobSkillFactory.getMobSkill(skillToUse.getLeft(), skillToUse.getRight());
-            int percHpLeft = (int) ((monster.getHp() / monster.getMaxHp()) * 100);
+            int percHpLeft = (monster.getHp() / monster.getMaxHp()) * 100;
             if (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) {
                 toUse = null;
             }

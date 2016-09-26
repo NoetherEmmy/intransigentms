@@ -4,7 +4,6 @@ import java.util.List;
 import net.sf.odinms.client.IEquip;
 import net.sf.odinms.client.IItem;
 import net.sf.odinms.client.InventoryException;
-import net.sf.odinms.client.Item;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.client.MapleInventory;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class ScrollHandler extends AbstractMaplePacketHandler {
 
-    private static Logger log = LoggerFactory.getLogger(ScrollHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ScrollHandler.class);
 
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -41,7 +40,7 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             toScroll = (IEquip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
         }
         byte oldLevel = toScroll.getLevel();
-        if (((IEquip) toScroll).getUpgradeSlots() < 1) {
+        if (toScroll.getUpgradeSlots() < 1) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
         }
@@ -50,7 +49,7 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
         IItem wscroll = null;
 
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
-        if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
+        if (!scrollReqs.isEmpty() && !scrollReqs.contains(toScroll.getItemId())) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
         }
@@ -85,7 +84,7 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             if (wscroll.getQuantity() < 1) {
                 c.getSession().write(MaplePacketCreator.clearInventoryItem(MapleInventoryType.USE, wscroll.getPosition(), false));
             } else {
-                c.getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, (Item) wscroll));
+                c.getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, wscroll));
             }
         }
         if (scrollSuccess == IEquip.ScrollResult.CURSE) {

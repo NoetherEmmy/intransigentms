@@ -5,8 +5,8 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class WhisperMapleClientMessageCallback implements MessageCallback {
 
-    private MapleClient client;
-    private String whisperfrom;
+    private final MapleClient client;
+    private final String whisperfrom;
 
     public WhisperMapleClientMessageCallback(String whisperfrom, MapleClient client) {
         this.whisperfrom = whisperfrom;

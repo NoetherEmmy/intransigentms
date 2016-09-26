@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InputStreamByteStream implements ByteInputStream {
-    private InputStream is;
+    private final InputStream is;
     private long read = 0;
-    private static Logger log = LoggerFactory.getLogger(InputStreamByteStream.class);
+    private static final Logger log = LoggerFactory.getLogger(InputStreamByteStream.class);
 
     /**
      * Class constructor.

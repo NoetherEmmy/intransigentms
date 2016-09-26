@@ -2,7 +2,6 @@ package net.sf.odinms.net.channel;
 
 import java.awt.Point;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -14,7 +13,6 @@ import java.rmi.registry.Registry;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,10 +67,9 @@ import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 public class ChannelServer implements Runnable, ChannelServerMBean {
 
     private static int uniqueID = 1;
-    private int port = 7575;
     private static Properties initialProp;
     private static WorldRegistry worldRegistry;
-    private PlayerStorage players = new PlayerStorage();
+    private final PlayerStorage players = new PlayerStorage();
     private String serverMessage;
     private int expRate;
     private int mesoRate;
@@ -82,7 +79,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private boolean dropUndroppables;
     private boolean moreThanOne;
     private int channel;
-    private String key;
+    private final String key;
     private Properties props = new Properties();
     private ChannelWorldInterface cwi;
     private WorldChannelInterface wci = null;
@@ -101,15 +98,15 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private short itemStatMultiplier;
     private short godlyItemRate;
     private int PvPis;
-    private MapleMapFactory mapFactory;
+    private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
-    private static Map<Integer, ChannelServer> instances = new HashMap<>();
-    private static Map<String, ChannelServer> pendingInstances = new HashMap<>();
-    private Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
+    private static final Map<Integer, ChannelServer> instances = new HashMap<>();
+    private static final Map<String, ChannelServer> pendingInstances = new HashMap<>();
+    private final Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
     private Boolean worldReady = true;
-    private Map<MapleSquadType, MapleSquad> mapleSquads = new HashMap<>();
-    private ClanHolder clans = new ClanHolder();
-    private Collection<FakeCharacter> clones = new LinkedList<>();
+    private final Map<MapleSquadType, MapleSquad> mapleSquads = new HashMap<>();
+    private final ClanHolder clans = new ClanHolder();
+    private final Collection<FakeCharacter> clones = new LinkedList<>();
     private int levelCap;
     private boolean multiLevel;
 
@@ -236,7 +233,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        port = Integer.parseInt(props.getProperty("net.sf.odinms.channel.net.port"));
+        int port = Integer.parseInt(props.getProperty("net.sf.odinms.channel.net.port"));
         ip = props.getProperty("net.sf.odinms.channel.net.interface") + ":" + port;
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
@@ -421,7 +418,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             while (!worldReady) {
                 try {
                     worldReady.wait();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 }
             }
         }
@@ -524,9 +521,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             return null;
         }
 
-        if (gsStore.get(gid) == null) {
-            gsStore.put(gid, new MapleGuildSummary(g));
-        }
+        gsStore.putIfAbsent(gid, new MapleGuildSummary(g));
 
         return g;
     }
@@ -568,7 +563,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         }
     }
 
-    public static void main(String args[]) throws FileNotFoundException, IOException, NotBoundException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException {
+    public static void main(String args[]) throws IOException, NotBoundException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException {
         initialProp = new Properties();
         initialProp.load(new FileReader(System.getProperty("net.sf.odinms.channel.config")));
         Registry registry = LocateRegistry.getRegistry(initialProp.getProperty("net.sf.odinms.world.host"), Registry.REGISTRY_PORT, new SslRMIClientSocketFactory());
@@ -584,7 +579,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             public void run() {
                 for (ChannelServer channel : getAllInstances()) {
                     for (int i = 910000001; i <= 910000022; ++i) {
-                        for (MapleMapObject obj : channel.getMapFactory().getMap(i).getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.HIRED_MERCHANT))) {
+                        for (MapleMapObject obj : channel.getMapFactory().getMap(i).getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.HIRED_MERCHANT))) {
                             HiredMerchant hm = (HiredMerchant) obj;
                             hm.closeShop(true);
                         }

@@ -16,7 +16,7 @@ public class FourthJobQuestsPortalHandler {
         BERSERK("s4berserk");
         private final String name;
 
-        private FourthJobQuests(String Newname) {
+        FourthJobQuests(String Newname) {
             this.name = Newname;
         }
 

@@ -8,8 +8,8 @@ import net.sf.odinms.tools.MockIOSession;
 
 public class FakeCharacter {
 
-    private MapleCharacter ch;
-    private MapleCharacter owner;
+    private final MapleCharacter ch;
+    private final MapleCharacter owner;
     private boolean follow = true;
 
     public FakeCharacter(MapleCharacter player, int id) {

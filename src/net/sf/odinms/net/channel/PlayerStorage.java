@@ -7,8 +7,8 @@ import net.sf.odinms.client.MapleCharacter;
 
 public class PlayerStorage implements IPlayerStorage {
 
-    Map<String, MapleCharacter> nameToChar = new LinkedHashMap<String, MapleCharacter>();
-    Map<Integer, MapleCharacter> idToChar = new LinkedHashMap<Integer, MapleCharacter>();
+    final Map<String, MapleCharacter> nameToChar = new LinkedHashMap<>();
+    final Map<Integer, MapleCharacter> idToChar = new LinkedHashMap<>();
 
     public void registerPlayer(MapleCharacter chr) {
         nameToChar.put(chr.getName().toLowerCase(), chr);
@@ -25,7 +25,7 @@ public class PlayerStorage implements IPlayerStorage {
     }
 
     public MapleCharacter getCharacterById(int id) {
-        return idToChar.get(Integer.valueOf(id));
+        return idToChar.get(id);
     }
 
     public Collection<MapleCharacter> getAllCharacters() {

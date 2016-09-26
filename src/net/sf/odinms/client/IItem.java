@@ -2,8 +2,8 @@ package net.sf.odinms.client;
 
 public interface IItem extends Comparable<IItem> {
 
-    public final int ITEM = 2;
-    public final int EQUIP = 1;
+    int ITEM = 2;
+    int EQUIP = 1;
 
     byte getType();
 

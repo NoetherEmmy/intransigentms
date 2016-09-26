@@ -18,7 +18,7 @@ import net.sf.odinms.tools.data.input.StreamUtil;
         slea.readInt();
         Point startPos = StreamUtil.readShortPoint(slea);
         List<LifeMovementFragment> res = parseMovement(slea);
-        if (res.size() == 0) {
+        if (res.isEmpty()) {
             return;
         }
         MapleCharacter player = c.getPlayer();

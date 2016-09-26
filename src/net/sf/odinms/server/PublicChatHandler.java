@@ -11,7 +11,7 @@ import net.sf.odinms.tools.StringUtil;
 
 public class PublicChatHandler {
 
-    private static Map<Integer, Integer> playerHolder = new HashMap<Integer, Integer>();
+    private static final Map<Integer, Integer> playerHolder = new HashMap<>();
 
     private static void addPlayer(MapleCharacter chr) {
         playerHolder.put(chr.getId(), chr.getClient().getChannel());
@@ -84,7 +84,7 @@ public class PublicChatHandler {
                 c.getSession().write(MaplePacketCreator.multiChat("", "Current people in the chat", 3));
                 c.getSession().write(MaplePacketCreator.serverNotice(6, ""));
                 int i = 0;
-                if (playerHolder.size() == 0) {
+                if (playerHolder.isEmpty()) {
                     c.getSession().write(MaplePacketCreator.multiChat("", "No one is in this chat unfortunately", 3));
                 } else {
                     for (int chrIds : playerHolder.keySet()) {
@@ -97,7 +97,7 @@ public class PublicChatHandler {
                             c.getSession().write(MaplePacketCreator.multiChat("", sb.toString(), 3));
                             sb = new StringBuilder();
                         }
-                        sb.append(chrs.getName() + "      ");
+                        sb.append(chrs.getName()).append("      ");
                         i++;
                     }
                     c.getSession().write(MaplePacketCreator.multiChat("", sb.toString(), 3));
@@ -107,7 +107,7 @@ public class PublicChatHandler {
                 String message = StringUtil.joinStringFrom(splitted, 0).trim();
                 sendMessage(player, message);
             } else {
-                mc.dropMessage("I did not understand what you just said..");
+                mc.dropMessage("I don't understand what you just said.");
             }
         } else {
             return false;

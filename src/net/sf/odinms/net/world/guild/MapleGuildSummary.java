@@ -3,12 +3,12 @@ package net.sf.odinms.net.world.guild;
 public class MapleGuildSummary implements java.io.Serializable {
 
     public static final long serialVersionUID = 3565477792085301248L;
-    private String name;
-    private short logoBG;
-    private byte logoBGColor;
-    private short logo;
-    private byte logoColor;
-    private int allianceId;
+    private final String name;
+    private final short logoBG;
+    private final byte logoBGColor;
+    private final short logo;
+    private final byte logoColor;
+    private final int allianceId;
 
     public MapleGuildSummary(MapleGuild g) {
         name = g.getName();

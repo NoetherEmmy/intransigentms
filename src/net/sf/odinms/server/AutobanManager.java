@@ -14,9 +14,9 @@ public class AutobanManager implements Runnable {
 
     private static class ExpirationEntry implements Comparable<ExpirationEntry> {
 
-        public long time;
-        public int acc;
-        public int points;
+        public final long time;
+        public final int acc;
+        public final int points;
 
         public ExpirationEntry(long time, int acc, int points) {
             this.time = time;
@@ -28,9 +28,9 @@ public class AutobanManager implements Runnable {
             return (int) (time - o.time);
         }
     }
-    private Map<Integer, Integer> points = new HashMap<Integer, Integer>();
-    private Map<Integer, List<String>> reasons = new HashMap<Integer, List<String>>();
-    private Set<ExpirationEntry> expirations = new TreeSet<ExpirationEntry>();
+    private final Map<Integer, Integer> points = new HashMap<>();
+    private final Map<Integer, List<String>> reasons = new HashMap<>();
+    private final Set<ExpirationEntry> expirations = new TreeSet<>();
     private static final int AUTOBAN_POINTS = 1000;
     private static AutobanManager instance = null;
 
@@ -59,7 +59,7 @@ public class AutobanManager implements Runnable {
             reasonList.add(reason);
         } else {
             this.points.put(acc, points);
-            reasonList = new LinkedList<String>();
+            reasonList = new LinkedList<>();
             reasonList.add(reason);
             this.reasons.put(acc, reasonList);
         }

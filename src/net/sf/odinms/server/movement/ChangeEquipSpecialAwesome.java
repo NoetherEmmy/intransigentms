@@ -4,7 +4,7 @@ import java.awt.Point;
 import net.sf.odinms.tools.data.output.LittleEndianWriter;
 
 public class ChangeEquipSpecialAwesome implements LifeMovementFragment {
-    private int wui;
+    private final int wui;
 
     public ChangeEquipSpecialAwesome(int wui) {
         this.wui = wui;

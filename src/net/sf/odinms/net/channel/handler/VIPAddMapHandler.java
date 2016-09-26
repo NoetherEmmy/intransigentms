@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class VIPAddMapHandler extends AbstractMaplePacketHandler {
 
-    private static Logger log = LoggerFactory.getLogger(VIPAddMapHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(VIPAddMapHandler.class);
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {

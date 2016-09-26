@@ -21,8 +21,8 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
 
     public class SummonAttackEntry {
 
-        private int monsterOid;
-        private int damage;
+        private final int monsterOid;
+        private final int damage;
 
         public SummonAttackEntry(int monsterOid, int damage) {
             super();
@@ -81,7 +81,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             int min = player.calculateMinBaseDamage(player);
             int max = player.calculateMaxBaseDamage(player.getTotalWatk());
             int basedmg;
-            double skilllevelmultiplier = (double) 1.5 + (double) (player.getSkillLevel(summonSkill) * percentperlevel);
+            double skilllevelmultiplier = 1.5 + player.getSkillLevel(summonSkill) * percentperlevel;
             for (int i = 0; i < allDamage.size(); ++i) {
                 basedmg = min + (int) (Math.random() * (double) (max - min + 1));
                 int thisdmg = allDamage.get(i).getDamage();
@@ -118,7 +118,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                     AutobanManager.getInstance().autoban
                     (player.getClient(),"XSource| " + player.getName() + "'s summon dealt " + damage + " to monster " + target.getId() + ".");
                 }
-                if (damage > 0 && summonEffect.getMonsterStati().size() > 0) {
+                if (damage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
                     if (summonEffect.makeChanceResult()) {
                         MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(summonEffect.getMonsterStati(), summonSkill, false);
                         target.applyStatus(player, monsterStatusEffect, summonEffect.isPoison(), 4000);

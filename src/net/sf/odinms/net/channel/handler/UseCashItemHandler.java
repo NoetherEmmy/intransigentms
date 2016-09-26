@@ -161,7 +161,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                     break;
 
-                case 506: // hmm npe when double clicking..
+                case 506: // Hmmm npe when double clicking...
                     int tagType = itemId % 10;
                     IItem eq = null;
                     if (tagType == 0) { // Item tag.
@@ -225,7 +225,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                     }
                                     if (tvType != 4) {
                                         String name = slea.readMapleAsciiString();
-                                        if (name.length() > 0) {
+                                        if (!name.isEmpty()) {
                                             int channel = c.getChannelServer().getWorldInterface().find(name);
                                             if (channel == -1) {
                                                 player.dropMessage(1, "Player could not be found.");
@@ -376,7 +376,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             pet.setName(newName);
                             c.getSession().write(MaplePacketCreator.updatePet(pet, true));
                             c.getSession().write(MaplePacketCreator.enableActions());
-                            player.getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.changePetName(c.getPlayer(), newName, 1), true);
+                            player.getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.changePetName(c.getPlayer(), newName), true);
                             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                         } else {
                             cm.dropMessage("Names must be 2 - 14 characters.");
@@ -440,7 +440,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                                 break;
                             }
-                            if ((victim.isGM() && player.isGM()) || !victim.isGM()) { // I should really handle this before the switch
+                            if (!victim.isGM() || player.isGM()) { // I should really handle this before the switch
                                 if (true) { // if ((player.getMap().getMapName().equals(victim.getMap().getMapName()) && !vip) || vip)
                                     player.changeMap(map, map.findClosestSpawnpoint(victim.getPosition()));
                                     //System.out.print("Good player TP, map: " + map.getId() + " spawn: " + map.findClosestSpawnpoint(victim.getPosition()).getName());

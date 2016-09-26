@@ -8,11 +8,11 @@ import net.sf.odinms.scripting.AbstractScriptManager;
 
 public class QuestScriptManager extends AbstractScriptManager {
 
-    private Map<MapleClient,QuestActionManager> qms = new HashMap<MapleClient,QuestActionManager>();
-    private Map<MapleClient,QuestScript> scripts = new HashMap<MapleClient,QuestScript>();
-    private static QuestScriptManager instance = new QuestScriptManager();
+    private final Map<MapleClient,QuestActionManager> qms = new HashMap<>();
+    private final Map<MapleClient,QuestScript> scripts = new HashMap<>();
+    private static final QuestScriptManager instance = new QuestScriptManager();
 
-    public synchronized static QuestScriptManager getInstance() {
+    public static synchronized QuestScriptManager getInstance() {
         return instance;
     }
 

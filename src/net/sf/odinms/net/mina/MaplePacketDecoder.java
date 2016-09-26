@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class MaplePacketDecoder extends CumulativeProtocolDecoder {
     private static final String DECODER_STATE_KEY = MaplePacketDecoder.class.getName() + ".STATE";
-    private static Logger log = LoggerFactory.getLogger(MaplePacketDecoder.class);
+    private static final Logger log = LoggerFactory.getLogger(MaplePacketDecoder.class);
 
     private static class DecoderState {
         public int packetlength = -1;

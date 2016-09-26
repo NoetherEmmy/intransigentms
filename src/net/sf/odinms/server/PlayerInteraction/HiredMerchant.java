@@ -19,20 +19,14 @@ public class HiredMerchant extends PlayerInteractionManager {
 
     private boolean open;
     public ScheduledFuture<?> schedule = null;
-    private MapleMap map;
-    private int itemId;
+    private final MapleMap map;
+    private final int itemId;
 
     public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
         super(owner, itemId % 10, desc, 3);
         this.itemId = itemId;
         this.map = owner.getMap();
-        this.schedule = TimerManager.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                HiredMerchant.this.closeShop(true);
-            }
-        }, 1000 * 60 * 60 * 24);
+        this.schedule = TimerManager.getInstance().schedule(() -> HiredMerchant.this.closeShop(true), 1000 * 60 * 60 * 24);
     }
 
     @Override
@@ -88,7 +82,7 @@ public class HiredMerchant extends PlayerInteractionManager {
             if (saveItems) {
                 saveItems();
             }
-        } catch (SQLException se) {
+        } catch (SQLException ignored) {
         }
         schedule.cancel(false);
     }

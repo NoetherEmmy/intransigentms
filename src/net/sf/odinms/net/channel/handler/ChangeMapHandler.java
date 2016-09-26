@@ -80,7 +80,7 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
                     /*
                     if (player.getClan() == -1 && !c.isGuest()) {
                         for (int i = 0; i < 3; ++i) {
-                            player.dropMessage(6, "You have yet to join a clan ! Type @clan to join a clan..");
+                            player.dropMessage(6, "You have yet to join a clan! Type @clan to join a clan.");
                         }
                     }
                     */

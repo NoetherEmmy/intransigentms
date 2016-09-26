@@ -9,8 +9,8 @@ import net.sf.odinms.server.life.Element;
 
 public class Skill implements ISkill {
 
-    private int id;
-    private List<MapleStatEffect> effects = new ArrayList<>();
+    private final int id;
+    private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
     private int animationTime;
 
@@ -231,10 +231,7 @@ public class Skill implements ISkill {
         if ((skillForJob / 10) % 10 > (jid / 10) % 10) {
             return false;
         }
-        if (skillForJob % 10 > jid % 10) {
-            return false;
-        }
-        return true;
+        return skillForJob % 10 <= jid % 10;
     }
 
     @Override
@@ -264,9 +261,6 @@ public class Skill implements ISkill {
 
     @Override
     public boolean isGMSkill() {
-        if (id > 9000000) {
-            return true;
-        }
-        return false;
+        return id > 9000000;
     }
 }

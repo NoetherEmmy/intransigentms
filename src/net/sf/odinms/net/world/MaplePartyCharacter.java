@@ -7,7 +7,7 @@ import net.sf.odinms.client.MapleCharacter;
 public class MaplePartyCharacter implements Serializable {
 
     private static final long serialVersionUID = 6215463252132450750L;
-    private String name;
+    private final String name;
     private int id;
     private int level;
     private int channel;
@@ -28,7 +28,7 @@ public class MaplePartyCharacter implements Serializable {
         this.jobid = maplechar.getJob().getId();
         this.mapid = maplechar.getMapId();
         this.online = true;
-        if (maplechar.getDoors().size() > 0) {
+        if (!maplechar.getDoors().isEmpty()) {
             this.doorTown = maplechar.getDoors().get(0).getTown().getId();
             this.doorTarget = maplechar.getDoors().get(0).getTarget().getId();
             this.doorPosition = maplechar.getDoors().get(0).getTargetPosition();

@@ -10,9 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import net.sf.odinms.client.MapleCQuests;
@@ -153,12 +151,14 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("You're not dead.");
             }
             */
-        } else if (splitted[0].equals("@rebirth") || splitted[0].equals("@reborn")) {
+        } else if (splitted[0].equals("@rebirth") || splitted[0].equals("@reborn")) { // !!! DEPRECATED !!!
+            /*
             if (player.getLevel() >= 200) {
                 player.doReborn();
             } else {
                 mc.dropMessage("You must be at least level 200.");
             }
+            */
         } else if (splitted[0].equals("@questinfo")) {
             MapleCQuests q;
             q = player.getCQuest();
@@ -322,7 +322,7 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@monstertrialtime")) {
             if (System.currentTimeMillis() - player.getLastTrialTime() < 2 * 60 * 60 * 1000) {
                 long timesincelast = System.currentTimeMillis() - player.getLastTrialTime();
-                double inminutes = timesincelast / ((double) 60000.0);
+                double inminutes = timesincelast / 60000.0;
                 inminutes = Math.floor(inminutes);
                 int cooldown = 120 - (int) inminutes;
                 mc.dropMessage("You must wait " + cooldown + " more minute(s) before you may enter the Monster Trials again.");
@@ -337,7 +337,7 @@ public class PlayerCommands implements Command {
             double rx;
             int absxp = player.getAbsoluteXp();
             absxp *= 4;
-            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.MONSTER))) {
+            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster monster = (MapleMonster) mmo;
                 if (!monsterids.contains(monster.getId())) {
                     monsterids.add(monster.getId());
@@ -386,7 +386,7 @@ public class PlayerCommands implements Command {
                     }
                     rs.close();
                     ps.close();
-                    if (retMobs.size() > 0) {
+                    if (!retMobs.isEmpty()) {
                         for (String singleRetMob : retMobs) {
                             mc.dropMessage(singleRetMob);
                         }
@@ -454,7 +454,7 @@ public class PlayerCommands implements Command {
                             }
                             rs.close();
                             ps.close();
-                            if (retMobs.size() > 0) {
+                            if (!retMobs.isEmpty()) {
                                 for (String singleRetMob : retMobs) {
                                     mc.dropMessage(singleRetMob);
                                 }
@@ -519,7 +519,7 @@ public class PlayerCommands implements Command {
                     }
                     rs.close();
                     ps.close();
-                    if (retItems.size() > 0) {
+                    if (!retItems.isEmpty()) {
                         String retitemstring = "";
                         for (String singleRetItem : retItems) {
                             retitemstring += singleRetItem + ", ";
@@ -620,7 +620,7 @@ public class PlayerCommands implements Command {
                         }
                         rs.close();
                         ps.close();
-                        if (retItems.size() > 0) {
+                        if (!retItems.isEmpty()) {
                             String retitemstring = "";
                             for (String singleRetItem : retItems) {
                                 retitemstring += singleRetItem + ", ";
@@ -658,14 +658,14 @@ public class PlayerCommands implements Command {
                             mc.dropMessage("GM level successfully changed to " + gmlevel + ".");
                         }
                     }
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException ignored) {
                     
                 }
             }
         } else if (splitted[0].equals("@online")) {
 
             for (ChannelServer cs : ChannelServer.getAllInstances()) {
-                if (cs.getPlayerStorage().getAllCharacters().size() > 0) {
+                if (!cs.getPlayerStorage().getAllCharacters().isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     mc.dropMessage("Channel " + cs.getChannel());
                     for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
@@ -784,46 +784,40 @@ public class PlayerCommands implements Command {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (mobList.size() > 0) {
+                if (!mobList.isEmpty()) {
                     if (sortbylevel) {
-                        Collections.sort(mobList, new Comparator<MapleMonster>() {
-                            @Override
-                            public int compare(final MapleMonster o1, final MapleMonster o2) {
-                                int comparison = Integer.valueOf(o1.getLevel()).compareTo(o2.getLevel());
-                                if (comparison < 0) {
-                                    return -1;
+                        Collections.sort(mobList, (o1, o2) -> {
+                            int comparison = Integer.valueOf(o1.getLevel()).compareTo(o2.getLevel());
+                            if (comparison < 0) {
+                                return -1;
+                            } else {
+                                if (comparison > 0) {
+                                    return 1;
                                 } else {
-                                    if (comparison > 0) {
-                                        return 1;
-                                    } else {
-                                        return 0;
-                                    }
+                                    return 0;
                                 }
                             }
                         });
                     } else {
                         final MapleCharacter p = player;
-                        Collections.sort(mobList, new Comparator<MapleMonster>() {
-                            @Override
-                            public int compare(final MapleMonster o1, final MapleMonster o2) {
-                                double xphpratio1 = (double) (((double) o1.getExp() * p.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp());
-                                double xphpratio2 = (double) (((double) o2.getExp() * p.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp());
-                                int comparison = Double.valueOf(xphpratio1).compareTo(xphpratio2);
-                                if (comparison < 0) {
-                                    return -1;
+                        Collections.sort(mobList, (o1, o2) -> {
+                            double xphpratio1 = ((double) o1.getExp() * p.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
+                            double xphpratio2 = ((double) o2.getExp() * p.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
+                            int comparison = Double.valueOf(xphpratio1).compareTo(xphpratio2);
+                            if (comparison < 0) {
+                                return -1;
+                            } else {
+                                if (comparison > 0) {
+                                    return 1;
                                 } else {
-                                    if (comparison > 0) {
-                                        return 1;
-                                    } else {
-                                        return 0;
-                                    }
+                                    return 0;
                                 }
                             }
                         });
                     }
                     
                     for (MapleMonster mob : mobList) {
-                        double xphpratio = (double) (((double) mob.getExp() * player.getTotalMonsterXp(mob.getLevel())) / (double) mob.getHp());
+                        double xphpratio = ((double) mob.getExp() * player.getTotalMonsterXp(mob.getLevel())) / (double) mob.getHp();
                         BigDecimal xhrbd = BigDecimal.valueOf(xphpratio);
                         xhrbd = xhrbd.setScale(2, RoundingMode.HALF_UP);
                         mc.dropMessage(mob.getName() + ": level " + mob.getLevel() + ", XP/HP ratio " + xhrbd.toString());
@@ -907,7 +901,7 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("You do not currently have any death penalties.");
             } else {
                 int hppenalty, mppenalty;
-                switch ((int) player.getJob().getId() / 100) {
+                switch (player.getJob().getId() / 100) {
                     case 0: // Beginner
                         hppenalty = 95;
                         mppenalty = 0;
@@ -939,13 +933,13 @@ public class PlayerCommands implements Command {
                 }
                 mc.dropMessage("Current death penalty level: " + player.getDeathPenalty());
                 mc.dropMessage("Current effects: -" + (hppenalty * player.getDeathPenalty()) + " maxHP, -" + (mppenalty * player.getDeathPenalty()) + " maxMP,");
-                mc.dropMessage("-" + Math.min(4 * player.getDeathPenalty(), 100) + "% weapon damage, -" + Math.min(4 * player.getDeathPenalty(), 100) + "% magic damage");
+                mc.dropMessage("-" + Math.min(3 * player.getDeathPenalty(), 100) + "% weapon damage, -" + Math.min(3 * player.getDeathPenalty(), 100) + "% magic damage");
                 mc.dropMessage(player.getStrengtheningTimeString());
             }
         } else if (splitted[0].equals("@monsterhp")) {
-            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.MONSTER))) {
+            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster monster = (MapleMonster) mmo;
-                double hppercentage = ((double) monster.getHp()) / ((double) monster.getMaxHp()) * (double) 100.0;
+                double hppercentage = ((double) monster.getHp()) / ((double) monster.getMaxHp()) * 100.0;
                 mc.dropMessage("Monster: " + monster.getName() + ", HP: " + hppercentage + "%");
             }
         } else if (splitted[0].equals("@truedamage")) {
@@ -953,10 +947,10 @@ public class PlayerCommands implements Command {
             String s = player.getTrueDamage() ? "on" : "off";
             mc.dropMessage("True damage is now turned " + s + ".");
         } else if (splitted[0].equals("@bosshp")) {
-            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.MONSTER))) {
+            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster monster = (MapleMonster) mmo;
                 if (monster.isBoss()) {
-                    double hppercentage = ((double) monster.getHp()) / ((double) monster.getMaxHp()) * (double) 100.0;
+                    double hppercentage = ((double) monster.getHp()) / ((double) monster.getMaxHp()) * 100.0;
                     mc.dropMessage("Monster: " + monster.getName() + ", HP: " + hppercentage + "%");
                 }
             }

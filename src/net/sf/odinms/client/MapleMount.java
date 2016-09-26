@@ -12,7 +12,7 @@ public class MapleMount {
     private int exp;
     private int level;
     private ScheduledFuture<?> tirednessSchedule;
-    private MapleCharacter owner;
+    private final MapleCharacter owner;
     private boolean active;
 
     public MapleMount(MapleCharacter owner, int id, int skillid) {
@@ -95,12 +95,7 @@ public class MapleMount {
     }
 
     public void startSchedule() {
-        this.tirednessSchedule = TimerManager.getInstance().register(new Runnable() {
-
-            public void run() {
-                increaseTiredness();
-            }
-        }, 60000, 60000);
+        this.tirednessSchedule = TimerManager.getInstance().register(this::increaseTiredness, 60000, 60000);
     }
 
     public void cancelSchedule() {

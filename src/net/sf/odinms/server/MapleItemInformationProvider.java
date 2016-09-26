@@ -26,33 +26,33 @@ import net.sf.odinms.tools.Pair;
 public class MapleItemInformationProvider {
 
     private static MapleItemInformationProvider instance = null;
-    protected MapleDataProvider itemData;
-    protected MapleDataProvider equipData;
-    protected MapleDataProvider stringData;
-    protected MapleData cashStringData;
-    protected MapleData consumeStringData;
-    protected MapleData eqpStringData;
-    protected MapleData etcStringData;
-    protected MapleData insStringData;
-    protected MapleData petStringData;
-    protected Map<Integer, MapleInventoryType> inventoryTypeCache = new HashMap<>();
-    protected Map<Integer, Short> slotMaxCache = new HashMap<>();
-    protected Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
-    protected Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
-    protected Map<Integer, Boolean> cashCache = new HashMap<>();
-    protected Map<Integer, Equip> equipCache = new HashMap<>();
-    protected Map<Integer, Double> priceCache = new HashMap<>();
-    protected Map<Integer, Integer> wholePriceCache = new HashMap<>();
-    protected Map<Integer, Integer> projectileWatkCache = new HashMap<>();
-    protected Map<Integer, String> nameCache = new HashMap<>();
-    protected Map<Integer, String> descCache = new HashMap<>();
-    protected Map<Integer, String> msgCache = new HashMap<>();
-    protected Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
-    protected Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
-    protected List<Pair<Integer, String>> itemNameCache = new ArrayList<>();
-    protected Map<Integer, Integer> getMesoCache = new HashMap<>();
-    protected Map<Integer, Integer> getExpCache = new HashMap<>();
-    private static Random rand = new Random();
+    protected final MapleDataProvider itemData;
+    protected final MapleDataProvider equipData;
+    protected final MapleDataProvider stringData;
+    protected final MapleData cashStringData;
+    protected final MapleData consumeStringData;
+    protected final MapleData eqpStringData;
+    protected final MapleData etcStringData;
+    protected final MapleData insStringData;
+    protected final MapleData petStringData;
+    protected final Map<Integer, MapleInventoryType> inventoryTypeCache = new HashMap<>();
+    protected final Map<Integer, Short> slotMaxCache = new HashMap<>();
+    protected final Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
+    protected final Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
+    protected final Map<Integer, Boolean> cashCache = new HashMap<>();
+    protected final Map<Integer, Equip> equipCache = new HashMap<>();
+    protected final Map<Integer, Double> priceCache = new HashMap<>();
+    protected final Map<Integer, Integer> wholePriceCache = new HashMap<>();
+    protected final Map<Integer, Integer> projectileWatkCache = new HashMap<>();
+    protected final Map<Integer, String> nameCache = new HashMap<>();
+    protected final Map<Integer, String> descCache = new HashMap<>();
+    protected final Map<Integer, String> msgCache = new HashMap<>();
+    protected final Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
+    protected final Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
+    protected final List<Pair<Integer, String>> itemNameCache = new ArrayList<>();
+    protected final Map<Integer, Integer> getMesoCache = new HashMap<>();
+    protected final Map<Integer, Integer> getExpCache = new HashMap<>();
+    private static final Random rand = new Random();
 
     /** Creates a new instance of MapleItemInformationProvider */
     protected MapleItemInformationProvider() {
@@ -1116,7 +1116,7 @@ public class MapleItemInformationProvider {
         }
         // vary no more than ceil of 10% of stat
         int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
-        return (short) ((defaultValue - lMaxRange) + Math.floor(rand.nextDouble() * (lMaxRange * 2 + 1 * additionalStats)));
+        return (short) ((defaultValue - lMaxRange) + Math.floor(rand.nextDouble() * (lMaxRange * 2 + additionalStats)));
     }
 
     public Equip randomizeStats(MapleClient c, Equip equip) {
@@ -1179,7 +1179,7 @@ public class MapleItemInformationProvider {
         MapleData data = getItemData(itemId);
         int theInt = data.getChildByPath("mob").getChildren().size();
         int[][] mobs2spawn = new int[theInt][2];
-        for (int x = 0; x < theInt; x++) {
+        for (int x = 0; x < theInt; ++x) {
             mobs2spawn[x][0] = MapleDataTool.getIntConvert("mob/" + x + "/id", data);
             mobs2spawn[x][1] = MapleDataTool.getIntConvert("mob/" + x + "/prob", data);
         }
@@ -1360,9 +1360,7 @@ public class MapleItemInformationProvider {
             }
         }
 
-        if (ret.get("skillid") == null) {
-            ret.put("skillid", 0);
-        }
+        ret.putIfAbsent("skillid", 0);
 
         return ret;
     }
@@ -1381,7 +1379,7 @@ public class MapleItemInformationProvider {
         }
         return ret;
     }
-    protected Map<Integer, Boolean> isQuestItemCache = new HashMap<>();
+    protected final Map<Integer, Boolean> isQuestItemCache = new HashMap<>();
 
     public boolean isQuestItem(int itemId) {
         if (isQuestItemCache.containsKey(itemId)) {

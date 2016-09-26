@@ -15,27 +15,26 @@ import net.sf.odinms.tools.data.input.InputStreamByteStream;
 import net.sf.odinms.tools.data.input.LittleEndianAccessor;
 
 public class ListWZFile {
-    private LittleEndianAccessor lea;
-    private List<String> entries = new ArrayList<String>();
-    private static Collection<String> modernImgs = new HashSet<String>();
+    private List<String> entries = new ArrayList<>();
+    private static Collection<String> modernImgs = new HashSet<>();
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ListWZFile.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ListWZFile.class);
 
     public static byte[] xorBytes(byte[] a, byte[] b) {
         byte[] wusched = new byte[a.length];
-        for (int i = 0; i < a.length; i++) {
+        for (int i = 0; i < a.length; ++i) {
             wusched[i] = (byte) (a[i] ^ b[i]);
         }
         return wusched;
     }
 
     public ListWZFile(File listwz) throws FileNotFoundException {
-        lea = new GenericLittleEndianAccessor(new InputStreamByteStream(new BufferedInputStream(new FileInputStream(listwz))));
+        LittleEndianAccessor lea = new GenericLittleEndianAccessor(new InputStreamByteStream(new BufferedInputStream(new FileInputStream(listwz))));
         while (lea.available() > 0) {
             int l = lea.readInt();
             char[] chunk = new char[l];
-            for (int i = 0; i < chunk.length; i++) {
-                    chunk[i] = lea.readChar();
+            for (int i = 0; i < chunk.length; ++i) {
+                chunk[i] = lea.readChar();
             }
             lea.readChar();
             char[] lolabc = new char[3];
@@ -58,7 +57,7 @@ public class ListWZFile {
             ListWZFile listwz;
             try {
                 listwz = new ListWZFile(MapleDataProviderFactory.fileInWZPath("List.wz"));
-                modernImgs = new HashSet<String>(listwz.getEntries());
+                modernImgs = new HashSet<>(listwz.getEntries());
             } catch (FileNotFoundException e) {
                 log.info("net.sf.odinms.listwz is set but the List.wz could not be found", e);
             }

@@ -329,8 +329,7 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
 
     @Override
     public ChannelWorldInterface getChannelInterface(int channel) {
-        ChannelWorldInterface cwi = WorldRegistryImpl.getInstance().getChannel(channel);
-        return cwi;
+        return WorldRegistryImpl.getInstance().getChannel(channel);
     }
 
     @Override

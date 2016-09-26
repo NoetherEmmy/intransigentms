@@ -7,8 +7,8 @@ import net.sf.odinms.server.quest.MapleQuest;
 
 public class QuestActionManager extends NPCConversationManager {
 
-    private boolean start;
-    private int quest;
+    private final boolean start;
+    private final int quest;
 
     public QuestActionManager(MapleClient c, int npc, int quest, boolean start) {
         super(c, npc, null, null);

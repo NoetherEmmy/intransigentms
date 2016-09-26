@@ -19,10 +19,10 @@ import org.slf4j.LoggerFactory;
 
 public class PortalScriptManager {
     private static final Logger log = LoggerFactory.getLogger(PortalScriptManager.class);
-    private static PortalScriptManager instance = new PortalScriptManager();
+    private static final PortalScriptManager instance = new PortalScriptManager();
 
-    private Map<String, PortalScript> scripts = new HashMap<String, PortalScript>();
-    private ScriptEngineFactory sef;
+    private final Map<String, PortalScript> scripts = new HashMap<>();
+    private final ScriptEngineFactory sef;
 
     private PortalScriptManager() {
         ScriptEngineManager sem = new ScriptEngineManager();
@@ -48,9 +48,7 @@ public class PortalScriptManager {
             fr = new FileReader(scriptFile);
             CompiledScript compiled = ((Compilable) portal).compile(fr);
             compiled.eval();
-        } catch (ScriptException e) {
-            log.error("THROW", e);
-        } catch (IOException e) {
+        } catch (ScriptException | IOException e) {
             log.error("THROW", e);
         } finally {
             if (fr != null) {

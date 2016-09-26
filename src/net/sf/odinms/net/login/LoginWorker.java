@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 
 public class LoginWorker implements Runnable {
 
-    private static LoginWorker instance = new LoginWorker();
-    private Deque<MapleClient> waiting;
-    private Set<String> waitingNames;
-    private List<Integer> possibleLoginHistory = new LinkedList<>();
+    private static final LoginWorker instance = new LoginWorker();
+    private final Deque<MapleClient> waiting;
+    private final Set<String> waitingNames;
+    private final List<Integer> possibleLoginHistory = new LinkedList<>();
     public static Logger log = LoggerFactory.getLogger(LoginWorker.class);
 
     private LoginWorker() {
@@ -86,13 +86,7 @@ public class LoginWorker implements Runnable {
                 if (client.finishLogin(true) == 0) {
                     if (!client.isGuest()) {
                         client.getSession().write(MaplePacketCreator.getAuthSuccessRequestPin(client.getAccountName()));
-                        client.setIdleTask(TimerManager.getInstance().schedule(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                client.getSession().close();
-                            }
-                        }, 10 * 60 * 10000));
+                        client.setIdleTask(TimerManager.getInstance().schedule(() -> client.getSession().close(), 10 * 60 * 10000));
                     }
                 } else {
                     client.getSession().write(MaplePacketCreator.getLoginFailed(7));

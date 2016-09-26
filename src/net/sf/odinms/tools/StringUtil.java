@@ -12,7 +12,7 @@ public class StringUtil {
      */
     public static String getLeftPaddedStr(String in, char padchar, int length) {
         StringBuilder builder = new StringBuilder(length);
-        for (int x = in.length(); x < length; x++) {
+        for (int x = in.length(); x < length; ++x) {
             builder.append(padchar);
         }
         builder.append(in);
@@ -30,7 +30,7 @@ public class StringUtil {
      */
     public static String getRightPaddedStr(String in, char padchar, int length) {
         StringBuilder builder = new StringBuilder(in);
-        for (int x = in.length(); x < length; x++) {
+        for (int x = in.length(); x < length; ++x) {
             builder.append(padchar);
         }
         return builder.toString();
@@ -58,7 +58,7 @@ public class StringUtil {
      */
     public static String joinStringFrom(String arr[], int start, String sep) {
         StringBuilder builder = new StringBuilder();
-        for (int i = start; i < arr.length; i++) {
+        for (int i = start; i < arr.length; ++i) {
             builder.append(arr[i]);
             if (i != arr.length - 1) {
                 builder.append(sep);
@@ -97,7 +97,7 @@ public class StringUtil {
      */
     public static int countCharacters(String str, char chr) {
         int ret = 0;
-        for (int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); ++i) {
             if (str.charAt(i) == chr) {
                 ret++;
             }

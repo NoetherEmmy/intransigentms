@@ -17,7 +17,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class SpecialMoveHandler extends AbstractMaplePacketHandler {
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SpecialMoveHandler.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SpecialMoveHandler.class);
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -36,7 +36,7 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
             return;
         }
         if (effect.getCooldown() > 0) {
-            if (c.getPlayer().skillisCooling(skillid)) {
+            if (c.getPlayer().skillIsCooling(skillid)) {
                 c.getSession().write(MaplePacketCreator.enableActions());
                 //c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                 return;

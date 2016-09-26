@@ -16,10 +16,10 @@ import net.sf.odinms.server.maps.MapleMapObjectType;
 
 public class MobSkill {
 
-    private int skillId;
-    private int skillLevel;
+    private final int skillId;
+    private final int skillLevel;
     private int mpCon;
-    private List<Integer> toSummon = new ArrayList<Integer>();
+    private final List<Integer> toSummon = new ArrayList<>();
     private int spawnEffect;
     private int hp;
     private int x;
@@ -325,20 +325,19 @@ public class MobSkill {
             myrb = new Point(lt.x * -1 + posFrom.x, rb.y + posFrom.y);
             mylt = new Point(rb.x * -1 + posFrom.x, lt.y + posFrom.y);
         }
-        Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
-        return bounds;
+        return new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
     }
 
     private List<MapleCharacter> getPlayersInRange(MapleMonster monster, MapleCharacter player) {
         Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-        List<MapleCharacter> players = new ArrayList<MapleCharacter>();
+        List<MapleCharacter> players = new ArrayList<>();
         players.add(player);
         return monster.getMap().getPlayersInRect(bounds, players);
     }
 
     private List<MapleMapObject> getObjectsInRange(MapleMonster monster, MapleMapObjectType objectType) {
         Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-        List<MapleMapObjectType> objectTypes = new ArrayList<MapleMapObjectType>();
+        List<MapleMapObjectType> objectTypes = new ArrayList<>();
         objectTypes.add(objectType);
         return monster.getMap().getMapObjectsInRect(bounds, objectTypes);
     }

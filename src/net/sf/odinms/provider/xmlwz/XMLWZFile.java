@@ -11,8 +11,8 @@ import net.sf.odinms.provider.wz.WZDirectoryEntry;
 import net.sf.odinms.provider.wz.WZFileEntry;
 
 public class XMLWZFile implements MapleDataProvider {
-    private File root;
-    private WZDirectoryEntry rootForNavigation;
+    private final File root;
+    private final WZDirectoryEntry rootForNavigation;
 
     public XMLWZFile(File fileIn) {
         root = fileIn;
@@ -33,6 +33,7 @@ public class XMLWZFile implements MapleDataProvider {
         }
     }
 
+    @SuppressWarnings("ThrowFromFinallyBlock")
     @Override
     public MapleData getData(String path) {
         File dataFile = new File(root, path + ".xml");

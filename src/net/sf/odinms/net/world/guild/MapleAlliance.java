@@ -17,7 +17,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 public class MapleAlliance implements java.io.Serializable {
 
     public static final long serialVersionUID = 24081985245L;
-    private int[] guilds = new int[5];
+    private final int[] guilds = new int[5];
     private int allianceId = -1;
     private int capacity;
     private String name;
@@ -69,7 +69,7 @@ public class MapleAlliance implements java.io.Serializable {
             }
             ps.close();
             rs.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         return alliance;
     }
@@ -175,7 +175,7 @@ public class MapleAlliance implements java.io.Serializable {
             ps.setInt(13, this.allianceId);
             ps.executeQuery();
             ps.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
     }
 
@@ -217,7 +217,7 @@ public class MapleAlliance implements java.io.Serializable {
                 ps.close();
                 rs.close();
             }
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         return ret;
     }

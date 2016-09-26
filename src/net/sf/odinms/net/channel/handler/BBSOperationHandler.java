@@ -42,11 +42,11 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
 
         switch (mode) {
             case 0:
-                boolean bEdit = slea.readByte() == 1 ? true : false;
+                boolean bEdit = slea.readByte() == 1;
                 if (bEdit) {
                     localthreadid = slea.readInt();
                 }
-                boolean bNotice = slea.readByte() == 1 ? true : false;
+                boolean bNotice = slea.readByte() == 1;
                 String title = correctLength(slea.readMapleAsciiString(), 25);
                 String text = correctLength(slea.readMapleAsciiString(), 600);
                 int icon = slea.readInt();
@@ -329,7 +329,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
                 ps.setInt(1, Integer.parseInt(re.getMessage()));
                 ps.execute();
                 ps.close();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }

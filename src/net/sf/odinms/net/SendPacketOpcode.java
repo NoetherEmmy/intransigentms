@@ -1,7 +1,6 @@
 package net.sf.odinms.net;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -166,7 +165,7 @@ public enum SendPacketOpcode implements WritableIntValueHolder {
         return code;
     }
 
-    public static Properties getDefaultProperties() throws FileNotFoundException, IOException {
+    public static Properties getDefaultProperties() throws IOException {
         Properties props = new Properties();
         FileInputStream fileInputStream = new FileInputStream(System.getProperty("net.sf.odinms.sendops"));
         props.load(fileInputStream);

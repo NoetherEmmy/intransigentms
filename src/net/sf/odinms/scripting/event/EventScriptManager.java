@@ -18,12 +18,12 @@ public class EventScriptManager extends AbstractScriptManager {
             this.iv = iv;
             this.em = em;
         }
-        public String script;
-        public Invocable iv;
-        public EventManager em;
+        public final String script;
+        public final Invocable iv;
+        public final EventManager em;
     }
 
-    private Map<String,EventEntry> events = new LinkedHashMap<>();
+    private final Map<String,EventEntry> events = new LinkedHashMap<>();
 
     public EventScriptManager(ChannelServer cserv, String[] scripts) {
         super();
@@ -48,9 +48,7 @@ public class EventScriptManager extends AbstractScriptManager {
             try {
                 ((ScriptEngine) entry.iv).put("em", entry.em);
                 entry.iv.invokeFunction("init", (Object) null);
-            } catch (ScriptException ex) {
-                Logger.getLogger(EventScriptManager.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchMethodException ex) {
+            } catch (ScriptException | NoSuchMethodException ex) {
                 Logger.getLogger(EventScriptManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

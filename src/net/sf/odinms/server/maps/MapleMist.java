@@ -11,9 +11,9 @@ import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleMist extends AbstractMapleMapObject {
-    private Rectangle mistPosition;
-    private MapleCharacter owner;
-    private MapleStatEffect source;
+    private final Rectangle mistPosition;
+    private final MapleCharacter owner;
+    private final MapleStatEffect source;
 
     public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source) {
         this.mistPosition = mistPosition;

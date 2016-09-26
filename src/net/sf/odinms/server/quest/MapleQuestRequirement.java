@@ -14,9 +14,9 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.server.MapleItemInformationProvider;
 
 public class MapleQuestRequirement {
-    private MapleQuestRequirementType type;
-    private MapleData data;
-    private MapleQuest quest;
+    private final MapleQuestRequirementType type;
+    private final MapleData data;
+    private final MapleQuest quest;
 
     /** Creates a new instance of MapleQuestRequirement */
     public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, MapleData data) {
@@ -103,7 +103,7 @@ public class MapleQuestRequirement {
     public List<Integer> getQuestItemsToShowOnlyIfQuestIsActivated() {
         if (type != MapleQuestRequirementType.ITEM) return null;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Integer> delta = new ArrayList<Integer>();
+        List<Integer> delta = new ArrayList<>();
         for (MapleData itemEntry : getData().getChildren()) {
             int itemId = MapleDataTool.getInt(itemEntry.getChildByPath("id"));
             if(ii.isQuestItem(itemId)) delta.add(itemId);

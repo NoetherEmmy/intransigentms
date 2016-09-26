@@ -3,7 +3,7 @@ package net.sf.odinms.tools.data.input;
 import java.io.ByteArrayOutputStream;
 
 public class GenericLittleEndianAccessor implements LittleEndianAccessor {
-    private ByteInputStream bs;
+    private final ByteInputStream bs;
 
     /**
      * Class constructor - Wraps the accessor around a stream of bytes.
@@ -109,7 +109,7 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
      */
     public final String readAsciiString(int n) {
         char ret[] = new char[n];
-        for (int x = 0; x < n; x++) {
+        for (int x = 0; x < n; ++x) {
             ret[x] = (char) readByte();
         }
         return String.valueOf(ret);
@@ -129,7 +129,7 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
         }
         byte[] buf = baos.toByteArray();
         char[] chrBuf = new char[buf.length];
-        for (int x = 0; x < buf.length; x++) {
+        for (int x = 0; x < buf.length; ++x) {
             chrBuf[x] = (char) buf[x];
         }
         return String.valueOf(chrBuf);
@@ -166,7 +166,7 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
     @Override
     public byte[] read(int num) {
         byte[] ret = new byte[num];
-        for (int x = 0; x < num; x++) {
+        for (int x = 0; x < num; ++x) {
             ret[x] = readByte();
         }
         return ret;
@@ -179,7 +179,7 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
      */
     @Override
     public void skip(int num) {
-        for (int x = 0; x < num; x++) {
+        for (int x = 0; x < num; ++x) {
             readByte();
         }
     }

@@ -23,7 +23,7 @@ import net.sf.odinms.server.maps.MapleReactor;
 public class ReactorActionManager extends AbstractPlayerInteraction {
     // private static final Logger log = LoggerFactory.getLogger(ReactorActionManager.class);
 
-    private MapleReactor reactor;
+    private final MapleReactor reactor;
 
     public ReactorActionManager(MapleClient c, MapleReactor reactor) {
         super(c);
@@ -52,7 +52,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         Iterator<DropEntry> iter = chances.iterator();
         // for (DropEntry d : chances){
         while (iter.hasNext()) {
-            DropEntry d = (DropEntry) iter.next();
+            DropEntry d = iter.next();
             if (Math.random() < (1 / (double) d.chance)) {
                 numItems++;
                 items.add(d);
@@ -76,7 +76,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
             if (d.itemId == 0) {
                 int range = maxMeso - minMeso;
                 int displayDrop = (int) (Math.random() * range) + minMeso;
-                int mesoDrop = (int) (displayDrop * ChannelServer.getInstance(getClient().getChannel()).getMesoRate());
+                int mesoDrop = displayDrop * ChannelServer.getInstance(getClient().getChannel()).getMesoRate();
                 reactor.getMap().spawnMesoDrop(mesoDrop, displayDrop, dropPos, reactor, getPlayer(), meso);
             } else {
                 IItem drop;
@@ -119,7 +119,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
     // Handler for all spawnMonster.
     private void spawnMonster(int id, int qty, Point pos) {
-        for (int i = 0; i < qty; i++) {
+        for (int i = 0; i < qty; ++i) {
             MapleMonster mob = MapleLifeFactory.getMonster(id);
             reactor.getMap().spawnMonsterOnGroudBelow(mob, pos);
         }
@@ -175,7 +175,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
     // Handler for all spawnFakeMonster.
     private void spawnFakeMonster(int id, int qty, Point pos) {
-        for (int i = 0; i < qty; i++) {
+        for (int i = 0; i < qty; ++i) {
             MapleMonster mob = MapleLifeFactory.getMonster(id);
             reactor.getMap().spawnFakeMonsterOnGroundBelow(mob, pos);
         }

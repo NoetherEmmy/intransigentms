@@ -9,10 +9,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassFinder {
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClassFinder.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClassFinder.class);
 
-    List<JarFile> jars = new LinkedList<JarFile>();
-    List<File> dirs = new LinkedList<File>();
+    final List<JarFile> jars = new LinkedList<>();
+    final List<File> dirs = new LinkedList<>();
 
     public ClassFinder() {
         String classpath = System.getProperty("java.class.path");
@@ -44,7 +44,7 @@ public class ClassFinder {
     }
 
     public String[] listClasses(String packageName, boolean recurse) {
-        List<String> ret = new LinkedList<String>();
+        List<String> ret = new LinkedList<>();
 
         // scan dirs
         final String fileSystemPackagePath = packageName.replace('.', File.separatorChar);

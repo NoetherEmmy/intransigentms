@@ -2,24 +2,17 @@ package net.sf.odinms.server.life;
 
 public class MobAttackInfo {
 
-    @SuppressWarnings("unused")
-    private int mobId;
-    @SuppressWarnings("unused")
-    private int attackId;
-    private boolean isDeadlyAttack;
     private int mpBurn;
     private int diseaseSkill;
     private int diseaseLevel;
     private int mpCon;
 
     public MobAttackInfo(int mobId, int attackId) {
-        this.mobId = mobId;
-        this.attackId = attackId;
     }
 
-    public void setDeadlyAttack(boolean isDeadlyAttack) {
+    public void setDeadlyAttack() {
         //this.isDeadlyAttack = isDeadlyAttack;
-        this.isDeadlyAttack = false;
+        boolean isDeadlyAttack1 = false;
     }
 
     public boolean isDeadlyAttack() {

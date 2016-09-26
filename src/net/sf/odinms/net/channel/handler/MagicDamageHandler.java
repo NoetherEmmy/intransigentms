@@ -85,7 +85,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             }
             
             if (player.getDeathPenalty() > 0) {
-                double dpmultiplier = Math.max((double) 1.0 - (double) player.getDeathPenalty() * 0.04, (double) 0.0);
+                double dpmultiplier = Math.max(1.0 - (double) player.getDeathPenalty() * 0.03, 0.0);
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {
@@ -97,7 +97,6 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                         }
                         attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
                         for (Integer additionald : additionaldmg) {
-                            //c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                             player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
                         }
                     }
@@ -113,14 +112,14 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         }
         player.getMap().broadcastMessage(player, packet, false, true);
         MapleStatEffect effect = attack.getAttackEffect(c.getPlayer());
-        int maxdamage;
+        //int maxdamage;
         // TODO fix magic damage calculation
-        maxdamage = 99999;
+        //maxdamage = 999999;
         ISkill skill = SkillFactory.getSkill(attack.skill);
         int skillLevel = c.getPlayer().getSkillLevel(skill);
         MapleStatEffect effect_ = skill.getEffect(skillLevel);
         if (effect_.getCooldown() > 0) {
-            if (player.skillisCooling(attack.skill)) {
+            if (player.skillIsCooling(attack.skill)) {
                 //player.getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                 return;
             } else {
@@ -129,14 +128,14 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 player.addCooldown(attack.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, timer);
             }
         }
-        applyAttack(attack, player, maxdamage, effect.getAttackCount());
+        applyAttack(attack, player, effect.getAttackCount());
         // MP Eater
         for (int i = 1; i <= 3; ++i) {
             ISkill eaterSkill = SkillFactory.getSkill(2000000 + i * 100000);
             int eaterLevel = player.getSkillLevel(eaterSkill);
             if (eaterLevel > 0) {
                 for (Pair<Integer, List<Integer>> singleDamage : attack.allDamage) {
-                    eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage.getLeft()), 0);
+                    eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage.getLeft()));
                 }
                 break;
             }

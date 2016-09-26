@@ -5,8 +5,8 @@ import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleMapEffect {
-    private String msg;
-    private int itemId;
+    private final String msg;
+    private final int itemId;
     private boolean active = true;
 
     public MapleMapEffect(String msg, int itemId) {

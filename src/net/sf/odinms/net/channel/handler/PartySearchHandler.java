@@ -13,7 +13,7 @@ public class PartySearchHandler extends AbstractMaplePacketHandler {
             AllPirate = false, Pirate1 = false, Pirate2 = false,
             AllThief = false, Thief1 = false, Thief2 = false,
             AllBowman = false, Bowman1 = false, Bowman2 = false;
-    ArrayList<Integer> boxsumconstructor = new ArrayList<Integer>();
+    ArrayList<Integer> boxsumconstructor = new ArrayList<>();
 
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -28,12 +28,12 @@ public class PartySearchHandler extends AbstractMaplePacketHandler {
         String binary = Integer.toBinaryString(box);
         String reverse = "";
         System.out.println("Binary: " + binary);
-        for (int z = 0; z < binary.length(); z++) {
+        for (int z = 0; z < binary.length(); ++z) {
             reverse = binary.charAt(z) + reverse;
         }
         System.out.println("Total Reverse: " + reverse);
         char letters;
-        for (int z = 0; z < reverse.length(); z++) {
+        for (int z = 0; z < reverse.length(); ++z) {
             letters = reverse.charAt(z);
             System.out.println("1 By 1 for jobs Current one is : " + letters);
             isJob(letters,z,c);

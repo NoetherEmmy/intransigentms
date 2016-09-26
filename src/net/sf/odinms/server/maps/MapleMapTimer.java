@@ -7,19 +7,16 @@ import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 
 public class MapleMapTimer {
-    private int duration;
-    private Calendar startTime;
-    private Calendar predictedStopTime;
+    private final Calendar predictedStopTime;
     private int mapToWarpTo = -1;
     private int minLevelToWarp = 0;
     private int maxLevelToWarp = 256;
-    private ScheduledFuture<?> sf0F;
+    private final ScheduledFuture<?> sf0F;
 
     public MapleMapTimer(ScheduledFuture<?> sfO, int newDuration, int mapToWarpToP, int minLevelToWarpP, int maxLevelToWarpP) {
-        this.duration = newDuration;
-        this.startTime = Calendar.getInstance();
+        Calendar startTime = Calendar.getInstance();
         this.predictedStopTime = Calendar.getInstance();
-        this.predictedStopTime.add(Calendar.SECOND, duration);
+        this.predictedStopTime.add(Calendar.SECOND, newDuration);
         this.mapToWarpTo = mapToWarpToP;
         this.minLevelToWarp = minLevelToWarpP;
         this.maxLevelToWarp = maxLevelToWarpP;

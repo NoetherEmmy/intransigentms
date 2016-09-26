@@ -3,7 +3,7 @@ package net.sf.odinms.tools.data.output;
 import java.io.ByteArrayOutputStream;
 
 public class BAOSByteOutputStream implements ByteOutputStream {
-    private ByteArrayOutputStream baos;
+    private final ByteArrayOutputStream baos;
 
     /**
      * Class constructor - Wraps the stream around a Java BAOS.

@@ -14,8 +14,8 @@ import org.apache.mina.common.IoSession;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
-    private final static short MAPLE_VERSION = 62;
-    private PacketProcessor processor;
+    private static final short MAPLE_VERSION = 62;
+    private final PacketProcessor processor;
     private int channel = -1;
 
     public MapleServerHandler(PacketProcessor processor) {

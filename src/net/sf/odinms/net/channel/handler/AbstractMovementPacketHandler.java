@@ -128,7 +128,7 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
         for (LifeMovementFragment move : movement) {
             if (move instanceof LifeMovement) {
                 if (move instanceof AbsoluteLifeMovement) {
-                    Point position = ((LifeMovement) move).getPosition();
+                    Point position = move.getPosition();
                     position.y += yoffset;
                     target.setPosition(position);
                 }

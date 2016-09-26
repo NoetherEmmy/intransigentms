@@ -28,7 +28,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class AbstractPlayerInteraction {
 
-    private MapleClient c;
+    private final MapleClient c;
 
     public AbstractPlayerInteraction(MapleClient c) {
         this.c = c;
@@ -136,7 +136,7 @@ public class AbstractPlayerInteraction {
                     if (randomStats) {
                         MapleInventoryManipulator.addFromDrop(c, ii.randomizeStats(getClient(), (Equip) item), false);
                     } else {
-                        MapleInventoryManipulator.addFromDrop(c, (Equip) item, false);
+                        MapleInventoryManipulator.addFromDrop(c, item, false);
                     }
                 } else {
                     c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
@@ -310,8 +310,6 @@ public class AbstractPlayerInteraction {
 
     /**
      * Spawns an NPC at a custom position
-     * @param [Int] npcId
-     * @param [Point] pos
      */
     public void spawnNpc(int npcId, Point pos) {
         MapleNPC npc = MapleLifeFactory.getNPC(npcId);

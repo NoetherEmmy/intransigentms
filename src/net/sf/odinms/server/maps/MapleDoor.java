@@ -3,7 +3,6 @@ package net.sf.odinms.server.maps;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -13,11 +12,11 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleDoor extends AbstractMapleMapObject {
 
-    private MapleCharacter owner;
-    private MapleMap town;
+    private final MapleCharacter owner;
+    private final MapleMap town;
     private MaplePortal townPortal;
-    private MapleMap target;
-    private Point targetPosition;
+    private final MapleMap target;
+    private final Point targetPosition;
 
     public MapleDoor(MapleCharacter owner, Point targetPosition) {
         super();
@@ -48,19 +47,14 @@ public class MapleDoor extends AbstractMapleMapObject {
                 freePortals.add(port);
             }
         }
-        Collections.sort(freePortals, new Comparator<MaplePortal>() {
-
-        @Override
-        public int compare(MaplePortal o1, MaplePortal o2) {
+        Collections.sort(freePortals, (o1, o2) -> {
             if (o1.getId() < o2.getId())
                 return -1;
             else if (o1.getId() == o2.getId())
                 return 0;
             else
                 return 1;
-            }
-
-        });
+            });
         for (MapleMapObject obj : town.getMapObjects()) {
             if (obj instanceof MapleDoor) {
                 MapleDoor door = (MapleDoor) obj;

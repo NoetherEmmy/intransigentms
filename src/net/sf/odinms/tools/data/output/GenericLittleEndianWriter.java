@@ -3,7 +3,7 @@ package net.sf.odinms.tools.data.output;
 import java.nio.charset.Charset;
 
 public class GenericLittleEndianWriter implements LittleEndianWriter {
-    private static Charset ASCII = Charset.forName("US-ASCII");
+    private static final Charset ASCII = Charset.forName("US-ASCII");
     private ByteOutputStream bos;
 
     /**
@@ -37,7 +37,7 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
      */
     @Override
     public void write(byte[] b) {
-        for (int x = 0; x < b.length; x++) {
+        for (int x = 0; x < b.length; ++x) {
             bos.writeByte(b[x]);
         }
     }

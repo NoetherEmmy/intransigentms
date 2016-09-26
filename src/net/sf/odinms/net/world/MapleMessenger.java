@@ -8,7 +8,7 @@ import java.util.List;
 
 public class MapleMessenger implements Serializable {
     private static final long serialVersionUID = 9179541993413738569L;
-    private List<MapleMessengerCharacter> members = new LinkedList<>();
+    private final List<MapleMessengerCharacter> members = new LinkedList<>();
     private int id;
     private boolean pos0 = false;
     private boolean pos1 = false;
@@ -120,8 +120,6 @@ public class MapleMessenger implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         final MapleMessenger other = (MapleMessenger) obj;
-        if (id != other.id)
-            return false;
-        return true;
+        return id == other.id;
     }
 }

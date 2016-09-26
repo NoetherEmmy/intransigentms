@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +15,8 @@ import net.sf.odinms.tools.StringUtil;
 
 public class CheatTracker {
 
-    private Map<CheatingOffense, CheatingOffenseEntry> offenses = Collections.synchronizedMap(new LinkedHashMap<CheatingOffense, CheatingOffenseEntry>());
-    private WeakReference<MapleCharacter> chr;
+    private final Map<CheatingOffense, CheatingOffenseEntry> offenses = Collections.synchronizedMap(new LinkedHashMap<CheatingOffense, CheatingOffenseEntry>());
+    private final WeakReference<MapleCharacter> chr;
     private long regenHPSince;
     private long regenMPSince;
     private int numHPRegens;
@@ -36,8 +35,8 @@ public class CheatTracker {
     private int monsterMoveCount;
     private int attacksWithoutHit = 0;
     private Boolean pickupComplete = Boolean.TRUE;
-    private long[] lastTime = new long[6];
-    private ScheduledFuture<?> invalidationTask;
+    private final long[] lastTime = new long[6];
+    private final ScheduledFuture<?> invalidationTask;
 
     public CheatTracker(MapleCharacter chr) {
         this.chr = new WeakReference<>(chr);
@@ -267,17 +266,13 @@ public class CheatTracker {
                 }
             }
         }
-        Collections.sort(offenseList, new Comparator<CheatingOffenseEntry>() {
-
-            @Override
-            public int compare(CheatingOffenseEntry o1, CheatingOffenseEntry o2) {
-                int thisVal = o1.getPoints();
-                int anotherVal = o2.getPoints();
-                return (thisVal < anotherVal ? 1 : (thisVal == anotherVal ? 0 : -1));
-            }
+        Collections.sort(offenseList, (o1, o2) -> {
+            int thisVal = o1.getPoints();
+            int anotherVal = o2.getPoints();
+            return (thisVal < anotherVal ? 1 : (thisVal == anotherVal ? 0 : -1));
         });
         int to = Math.min(offenseList.size(), 4);
-        for (int x = 0; x < to; x++) {
+        for (int x = 0; x < to; ++x) {
             ret.append(StringUtil.makeEnumHumanReadable(offenseList.get(x).getOffense().name()));
             ret.append(": ");
             ret.append(offenseList.get(x).getCount());

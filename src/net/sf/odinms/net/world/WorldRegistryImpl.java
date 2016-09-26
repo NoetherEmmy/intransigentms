@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -40,16 +39,16 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     private static final long serialVersionUID = -5170574938159280746L;
     private static WorldRegistryImpl instance = null;
-    private static Logger log = LoggerFactory.getLogger(WorldRegistryImpl.class);
-    private Map<Integer, ChannelWorldInterface> channelServer = new LinkedHashMap<>();
-    private List<LoginWorldInterface> loginServer = new LinkedList<>();
-    private Map<Integer, MapleParty> parties = new HashMap<>();
-    private AtomicInteger runningPartyId = new AtomicInteger();
-    private Map<Integer, MapleMessenger> messengers = new HashMap<>();
-    private AtomicInteger runningMessengerId = new AtomicInteger();
-    private Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
-    private PlayerBuffStorage buffStorage = new PlayerBuffStorage();
-    private Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>(); // contains id and alliance info.
+    private static final Logger log = LoggerFactory.getLogger(WorldRegistryImpl.class);
+    private final Map<Integer, ChannelWorldInterface> channelServer = new LinkedHashMap<>();
+    private final List<LoginWorldInterface> loginServer = new LinkedList<>();
+    private final Map<Integer, MapleParty> parties = new HashMap<>();
+    private final AtomicInteger runningPartyId = new AtomicInteger();
+    private final Map<Integer, MapleMessenger> messengers = new HashMap<>();
+    private final AtomicInteger runningMessengerId = new AtomicInteger();
+    private final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
+    private final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
+    private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>(); // contains id and alliance info.
 
     private WorldRegistryImpl() throws RemoteException {
         super(0, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
@@ -224,13 +223,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     public String getStatus() throws RemoteException {
         StringBuilder ret = new StringBuilder();
         List<Entry<Integer, ChannelWorldInterface>> channelServers = new ArrayList<>(channelServer.entrySet());
-        Collections.sort(channelServers, new Comparator<Entry<Integer, ChannelWorldInterface>>() {
-
-            @Override
-            public int compare(Entry<Integer, ChannelWorldInterface> o1, Entry<Integer, ChannelWorldInterface> o2) {
-                return o1.getKey().compareTo(o2.getKey());
-            }
-        });
+        Collections.sort(channelServers, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
         int totalUsers = 0;
         for (Entry<Integer, ChannelWorldInterface> cs : channelServers) {
             ret.append("Channel ");

@@ -10,7 +10,7 @@ public final class PacketProcessor {
     public enum Mode {
         LOGINSERVER,
         CHANNELSERVER
-    };
+    }
 
     private static PacketProcessor instance;
     private MaplePacketHandler[] handlers;
@@ -44,7 +44,7 @@ public final class PacketProcessor {
         }
     }
 
-    public synchronized static PacketProcessor getProcessor(Mode mode) {
+    public static synchronized PacketProcessor getProcessor(Mode mode) {
         if (instance == null) {
             instance = new PacketProcessor();
             instance.reset(mode);

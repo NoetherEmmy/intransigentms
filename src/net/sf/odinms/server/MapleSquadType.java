@@ -5,7 +5,7 @@ public enum MapleSquadType {
 
     final byte type;
 
-    private MapleSquadType(int type) {
+    MapleSquadType(int type) {
         this.type = (byte)type;
     }
 }

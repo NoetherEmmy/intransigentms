@@ -10,9 +10,9 @@ import net.sf.odinms.provider.MapleDataEntity;
 public class WZIMGEntry implements MapleData {
     private String name;
     private MapleDataType type;
-    private List<MapleData> children = new ArrayList<MapleData>(10);
+    private final List<MapleData> children = new ArrayList<>(10);
     private Object data;
-    private MapleDataEntity parent;
+    private final MapleDataEntity parent;
 
     public WZIMGEntry(MapleDataEntity parent) {
         this.parent = parent;
@@ -42,7 +42,7 @@ public class WZIMGEntry implements MapleData {
         }
 
         MapleData ret = this;
-        for (int x = 0; x < segments.length; x++) {
+        for (int x = 0; x < segments.length; ++x) {
             boolean foundChild = false;
             for (MapleData child : ret.getChildren()) {
                 if (child.getName().equals(segments[x])) {

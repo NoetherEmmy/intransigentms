@@ -7,9 +7,9 @@ import net.sf.odinms.tools.Pair;
 
 @SuppressWarnings("serial")
 public class PlayerBuffStorage implements Serializable {
-    private List<Pair<Integer, List<PlayerBuffValueHolder>>> buffs = new ArrayList<>();
-    private List<Pair<Integer, List<PlayerCoolDownValueHolder>>> coolDowns = new ArrayList<>();
-    private int id = (int) (Math.random() * 100);
+    private final List<Pair<Integer, List<PlayerBuffValueHolder>>> buffs = new ArrayList<>();
+    private final List<Pair<Integer, List<PlayerCoolDownValueHolder>>> coolDowns = new ArrayList<>();
+    private final int id = (int) (Math.random() * 100);
     @SuppressWarnings("unused")
 
     public PlayerBuffStorage() {

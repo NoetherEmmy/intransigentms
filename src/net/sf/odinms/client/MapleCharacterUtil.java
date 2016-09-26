@@ -18,7 +18,7 @@ public class MapleCharacterUtil {
 
     public static boolean hasSymbols(String name) {
         String[] symbols = {"`","~","!","@","#","$","%","^","&","*","(",")","_","-","=","+","{","[","]","}","|",";",":","'",",","<",">",".","?","/"};
-        for (byte s = 0; s < symbols.length; s++) {
+        for (byte s = 0; s < symbols.length; ++s) {
             if (name.contains(symbols[s])) {
                 return true;
             }

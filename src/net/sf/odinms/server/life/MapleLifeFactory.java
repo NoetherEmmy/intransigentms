@@ -18,12 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MapleLifeFactory {
-    private static Logger log = LoggerFactory.getLogger(MapleMapFactory.class);
-    private static MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Mob.wz"));
-    private static MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
-    private static MapleData mobStringData = stringDataWZ.getData("Mob.img");
-    private static MapleData npcStringData = stringDataWZ.getData("Npc.img");
-    private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(MapleMapFactory.class);
+    private static final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Mob.wz"));
+    private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
+    private static final MapleData mobStringData = stringDataWZ.getData("Mob.img");
+    private static final MapleData npcStringData = stringDataWZ.getData("Npc.img");
+    private static final Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {
@@ -122,8 +122,7 @@ public class MapleLifeFactory {
 
             monsterStats.put(mid, stats);
         }
-        MapleMonster ret = new MapleMonster(mid, stats);
-        return ret;
+        return new MapleMonster(mid, stats);
     }
 
     public static void decodeElementalString (MapleMonsterStats stats, String elemAttr) {

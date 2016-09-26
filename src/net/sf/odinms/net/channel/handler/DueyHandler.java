@@ -40,7 +40,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         TOCLIENT_SUCCESSFULLY_SENT(0x12),;
         final byte code;
 
-        private Actions(int code) {
+        Actions(int code) {
             this.code = (byte) code;
         }
 
@@ -116,7 +116,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                         } else {
                             MapleInventoryManipulator.removeFromSlot(c, inv, (byte) itemPos, amount, true, false);
                         }
-                        addItemToDB(item, (short) amount, mesos, c.getPlayer().getName(), MapleCharacter.getIdByName(recipient, 0), recipientOn);
+                        addItemToDB(item, amount, mesos, c.getPlayer().getName(), MapleCharacter.getIdByName(recipient, 0), recipientOn);
                     } else {  // hax.
                         c.disconnect();
                         c.getSession().close();
@@ -223,7 +223,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     public static List<DueyPackages> loadItems(MapleCharacter chr) {
-        List<DueyPackages> packages = new LinkedList<DueyPackages>();
+        List<DueyPackages> packages = new LinkedList<>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE RecieverId = ?"); // PLEASE WORK D:
@@ -246,7 +246,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     public static DueyPackages loadSingleItem(int packageid) {
-        List<DueyPackages> packages = new LinkedList<DueyPackages>();
+        List<DueyPackages> packages = new LinkedList<>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE PackageId = ?"); // PLEASE WORK D:

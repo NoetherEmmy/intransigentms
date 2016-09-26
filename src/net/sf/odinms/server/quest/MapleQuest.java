@@ -21,34 +21,34 @@ import org.slf4j.LoggerFactory;
 
 public class MapleQuest {
 
-    private static Map<Integer,MapleQuest> quests = new HashMap<Integer,MapleQuest>();
+    private static final Map<Integer,MapleQuest> quests = new HashMap<>();
     protected int id;
     protected List<MapleQuestRequirement> startReqs;
     protected List<MapleQuestRequirement> completeReqs;
     protected List<MapleQuestAction> startActs;
     protected List<MapleQuestAction> completeActs;
-    protected List<Integer> relevantMobs;
+    protected final List<Integer> relevantMobs;
     private boolean autoStart;
     private boolean autoPreComplete;
     private boolean repeatable = false;
-    private static MapleDataProvider questData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz"));
-    private static MapleData actions = questData.getData("Act.img");
-    private static MapleData requirements = questData.getData("Check.img");
-    private static MapleData info = questData.getData("QuestInfo.img");
+    private static final MapleDataProvider questData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz"));
+    private static final MapleData actions = questData.getData("Act.img");
+    private static final MapleData requirements = questData.getData("Check.img");
+    private static final MapleData info = questData.getData("QuestInfo.img");
 
     protected static final Logger log = LoggerFactory.getLogger(MapleQuest.class);
 
     protected MapleQuest() {
-            relevantMobs = new LinkedList<Integer>();
+            relevantMobs = new LinkedList<>();
     }
 
     /** Creates a new instance of MapleQuest */
     private MapleQuest(int id) {
         this.id = id;
-        relevantMobs = new LinkedList<Integer>();
+        relevantMobs = new LinkedList<>();
         // read reqs
         MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
-        startReqs = new LinkedList<MapleQuestRequirement>();
+        startReqs = new LinkedList<>();
         if (startReqData != null) {
             for (MapleData startReq : startReqData.getChildren()) {
                 MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
@@ -64,7 +64,7 @@ public class MapleQuest {
             }
         }
         MapleData completeReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("1");
-        completeReqs = new LinkedList<MapleQuestRequirement>();
+        completeReqs = new LinkedList<>();
         if (completeReqData != null) {
             for (MapleData completeReq : completeReqData.getChildren()) {
                 MapleQuestRequirement req = new MapleQuestRequirement(this, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
@@ -77,7 +77,7 @@ public class MapleQuest {
             }
         }
         MapleData startActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("0");
-        startActs = new LinkedList<MapleQuestAction>();
+        startActs = new LinkedList<>();
         if (startActData != null) {
             for (MapleData startAct : startActData.getChildren()) {
                 MapleQuestActionType questActionType = MapleQuestActionType.getByWZName(startAct.getName());
@@ -85,7 +85,7 @@ public class MapleQuest {
             }
         }
         MapleData completeActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("1");
-        completeActs = new LinkedList<MapleQuestAction>();
+        completeActs = new LinkedList<>();
         if (completeActData != null) {
             for (MapleData completeAct : completeActData.getChildren()) {
                 completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, this));
@@ -200,20 +200,16 @@ public class MapleQuest {
     }
 
     private boolean checkNPCOnMap(MapleCharacter player, int npcid) {
-        if (player.getMap().containsNPC(npcid)) {
-            return true;
-        } else {
-            return false;
-        }
+        return player.getMap().containsNPC(npcid);
     }
 
     public List<Integer> getQuestItemsToShowOnlyIfQuestIsActivated() {
-        Set<Integer> delta = new HashSet<Integer>();
+        Set<Integer> delta = new HashSet<>();
         for(MapleQuestRequirement mqr : this.completeReqs) {
             if(mqr.getType() != MapleQuestRequirementType.ITEM) continue;
             delta.addAll(mqr.getQuestItemsToShowOnlyIfQuestIsActivated());
         }
-        List<Integer> returnThis = new ArrayList<Integer>();
+        List<Integer> returnThis = new ArrayList<>();
         returnThis.addAll(delta);
         return Collections.unmodifiableList(returnThis);
     }

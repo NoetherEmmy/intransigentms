@@ -152,7 +152,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             c.getPlayer().sendMacros();
             try {
                 c.getPlayer().showNote();
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
             }
             if (player.getGuildId() > 0) {
                 c.getChannelServer().getWorldInterface().setGuildMemberOnline(player.getMGC(), true, c.getChannel());

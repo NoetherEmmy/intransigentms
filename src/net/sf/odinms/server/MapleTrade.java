@@ -11,15 +11,15 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleTrade {
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleTrade.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleTrade.class);
     private MapleTrade partner = null;
-    private List<IItem> items = new LinkedList<IItem>();
+    private final List<IItem> items = new LinkedList<>();
     private List<IItem> exchangeItems;
     private int meso = 0;
     private int exchangeMeso;
     boolean locked = false;
-    private MapleCharacter chr;
-    private byte number;
+    private final MapleCharacter chr;
+    private final byte number;
 
     public MapleTrade(byte number, MapleCharacter c) {
         chr = c;
@@ -152,12 +152,12 @@ public class MapleTrade {
     }
 
     public List<IItem> getItems() {
-        return new LinkedList<IItem>(items);
+        return new LinkedList<>(items);
     }
 
     public boolean fitsInInventory() {
         MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
-        Map<MapleInventoryType, Integer> neededSlots = new LinkedHashMap<MapleInventoryType, Integer>();
+        Map<MapleInventoryType, Integer> neededSlots = new LinkedHashMap<>();
         for (IItem item : exchangeItems) {
             MapleInventoryType type = mii.getInventoryType(item.getItemId());
             if (neededSlots.get(type) == null) {

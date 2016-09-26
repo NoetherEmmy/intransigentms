@@ -12,7 +12,7 @@ public class MapleTVEffect {
 
     public static MaplePacket packet;
     public static boolean active;
-    private ChannelServer cserv;
+    private final ChannelServer cserv;
 
     public MapleTVEffect(MapleCharacter user, MapleCharacter partner, List<String> msg, int type) {
         cserv = user.getClient().getChannelServer();
@@ -50,12 +50,6 @@ public class MapleTVEffect {
     }
 
     private void scheduleCancel(int type) {
-        TimerManager.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                broadCastTV(false);
-            }
-        }, getMapleTVDuration(type));
+        TimerManager.getInstance().schedule(() -> broadCastTV(false), getMapleTVDuration(type));
     }
 }

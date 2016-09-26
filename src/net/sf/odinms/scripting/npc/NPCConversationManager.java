@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import net.sf.odinms.client.IItem;
@@ -62,11 +61,11 @@ import net.sf.odinms.server.life.MobSkillFactory;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
-    private MapleClient c;
-    private int npc;
+    private final MapleClient c;
+    private final int npc;
     private String fileName = null;
     private String getText;
-    private MapleCharacter chr;
+    private final MapleCharacter chr;
 
     public NPCConversationManager(MapleClient c, int npc, MapleCharacter chr, String fileName) {
         super(c);
@@ -243,7 +242,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         IItem stars = getPlayer().getInventory(MapleInventoryType.USE).getItem((byte) 1);
         if (ii.isThrowingStar(stars.getItemId()) || ii.isBullet(stars.getItemId())) {
             stars.setQuantity(ii.getSlotMax(getClient(), stars.getItemId()));
-            getC().getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, (Item) stars));
+            getC().getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, stars));
         }
     }
 
@@ -487,11 +486,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public boolean completedAllQuests() {
         if (getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000)) {
             return false;
-        } else if (getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000)) {
-            return false;
-        } else {
-            return true;
-        }
+        } else return !getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000);
     }
     
     public String getAllItemStats(int itemid) {
@@ -612,7 +607,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     
     public int getMonsterTrialCooldown() {
         long timesincelast = System.currentTimeMillis() - getPlayer().getLastTrialTime();
-        double inminutes = timesincelast / ((double) 60000.0);
+        double inminutes = timesincelast / 60000.0;
         inminutes = Math.floor(inminutes);
         return 120 - (int) inminutes;
     }
@@ -697,19 +692,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 final int returnmapid = getPlayer().getTrialReturnMap();
                 final MapleCharacter player = getPlayer();
                 TimerManager tMan = TimerManager.getInstance();
-		final Runnable endTrialTask = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (player.getMapId() >= 1000 && player.getMapId() <= 1006) {
-                            player.changeMap(returnmapid, 0);
-                        }
-                    }
-		};
+		final Runnable endTrialTask = () -> {
+            if (player.getMapId() >= 1000 && player.getMapId() <= 1006) {
+                player.changeMap(returnmapid, 0);
+            }
+        };
                 //getPlayer().getMap().broadcastMessage(MaplePacketCreator.getClock(600), getPlayer().getPosition());
                 getPlayer().getClient().getSession().write(MaplePacketCreator.getClock(1200)); // 20 minutes
                 int monsterchoices[] = monsters[calculateLevelGroup(getPlayer().getLevel()) - 1];
                 int monsterchoice = monsterchoices[(int) Math.floor(Math.random() * monsterchoices.length)];
-                int monsterid = (int) Math.floor((double) monsterchoice / (double) 10.0);
+                int monsterid = (int) Math.floor((double) monsterchoice / 10.0);
                 int monstercount = monsterchoice % 10;
                 Point monsterspawnpoint = new Point(-336, -11); // (-336, 101)
                 for (int i = 0; i < monstercount; ++i) {
@@ -719,12 +711,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     } catch (NullPointerException npe) {
                         System.out.print("Player " + player.getName() + " booted from Monster Trials; monsterchoice, monsterid: " + monsterchoice + ", " + monsterid + "\n");
                         npe.printStackTrace();
-                        tMan.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                player.changeMap(returnmapid, 0);
-                                player.dropMessage("There was an error loading your Monster Trial! Tell a GM about this and try again.");
-                            }
+                        tMan.schedule(() -> {
+                            player.changeMap(returnmapid, 0);
+                            player.dropMessage("There was an error loading your Monster Trial! Tell a GM about this and try again.");
                         }, 500);
                         return true;
                     }
@@ -753,13 +742,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             warpParty(mapid);
             final List<MapleCharacter> players = partymembers;
             TimerManager tMan = TimerManager.getInstance();
-            tMan.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    for (MapleCharacter player : players) {
-                        if (player.getMapId() == 3000) {
-                            player.changeMap(player.getBossReturnMap(), 0);
-                        }
+            tMan.schedule(() -> {
+                for (MapleCharacter player : players) {
+                    if (player.getMapId() == 3000) {
+                        player.changeMap(player.getBossReturnMap(), 0);
                     }
                 }
             }, 40 * 60 * 1000); // 40 minutes
@@ -954,8 +940,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public int itemQuantity(int itemid) {
-        int possesed = getPlayer().getItemQuantity(itemid, false);
-        return possesed;
+        return getPlayer().getItemQuantity(itemid, false);
     }
 
     public MapleSquad createMapleSquad(MapleSquadType type) {
@@ -996,11 +981,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public boolean checkSquadLeader(MapleSquadType type) {
         MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         if (squad != null) {
-            if (squad.getLeader().getId() == getPlayer().getId()) {
-                return true;
-            } else {
-                return false;
-            }
+            return squad.getLeader().getId() == getPlayer().getId();
         } else {
             return false;
         }
@@ -1095,8 +1076,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public int makeRing(MapleCharacter partner, int ringId) {
-        int ret = net.sf.odinms.client.MapleRing.createRing(ringId, getPlayer(), partner);
-        return ret;
+        return net.sf.odinms.client.MapleRing.createRing(ringId, getPlayer(), partner);
     }
 
     public void resetReactors() {
@@ -1130,8 +1110,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public int getSkillLevel(int skillid) {
-        int skilllevel = getPlayer().getSkillLevel(SkillFactory.getSkill(skillid));
-        return skilllevel;
+        return getPlayer().getSkillLevel(SkillFactory.getSkill(skillid));
     }
 
     public void giveBuff(int skillid) {
@@ -1205,12 +1184,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void scheduleWarp(int delay, int mapid) {
         final int fmapid = mapid;
-        TimerManager.getInstance().schedule(new Runnable() {
-            @Override
-            public void run() {
-                getPlayer().changeMap(fmapid);
-            }
-        }, delay * 1000);
+        TimerManager.getInstance().schedule(() -> getPlayer().changeMap(fmapid), delay * 1000);
     }
 
     public void startClock(int limit, int endMap) {
@@ -1309,10 +1283,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean isGuest() {
-        if (c.isGuest()) {
-            return true;
-        }
-        return false;
+        return c.isGuest();
     }
 
     public void broadcastMessage(int type, String message) {
@@ -1386,11 +1357,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean hasTemp() {
-        if (!getPlayer().hasMerchant() && getPlayer().tempHasItems()) {
-            return true;
-        } else {
-            return false;
-        }
+        return !getPlayer().hasMerchant() && getPlayer().tempHasItems();
     }
     
     public void giveBuff(int buff, int level) {
@@ -1448,18 +1415,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, new Comparator<IItem>() {
-            @Override
-            public int compare(final IItem o1, final IItem o2) {
-                int comparison = (int) (o1.getPosition() - o2.getPosition());
-                if (comparison < 0) {
-                    return -1;
+        Collections.sort(equiplist, (o1, o2) -> {
+            int comparison = o1.getPosition() - o2.getPosition();
+            if (comparison < 0) {
+                return -1;
+            } else {
+                if (comparison > 0) {
+                    return 1;
                 } else {
-                    if (comparison > 0) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return 0;
                 }
             }
         });
@@ -1492,18 +1456,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, new Comparator<IItem>() {
-            @Override
-            public int compare(final IItem o1, final IItem o2) {
-                int comparison = (int) (o1.getPosition() - o2.getPosition());
-                if (comparison < 0) {
-                    return -1;
+        Collections.sort(equiplist, (o1, o2) -> {
+            int comparison = o1.getPosition() - o2.getPosition();
+            if (comparison < 0) {
+                return -1;
+            } else {
+                if (comparison > 0) {
+                    return 1;
                 } else {
-                    if (comparison > 0) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return 0;
                 }
             }
         });
@@ -1551,18 +1512,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, new Comparator<IItem>() {
-            @Override
-            public int compare(final IItem o1, final IItem o2) {
-                int comparison = (int) (o1.getPosition() - o2.getPosition());
-                if (comparison < 0) {
-                    return -1;
+        Collections.sort(equiplist, (o1, o2) -> {
+            int comparison = o1.getPosition() - o2.getPosition();
+            if (comparison < 0) {
+                return -1;
+            } else {
+                if (comparison > 0) {
+                    return 1;
                 } else {
-                    if (comparison > 0) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return 0;
                 }
             }
         });
@@ -1712,18 +1670,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return "There are no use items with the selected initial letter.";
         }
         
-        Collections.sort(consumelist, new Comparator<Pair<Integer, String>>() {
-            @Override
-            public int compare(final Pair<Integer, String> o1, final Pair<Integer, String> o2) {
-                int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
-                if (comparison < 0) {
-                    return -1;
+        Collections.sort(consumelist, (o1, o2) -> {
+            int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
+            if (comparison < 0) {
+                return -1;
+            } else {
+                if (comparison > 0) {
+                    return 1;
                 } else {
-                    if (comparison > 0) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return 0;
                 }
             }
         });
@@ -1745,18 +1700,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return "There are no equipment items with the selected initial letter.";
         }
         
-        Collections.sort(eqplist, new Comparator<Pair<Integer, String>>() {
-            @Override
-            public int compare(final Pair<Integer, String> o1, final Pair<Integer, String> o2) {
-                int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
-                if (comparison < 0) {
-                    return -1;
+        Collections.sort(eqplist, (o1, o2) -> {
+            int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
+            if (comparison < 0) {
+                return -1;
+            } else {
+                if (comparison > 0) {
+                    return 1;
                 } else {
-                    if (comparison > 0) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return 0;
                 }
             }
         });
@@ -1778,18 +1730,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return "There are no etc items with the selected initial letter.";
         }
         
-        Collections.sort(etclist, new Comparator<Pair<Integer, String>>() {
-            @Override
-            public int compare(final Pair<Integer, String> o1, final Pair<Integer, String> o2) {
-                int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
-                if (comparison < 0) {
-                    return -1;
+        Collections.sort(etclist, (o1, o2) -> {
+            int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
+            if (comparison < 0) {
+                return -1;
+            } else {
+                if (comparison > 0) {
+                    return 1;
                 } else {
-                    if (comparison > 0) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return 0;
                 }
             }
         });
@@ -1937,7 +1886,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleCharacter p = getPlayer();
         ISkill resurrection = SkillFactory.getSkill(2321006);
         int resurrectionlevel = p.getSkillLevel(resurrection);
-        if (resurrectionlevel > 0 && !p.skillisCooling(2321006) && itemQuantity(4031485) > 0) {
+        if (resurrectionlevel > 0 && !p.skillIsCooling(2321006) && itemQuantity(4031485) > 0) {
             gainItem(4031485, (short) -1);
             p.setHp(p.getMaxHp(), false);
             p.setMp(p.getMaxMp());
@@ -1980,7 +1929,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.setInt(2, getPlayer().getId());
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException se) {
+        } catch (SQLException ignored) {
         }
     }
     

@@ -3,10 +3,10 @@ package net.sf.odinms.server.movement;
 import java.awt.Point;
 
 public abstract class AbstractLifeMovement implements LifeMovement {
-    private Point position;
-    private int duration;
-    private int newstate;
-    private int type;
+    private final Point position;
+    private final int duration;
+    private final int newstate;
+    private final int type;
 
     public AbstractLifeMovement(int type, Point position, int duration, int newstate) {
         super();

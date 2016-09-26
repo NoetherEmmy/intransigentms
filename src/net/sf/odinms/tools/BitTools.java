@@ -32,7 +32,7 @@ public class BitTools {
      */
     public static String getString(byte array[], int index, int length) {
         char[] cret = new char[length];
-        for (int x = 0; x < length; x++) {
+        for (int x = 0; x < length; ++x) {
             cret[x] = (char) array[x + index];
         }
         return String.valueOf(cret);
@@ -47,7 +47,7 @@ public class BitTools {
      * @return The string read.
      */
     public static String getMapleString(byte array[], int index) {
-        int length = ((int) (array[index]) & 0xFF) | ((int) (array[index + 1] << 8) & 0xFF00);
+        int length = ((int) (array[index]) & 0xFF) | (array[index + 1] << 8 & 0xFF00);
         return BitTools.getString(array, index + 2, length);
     }
 
@@ -64,7 +64,6 @@ public class BitTools {
          * in: 11001101 count: 3 out: 0110 1110
          */
         int tmp = (int) in & 0xFF;
-        ;
         tmp = tmp << (count % 8);
         return (byte) ((tmp & 0xFF) | (tmp >> 8));
     }
@@ -100,7 +99,7 @@ public class BitTools {
      */
     public static byte[] multiplyBytes(byte[] in, int count, int mul) {
         byte[] ret = new byte[count * mul];
-        for (int x = 0; x < count * mul; x++) {
+        for (int x = 0; x < count * mul; ++x) {
             ret[x] = in[x % count];
         }
         return ret;

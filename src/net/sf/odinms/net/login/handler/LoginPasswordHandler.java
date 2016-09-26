@@ -40,7 +40,7 @@ public class LoginPasswordHandler implements MaplePacketHandler {
                 loginok = c.login(login, pwd, ipBan || macBan);
             }
         } else loginok = c.login(login, pwd, ipBan || macBan);
-        Calendar tempbannedTill = c.getTempBanCalendar();
+        Calendar tempBannedTill = c.getTempBanCalendar();
         if (loginok == 0 && (ipBan || macBan)) {
             loginok = 3;
             if (macBan) {
@@ -54,8 +54,8 @@ public class LoginPasswordHandler implements MaplePacketHandler {
         } else if (loginok != 0) {
             c.getSession().write(MaplePacketCreator.getLoginFailed(loginok));
             return;
-        } else if (tempbannedTill.getTimeInMillis() != 0) {
-            long tempban = KoreanDateUtil.getTempBanTimestamp(tempbannedTill.getTimeInMillis());
+        } else if (tempBannedTill != null && tempBannedTill.getTimeInMillis() != 0) {
+            long tempban = KoreanDateUtil.getTempBanTimestamp(tempBannedTill.getTimeInMillis());
             byte reason = c.getBanReason();
             c.getSession().write(MaplePacketCreator.getTempBan(tempban, reason));
             return;

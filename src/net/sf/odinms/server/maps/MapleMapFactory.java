@@ -28,7 +28,7 @@ import net.sf.odinms.tools.StringUtil;
 
 public class MapleMapFactory {
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
     private final MapleDataProvider source;
     private final MapleData nameData;
     private final Map<Integer, MapleMap> maps = new HashMap<>();
@@ -301,15 +301,9 @@ public class MapleMapFactory {
     }
 
     private String getMapName(int mapid) {
-        String mapName = StringUtil.getLeftPaddedStr(Integer.toString(mapid), '0', 9);
-        StringBuilder builder = new StringBuilder("Map/Map");
         int area = mapid / 100000000;
-        builder.append(area);
-        builder.append("/");
-        builder.append(mapName);
-        builder.append(".img");
-
-        mapName = builder.toString();
+        String mapName = StringUtil.getLeftPaddedStr(Integer.toString(mapid), '0', 9);
+        mapName = "Map/Map" + area + "/" + mapName + ".img";
         return mapName;
     }
 
@@ -337,8 +331,7 @@ public class MapleMapFactory {
         builder.append("/");
         builder.append(mapid);
 
-        String mapName = builder.toString();
-        return mapName;
+        return builder.toString();
     }
 
     public void setChannel(int channel) {

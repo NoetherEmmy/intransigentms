@@ -2,20 +2,20 @@ package net.sf.odinms.server.life;
 
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.sf.odinms.client.MapleCharacter;
+
 import net.sf.odinms.server.maps.MapleMap;
 
 public class SpawnPoint {
-    private MapleMonster monster;
-    private Point pos;
+    private final MapleMonster monster;
+    private final Point pos;
     private long nextPossibleSpawn;
-    private int mobTime;
-    private AtomicInteger spawnedMonsters = new AtomicInteger(0);
+    private final int mobTime;
+    private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
 
     /**
      * Whether the spawned monster is immobile
      */
-    private boolean immobile;
+    private final boolean immobile;
 
     public SpawnPoint(MapleMonster monster, Point pos, int mobTime) {
         super();
@@ -53,17 +53,14 @@ public class SpawnPoint {
         MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(new Point(pos));
         spawnedMonsters.incrementAndGet();
-        mob.addListener(new MonsterListener() {
-            @Override
-            public void monsterKilled(MapleMonster monster, MapleCharacter highestDamageChar) {
-                nextPossibleSpawn = System.currentTimeMillis();
-                if (mobTime > 0) {
-                    nextPossibleSpawn += mobTime * 1000;
-                } else {
-                    nextPossibleSpawn += monster.getAnimationTime("die1");
-                }
-                spawnedMonsters.decrementAndGet();
+        mob.addListener(monster1 -> {
+            nextPossibleSpawn = System.currentTimeMillis();
+            if (mobTime > 0) {
+                nextPossibleSpawn += mobTime * 1000;
+            } else {
+                nextPossibleSpawn += monster1.getAnimationTime("die1");
             }
+            spawnedMonsters.decrementAndGet();
         });
         mapleMap.spawnMonster(mob);
         if (mobTime == 0) {

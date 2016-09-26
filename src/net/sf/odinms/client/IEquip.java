@@ -2,7 +2,7 @@ package net.sf.odinms.client;
 
 public interface IEquip extends IItem {
 
-    public enum ScrollResult {
+    enum ScrollResult {
         SUCCESS, FAIL, CURSE
     }
 
@@ -10,35 +10,35 @@ public interface IEquip extends IItem {
     byte getLocked();
     byte getLevel();
 
-    public int getRingId();
+    int getRingId();
 
-    public short getStr();
+    short getStr();
 
-    public short getDex();
+    short getDex();
 
-    public short getInt();
+    short getInt();
 
-    public short getLuk();
+    short getLuk();
 
-    public short getHp();
+    short getHp();
 
-    public short getMp();
+    short getMp();
 
-    public short getWatk();
+    short getWatk();
 
-    public short getMatk();
+    short getMatk();
 
-    public short getWdef();
+    short getWdef();
 
-    public short getMdef();
+    short getMdef();
 
-    public short getAcc();
+    short getAcc();
 
-    public short getAvoid();
+    short getAvoid();
 
-    public short getHands();
+    short getHands();
 
-    public short getSpeed();
+    short getSpeed();
 
-    public short getJump();
+    short getJump();
 }

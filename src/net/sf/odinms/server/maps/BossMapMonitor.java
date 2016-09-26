@@ -6,21 +6,18 @@ import net.sf.odinms.server.TimerManager;
 
 public class BossMapMonitor {
 
-    private MaplePortal portal;
-    private MapleMap map;
-    private MapleMap pMap;
-    private ScheduledFuture<?> schedule;
+    private final MaplePortal portal;
+    private final MapleMap map;
+    private final MapleMap pMap;
+    private final ScheduledFuture<?> schedule;
 
     public BossMapMonitor(final MapleMap map, MapleMap pMap, MaplePortal portal) {
         this.map = map;
         this.pMap = pMap;
         this.portal = portal;
-        schedule = TimerManager.getInstance().register(new Runnable() {
-
-            public void run() {
-                if (map.playerCount() <= 0) {
-                    BossMapMonitor.this.run();
-                }
+        schedule = TimerManager.getInstance().register(() -> {
+            if (map.playerCount() <= 0) {
+                BossMapMonitor.this.run();
             }
         }, 10000);
     }

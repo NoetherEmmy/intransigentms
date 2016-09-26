@@ -13,7 +13,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class UseItemEffectHandler extends AbstractMaplePacketHandler {
 
-    private static Logger log = LoggerFactory.getLogger(UseItemHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(UseItemHandler.class);
 
     public UseItemEffectHandler() {
     }

@@ -18,12 +18,12 @@ public class MapleMonsterStats {
     private boolean undead;
     private boolean ffaLoot;
     private String name;
-    private Map<String, Integer> animationTimes = new HashMap<>();
-    private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
+    private final Map<String, Integer> animationTimes = new HashMap<>();
+    private final Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
     private List<Integer> revives = Collections.emptyList();
     private byte tagColor;
     private byte tagBgColor;
-    private List<Pair<Integer, Integer>> skills = new ArrayList<>();
+    private final List<Pair<Integer, Integer>> skills = new ArrayList<>();
     private boolean firstAttack;
     private int buffToGive;
     private boolean explosive;

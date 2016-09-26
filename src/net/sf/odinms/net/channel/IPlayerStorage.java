@@ -5,9 +5,9 @@ import net.sf.odinms.client.MapleCharacter;
 
 public interface IPlayerStorage {
 
-    public MapleCharacter getCharacterByName(String name);
+    MapleCharacter getCharacterByName(String name);
 
-    public MapleCharacter getCharacterById(int id);
+    MapleCharacter getCharacterById(int id);
 
     Collection<MapleCharacter> getAllCharacters();
 }

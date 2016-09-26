@@ -6,7 +6,7 @@ import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.tools.HexTool;
 
 public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
-    private ByteArrayOutputStream baos;
+    private final ByteArrayOutputStream baos;
 
     /**
      * Constructor - initializes this stream with a default size.

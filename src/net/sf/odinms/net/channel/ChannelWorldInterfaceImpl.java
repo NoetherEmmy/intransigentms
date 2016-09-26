@@ -174,8 +174,8 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
     }
 
     public List<CheaterData> getCheaters() throws RemoteException {
-        List<CheaterData> cheaters = new ArrayList<CheaterData>();
-        List<MapleCharacter> allplayers = new ArrayList<MapleCharacter>(server.getPlayerStorage().getAllCharacters());
+        List<CheaterData> cheaters = new ArrayList<>();
+        List<MapleCharacter> allplayers = new ArrayList<>(server.getPlayerStorage().getAllCharacters());
         /*Collections.sort(allplayers, new Comparator<MapleCharacter>() {
         @Override
         public int compare(MapleCharacter o1, MapleCharacter o2) {
@@ -255,7 +255,7 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
 
     @Override
     public int[] multiBuddyFind(int charIdFrom, int[] characterIds) throws RemoteException {
-        List<Integer> ret = new ArrayList<Integer>(characterIds.length);
+        List<Integer> ret = new ArrayList<>(characterIds.length);
         IPlayerStorage playerStorage = server.getPlayerStorage();
         for (int characterId : characterIds) {
             MapleCharacter chr = playerStorage.getCharacterById(characterId);
@@ -268,7 +268,7 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
         int[] retArr = new int[ret.size()];
         int pos = 0;
         for (Integer i : ret) {
-            retArr[pos++] = i.intValue();
+            retArr[pos++] = i;
         }
         return retArr;
     }

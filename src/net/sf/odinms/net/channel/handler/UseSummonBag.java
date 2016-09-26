@@ -30,7 +30,7 @@ public class UseSummonBag extends AbstractMaplePacketHandler {
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemId && c.getPlayer().isAlive()) {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
             int[][] toSpawn = ii.getSummonMobs(itemId);
-            for (int z = 0; z < toSpawn.length; z++) {
+            for (int z = 0; z < toSpawn.length; ++z) {
                 int[] toSpawnChild = toSpawn[z];
                 if ((int) Math.ceil(Math.random() * 100) <= toSpawnChild[1]) {
                     MapleMonster ht = MapleLifeFactory.getMonster(toSpawnChild[0]);

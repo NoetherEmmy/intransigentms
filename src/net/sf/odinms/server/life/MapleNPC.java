@@ -7,7 +7,7 @@ import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleNPC extends AbstractLoadedMapleLife {
-    private MapleNPCStats stats;
+    private final MapleNPCStats stats;
     private boolean custom = false;
 
     public MapleNPC(int id, MapleNPCStats stats) {

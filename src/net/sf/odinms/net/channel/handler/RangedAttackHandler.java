@@ -29,7 +29,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class RangedAttackHandler extends AbstractDealDamageHandler {
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RangedAttackHandler.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RangedAttackHandler.class);
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -98,7 +98,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             if (skillused != null && skillused.getId() == 5211004 && player.getItemQuantity(2331000, false) > 0) {
                 MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, 2331000, 1, false, true);
                 attack.charge = 1;
-                double capsulemultiplier = (double) (skillused.getEffect(player.getSkillLevel(skillused)).getDamage() + 40.0) / (double) skillused.getEffect(player.getSkillLevel(skillused)).getDamage();
+                double capsulemultiplier = (skillused.getEffect(player.getSkillLevel(skillused)).getDamage() + 40.0) / (double) skillused.getEffect(player.getSkillLevel(skillused)).getDamage();
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {
@@ -122,7 +122,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             }
             
             if (player.getDeathPenalty() > 0) {
-                double dpmultiplier = Math.max((double) 1.0 - (double) player.getDeathPenalty() * 0.04, (double) 0.0);
+                double dpmultiplier = Math.max(1.0 - (double) player.getDeathPenalty() * 0.03, 0.0);
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {
@@ -146,7 +146,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
         //
         if (attack.skill == 5121002) {
             player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player.getId(), attack.skill, attack.stance, attack.numAttackedAndDamage, 0, attack.allDamage, attack.speed), false);
-            applyAttack(attack, player, 9999999, 1);
+            applyAttack(attack, player, 1);
         } else {
             MapleInventory equip = player.getInventory(MapleInventoryType.EQUIPPED);
             IItem weapon = equip.getItem((byte) -11);
@@ -237,11 +237,12 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                     }
                     player.getMap().broadcastMessage(player, packet, false, true);
                 } catch (Exception e) {
-                    log.warn("Failed to handle ranged attack..", e);
+                    log.warn("Failed to handle ranged attack.", e);
                 }
 
-                int basedamage;
-                int projectileWatk = 0;
+                //int basedamage;
+                //int projectileWatk = 0;
+                /*
                 if (projectile != 0) {
                     projectileWatk = mii.getWatkForProjectile(projectile);
                 }
@@ -257,7 +258,9 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 if (attack.skill == 3101005) { // arrowbomb is hardcore like that O.o
                     basedamage *= effect.getX() / 100.0;
                 }
-                int maxdamage = basedamage;
+                */
+                //int maxdamage = basedamage;
+                /*
                 double critdamagerate = 0.0;
                 if (player.getJob().isA(MapleJob.ASSASSIN)) {
                     ISkill criticalthrow = SkillFactory.getSkill(4100001);
@@ -272,7 +275,9 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                         critdamagerate = (criticalshot.getEffect(critlevel).getDamage() / 100.0) - 1.0;
                     }
                 }
-                int critdamage = (int) (basedamage * critdamagerate);
+                */
+                //int critdamage = (int) (basedamage * critdamagerate);
+                /*
                 if (effect != null) {
                     maxdamage *= effect.getDamage() / 100.0;
                 }
@@ -291,6 +296,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 if (attack.skill == 4111004) {
                     maxdamage = 35000;
                 }
+                */
                 if (effect != null) {
                     int money = effect.getMoneyCon();
                     if (money != 0) {
@@ -307,7 +313,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                     int skillLevel = c.getPlayer().getSkillLevel(skill);
                     MapleStatEffect effect_ = skill.getEffect(skillLevel);
                     if (effect_.getCooldown() > 0) {
-                        if (player.skillisCooling(attack.skill)) {
+                        if (player.skillIsCooling(attack.skill)) {
                             //player.getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                             return;
                         } else {
@@ -317,7 +323,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                         }
                     }
                 }
-                applyAttack(attack, player, maxdamage, bulletCount);
+                applyAttack(attack, player, bulletCount);
             }
         }
     }

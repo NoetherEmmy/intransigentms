@@ -12,8 +12,8 @@ public enum MapleDisease implements LongValueHolder {
     DARKNESS(0x10000000000000L),
     WEAKEN(0x4000000000000000L),
     CURSE(0x8000000000000000L);
-    private long i;
-    private MapleDisease(long i) {
+    private final long i;
+    MapleDisease(long i) {
         this.i = i;
     }
 

@@ -25,7 +25,7 @@ public enum MapleStat implements IntValueHolder {
     PET(0x180008);
     private final int i;
 
-    private MapleStat(int i) {
+    MapleStat(int i) {
         this.i = i;
     }
 

@@ -15,12 +15,12 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleMiniGame extends PlayerInteractionManager {
 
-    private MapleCharacter owner;
+    private final MapleCharacter owner;
     private MiniGameType GameType;
-    private int[] piece = new int[250];
-    private List<Integer> list4x3 = new ArrayList<Integer>();
-    private List<Integer> list5x4 = new ArrayList<Integer>();
-    private List<Integer> list6x5 = new ArrayList<Integer>();
+    private final int[] piece = new int[250];
+    private final List<Integer> list4x3 = new ArrayList<>();
+    private final List<Integer> list5x4 = new ArrayList<>();
+    private final List<Integer> list6x5 = new ArrayList<>();
     boolean ready = false;
     private int loser = 1;
     private boolean started; // 0 = waiting, 1 = in progress
@@ -145,7 +145,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
         }
     }
 
-    public int getOmokPoints(String type, boolean getOwner) { // wins, losses, ties
+    public int getOmokPoints(String type) { // wins, losses, ties
         Connection con = DatabaseConnection.getConnection();
         int points = 0;
 
@@ -230,17 +230,17 @@ public class MapleMiniGame extends PlayerInteractionManager {
         GameType = game;
         if (game == GameType.MATCH_CARDS) {
             if (matchestowin == 6) {
-                for (int i = 0; i < matchestowin; i++) {
+                for (int i = 0; i < matchestowin; ++i) {
                     list4x3.add(i);
                     list4x3.add(i);
                 }
             } else if (matchestowin == 10) {
-                for (int i = 0; i < matchestowin; i++) {
+                for (int i = 0; i < matchestowin; ++i) {
                     list5x4.add(i);
                     list5x4.add(i);
                 }
             } else if (matchestowin == 15) {
-                for (int i = 0; i < matchestowin; i++) {
+                for (int i = 0; i < matchestowin; ++i) {
                     list6x5.add(i);
                     list6x5.add(i);
                 }
@@ -303,8 +303,8 @@ public class MapleMiniGame extends PlayerInteractionManager {
         if (piece[slot] == 0) {
             piece[slot] = type;
             broadcast(MaplePacketCreator.getMiniGameMoveOmok(move1, move2, type), true);
-            for (int y = 0; y < 15; y++) {
-                for (int x = 0; x < 11; x++) {
+            for (int y = 0; y < 15; ++y) {
+                for (int x = 0; x < 11; ++x) {
                     if (searchCombo(x, y, type)) {
                         if (isOwner(chr)) {
                             broadcast(MaplePacketCreator.getMiniGameWin(this, 0), true);
@@ -325,8 +325,8 @@ public class MapleMiniGame extends PlayerInteractionManager {
                     }
                 }
             }
-            for (int y = 0; y < 15; y++) {
-                for (int x = 4; x < 15; x++) {
+            for (int y = 0; y < 15; ++y) {
+                for (int x = 4; x < 15; ++x) {
                     if (searchCombo2(x, y, type)) {
                         if (isOwner(chr)) {
                             broadcast(MaplePacketCreator.getMiniGameWin(this, 0), true);

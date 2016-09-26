@@ -15,10 +15,10 @@ public class MapleCustomQuest extends MapleQuest {
     public MapleCustomQuest(int id) {
         try {
             this.id = id;
-            startActs = new LinkedList<MapleQuestAction>();
-            completeActs = new LinkedList<MapleQuestAction>();
-            startReqs = new LinkedList<MapleQuestRequirement>();
-            completeReqs = new LinkedList<MapleQuestRequirement>();
+            startActs = new LinkedList<>();
+            completeActs = new LinkedList<>();
+            startReqs = new LinkedList<>();
+            completeReqs = new LinkedList<>();
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT * FROM questrequirements WHERE questid = ?");
             ps.setInt(1, id);

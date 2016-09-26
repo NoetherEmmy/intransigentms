@@ -24,18 +24,18 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleGuild implements java.io.Serializable {
 
-    public final static int CREATE_GUILD_COST = 5000000;
-    public final static int CHANGE_EMBLEM_COST = 15000000;
-    public final static int INCREASE_CAPACITY_COST = 5000000;
-    public final static boolean ENABLE_BBS = true;
+    public static final int CREATE_GUILD_COST = 5000000;
+    public static final int CHANGE_EMBLEM_COST = 15000000;
+    public static final int INCREASE_CAPACITY_COST = 5000000;
+    public static final boolean ENABLE_BBS = true;
 
     private enum BCOp {
         NONE, DISBAND, EMBELMCHANGE
     }
 
     public static final long serialVersionUID = 6322150443228168192L;
-    private List<MapleGuildCharacter> members;
-    private String rankTitles[] = new String[5];
+    private final List<MapleGuildCharacter> members;
+    private final String[] rankTitles = new String[5];
     private String name;
     private int id;
     private int gp;
@@ -47,7 +47,7 @@ public class MapleGuild implements java.io.Serializable {
     private int logoBGColor;
     private String notice;
     private int signature;
-    private Map<Integer, List<Integer>> notifications = new LinkedHashMap<>();
+    private final Map<Integer, List<Integer>> notifications = new LinkedHashMap<>();
     private boolean bDirty = true;
     private int allianceId;
 
@@ -117,7 +117,7 @@ public class MapleGuild implements java.io.Serializable {
         if (notifications.keySet().size() != chs.size()) {
             notifications.clear();
             for (Integer ch : chs) {
-                notifications.put(ch, new java.util.LinkedList<Integer>());
+                notifications.put(ch, new java.util.LinkedList<>());
             }
         } else {
             for (List<Integer> l : notifications.values()) {
@@ -275,7 +275,7 @@ public class MapleGuild implements java.io.Serializable {
                 ChannelWorldInterface cwi;
                 for (Integer ch : chs) {
                     cwi = wr.getChannel(ch);
-                    if (notifications.get(ch).size() > 0) {
+                    if (!notifications.get(ch).isEmpty()) {
                         if (bcop == BCOp.DISBAND) {
                             cwi.setGuildAndRank(notifications.get(ch), 0, 5, exceptionId);
                         } else if (bcop == BCOp.EMBELMCHANGE) {
@@ -374,7 +374,7 @@ public class MapleGuild implements java.io.Serializable {
             if (members.size() >= capacity) {
                 return 0;
             }
-            for (int i = members.size() - 1; i >= 0; i--) {
+            for (int i = members.size() - 1; i >= 0; --i) {
                 if (members.get(i).getGuildRank() < 5 || members.get(i).getName().compareTo(mgc.getName()) < 0) {
                     members.add(i + 1, mgc);
                     bDirty = true;
@@ -470,9 +470,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public void changeRankTitle(String[] ranks) {
-        for (int i = 0; i < 5; ++i) {
-            rankTitles[i] = ranks[i];
-        }
+        System.arraycopy(ranks, 0, rankTitles, 0, 5);
         this.broadcast(MaplePacketCreator.rankTitleChange(this.id, ranks));
         this.writeToDB();
     }
@@ -554,7 +552,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.setInt(2, id);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
     }
 }

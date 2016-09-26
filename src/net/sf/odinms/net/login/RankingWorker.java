@@ -13,7 +13,7 @@ public class RankingWorker implements Runnable {
 
     private Connection con;
     private long lastUpdate = System.currentTimeMillis();
-    private static Logger log = LoggerFactory.getLogger(RankingWorker.class);
+    private static final Logger log = LoggerFactory.getLogger(RankingWorker.class);
 	
     public void run() {
         try {

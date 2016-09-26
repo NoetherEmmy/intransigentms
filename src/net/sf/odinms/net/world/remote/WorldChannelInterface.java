@@ -21,111 +21,111 @@ import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 
 public interface WorldChannelInterface extends Remote, WorldChannelCommonOperations {
 
-    public Properties getDatabaseProperties() throws RemoteException;
+    Properties getDatabaseProperties() throws RemoteException;
 
-    public Properties getGameProperties() throws RemoteException;
+    Properties getGameProperties() throws RemoteException;
 
-    public void serverReady() throws RemoteException;
+    void serverReady() throws RemoteException;
 
-    public String getIP(int channel) throws RemoteException;
+    String getIP(int channel) throws RemoteException;
 
-    public int find(String charName) throws RemoteException;
+    int find(String charName) throws RemoteException;
 
-    public int find(int characterId) throws RemoteException;
+    int find(int characterId) throws RemoteException;
 
-    public Map<Integer, Integer> getConnected() throws RemoteException;
+    Map<Integer, Integer> getConnected() throws RemoteException;
 
     MapleParty createParty(MaplePartyCharacter chrfor) throws RemoteException;
 
     MapleParty getParty(int partyid) throws RemoteException;
 
-    public void updateParty(int partyid, PartyOperation operation, MaplePartyCharacter target) throws RemoteException;
+    void updateParty(int partyid, PartyOperation operation, MaplePartyCharacter target) throws RemoteException;
 
-    public void partyChat(int partyid, String chattext, String namefrom) throws RemoteException;
+    void partyChat(int partyid, String chattext, String namefrom) throws RemoteException;
 
-    public boolean isAvailable() throws RemoteException;
+    boolean isAvailable() throws RemoteException;
 
-    public ChannelWorldInterface getChannelInterface(int channel) throws RemoteException;
+    ChannelWorldInterface getChannelInterface(int channel) throws RemoteException;
 
-    public WorldLocation getLocation(String name) throws RemoteException;
+    WorldLocation getLocation(String name) throws RemoteException;
 
-    public CharacterIdChannelPair[] multiBuddyFind(int charIdFrom, int[] characterIds) throws RemoteException;
+    CharacterIdChannelPair[] multiBuddyFind(int charIdFrom, int[] characterIds) throws RemoteException;
 
-    public MapleGuild getGuild(int id, MapleGuildCharacter mgc) throws RemoteException;
+    MapleGuild getGuild(int id, MapleGuildCharacter mgc) throws RemoteException;
 
-    public void clearGuilds() throws RemoteException;
+    void clearGuilds() throws RemoteException;
 
-    public void setGuildMemberOnline(MapleGuildCharacter mgc, boolean bOnline, int channel) throws RemoteException;
+    void setGuildMemberOnline(MapleGuildCharacter mgc, boolean bOnline, int channel) throws RemoteException;
 
-    public int addGuildMember(MapleGuildCharacter mgc) throws RemoteException;
+    int addGuildMember(MapleGuildCharacter mgc) throws RemoteException;
 
-    public void leaveGuild(MapleGuildCharacter mgc) throws RemoteException;
+    void leaveGuild(MapleGuildCharacter mgc) throws RemoteException;
 
-    public void guildChat(int gid, String name, int cid, String msg) throws RemoteException;
+    void guildChat(int gid, String name, int cid, String msg) throws RemoteException;
 
-    public void changeRank(int gid, int cid, int newRank) throws RemoteException;
+    void changeRank(int gid, int cid, int newRank) throws RemoteException;
 
-    public void expelMember(MapleGuildCharacter initiator, String name, int cid) throws RemoteException;
+    void expelMember(MapleGuildCharacter initiator, String name, int cid) throws RemoteException;
 
-    public void setGuildNotice(int gid, String notice) throws RemoteException;
+    void setGuildNotice(int gid, String notice) throws RemoteException;
 
-    public void memberLevelJobUpdate(MapleGuildCharacter mgc) throws RemoteException;
+    void memberLevelJobUpdate(MapleGuildCharacter mgc) throws RemoteException;
 
-    public void changeRankTitle(int gid, String[] ranks) throws RemoteException;
+    void changeRankTitle(int gid, String[] ranks) throws RemoteException;
 
-    public int createGuild(int leaderId, String name) throws RemoteException;
+    int createGuild(int leaderId, String name) throws RemoteException;
 
-    public void setGuildEmblem(int gid, short bg, byte bgcolor, short logo, byte logocolor) throws RemoteException;
+    void setGuildEmblem(int gid, short bg, byte bgcolor, short logo, byte logocolor) throws RemoteException;
 
-    public void disbandGuild(int gid) throws RemoteException;
+    void disbandGuild(int gid) throws RemoteException;
 
-    public boolean increaseGuildCapacity(int gid) throws RemoteException;
+    boolean increaseGuildCapacity(int gid) throws RemoteException;
 
-    public void gainGP(int gid, int amount) throws RemoteException;
+    void gainGP(int gid, int amount) throws RemoteException;
 
     MapleMessenger createMessenger(MapleMessengerCharacter chrfor) throws RemoteException;
 
     MapleMessenger getMessenger(int messengerid) throws RemoteException;
 
-    public void leaveMessenger(int messengerid, MapleMessengerCharacter target) throws RemoteException;
+    void leaveMessenger(int messengerid, MapleMessengerCharacter target) throws RemoteException;
 
-    public void joinMessenger(int messengerid, MapleMessengerCharacter target, String from, int fromchannel) throws RemoteException;
+    void joinMessenger(int messengerid, MapleMessengerCharacter target, String from, int fromchannel) throws RemoteException;
 
-    public void silentJoinMessenger(int messengerid, MapleMessengerCharacter target, int position) throws RemoteException;
+    void silentJoinMessenger(int messengerid, MapleMessengerCharacter target, int position) throws RemoteException;
 
-    public void silentLeaveMessenger(int messengerid, MapleMessengerCharacter target) throws RemoteException;
+    void silentLeaveMessenger(int messengerid, MapleMessengerCharacter target) throws RemoteException;
 
-    public void messengerChat(int messengerid, String chattext, String namefrom) throws RemoteException;
+    void messengerChat(int messengerid, String chattext, String namefrom) throws RemoteException;
 
-    public void declineChat(String target, String namefrom) throws RemoteException;
+    void declineChat(String target, String namefrom) throws RemoteException;
 
-    public void updateMessenger(int messengerid, String namefrom, int fromchannel) throws RemoteException;
+    void updateMessenger(int messengerid, String namefrom, int fromchannel) throws RemoteException;
 
-    public void addBuffsToStorage(int chrid, List<PlayerBuffValueHolder> toStore) throws RemoteException;
+    void addBuffsToStorage(int chrid, List<PlayerBuffValueHolder> toStore) throws RemoteException;
 
-    public List<PlayerBuffValueHolder> getBuffsFromStorage(int chrid) throws RemoteException;
+    List<PlayerBuffValueHolder> getBuffsFromStorage(int chrid) throws RemoteException;
 
-    public void addCooldownsToStorage(int chrid, List<PlayerCoolDownValueHolder> toStore) throws RemoteException;
+    void addCooldownsToStorage(int chrid, List<PlayerCoolDownValueHolder> toStore) throws RemoteException;
 
-    public List<PlayerCoolDownValueHolder> getCooldownsFromStorage(int chrid) throws RemoteException;
+    List<PlayerCoolDownValueHolder> getCooldownsFromStorage(int chrid) throws RemoteException;
 
-    public MapleAlliance getAlliance(int id) throws RemoteException;
+    MapleAlliance getAlliance(int id) throws RemoteException;
 
-    public void addAlliance(int id, MapleAlliance addAlliance) throws RemoteException;
+    void addAlliance(int id, MapleAlliance addAlliance) throws RemoteException;
 
-    public void disbandAlliance(int id) throws RemoteException;
+    void disbandAlliance(int id) throws RemoteException;
 
-    public void allianceMessage(int id, MaplePacket packet, int exception, int guildex) throws RemoteException;
+    void allianceMessage(int id, MaplePacket packet, int exception, int guildex) throws RemoteException;
 
-    public boolean setAllianceNotice(int aId, String notice) throws RemoteException;
+    boolean setAllianceNotice(int aId, String notice) throws RemoteException;
 
-    public boolean setAllianceRanks(int aId, String[] ranks) throws RemoteException;
+    boolean setAllianceRanks(int aId, String[] ranks) throws RemoteException;
 
-    public boolean removeGuildFromAlliance(int aId, int guildId) throws RemoteException;
+    boolean removeGuildFromAlliance(int aId, int guildId) throws RemoteException;
 
-    public boolean addGuildtoAlliance(int aId, int guildId) throws RemoteException;
+    boolean addGuildtoAlliance(int aId, int guildId) throws RemoteException;
 
-    public boolean setGuildAllianceId(int gId, int aId) throws RemoteException;
+    boolean setGuildAllianceId(int gId, int aId) throws RemoteException;
 
-    public boolean increaseAllianceCapacity(int aId, int inc) throws RemoteException;
+    boolean increaseAllianceCapacity(int aId, int inc) throws RemoteException;
 }

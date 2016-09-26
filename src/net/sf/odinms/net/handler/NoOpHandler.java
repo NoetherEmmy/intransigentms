@@ -5,7 +5,7 @@ import net.sf.odinms.net.MaplePacketHandler;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public final class NoOpHandler implements MaplePacketHandler {
-    private static NoOpHandler instance = new NoOpHandler();
+    private static final NoOpHandler instance = new NoOpHandler();
 
     private NoOpHandler() {
     }

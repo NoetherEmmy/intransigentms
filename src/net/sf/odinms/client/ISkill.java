@@ -13,13 +13,13 @@ public interface ISkill {
 
     int getAnimationTime();
 
-    public boolean canBeLearnedBy(MapleJob job);
+    boolean canBeLearnedBy(MapleJob job);
 
-    public boolean isFourthJob();
+    boolean isFourthJob();
 
-    public boolean isBeginnerSkill();
+    boolean isBeginnerSkill();
 
-    public boolean isGMSkill();
+    boolean isGMSkill();
 
-    public Element getElement();
+    Element getElement();
 }

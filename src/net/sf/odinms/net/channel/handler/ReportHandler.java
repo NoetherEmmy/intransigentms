@@ -34,7 +34,6 @@ public class ReportHandler extends AbstractMaplePacketHandler {
             chatlog = slea.readAsciiString(clogLen);
         }
         System.out.println(c.getPlayer().getName() + " reported charid " + reportedCharId);
-        int cid = reportedCharId;
 
         if (addReportEntry(c.getPlayer().getId(), reportedCharId, reason, chatlog)) {
             c.getSession().write(MaplePacketCreator.reportReply((byte) 0));
@@ -43,7 +42,7 @@ public class ReportHandler extends AbstractMaplePacketHandler {
         }
         try {
             WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
-            wci.broadcastGMMessage(null, MaplePacketCreator.serverNotice(5, c.getPlayer().getName() + " reported " + MapleCharacter.getNameById(cid, 0) + " for " + reasons[reason] + ".").getBytes());
+            wci.broadcastGMMessage(null, MaplePacketCreator.serverNotice(5, c.getPlayer().getName() + " reported " + MapleCharacter.getNameById(reportedCharId, 0) + " for " + reasons[reason] + ".").getBytes());
         } catch (RemoteException ex) {
             c.getChannelServer().reconnectWorld();
         }

@@ -12,9 +12,9 @@ import net.sf.odinms.server.TimerManager;
 
 public class CheatingOffensePersister {
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CheatingOffensePersister.class);
-    private final static CheatingOffensePersister INSTANCE = new CheatingOffensePersister();
-    private Set<CheatingOffenseEntry> toPersist = new LinkedHashSet<CheatingOffenseEntry>();
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CheatingOffensePersister.class);
+    private static final CheatingOffensePersister INSTANCE = new CheatingOffensePersister();
+    private final Set<CheatingOffenseEntry> toPersist = new LinkedHashSet<>();
 
     private CheatingOffensePersister() {
         TimerManager.getInstance().register(new PersistingTask(), 61000);

@@ -10,7 +10,7 @@ public class MapleParty implements Serializable {
 
     private static final long serialVersionUID = 9179541993413738569L;
     private MaplePartyCharacter leader;
-    private List<MaplePartyCharacter> members = new LinkedList<>();
+    private final List<MaplePartyCharacter> members = new LinkedList<>();
     private int id;
     private int CP;
     private int team;

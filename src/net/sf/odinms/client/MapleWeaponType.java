@@ -19,13 +19,13 @@ public enum MapleWeaponType {
     WAND(3.6),
     KNUCKLE(4.0),
     GUN(5.0);
-    private double damageMultiplier;
+    private final double damageMultiplier;
 
-    private MapleWeaponType(double maxDamageMultiplier) {
+    MapleWeaponType(double maxDamageMultiplier) {
         this.damageMultiplier = maxDamageMultiplier;
     }
 
     public double getMaxDamageMultiplier() {
         return damageMultiplier;
     }
-};
+}

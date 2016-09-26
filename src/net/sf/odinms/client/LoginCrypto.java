@@ -11,7 +11,7 @@ public class LoginCrypto {
     private LoginCrypto() {
     }
 
-    private static char[] iota64 = new char[64];
+    private static final char[] iota64 = new char[64];
 
     private static String toSimpleHexString(byte[] bytes) {
         return HexTool.toString(bytes).replace(" ", "").toLowerCase();
@@ -61,13 +61,13 @@ public class LoginCrypto {
         int i = 0;
         iota64[i++] = '.';
         iota64[i++] = '/';
-        for (char c = 'A'; c <= 'Z'; c++) {
+        for (char c = 'A'; c <= 'Z'; ++c) {
             iota64[i++] = c;
         }
-        for (char c = 'a'; c <= 'z'; c++) {
+        for (char c = 'a'; c <= 'z'; ++c) {
             iota64[i++] = c;
         }
-        for (char c = '0'; c <= '9'; c++) {
+        for (char c = '0'; c <= '9'; ++c) {
             iota64[i++] = c;
         }
     }
@@ -115,9 +115,7 @@ public class LoginCrypto {
             } while (--count > 0);
             out = seed.substring(0, 12);
             out += encode64(sha1Hash);
-        } catch (NoSuchAlgorithmException Ex) {
-            System.out.println("Error hashing password." + Ex);
-        } catch (UnsupportedEncodingException Ex) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException Ex) {
             System.out.println("Error hashing password." + Ex);
         }
         if (out == null) {

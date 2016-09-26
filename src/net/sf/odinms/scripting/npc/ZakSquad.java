@@ -52,7 +52,7 @@ public class ZakSquad {
         }
     }
 
-    public static int setFighting(int ch, int id) throws SQLException {
+    public static int setFighting(int ch) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT status FROM zaksquads WHERE channel = ?");
         ps.setInt(1, ch);

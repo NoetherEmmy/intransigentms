@@ -177,7 +177,7 @@ public class MaplePet extends Item {
         for (LifeMovementFragment move : movement) {
             if (move instanceof LifeMovement) {
                 if (move instanceof AbsoluteLifeMovement) {
-                    Point position = ((LifeMovement) move).getPosition();
+                    Point position = move.getPosition();
                     this.setPos(position);
                 }
                 this.setStance(((LifeMovement) move).getNewstate());

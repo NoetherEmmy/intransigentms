@@ -7,46 +7,46 @@ import net.sf.odinms.net.MaplePacket;
 
 public interface IPlayerInteractionManager {
 
-    public final byte HIRED_MERCHANT = 1;
-    public final byte PLAYER_SHOP = 2;
-    public final byte MATCH_CARD = 3;
-    public final byte OMOK = 4;
+    byte HIRED_MERCHANT = 1;
+    byte PLAYER_SHOP = 2;
+    byte MATCH_CARD = 3;
+    byte OMOK = 4;
 
-    public void broadcast(MaplePacket packet, boolean toOwner);
+    void broadcast(MaplePacket packet, boolean toOwner);
 
-    public void addVisitor(MapleCharacter visitor);
+    void addVisitor(MapleCharacter visitor);
 
-    public void removeVisitor(MapleCharacter visitor);
+    void removeVisitor(MapleCharacter visitor);
 
-    public int getVisitorSlot(MapleCharacter visitor);
+    int getVisitorSlot(MapleCharacter visitor);
 
-    public void removeAllVisitors(int error, int type);
+    void removeAllVisitors(int error, int type);
 
-    public void buy(MapleClient c, int item, short quantity);
+    void buy(MapleClient c, int item, short quantity);
 
-    public void closeShop(boolean saveItems);
+    void closeShop(boolean saveItems);
 
-    public String getOwnerName();
+    String getOwnerName();
 
-    public int getOwnerId();
+    int getOwnerId();
 
-    public String getDescription();
+    String getDescription();
 
-    public MapleCharacter[] getVisitors();
+    MapleCharacter[] getVisitors();
 
-    public List<MaplePlayerShopItem> getItems();
+    List<MaplePlayerShopItem> getItems();
 
-    public void addItem(MaplePlayerShopItem item);
+    void addItem(MaplePlayerShopItem item);
 
-    public boolean removeItem(int item);
+    boolean removeItem(int item);
 
-    public void removeFromSlot(int slot);
+    void removeFromSlot(int slot);
 
-    public int getFreeSlot();
+    int getFreeSlot();
 
-    public byte getItemType();
+    byte getItemType();
 
-    public boolean isOwner(MapleCharacter chr);
+    boolean isOwner(MapleCharacter chr);
 
-    public byte getShopType();
+    byte getShopType();
 }

@@ -4,9 +4,9 @@ import net.sf.odinms.client.IItem;
 
 public class MaplePlayerShopItem {
 
-    private IItem item;
+    private final IItem item;
     private short bundles;
-    private int price;
+    private final int price;
 
     public MaplePlayerShopItem(IItem item, short bundles, int price) {
         this.item = item;

@@ -7,10 +7,10 @@ import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleMapItem extends AbstractMapleMapObject {
-    protected IItem item;
-    protected MapleMapObject dropper;
-    protected MapleCharacter owner;
-    protected int meso;
+    protected final IItem item;
+    protected final MapleMapObject dropper;
+    protected final MapleCharacter owner;
+    protected final int meso;
     protected int displayMeso;
     protected boolean pickedUp = false;
 

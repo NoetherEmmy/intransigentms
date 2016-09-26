@@ -17,11 +17,11 @@ import net.sf.odinms.server.maps.MapleMap;
 
 public class EventManager {
 
-    private Invocable iv;
-    private ChannelServer cserv;
-    private Map<String, EventInstanceManager> instances = new HashMap<String, EventInstanceManager>();
-    private Properties props = new Properties();
-    private String name;
+    private final Invocable iv;
+    private final ChannelServer cserv;
+    private final Map<String, EventInstanceManager> instances = new HashMap<>();
+    private final Properties props = new Properties();
+    private final String name;
 
     public EventManager(ChannelServer cserv, Invocable iv, String name) {
         this.iv = iv;
@@ -32,9 +32,7 @@ public class EventManager {
     public void cancel() {
         try {
             iv.invokeFunction("cancelSchedule", (Object) null);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -44,46 +42,31 @@ public class EventManager {
     }
 
     public void schedule(final String methodName, final EventInstanceManager eim, long delay) {
-        TimerManager.getInstance().schedule(new Runnable() {
-
-            public void run() {
-                try {
-                    iv.invokeFunction(methodName, eim);
-                } catch (ScriptException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        TimerManager.getInstance().schedule(() -> {
+            try {
+                iv.invokeFunction(methodName, eim);
+            } catch (ScriptException | NoSuchMethodException ex) {
+                Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }, delay);
     }
 
     public ScheduledFuture<?> scheduleAtTimestamp(final String methodName, long timestamp) {
-        return TimerManager.getInstance().scheduleAtTimestamp(new Runnable() {
-
-            public void run() {
-                try {
-                    iv.invokeFunction(methodName, (Object) null);
-                } catch (ScriptException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        return TimerManager.getInstance().scheduleAtTimestamp(() -> {
+            try {
+                iv.invokeFunction(methodName, (Object) null);
+            } catch (ScriptException | NoSuchMethodException ex) {
+                Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }, timestamp);
     }
 
     public ScheduledFuture<?> scheduleAtFixedRate(final String methodName, long delay) { // Ehh Fully copied and pasted, im lazy.
-        return TimerManager.getInstance().register(new Runnable() {
-
-            public void run() {
-                try {
-                    iv.invokeFunction(methodName, (Object) null);
-                } catch (ScriptException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        return TimerManager.getInstance().register(() -> {
+            try {
+                iv.invokeFunction(methodName, (Object) null);
+            } catch (ScriptException | NoSuchMethodException ex) {
+                Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }, delay);
     }
@@ -109,9 +92,7 @@ public class EventManager {
     public void disposeInstance(String name) {
         try {
             iv.invokeFunction("dispose", (Object) null);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         instances.remove(name);
@@ -138,9 +119,7 @@ public class EventManager {
         try {
             EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
             eim.registerParty(party, map);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -149,9 +128,7 @@ public class EventManager {
     public void startInstance(EventInstanceManager eim) {
         try {
             iv.invokeFunction("setup", eim);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

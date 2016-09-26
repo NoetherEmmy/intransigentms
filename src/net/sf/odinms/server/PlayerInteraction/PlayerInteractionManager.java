@@ -16,13 +16,13 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public abstract class PlayerInteractionManager extends AbstractMapleMapObject implements IPlayerInteractionManager {
 
-    private String ownerName;
-    private int ownerId;
-    private byte type;
+    private final String ownerName;
+    private final int ownerId;
+    private final byte type;
     private String description = "";
-    private short capacity;
-    protected MapleCharacter[] visitors = new MapleCharacter[3];
-    protected List<MaplePlayerShopItem> items = new LinkedList<>();
+    private final short capacity;
+    protected final MapleCharacter[] visitors = new MapleCharacter[3];
+    protected final List<MaplePlayerShopItem> items = new LinkedList<>();
 
     public PlayerInteractionManager(MapleCharacter owner, int type, String desc, int capacity) {
         this.setPosition(owner.getPosition());
@@ -163,7 +163,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
 
     @Override
     public int getVisitorSlot(MapleCharacter visitor) {
-        for (int i = 0; i < capacity; i++) {
+        for (int i = 0; i < capacity; ++i) {
             if (visitors[i] == visitor) {
                 return i;
             }
@@ -173,7 +173,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
 
     @Override
     public void removeAllVisitors(int error, int type) {
-        for (int i = 0; i < capacity; i++) {
+        for (int i = 0; i < capacity; ++i) {
             if (visitors[i] != null) {
                 if (type != -1) {
                     visitors[i].getClient().getSession().write(MaplePacketCreator.shopErrorMessage(error, type));
@@ -234,7 +234,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
 
     @Override
     public int getFreeSlot() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; ++i) {
             if (visitors[i] == null) {
                 return i;
             }

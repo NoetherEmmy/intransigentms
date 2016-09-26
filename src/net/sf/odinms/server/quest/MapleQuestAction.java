@@ -21,10 +21,10 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleQuestAction {
 
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleQuestAction.class);
-    private MapleQuestActionType type;
-    private MapleData data;
-    private MapleQuest quest;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleQuestAction.class);
+    private final MapleQuestActionType type;
+    private final MapleData data;
+    private final MapleQuest quest;
 
     /** Creates a new instance of MapleQuestAction
      * @param type
@@ -87,14 +87,14 @@ public class MapleQuestAction {
                 Map<Integer, Integer> props = new HashMap<>();
                 for (MapleData iEntry : data.getChildren()) {
                     if (iEntry.getChildByPath("prop") != null && MapleDataTool.getInt(iEntry.getChildByPath("prop")) != -1 && canGetItem(iEntry, c)) {
-                        for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
+                        for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); ++i) {
                             props.put(props.size(), MapleDataTool.getInt(iEntry.getChildByPath("id")));
                         }
                     }
                 }
                 int selection = 0;
                 int extNum = 0;
-                if (props.size() > 0) {
+                if (!props.isEmpty()) {
                     Random r = new Random();
                     selection = props.get(r.nextInt(props.size()));
                 }

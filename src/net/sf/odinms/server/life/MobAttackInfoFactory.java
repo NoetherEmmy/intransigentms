@@ -12,8 +12,8 @@ import net.sf.odinms.tools.StringUtil;
 
 public class MobAttackInfoFactory {
 	
-    private static Map<Pair<Integer, Integer>, MobAttackInfo> mobAttacks = new HashMap<>();
-    private static MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Mob.wz"));
+    private static final Map<Pair<Integer, Integer>, MobAttackInfo> mobAttacks = new HashMap<>();
+    private static final MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Mob.wz"));
 
     public static MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
         MobAttackInfo ret = mobAttacks.get(new Pair<>(mob.getId(), attack));
@@ -40,7 +40,7 @@ public class MobAttackInfoFactory {
                         int mpCon = MapleDataTool.getInt("conMP", attackData, 0);
                         ret = new MobAttackInfo(mob.getId(), attack);
                         //ret.setDeadlyAttack(deadlyAttack != null);
-                        ret.setDeadlyAttack(false);
+                        ret.setDeadlyAttack();
                         ret.setMpBurn(mpBurn);
                         ret.setDiseaseSkill(disease);
                         ret.setDiseaseLevel(level);

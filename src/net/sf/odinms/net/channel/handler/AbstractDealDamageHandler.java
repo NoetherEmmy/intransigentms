@@ -58,7 +58,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         }
     }
 
-    protected synchronized void applyAttack(AttackInfo attack, MapleCharacter player, int maxDamagePerMonster, int attackCount) {
+    protected synchronized void applyAttack(AttackInfo attack, MapleCharacter player, int attackCount) {
         player.getCheatTracker().resetHPRegen();
         //player.getCheatTracker().checkAttack(attack.skill);
         //System.out.print("applyAttack(" + attack.toString() + ", " + player.getName() + ", " + maxDamagePerMonster + ", " + attackCount + "\n");
@@ -99,7 +99,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         int totDamage = 0;
         final MapleMap map = player.getMap();
 
-        // PvP Checks.
+        /* PvP Checks.
         if (attack.skill != 2301002 && attack.skill != 4201004 && attack.skill != 1111008) {
             int MapChannel = player.getClient().getChannel();
             int PvPis = player.getClient().getChannelServer().PvPis();
@@ -108,7 +108,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 PvPLibrary.doPvP(player, attack);
             }
         }
-        // End of PvP Checks.
+        // End of PvP Checks. */
 
         if (attack.skill == 4211006) { // Meso explosion.
             int delay = 0;
@@ -121,14 +121,10 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             if (mapitem.isPickedUp()) {
                                 return;
                             }
-                            TimerManager.getInstance().schedule(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    map.removeMapObject(mapitem);
-                                    map.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 4, 0), mapitem.getPosition());
-                                    mapitem.setPickedUp(true);
-                                }
+                            TimerManager.getInstance().schedule(() -> {
+                                map.removeMapObject(mapitem);
+                                map.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 4, 0), mapitem.getPosition());
+                                mapitem.setPickedUp(true);
                             }, delay);
                             delay += 100;
                         }
@@ -158,17 +154,17 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 // anti-hack
                 if (totDamageToOneMonster > attack.numDamage + 1) {
                     int dmgCheck = player.getCheatTracker().checkDamage(totDamageToOneMonster);
-                    if (dmgCheck > 5 && totDamageToOneMonster < 99999 && monster.getId() < 9500317 && monster.getId() > 9500319) {
+                    if (dmgCheck > 5 && totDamageToOneMonster < 999999 && monster.getId() < 9500317 && monster.getId() > 9500319) {
                         player.getCheatTracker().registerOffense(CheatingOffense.SAME_DAMAGE, dmgCheck + " times: " + totDamageToOneMonster);
                     }
                 }
-                if (totDamageToOneMonster >= 100000000) {
+                if (totDamageToOneMonster >= 12000000) {
                     AutobanManager.getInstance().autoban
                     (player.getClient(),"XSource| " + player.getName() + " dealt " + totDamageToOneMonster + " to monster " + monster.getId() + ".");
                 }
 
                 double distance = player.getPosition().distanceSq(monster.getPosition());
-                if (distance > 400000.0) { // 600^2, 550 is approximatly the range of ultis
+                if (distance > 400000.0) { // 600^2, 550 is approximately the range of ultimates
                     player.getCheatTracker().registerOffense(CheatingOffense.ATTACK_FARAWAY_MONSTER, Double.toString(Math.sqrt(distance)));
                 }
 
@@ -197,8 +193,8 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 switch (attack.skill) {
                     case 1221011: // sanctuary
                         if (attack.isHH) {
-                            // TODO min damage still needs calculated.. using -20% as mindamage in the meantime... seems to work
-                            int HHDmg = (int) (player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100));
+                            // TODO min damage still needs calculated. Using -20% as mindamage in the meantime... seems to work.
+                            int HHDmg = player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100);
                             HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * .80) + HHDmg * .80));
                             map.damageMonster(player, monster, HHDmg);
                         }
@@ -306,7 +302,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                     }
                 }
-                if (totDamageToOneMonster > 0 && attackEffect != null && attackEffect.getMonsterStati().size() > 0) {
+                if (totDamageToOneMonster > 0 && attackEffect != null && !attackEffect.getMonsterStati().isEmpty()) {
                     if (attackEffect.makeChanceResult()) {
                         MonsterStatusEffect monsterStatusEffect;
                         switch (attack.skill) {
@@ -380,13 +376,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 final MapleMonster tdmob = monster;
                 final MapleCharacter tdchar = player;
 
-                TimerManager.getInstance().schedule(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        tdmap.spawnMesoDrop(todrop, todrop, tdpos, tdmob, tdchar, false);
-                    }
-                }, delay);
+                TimerManager.getInstance().schedule(() -> tdmap.spawnMesoDrop(todrop, todrop, tdpos, tdmob, tdchar, false), delay);
 
                 delay += 100;
             }
@@ -470,10 +460,10 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         if (ret.numAttackedAndDamage == 0) {
             lea.skip(10);
             int bullets = lea.readByte();
-            for (int j = 0; j < bullets; j++) {
+            for (int j = 0; j < bullets; ++j) {
                 int mesoid = lea.readInt();
                 lea.skip(1);
-                ret.allDamage.add(new Pair<Integer, List<Integer>>(mesoid, null));
+                ret.allDamage.add(new Pair<>(mesoid, null));
             }
             return ret;
 
@@ -496,10 +486,10 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
 
             } else {
                 int bullets = lea.readByte();
-                for (int j = 0; j < bullets; j++) {
+                for (int j = 0; j < bullets; ++j) {
                     int mesoid = lea.readInt();
                     lea.skip(1);
-                    ret.allDamage.add(new Pair<Integer, List<Integer>>(mesoid, null));
+                    ret.allDamage.add(new Pair<>(mesoid, null));
                 }
             }
         }

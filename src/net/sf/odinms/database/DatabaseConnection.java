@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 public class DatabaseConnection {
 
-    private static ThreadLocal<Connection> con = new ThreadLocalConnection();
-    private final static Logger log = LoggerFactory.getLogger(DatabaseConnection.class);
+    private static final ThreadLocal<Connection> con = new ThreadLocalConnection();
+    private static final Logger log = LoggerFactory.getLogger(DatabaseConnection.class);
     private static Properties props = null;
 
     public static Connection getConnection() {
@@ -38,7 +38,7 @@ public class DatabaseConnection {
 
     private static class ThreadLocalConnection extends ThreadLocal<Connection> {
 
-        public static Collection<Connection> allConnections = new LinkedList<Connection>();
+        public static final Collection<Connection> allConnections = new LinkedList<>();
 
         @Override
         protected Connection initialValue() {

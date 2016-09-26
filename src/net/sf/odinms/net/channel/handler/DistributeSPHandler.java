@@ -12,8 +12,8 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
 
     private class SP {
 
-        private ISkill skill;
-        private MapleClient c;
+        private final ISkill skill;
+        private final MapleClient c;
 
         SP(MapleClient c, ISkill skill) {
             this.skill = skill;

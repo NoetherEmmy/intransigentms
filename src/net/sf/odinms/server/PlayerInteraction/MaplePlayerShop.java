@@ -12,9 +12,9 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MaplePlayerShop extends PlayerInteractionManager {
 
-    private MapleCharacter owner;
+    private final MapleCharacter owner;
     private int boughtnumber = 0;
-    private List<String> bannedList = new ArrayList<String>();
+    private final List<String> bannedList = new ArrayList<>();
 
     public MaplePlayerShop(MapleCharacter owner, int itemId, String desc) {
         super(owner, itemId % 10, desc, 3);
@@ -66,7 +66,7 @@ public class MaplePlayerShop extends PlayerInteractionManager {
             if (saveItems) {
                 saveItems();
             }
-        } catch (SQLException se) {
+        } catch (SQLException ignored) {
         }
         owner.setInteraction(null);
     }
@@ -75,7 +75,7 @@ public class MaplePlayerShop extends PlayerInteractionManager {
         if (!bannedList.contains(name)) {
             bannedList.add(name);
         }
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; ++i) {
             if (visitors[i].getName().equals(name)) {
                 visitors[i].getClient().getSession().write(MaplePacketCreator.shopErrorMessage(5, 1));
                 visitors[i].setInteraction(null);
@@ -85,10 +85,7 @@ public class MaplePlayerShop extends PlayerInteractionManager {
     }
 
     public boolean isBanned(String name) {
-        if (bannedList.contains(name)) {
-            return true;
-        }
-        return false;
+        return bannedList.contains(name);
     }
 
     public MapleCharacter getMCOwner() {

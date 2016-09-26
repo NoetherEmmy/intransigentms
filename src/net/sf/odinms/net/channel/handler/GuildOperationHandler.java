@@ -31,9 +31,9 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
     }
 
     private class Invited {
-        public String name;
-        public int gid;
-        public long expiration;
+        public final String name;
+        public final int gid;
+        public final long expiration;
 
         public Invited(String n, int id) {
             name = n.toLowerCase();
@@ -46,11 +46,11 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
             if (!(other instanceof Invited))
                 return false;
             Invited oth = (Invited) other;
-            return (gid == oth.gid && name.equals(oth));
+            return (gid == oth.gid && name.equals(oth.name));
         }
     }
 
-    private java.util.List<Invited> invited = new java.util.LinkedList<Invited>();
+    private final java.util.List<Invited> invited = new java.util.LinkedList<>();
     private long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
     @Override

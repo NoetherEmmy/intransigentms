@@ -49,7 +49,7 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
                     ips.closeShop(((MaplePlayerShop) ips).returnItems(c));
                 } else if (ips.getShopType() == 1) {
                     c.getSession().write(MaplePacketCreator.shopVisitorLeave(0));
-                    if (ips.getItems().size() == 0) {
+                    if (ips.getItems().isEmpty()) {
                         ips.removeAllVisitors(3, 1);
                         ips.closeShop(((HiredMerchant) ips).returnItems(c));
                     }

@@ -1,12 +1,11 @@
 package net.sf.odinms.tools.data.input;
 
 import java.io.IOException;
-import net.sf.odinms.tools.HexTool;
 
 public class ByteArrayByteStream implements SeekableInputStreamBytestream {
     private int pos = 0;
     private long bytesRead = 0;
-    private byte[] arr;
+    private final byte[] arr;
 
     /**
      * Class constructor.
@@ -62,11 +61,11 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
         return ((int) arr[pos++]) & 0xFF;
     }
 
-    /**
-     * Returns the current stream as a hexadecimal string of values.
-     * Shows the entire stream, and the remaining data at the current position.
-     *
-     * @return The current stream as a string.
+    /*
+      Returns the current stream as a hexadecimal string of values.
+      Shows the entire stream, and the remaining data at the current position.
+
+      @return The current stream as a string.
      * @see java.lang.Object#toString()
      */
     //@Override

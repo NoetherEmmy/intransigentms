@@ -17,7 +17,7 @@ public class MapleQuestStatus {
         COMPLETED(2);
         final int status;
 
-        private Status(int id) {
+        Status(int id) {
             status = id;
         }
 
@@ -34,9 +34,9 @@ public class MapleQuestStatus {
             return null;
         }
     }
-    private MapleQuest quest;
+    private final MapleQuest quest;
     private Status status;
-    private Map<Integer, Integer> killedMobs = new LinkedHashMap<Integer, Integer>();
+    private final Map<Integer, Integer> killedMobs = new LinkedHashMap<>();
     private int npc;
     private long completionTime;
     private int forfeited = 0;
@@ -101,7 +101,7 @@ public class MapleQuestStatus {
     }
 
     public boolean hasMobKills() {
-        return killedMobs.size() > 0;
+        return !killedMobs.isEmpty();
     }
 
     public int getMobKills(int id) {

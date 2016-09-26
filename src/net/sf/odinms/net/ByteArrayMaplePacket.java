@@ -5,7 +5,7 @@ import net.sf.odinms.tools.HexTool;
 public class ByteArrayMaplePacket implements MaplePacket {
 
     public static final long serialVersionUID = -7997681658570958848L;
-    private byte[] data;
+    private final byte[] data;
     private Runnable onSend;
 
     public ByteArrayMaplePacket(byte[] data) {

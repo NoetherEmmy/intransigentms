@@ -37,13 +37,13 @@ public class LoginServer implements Runnable, LoginServerMBean {
     public static final int PORT = 8484;
     private IoAcceptor acceptor;
     private static WorldRegistry worldRegistry = null;
-    private Map<Integer, String> channelServer = new HashMap<>();
+    private final Map<Integer, String> channelServer = new HashMap<>();
     private LoginWorldInterface lwi;
     private WorldLoginInterface wli;
     private Properties prop = new Properties();
-    private Properties initialProp = new Properties();
+    private final Properties initialProp = new Properties();
     private Boolean worldReady = Boolean.TRUE;
-    private Properties subnetInfo = new Properties();
+    private final Properties subnetInfo = new Properties();
     private Map<Integer, Integer> load = new HashMap<>();
     private String serverName;
     private String eventMessage;
@@ -51,12 +51,11 @@ public class LoginServer implements Runnable, LoginServerMBean {
     int maxCharacters;
     int userLimit;
     int loginInterval;
-    private long rankingInterval;
     private boolean serverCheck;
     private boolean twoWorlds;
     private boolean AutoReg;
     private byte AutoRegLimit;
-    private static LoginServer instance = new LoginServer();
+    private static final LoginServer instance = new LoginServer();
 
 
     static {
@@ -220,7 +219,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
         tMan.start();
         loginInterval = Integer.parseInt(prop.getProperty("net.sf.odinms.login.interval"));
         tMan.register(LoginWorker.getInstance(), loginInterval);
-        rankingInterval = Long.parseLong(prop.getProperty("net.sf.odinms.login.ranking.interval"));
+        long rankingInterval = Long.parseLong(prop.getProperty("net.sf.odinms.login.ranking.interval"));
         tMan.register(new RankingWorker(), rankingInterval);
         try {
             acceptor.bind(new InetSocketAddress(PORT), new MapleServerHandler(PacketProcessor.getProcessor(PacketProcessor.Mode.LOGINSERVER)), cfg);
@@ -234,7 +233,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
         System.out.println("The Server is Shutting down.");
         try {
             worldRegistry.deregisterLoginServer(lwi);
-        } catch (RemoteException e) {
+        } catch (RemoteException ignored) {
         }
         TimerManager.getInstance().stop();
         System.exit(0);
@@ -245,7 +244,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
             while (!worldReady) {
                 try {
                     worldReady.wait();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 }
             }
         }

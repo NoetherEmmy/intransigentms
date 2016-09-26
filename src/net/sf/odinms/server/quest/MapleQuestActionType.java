@@ -5,7 +5,7 @@ public enum MapleQuestActionType {
 
     final byte type;
 
-    private MapleQuestActionType(int type) {
+    MapleQuestActionType(int type) {
         this.type = (byte)type;
     }
 
@@ -23,13 +23,23 @@ public enum MapleQuestActionType {
     }
 
     public static MapleQuestActionType getByWZName(String name) {
-        if (name.equals("exp")) return EXP;
-        else if (name.equals("money")) return MESO;
-        else if (name.equals("item")) return ITEM;
-        else if (name.equals("skill")) return SKILL;
-        else if (name.equals("nextQuest")) return NEXTQUEST;
-        else if (name.equals("pop")) return FAME;
-        else if (name.equals("buffItemID")) return BUFF;
-        else return UNDEFINED;
+        switch (name) {
+            case "exp":
+                return EXP;
+            case "money":
+                return MESO;
+            case "item":
+                return ITEM;
+            case "skill":
+                return SKILL;
+            case "nextQuest":
+                return NEXTQUEST;
+            case "pop":
+                return FAME;
+            case "buffItemID":
+                return BUFF;
+            default:
+                return UNDEFINED;
+        }
     }
 }

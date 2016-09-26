@@ -8,7 +8,7 @@ import net.sf.odinms.client.ISkill;
 
 public class MonsterStatusEffect {
 
-    private final Map<MonsterStatus, Integer> stati;
+    private final ConcurrentHashMap<MonsterStatus, Integer> stati;
     private final ISkill skill;
     private final boolean monsterSkill;
     private ScheduledFuture<?> cancelTask;

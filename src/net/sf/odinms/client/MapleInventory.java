@@ -11,9 +11,9 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 
 public class MapleInventory implements Iterable<IItem>, InventoryContainer {
 
-    private Map<Byte, IItem> inventory;
-    private byte slotLimit;
-    private MapleInventoryType type;
+    private final Map<Byte, IItem> inventory;
+    private final byte slotLimit;
+    private final MapleInventoryType type;
 
     /** Creates a new instance of MapleInventory */
     public MapleInventory(MapleInventoryType type, byte slotLimit) {

@@ -1,9 +1,9 @@
 package net.sf.odinms.server;
 
 public class CashItemInfo {
-    private int itemId;
-    private int count;
-    private int price;
+    private final int itemId;
+    private final int count;
+    private final int price;
 
     public CashItemInfo(int itemId, int count, int price) {
         this.itemId = itemId;

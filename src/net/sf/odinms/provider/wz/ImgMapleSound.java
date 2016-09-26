@@ -1,7 +1,8 @@
 package net.sf.odinms.provider.wz;
 
 public class ImgMapleSound {
-    private int dataLenght, offset;
+    private final int dataLenght;
+    private final int offset;
 
     /**
      * @param dataLength length of the sound data

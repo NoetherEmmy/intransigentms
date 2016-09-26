@@ -8,7 +8,7 @@ import net.sf.odinms.tools.Pair;
 public class MapleReactorStats {
     private Point tl;
     private Point br;
-    private Map<Byte, StateData> stateInfo = new HashMap<Byte, StateData>();
+    private final Map<Byte, StateData> stateInfo = new HashMap<>();
 
     /*public int getInfoId() {
     return infoId;
@@ -72,9 +72,9 @@ public class MapleReactorStats {
     }
 
     private class StateData {
-        private int type;
-        private Pair<Integer, Integer> reactItem;
-        private byte nextState;
+        private final int type;
+        private final Pair<Integer, Integer> reactItem;
+        private final byte nextState;
 
         private StateData(int type, Pair<Integer, Integer> reactItem, byte nextState) {
             this.type = type;

@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 public class PlayerCoolDownValueHolder implements Serializable {
     static final long serialVersionUID = 9179541993413738569L;
-    public int skillId;
-    public long startTime;
-    public long length;
-    private int id;
+    public final int skillId;
+    public final long startTime;
+    public final long length;
+    private final int id;
 
     public PlayerCoolDownValueHolder(int skillId, long startTime, long length) {
         this.skillId = skillId;
@@ -33,8 +33,6 @@ public class PlayerCoolDownValueHolder implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         final PlayerCoolDownValueHolder other = (PlayerCoolDownValueHolder) obj;
-        if (id != other.id)
-            return false;
-        return true;
+        return id == other.id;
     }
 }

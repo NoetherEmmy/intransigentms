@@ -42,7 +42,7 @@ public class PetFoodHandler extends AbstractMaplePacketHandler {
                 }
                 pet.setFullness(newFullness);
                 if (gainCloseness && pet.getCloseness() < 30000) {
-                    int newCloseness = pet.getCloseness() + (1 * c.getChannelServer().getPetExpRate());
+                    int newCloseness = pet.getCloseness() + (c.getChannelServer().getPetExpRate());
                     if (newCloseness > 30000) {
                         newCloseness = 30000;
                     }
@@ -55,7 +55,7 @@ public class PetFoodHandler extends AbstractMaplePacketHandler {
                 }
             } else {
                 if (gainCloseness) {
-                    int newCloseness = pet.getCloseness() - (1 * c.getChannelServer().getPetExpRate());
+                    int newCloseness = pet.getCloseness() - (c.getChannelServer().getPetExpRate());
                     if (newCloseness < 0) {
                         newCloseness = 0;
                     }

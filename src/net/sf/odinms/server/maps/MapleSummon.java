@@ -7,11 +7,11 @@ import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleSummon extends AbstractAnimatedMapleMapObject {
-    private MapleCharacter owner;
-    private int skillLevel;
-    private int skill;
+    private final MapleCharacter owner;
+    private final int skillLevel;
+    private final int skill;
     private int hp;
-    private SummonMovementType movementType;
+    private final SummonMovementType movementType;
 
     public MapleSummon(MapleCharacter owner, int skill, Point pos, SummonMovementType movementType) {
         super();

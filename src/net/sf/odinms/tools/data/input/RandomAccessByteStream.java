@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RandomAccessByteStream implements SeekableInputStreamBytestream {
-    private RandomAccessFile raf;
+    private final RandomAccessFile raf;
     private long read = 0;
-    private static Logger log = LoggerFactory.getLogger(RandomAccessByteStream.class);
+    private static final Logger log = LoggerFactory.getLogger(RandomAccessByteStream.class);
 
     /**
      * Class constructor. Wraps this object around a RandomAccessFile.

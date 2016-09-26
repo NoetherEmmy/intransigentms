@@ -3,8 +3,8 @@ package net.sf.odinms.tools.data.input;
 import java.io.IOException;
 
 public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAccessor implements SeekableLittleEndianAccessor {
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GenericSeekableLittleEndianAccessor.class);
-    private SeekableInputStreamBytestream bs;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GenericSeekableLittleEndianAccessor.class);
+    private final SeekableInputStreamBytestream bs;
 
     /**
      * Class constructor

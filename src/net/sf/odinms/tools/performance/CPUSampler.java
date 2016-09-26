@@ -13,11 +13,11 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 public class CPUSampler {
-    private List<String> included = new LinkedList<String>();
-    private static CPUSampler instance = new CPUSampler();
+    private final List<String> included = new LinkedList<>();
+    private static final CPUSampler instance = new CPUSampler();
     private long interval = 5;
     private SamplerThread sampler = null;
-    private Map<StackTrace, Integer> recorded = new HashMap<StackTrace, Integer>();
+    private final Map<StackTrace, Integer> recorded = new HashMap<>();
     private int totalSamples = 0;
 
     private CPUSampler() {
@@ -61,7 +61,7 @@ public class CPUSampler {
     }
 
     public SampledStacktraces getTopConsumers() {
-        List<StacktraceWithCount> ret = new ArrayList<StacktraceWithCount>();
+        List<StacktraceWithCount> ret = new ArrayList<>();
         Set<Entry<StackTrace, Integer>> entrySet = recorded.entrySet();
         for (Entry<StackTrace, Integer> entry : entrySet) {
             ret.add(new StacktraceWithCount(entry.getValue(), entry.getKey()));
@@ -74,7 +74,7 @@ public class CPUSampler {
         SampledStacktraces topConsumers = getTopConsumers();
         StringBuilder builder = new StringBuilder(); // build our summary :o
         builder.append("Top Methods:\n");
-        for (int i = 0; i < topMethods && i < topConsumers.getTopConsumers().size(); i++) {
+        for (int i = 0; i < topMethods && i < topConsumers.getTopConsumers().size(); ++i) {
             builder.append(topConsumers.getTopConsumers().get(i).toString(topConsumers.getTotalInvocations(), 1));
         }
         builder.append("\nStack Traces:\n");
@@ -91,9 +91,9 @@ public class CPUSampler {
                 Integer i = recorded.get(st);
                 totalSamples++;
                 if (i == null) {
-                    recorded.put(st, Integer.valueOf(1));
+                    recorded.put(st, 1);
                 } else {
-                    recorded.put(st, Integer.valueOf(i.intValue() + 1));
+                    recorded.put(st, i + 1);
                 }
             }
         }
@@ -102,12 +102,12 @@ public class CPUSampler {
     private int findRelevantElement(StackTraceElement[] trace) {
         if (trace.length == 0) {
             return -1;
-        } else if (included.size() == 0) {
+        } else if (included.isEmpty()) {
             return 0;
         }
         int firstIncluded = -1;
         for (String myIncluded : included) {
-            for (int i = 0; i < trace.length; i++) {
+            for (int i = 0; i < trace.length; ++i) {
                 StackTraceElement ste = trace[i];
                 if (ste.getClassName().startsWith(myIncluded)) {
                     if (i < firstIncluded || firstIncluded == -1) {
@@ -124,8 +124,8 @@ public class CPUSampler {
     }
 
     private static class StackTrace {
-        private StackTraceElement[] trace;
-        private State state;
+        private final StackTraceElement[] trace;
+        private final State state;
 
         public StackTrace(StackTraceElement[] trace, int startAt, State state) {
             this.state = state;
@@ -149,7 +149,7 @@ public class CPUSampler {
             if (!(other.state == this.state)) {
                 return false;
             }
-            for (int i = 0; i < trace.length; i++) {
+            for (int i = 0; i < trace.length; ++i) {
                 if (!trace[i].equals(other.trace[i])) {
                     return false;
                 }
@@ -238,8 +238,8 @@ public class CPUSampler {
     }
 
     public static class StacktraceWithCount implements Comparable<StacktraceWithCount> {
-        private int count;
-        private StackTrace trace;
+        private final int count;
+        private final StackTrace trace;
 
         public StacktraceWithCount(int count, StackTrace trace) {
             super();
@@ -257,7 +257,7 @@ public class CPUSampler {
 
         @Override
         public int compareTo(StacktraceWithCount o) {
-            return -Integer.valueOf(count).compareTo(Integer.valueOf(o.count));
+            return -Integer.valueOf(count).compareTo(o.count);
         }
 
         @Override
@@ -275,8 +275,8 @@ public class CPUSampler {
     }
 
     public static class SampledStacktraces {
-        List<StacktraceWithCount> topConsumers;
-        int totalInvocations;
+        final List<StacktraceWithCount> topConsumers;
+        final int totalInvocations;
 
         public SampledStacktraces(List<StacktraceWithCount> topConsumers, int totalInvocations) {
             super();

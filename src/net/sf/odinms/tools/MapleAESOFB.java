@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 public class MapleAESOFB {
 	private byte iv[];
 	private Cipher cipher;
-	private short mapleVersion;
+	private final short mapleVersion;
         private static final byte[] funnyBytes = new byte[] {(byte)0xEC,(byte)0x3F, (byte)0x77, (byte)0xA4, (byte)0x45, (byte)0xD0, (byte)0x71, (byte)0xBF, (byte)0xB7, (byte)0x98, (byte)0x20, (byte)0xFC,
         (byte)0x4B, (byte)0xE9, (byte)0xB3, (byte)0xE1, (byte)0x5C, (byte)0x22, (byte)0xF7, (byte)0x0C,	(byte)0x44, (byte)0x1B, (byte)0x81, (byte)0xBD, (byte)0x63, (byte)0x8D, (byte)0xD4, (byte)0xC3,
         (byte)0xF2, (byte)0x10, (byte)0x19, (byte)0xE0, (byte)0xFB, (byte)0xA1, (byte)0x6E, (byte)0x66,	(byte)0xEA, (byte)0xAE, (byte)0xD6, (byte)0xCE, (byte)0x06, (byte)0x18, (byte)0x4E, (byte)0xEB,
@@ -58,8 +58,6 @@ public class MapleAESOFB {
 		(byte) 0x84, 0x7F, 0x61, 0x1E, (byte) 0xCF, (byte) 0xC5, (byte) 0xD1, 0x56, 0x3D, (byte) 0xCA, (byte) 0xF4,
 		0x05, (byte) 0xC6, (byte) 0xE5, 0x08, 0x49, 0x4F, 0x64, 0x69, 0x6E, 0x4D, 0x53, 0x7E, 0x46, 0x72, 0x7A };*/
 
-    private Logger log = LoggerFactory.getLogger(MapleAESOFB.class);
-
     /**
      * Class constructor - Creates an instance of the MapleStory encryption
      * cipher.
@@ -69,11 +67,10 @@ public class MapleAESOFB {
      */
     public MapleAESOFB(byte key[], byte iv[], short mapleVersion) {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+        Logger log = LoggerFactory.getLogger(MapleAESOFB.class);
         try {
             cipher = Cipher.getInstance("AES");
-        } catch (NoSuchAlgorithmException e) {
-            log.error("ERROR", e);
-        } catch (NoSuchPaddingException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             log.error("ERROR", e);
         }
         try {
@@ -118,18 +115,14 @@ public class MapleAESOFB {
             if (remaining < llength) {
                 llength = remaining;
             }
-            for (int x = start; x < (start + llength); x++) {
+            for (int x = start; x < (start + llength); ++x) {
                 if ((x - start) % myIv.length == 0) {
                     try {
                         byte[] newIv = cipher.doFinal(myIv);
-                        for (int j = 0; j < myIv.length; j++) {
-                            myIv[j] = newIv[j];
-                        }
+                        System.arraycopy(newIv, 0, myIv, 0, myIv.length);
                         // System.out
                         // .println("Iv is now " + HexTool.toString(this.iv));
-                    } catch (IllegalBlockSizeException e) {
-                        e.printStackTrace();
-                    } catch (BadPaddingException e) {
+                    } catch (IllegalBlockSizeException | BadPaddingException e) {
                         e.printStackTrace();
                     }
                 }
@@ -219,7 +212,7 @@ public class MapleAESOFB {
      */
     public static byte[] getNewIv(byte oldIv[]) {
         byte[] in = { (byte) 0xf2, 0x53, (byte) 0x50, (byte) 0xc6 };
-        for (int x = 0; x < 4; x++) {
+        for (int x = 0; x < 4; ++x) {
             funnyShit(oldIv[x], in);
             //funnyRamon(oldIv[x], in);
             // System.out.println(HexTool.toString(in));
@@ -246,12 +239,11 @@ public class MapleAESOFB {
 	 */
     public static byte[] funnyShit(byte inputByte, byte[] in) {
         byte elina = in[1];
-        byte anna = inputByte;
         byte moritz = funnyBytes[(int) elina & 0xFF];
         moritz -= inputByte;
         in[0] += moritz;
         moritz = in[2];
-        moritz ^= funnyBytes[(int) anna & 0xFF];
+        moritz ^= funnyBytes[(int) inputByte & 0xFF];
         elina -= (int) moritz & 0xFF;
         in[1] = elina;
         elina = in[3];
@@ -261,7 +253,7 @@ public class MapleAESOFB {
         moritz += inputByte;
         moritz ^= in[2];
         in[2] = moritz;
-        elina += (int) funnyBytes[(int) anna & 0xFF] & 0xFF;
+        elina += (int) funnyBytes[(int) inputByte & 0xFF] & 0xFF;
         in[3] = elina;
 
         int merry = ((int) in[0]) & 0xFF;
@@ -300,9 +292,9 @@ public class MapleAESOFB {
         (byte)0xD3, (byte)0xAB, (byte)0x91, (byte)0xB9, (byte)0x84, (byte)0x7F, (byte)0x61, (byte)0x1E,	(byte)0xCF, (byte)0xC5, (byte)0xD1, (byte)0x56, (byte)0x3D, (byte)0xCA, (byte)0xF4, (byte)0x05,
         (byte)0xC6, (byte)0xE5, (byte)0x08, (byte)0x49};
           
-         //for (int i=0; i<4; i++) {
+         //for (int i=0; i<4; ++i) {
               byte a = in[1];
-              byte b =  a;
+              byte b = a;
               b = rammyByte[b];
               b -= inputByte;
               in[0] += b;
@@ -320,21 +312,21 @@ public class MapleAESOFB {
               a += rammyByte[inputByte];
               in[3] = a;
               int c = 0, d = 0;
-              for (int j=0; j<4; j++) {
-                      c = in[0] + in[1]*0x100 + in[2]*0x100*0x100 + in[3]*0x100*0x100*0x100;
-                      d = c;
+              for (int j = 0; j < 4; ++j) {
+                  c = in[0] + in[1] * 0x100 + in[2] * 0x100 * 0x100 + in[3] * 0x100 * 0x100 * 0x100;
+                  d = c;
               }
               c = c >> 0x1D;
               d = d << 0x03;
               c = c | d;
-              in[0] = ((byte)(c%0x100));
+              in[0] = ((byte)(c % 0x100));
               c = c / 0x100;
-              in[1] = ((byte)(c%0x100));
+              in[1] = ((byte)(c % 0x100));
               c = c / 0x100;
-              in[2] = ((byte)(c%0x100));
+              in[2] = ((byte)(c % 0x100));
               in[3] = ((byte)(c / 0x100));
       //}
-      //for (int i=0; i<4; i++)
+      //for (int i=0; i<4; ++i)
               //inputByte[i] = in[i];
       return in;
     }

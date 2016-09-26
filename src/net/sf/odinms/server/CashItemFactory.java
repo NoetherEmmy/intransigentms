@@ -12,10 +12,10 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.tools.StringUtil;
 
 public class CashItemFactory {
-    private static Map<Integer, Integer> snLookup = new HashMap<Integer,Integer>();
-    private static Map<Integer, CashItemInfo> itemStats = new HashMap<Integer, CashItemInfo>();
-    private static MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
-    private static MapleData commodities = data.getData(StringUtil.getLeftPaddedStr("Commodity.img", '0', 11));
+    private static final Map<Integer, Integer> snLookup = new HashMap<>();
+    private static final Map<Integer, CashItemInfo> itemStats = new HashMap<>();
+    private static final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
+    private static final MapleData commodities = data.getData(StringUtil.getLeftPaddedStr("Commodity.img", '0', 11));
 
     public static CashItemInfo getItem(int sn) {
         if (itemStats.containsKey(sn)) {
@@ -41,7 +41,7 @@ public class CashItemFactory {
             currSN = MapleDataTool.getIntConvert("0/SN",commodities);
             snLookup.put(currSN, curr);
         }
-        for (int i = snLookup.size() - 1; currSN != sn; i++) {
+        for (int i = snLookup.size() - 1; currSN != sn; ++i) {
             curr = i;
             currSN = MapleDataTool.getIntConvert(curr + "/SN",commodities);
             snLookup.put(currSN, curr);
@@ -50,7 +50,7 @@ public class CashItemFactory {
     }
 
     public static List<Integer> getPackageItems(int itemId) {
-        List<Integer> packageItems = new ArrayList<Integer>();
+        List<Integer> packageItems = new ArrayList<>();
         MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File("wz/Etc.wz"));
         MapleData a = dataProvider.getData("CashPackage.img");
         if (packageItems.contains(itemId))

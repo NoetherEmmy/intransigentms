@@ -4,10 +4,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface LoginWorldInterface extends Remote {
-    public void channelOnline(int channel, String ip) throws RemoteException;
-    public void channelOffline(int channel) throws RemoteException;
-    public void shutdown() throws RemoteException;
-    public boolean isAvailable() throws RemoteException;
-    public double getPossibleLoginAverage() throws RemoteException;
-    public int getWaitingUsers() throws RemoteException;
+    void channelOnline(int channel, String ip) throws RemoteException;
+    void channelOffline(int channel) throws RemoteException;
+    void shutdown() throws RemoteException;
+    boolean isAvailable() throws RemoteException;
+    double getPossibleLoginAverage() throws RemoteException;
+    int getWaitingUsers() throws RemoteException;
 }

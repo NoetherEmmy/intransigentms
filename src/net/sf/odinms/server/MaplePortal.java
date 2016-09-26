@@ -5,10 +5,10 @@ import net.sf.odinms.client.MapleClient;
 
 public interface MaplePortal {
 
-    public final int MAP_PORTAL = 2;
-    public final int DOOR_PORTAL = 6;
-    public static final boolean OPEN = true;
-    public static final boolean CLOSE = false;
+    int MAP_PORTAL = 2;
+    int DOOR_PORTAL = 6;
+    boolean OPEN = true;
+    boolean CLOSE = false;
 
     int getType();
 

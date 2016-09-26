@@ -11,9 +11,9 @@ import net.sf.odinms.tools.StringUtil;
 
 public class SkillFactory {
 
-    private static Map<Integer, ISkill> skills = new HashMap<Integer, ISkill>();
-    private static MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
-    private static MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
+    private static final Map<Integer, ISkill> skills = new HashMap<>();
+    private static final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
+    private static final MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
 
     public static ISkill getSkill(int id) {
         ISkill ret = skills.get(id);

@@ -31,7 +31,7 @@ public class MoveSummonHandler extends AbstractMovementPacketHandler {
             // player = ((MapleCharacter) c.getPlayer().getMap().getMapObject(30000));
             player.getMap().broadcastMessage(player, MaplePacketCreator.moveSummon(player.getId(), oid, startPos, res), summon.getPosition());
         } else {
-            player.getSummons().remove(summon);
+            player.getSummons().remove(summon.getSkill());
         }
     }
 }

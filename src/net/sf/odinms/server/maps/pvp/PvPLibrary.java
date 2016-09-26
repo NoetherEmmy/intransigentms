@@ -14,12 +14,8 @@ import net.sf.odinms.tools.MaplePacketCreator;
 public class PvPLibrary {
 
     private static int pvpDamage;
-    private static int min;
     public static int maxDis;
     public static int maxHeight;
-    private static int matk;
-    private static int watk;
-    private static int luk;
     private static boolean isAoe;
     public static boolean isLeft = false;
     public static boolean isRight = false;
@@ -28,7 +24,6 @@ public class PvPLibrary {
     private static boolean magicguard = false;
     private static boolean mesguard = false;
     private static double multi = 0;
-    private static double mastery = 0;
     private static int skill = 0;
     private static ISkill skil;
     private static boolean ignore = false;
@@ -40,9 +35,9 @@ public class PvPLibrary {
     private static final int DAMAGE_DIVIDER = 2;
 
     public static void pvpDamageBalance(AbstractDealDamageHandler.AttackInfo attack, MapleCharacter player) {
-        matk = player.getTotalMagic();
-        luk = player.getTotalLuk();
-        watk = player.getTotalWatk();
+        int matk = player.getTotalMagic();
+        int luk = player.getTotalLuk();
+        int watk = player.getTotalWatk();
         switch (attack.skill) {
             case 0: // normal attack
                 multi = 1;
@@ -64,9 +59,9 @@ public class PvPLibrary {
             case 2001004:    // Energy Bolt
                 skil = SkillFactory.getSkill(2001004);
                 multi = skil.getEffect(player.getSkillLevel(skil)).getMatk();
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                double mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
-                min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
+                int min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
                 maxDis = 200;
                 maxHeight = 35;
@@ -76,7 +71,7 @@ public class PvPLibrary {
             case 2001005:    // Magic Claw
                 skil = SkillFactory.getSkill(2001005);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -115,7 +110,7 @@ public class PvPLibrary {
             case 2101004:    // Fire Arrow
                 skil = SkillFactory.getSkill(4101004);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -127,7 +122,7 @@ public class PvPLibrary {
             case 2101005:    // Poison Brace
                 skil = SkillFactory.getSkill(2101005);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -139,7 +134,7 @@ public class PvPLibrary {
             case 2201004:    // Cold Beam
                 skil = SkillFactory.getSkill(2201004);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -151,7 +146,7 @@ public class PvPLibrary {
             case 2301005:    // Holy Arrow
                 skil = SkillFactory.getSkill(2301005);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -217,7 +212,7 @@ public class PvPLibrary {
             case 2211002:    // Ice Strike
                 skil = SkillFactory.getSkill(2211002);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -229,7 +224,7 @@ public class PvPLibrary {
             case 2211003:    // Thunder Spear
                 skil = SkillFactory.getSkill(2211003);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -296,7 +291,7 @@ public class PvPLibrary {
             case 2121003:    // Fire Demon
                 skil = SkillFactory.getSkill(2121003);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -308,7 +303,7 @@ public class PvPLibrary {
             case 2221006:    // Chain Lightning
                 skil = SkillFactory.getSkill(2221006);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -320,7 +315,7 @@ public class PvPLibrary {
             case 2221003:    // Ice Demon
                 skil = SkillFactory.getSkill(2221003);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -332,7 +327,7 @@ public class PvPLibrary {
             case 2321007:    // Angel's Ray
                 skil = SkillFactory.getSkill(2321007);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -366,8 +361,8 @@ public class PvPLibrary {
                 isAoe = false;
                 break;
             case 3221007:    // Sniping
-                pvpDamage = (int) (player.calculateMaxBaseDamage(watk) * 3);
-                min = (int) (player.calculateMinBaseDamage(player) * 3);
+                pvpDamage = player.calculateMaxBaseDamage(watk) * 3;
+                min = player.calculateMinBaseDamage(player) * 3;
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
                 maxHeight = 35;
                 isAoe = false;
@@ -401,7 +396,7 @@ public class PvPLibrary {
             case 2201005:    // Thunderbolt
                 skil = SkillFactory.getSkill(2201005);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -450,7 +445,7 @@ public class PvPLibrary {
             case 2111002:    // Explosion
                 skil = SkillFactory.getSkill(2111002);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -462,7 +457,7 @@ public class PvPLibrary {
             case 2111003:    // Poison Mist
                 skil = SkillFactory.getSkill(2111003);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -474,7 +469,7 @@ public class PvPLibrary {
             case 2311004:    // Shining Ray
                 skil = SkillFactory.getSkill(2311004);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -527,7 +522,7 @@ public class PvPLibrary {
             case 2121001:    // Big Bang
                 skil = SkillFactory.getSkill(2121001);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -539,7 +534,7 @@ public class PvPLibrary {
             case 2121007:    // Meteo
                 skil = SkillFactory.getSkill(2121007);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -551,7 +546,7 @@ public class PvPLibrary {
             case 2121006:    // Paralyze
                 skil = SkillFactory.getSkill(2121006);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -563,7 +558,7 @@ public class PvPLibrary {
             case 2221001:    // Big Bang
                 skil = SkillFactory.getSkill(2221001);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -575,7 +570,7 @@ public class PvPLibrary {
             case 2221007:    // Blizzard
                 skil = SkillFactory.getSkill(2221007);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -587,7 +582,7 @@ public class PvPLibrary {
             case 2321008:    // Genesis
                 skil = SkillFactory.getSkill(2321008);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -599,7 +594,7 @@ public class PvPLibrary {
             case 2321001:   // bishop Big Bang
                 skil = SkillFactory.getSkill(2321001);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
-                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5 + 10 / 100;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
                 min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
@@ -644,10 +639,6 @@ public class PvPLibrary {
                 isAoe = true;
                 ignore = true;
                 break;
-            /**
-             *@author Supiangel
-             *
-             */
             case 5001001:    // First Strike
                 skil = SkillFactory.getSkill(5001001);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0);
@@ -827,7 +818,6 @@ public class PvPLibrary {
                 break;
             default:
                 break;
-
         }
         if (!magic || !ignore) {
             maxDis = player.getMaxDis(player);
@@ -848,148 +838,144 @@ public class PvPLibrary {
     }
 
     public static void monsterBomb(final MapleCharacter player, final MapleCharacter attackedPlayers, final AbstractDealDamageHandler.AttackInfo attack) {
-        for (int dmgpacket = 0; dmgpacket < attack.numDamage; dmgpacket++) {
-            TimerManager.getInstance().schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (!magic || !ignore) {
-                        pvpDamage = (int) (player.getRandomage(player) * multi);
-                    }
-                    combo = player.getBuffedValue(MapleBuffStat.COMBO);
-                    if (combo != null) {
-                        // player.handleOrbgain();
+        for (int dmgpacket = 0; dmgpacket < attack.numDamage; ++dmgpacket) {
+            TimerManager.getInstance().schedule(() -> {
+                if (!magic || !ignore) {
+                    pvpDamage = (int) (player.getRandomage(player) * multi);
+                }
+                combo = player.getBuffedValue(MapleBuffStat.COMBO);
+                if (combo != null) {
+                    // player.handleOrbgain();
+                    skil = SkillFactory.getSkill(1120003);
+                    skill = player.getSkillLevel(skil);
+                    if (skill > 0) {
+                        multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 500.0);
+                        if (multi < 0) {
+                            multi = 1;
+                        }
+                        pvpDamage *= multi;
+                    } else {
                         skil = SkillFactory.getSkill(1120003);
                         skill = player.getSkillLevel(skil);
-                        if (skill > 0) {
-                            multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 500.0);
-                            if (multi < 0) {
-                                multi = 1;
-                            }
-                            pvpDamage *= multi;
-                        } else {
-                            skil = SkillFactory.getSkill(1120003);
-                            skill = player.getSkillLevel(skil);
-                            multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 500.0);
-                            if (multi < 0) {
-                                multi = 1;
-                            }
-                            pvpDamage *= multi;
+                        multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 500.0);
+                        if (multi < 0) {
+                            multi = 1;
                         }
+                        pvpDamage *= multi;
                     }
-                    if (!magic) {
-                        pvpDamage -= (attackedPlayers.getTotalWdef() * 1.5);
+                }
+                if (!magic) {
+                    pvpDamage -= (attackedPlayers.getTotalWdef() * 1.5);
+                } else {
+                    pvpDamage -= (attackedPlayers.getTotalMdef() * 1.5);
+                }
+                pvpDamage /= 5;
+                if (magic) {
+                    pvpDamage /= 2;
+                }
+                if (player.getReborns() > 0) {
+                    pvpDamage *= ((player.getReborns() / 5) + 1);
+                }
+                pvpDamage /= DAMAGE_DIVIDER;
+                if (pvpDamage > MAX_PVP_DAMAGE) {
+                    pvpDamage = MAX_PVP_DAMAGE;
+                }
+                if (pvpDamage < 0) {
+                    pvpDamage = MIN_PVP_DAMAGE;
+                }
+                Integer mguard = attackedPlayers.getBuffedValue(MapleBuffStat.MAGIC_GUARD);
+                Integer mesoguard = attackedPlayers.getBuffedValue(MapleBuffStat.MESOGUARD);
+                if (mguard != null) {
+                    skil = SkillFactory.getSkill(2001002);
+                    skill = attackedPlayers.getSkillLevel(skil);
+                    if (skill > 0) {
+                        multi = (skil.getEffect(attackedPlayers.getSkillLevel(skil)).getX() / 100.0);
+                    }
+                    int mg = (int) (pvpDamage * multi);
+                    if (attackedPlayers.getMp() > mg) {
+                        attackedPlayers.setMp(attackedPlayers.getMp() - mg);
+                        pvpDamage -= mg;
                     } else {
-                        pvpDamage -= (attackedPlayers.getTotalMdef() * 1.5);
+                        pvpDamage -= attackedPlayers.getMp();
+                        attackedPlayers.setMp(0);
+                        attackedPlayers.dropMessage(5, "Your MP has been drained.");
                     }
-                    pvpDamage /= 5;
-                    if (magic) {
-                        pvpDamage /= 2;
+                    magicguard = true;
+                }
+                if (mesoguard != null) {
+                    skil = SkillFactory.getSkill(4211005);
+                    skill = attackedPlayers.getSkillLevel(skil);
+                    if (skill > 0) {
+                        multi = (skil.getEffect(attackedPlayers.getSkillLevel(skil)).getX() / 100.0);
                     }
-                    if (player.getReborns() > 0) {
-                        pvpDamage *= ((player.getReborns() / 5) + 1);
+                    int mg = (int) (pvpDamage * multi);
+                    if (attackedPlayers.getMeso() > mg) {
+                        attackedPlayers.gainMeso(-mg, false);
+                        pvpDamage *= 0.5;
+                    } else {
+                        attackedPlayers.dropMessage(5, "You do not have enough mesos to weaken the blow");
                     }
-                    pvpDamage /= DAMAGE_DIVIDER;
-                    if (pvpDamage > MAX_PVP_DAMAGE) {
-                        pvpDamage = MAX_PVP_DAMAGE;
-                    }
-                    if (pvpDamage < 0) {
-                        pvpDamage = MIN_PVP_DAMAGE;
-                    }
-                    Integer mguard = attackedPlayers.getBuffedValue(MapleBuffStat.MAGIC_GUARD);
-                    Integer mesoguard = attackedPlayers.getBuffedValue(MapleBuffStat.MESOGUARD);
-                    if (mguard != null) {
-                        skil = SkillFactory.getSkill(2001002);
-                        skill = attackedPlayers.getSkillLevel(skil);
+                    mesguard = true;
+                }
+                int y = 2;
+                int skillid;
+                int aPmp;
+                if (magic) {
+                    for (int i = 0; i < y; ++i) {
+                        skillid = 100000 * i + 2000000;
+                        skil = SkillFactory.getSkill(skillid);
+                        skill = player.getSkillLevel(skil);
                         if (skill > 0) {
-                            multi = (skil.getEffect(attackedPlayers.getSkillLevel(skil)).getX() / 100.0);
-                        }
-                        int mg = (int) (pvpDamage * multi);
-                        if (attackedPlayers.getMp() > mg) {
-                            attackedPlayers.setMp(attackedPlayers.getMp() - mg);
-                            pvpDamage -= mg;
-                        } else {
-                            pvpDamage -= attackedPlayers.getMp();
-                            attackedPlayers.setMp(0);
-                            attackedPlayers.dropMessage(5, "Your MP has been drained.");
-                        }
-                        magicguard = true;
-                    }
-                    if (mesoguard != null) {
-                        skil = SkillFactory.getSkill(4211005);
-                        skill = attackedPlayers.getSkillLevel(skil);
-                        if (skill > 0) {
-                            multi = (skil.getEffect(attackedPlayers.getSkillLevel(skil)).getX() / 100.0);
-                        }
-                        int mg = (int) (pvpDamage * multi);
-                        if (attackedPlayers.getMeso() > mg) {
-                            attackedPlayers.gainMeso(-mg, false);
-                            pvpDamage *= 0.5;
-                        } else {
-                            attackedPlayers.dropMessage(5, "You do not have enough mesos to weaken the blow");
-                        }
-                        mesguard = true;
-                    }
-                    int y = 2;
-                    int skillid;
-                    int aPmp;
-                    if (magic) {
-                        for (int i = 0; i < y; i++) {
-                            skillid = 100000 * i + 2000000;
-                            skil = SkillFactory.getSkill(skillid);
-                            skill = player.getSkillLevel(skil);
-                            if (skill > 0) {
-                                multi = (skil.getEffect(player.getSkillLevel(skil)).getX() / 100.0);
-                                if (skil.getEffect(player.getSkillLevel(skil)).makeChanceResult()) {
-                                    aPmp = (int) (multi * attackedPlayers.getMaxMp());
-                                    if (attackedPlayers.getMp() > aPmp) {
-                                        attackedPlayers.setMp(attackedPlayers.getMp() - aPmp);
-                                        player.setMp(player.getMp() + aPmp);
-                                        if (player.getMp() > player.getMaxMp()) {
-                                            player.setMp(player.getMaxMp());
-                                        }
-                                    } else {
-                                        player.setMp(player.getMp() + attackedPlayers.getMp());
-                                        if (player.getMp() > player.getMaxMp()) {
-                                            player.setMp(player.getMaxMp());
-                                        }
-                                        attackedPlayers.setMp(0);
+                            multi = (skil.getEffect(player.getSkillLevel(skil)).getX() / 100.0);
+                            if (skil.getEffect(player.getSkillLevel(skil)).makeChanceResult()) {
+                                aPmp = (int) (multi * attackedPlayers.getMaxMp());
+                                if (attackedPlayers.getMp() > aPmp) {
+                                    attackedPlayers.setMp(attackedPlayers.getMp() - aPmp);
+                                    player.setMp(player.getMp() + aPmp);
+                                    if (player.getMp() > player.getMaxMp()) {
+                                        player.setMp(player.getMaxMp());
                                     }
+                                } else {
+                                    player.setMp(player.getMp() + attackedPlayers.getMp());
+                                    if (player.getMp() > player.getMaxMp()) {
+                                        player.setMp(player.getMaxMp());
+                                    }
+                                    attackedPlayers.setMp(0);
                                 }
                             }
                         }
-                        magic = false;
-                        magicrecovery = true;
                     }
-                    pvpMob = MapleLifeFactory.getMonster(9400711);
+                    magic = false;
+                    magicrecovery = true;
+                }
+                pvpMob = MapleLifeFactory.getMonster(9400711);
 
-                    player.getClient().getSession().write(MaplePacketCreator.damagePlayer(attack.numDamage, pvpMob.getId(), attackedPlayers.getId(), pvpDamage));
-                    attackedPlayers.addHP(-pvpDamage);
-                    attackedDamage += pvpDamage;
+                player.getClient().getSession().write(MaplePacketCreator.damagePlayer(attack.numDamage, pvpMob.getId(), attackedPlayers.getId(), pvpDamage));
+                attackedPlayers.addHP(-pvpDamage);
+                attackedDamage += pvpDamage;
 
-                    if (attackedDamage > 0) {
-                        combo = player.getBuffedValue(MapleBuffStat.COMBO);
-                        if (combo != null) {
-                            player.handleOrbgain();
-                        }
+                if (attackedDamage > 0) {
+                    combo = player.getBuffedValue(MapleBuffStat.COMBO);
+                    if (combo != null) {
+                        player.handleOrbgain();
                     }
-                    attackedDamage = 0;
-                    if (magicguard) {
-                        player.getClient().getSession().write(MaplePacketCreator.serverNotice(5, player.getName() + " has partially blocked your attack with magic guard!"));
-                        magicguard = false;
-                    }
-                    if (mesguard) {
-                        player.getClient().getSession().write(MaplePacketCreator.serverNotice(5, player.getName() + " has partially blocked your attack with mesoguard!"));
-                        mesguard = false;
-                    }
-                    if (magicrecovery) {
-                        attackedPlayers.getClient().getSession().write(MaplePacketCreator.serverNotice(5, player.getName() + " has partially absorbed your MP with MP Eater!"));
-                        magicrecovery = false;
-                    }
-                    // rewards
-                    if (attackedPlayers.isDead() && attackedPlayers.getHp() <= 0) {
-                        playerReward(player, attackedPlayers);
-                    }
+                }
+                attackedDamage = 0;
+                if (magicguard) {
+                    player.getClient().getSession().write(MaplePacketCreator.serverNotice(5, player.getName() + " has partially blocked your attack with magic guard!"));
+                    magicguard = false;
+                }
+                if (mesguard) {
+                    player.getClient().getSession().write(MaplePacketCreator.serverNotice(5, player.getName() + " has partially blocked your attack with mesoguard!"));
+                    mesguard = false;
+                }
+                if (magicrecovery) {
+                    attackedPlayers.getClient().getSession().write(MaplePacketCreator.serverNotice(5, player.getName() + " has partially absorbed your MP with MP Eater!"));
+                    magicrecovery = false;
+                }
+                // rewards
+                if (attackedPlayers.isDead() && attackedPlayers.getHp() <= 0) {
+                    playerReward(player, attackedPlayers);
                 }
             }, dmgpacket * 40 + 100);
         }
@@ -1016,7 +1002,7 @@ public class PvPLibrary {
         attackedPlayers.getMap().spawnMesoDrop(mesoReward, mesoReward, attackedPlayers.getPosition(), attackedPlayers, attackedPlayers, false);
     }
 
-    public synchronized static void doPvP(MapleCharacter player, AbstractDealDamageHandler.AttackInfo attack) {
+    public static synchronized void doPvP(MapleCharacter player, AbstractDealDamageHandler.AttackInfo attack) {
         pvpDamageBalance(attack, player); // grab height/distance/damage/aoe true\false
         getDirection(attack);
         for (MapleCharacter attackedPlayers : player.getMap().getNearestPvpChar(player.getPosition(), PvPLibrary.maxDis, PvPLibrary.maxHeight, Collections.unmodifiableCollection(player.getMap().getCharacters()))) {

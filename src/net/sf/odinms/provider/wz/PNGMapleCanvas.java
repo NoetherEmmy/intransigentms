@@ -14,12 +14,12 @@ import net.sf.odinms.provider.MapleCanvas;
 
 public class PNGMapleCanvas implements MapleCanvas {
     private static final int[] ZAHLEN = new int[] { 2, 1, 0, 3 };
-    private int height;
-    private int width;
-    private int dataLength;
-    private int format;
+    private final int height;
+    private final int width;
+    private final int dataLength;
+    private final int format;
 
-    private byte[] data;
+    private final byte[] data;
 
     public PNGMapleCanvas(int width, int height, int dataLength, int format, byte[] data) {
             super();
@@ -87,7 +87,7 @@ public class PNGMapleCanvas implements MapleCanvas {
         }
         dec.end();
         if (getFormat() == 1) {
-            for ( int i = 0; i < sizeUncompressed; i++) {
+            for ( int i = 0; i < sizeUncompressed; ++i) {
                 byte low = (byte) (uc[i] & 0x0F);
                 byte high = (byte) (uc[i] & 0xF0);
                 writeBuf[(i << 1)] = (byte) (((low << 4) | low) & 0xFF);
@@ -106,12 +106,12 @@ public class PNGMapleCanvas implements MapleCanvas {
                 writeBuf[(i << 1) + 3] = (byte) 0xFF;
             }
         } else if (getFormat() == 517) {
-            byte b = 0x00;
-            int pixelIndex = 0;
-            for (int i = 0; i < declen; i++) {
-                for (int j = 0; j < 8; j++) {
+            byte b;
+            int pixelIndex;
+            for (int i = 0; i < declen; ++i) {
+                for (int j = 0; j < 8; ++j) {
                     b = (byte) (((uc[i] & (0x01 << (7 - j))) >> (7 - j)) * 255);
-                    for (int k = 0; k < 16; k++) {
+                    for (int k = 0; k < 16; ++k) {
                         pixelIndex = (i << 9) + (j << 6) + k * 2;
                         writeBuf[pixelIndex] = b;
                         writeBuf[pixelIndex + 1] = b;

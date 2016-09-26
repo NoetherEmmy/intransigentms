@@ -13,7 +13,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class PlayerNPCs extends AbstractMapleMapObject {
 
-    private Map<Byte, Integer> equips = new HashMap<Byte, Integer>();
+    private final Map<Byte, Integer> equips = new HashMap<>();
     private int npcId,  mapid,  face,  hair;
     private byte skin,  dir, gender;
     private String name = "";

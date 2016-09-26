@@ -23,14 +23,14 @@ public class WZFile implements MapleDataProvider {
         ListWZFile.init();
     }
 
-    private File wzfile;
-    private LittleEndianAccessor lea;
-    private SeekableLittleEndianAccessor slea;
+    private final File wzfile;
+    private final LittleEndianAccessor lea;
+    private final SeekableLittleEndianAccessor slea;
     // private LittleEndianOutputStream leo;
-    private Logger log = LoggerFactory.getLogger(WZFile.class);
+    private final Logger log = LoggerFactory.getLogger(WZFile.class);
     private int headerSize;
-    private WZDirectoryEntry root;
-    private boolean provideImages;
+    private final WZDirectoryEntry root;
+    private final boolean provideImages;
     private int cOffset;
 
     public WZFile(File wzfile, boolean provideImages) throws IOException {
@@ -45,7 +45,7 @@ public class WZFile implements MapleDataProvider {
     }
 
     @SuppressWarnings("unused")
-    private void load() throws IOException {
+    private void load() {
         String sPKG = lea.readAsciiString(4);
         int size1 = lea.readInt();
         int size2 = lea.readInt();
@@ -81,7 +81,7 @@ public class WZFile implements MapleDataProvider {
 
     private void parseDirectory(WZDirectoryEntry dir) {
         int entries = WZTool.readValue(lea);
-        for (int i = 0; i < entries; i++) {
+        for (int i = 0; i < entries; ++i) {
             byte marker = lea.readByte();
             String name = null;
             @SuppressWarnings("unused")
@@ -89,7 +89,7 @@ public class WZFile implements MapleDataProvider {
             int size, checksum;
             switch (marker) {
                 case 0x02:
-                    name = WZTool.readDecodedStringAtOffset(slea, lea.readInt() + this.headerSize + 1,true);
+                    name = WZTool.readDecodedStringAtOffset(slea, lea.readInt() + this.headerSize + 1);
                     size = WZTool.readValue(lea);
                     checksum = WZTool.readValue(lea);
                     dummyInt = lea.readInt();
@@ -97,7 +97,7 @@ public class WZFile implements MapleDataProvider {
                     break;
                 case 0x03:
                 case 0x04:
-                    name = WZTool.readDecodedString(lea);
+                    name = WZTool.readDecodedString();
                     size = WZTool.readValue(lea);
                     checksum = WZTool.readValue(lea);
                     dummyInt = lea.readInt();
@@ -120,7 +120,7 @@ public class WZFile implements MapleDataProvider {
     // private void writeDirectory(MapleDataDirectoryEntry dir) {
     // // leo.writeInt(dir.getSize());
     //
-    // for (int i = 0; i < dir.getSize(); i++) {
+    // for (int i = 0; i < dir.getSize(); ++i) {
     // byte marker = lea.readByte();
     //
     // // if ()
@@ -164,7 +164,7 @@ public class WZFile implements MapleDataProvider {
     public WZIMGFile getImgFile(String path) throws IOException {
         String segments[] = path.split("/");
         WZDirectoryEntry dir = root;
-        for (int x = 0; x < segments.length - 1; x++) {
+        for (int x = 0; x < segments.length - 1; ++x) {
             dir = (WZDirectoryEntry) dir.getEntry(segments[x]);
             if (dir == null) {
                 // throw new IllegalArgumentException("File " + path + " not found in " + root.getName());
@@ -186,8 +186,7 @@ public class WZFile implements MapleDataProvider {
                 //throw new IllegalArgumentException("File " + path + " not found in " + root.getName());
                 return null;
             }
-            MapleData ret = imgFile.getRoot();
-            return ret;
+            return imgFile.getRoot();
         } catch (IOException e) {
             log.error("THROW", e);
         }

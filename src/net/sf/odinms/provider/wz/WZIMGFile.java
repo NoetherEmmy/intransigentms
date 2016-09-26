@@ -13,12 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WZIMGFile {
-    private Logger log = LoggerFactory.getLogger(WZIMGFile.class);
-    private WZFileEntry file;
-    private WZIMGEntry root;
-    private boolean provideImages;
-    @SuppressWarnings("unused")
-    private boolean modernImg;
+    private final Logger log = LoggerFactory.getLogger(WZIMGFile.class);
+    private final WZFileEntry file;
+    private final WZIMGEntry root;
+    private final boolean provideImages;
 
     public WZIMGFile(File wzfile, WZFileEntry file, boolean provideImages, boolean modernImg) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(wzfile, "r");
@@ -30,7 +28,6 @@ public class WZIMGFile {
         root.setName(file.getName());
         root.setType(MapleDataType.EXTENDED);
         // dumpImg(new FileOutputStream(file.getName()), slea);
-        this.modernImg = modernImg;
         parseExtended(root, slea, 0);
         root.finish();
         raf.close();
@@ -40,7 +37,7 @@ public class WZIMGFile {
         DataOutputStream os = new DataOutputStream(out);
         long oldPos = slea.getPosition();
         slea.seek(file.getOffset());
-        for (int x = 0; x < file.getSize(); x++) {
+        for (int x = 0; x < file.getSize(); ++x) {
             os.write(slea.readByte());
         }
         slea.seek(oldPos);
@@ -54,7 +51,7 @@ public class WZIMGFile {
         byte marker = slea.readByte();
         switch (marker) {
             case 0: {
-                String name = WZTool.readDecodedString(slea);
+                String name = WZTool.readDecodedString();
                 entry.setName(name);
                 break;
             } case 1: {
@@ -72,26 +69,26 @@ public class WZIMGFile {
             case 2:
             case 11:
                 entry.setType(MapleDataType.SHORT);
-                entry.setData(Short.valueOf(slea.readShort()));
+                entry.setData(slea.readShort());
                 break;
             case 3:
                 entry.setType(MapleDataType.INT);
-                entry.setData(Integer.valueOf(WZTool.readValue(slea)));
+                entry.setData(WZTool.readValue(slea));
                 break;
             case 4:
                 entry.setType(MapleDataType.FLOAT);
-                entry.setData(Float.valueOf(WZTool.readFloatValue(slea)));
+                entry.setData(WZTool.readFloatValue(slea));
                 break;
             case 5:
                 entry.setType(MapleDataType.DOUBLE);
-                entry.setData(Double.valueOf(slea.readDouble()));
+                entry.setData(slea.readDouble());
                 break;
             case 8:
                 entry.setType(MapleDataType.STRING);
                 byte iMarker = slea.readByte();
                 if (iMarker == 0) {
                     // String pathToData = MapleDataTool.getFullDataPath(entry);
-                    entry.setData(WZTool.readDecodedString(slea));
+                    entry.setData(WZTool.readDecodedString());
                 } else if (iMarker == 1) {
                     entry.setData(WZTool.readDecodedStringAtOffsetAndReset(slea, slea.readInt() + file.getOffset()));
                 } else {
@@ -114,7 +111,7 @@ public class WZIMGFile {
         String type;
         switch (marker) {
             case 0x73:
-                type = WZTool.readDecodedString(slea);
+                type = WZTool.readDecodedString();
                 break;
             case 0x1B:
                 type = WZTool.readDecodedStringAtOffsetAndReset(slea, file.getOffset() + slea.readInt());
@@ -132,88 +129,99 @@ public class WZIMGFile {
          * "Canvas"
          * "UOL"
          */
-        if (type.equals("Property")) {
-            entry.setType(MapleDataType.PROPERTY);
-            slea.readByte();
-            slea.readByte();
-            int children = WZTool.readValue(slea);
-            for (int i = 0; i < children; i++) {
-                WZIMGEntry cEntry = new WZIMGEntry(entry);
-                parse(cEntry, slea);
-                cEntry.finish();
-                entry.addChild(cEntry);
-            }
-        } else if (type.equals("Canvas")) {
-            entry.setType(MapleDataType.CANVAS);
-            slea.readByte();
-            marker = slea.readByte();
-            if (marker == 0) {
-
-            } else if (marker == 1) {
+        switch (type) {
+            case "Property": {
+                entry.setType(MapleDataType.PROPERTY);
                 slea.readByte();
                 slea.readByte();
                 int children = WZTool.readValue(slea);
-                for (int i = 0; i < children; i++) {
-                    WZIMGEntry child = new WZIMGEntry(entry);
-                    parse(child, slea);
-                    child.finish();
-                    entry.addChild(child);
+                for (int i = 0; i < children; ++i) {
+                    WZIMGEntry cEntry = new WZIMGEntry(entry);
+                    parse(cEntry, slea);
+                    cEntry.finish();
+                    entry.addChild(cEntry);
                 }
-            } else {
-                log.warn("Canvas marker != 1 ({})", marker);
+                break;
             }
-            int width = WZTool.readValue(slea);
-            int height = WZTool.readValue(slea);
-            int format = WZTool.readValue(slea);
-            int format2 = slea.readByte();
-            slea.readInt();
-            int dataLength = slea.readInt() - 1;
-            slea.readByte();
+            case "Canvas": {
+                entry.setType(MapleDataType.CANVAS);
+                slea.readByte();
+                marker = slea.readByte();
+                if (marker == 0) {
 
-            if (provideImages) {
-                byte[] pngdata = slea.read(dataLength);
-                entry.setData(new PNGMapleCanvas(width, height, dataLength, format + format2, pngdata));
-            } else {
-                entry.setData(new PNGMapleCanvas(width, height, dataLength, format + format2, null));
-                slea.skip(dataLength);
+                } else if (marker == 1) {
+                    slea.readByte();
+                    slea.readByte();
+                    int children = WZTool.readValue(slea);
+                    for (int i = 0; i < children; ++i) {
+                        WZIMGEntry child = new WZIMGEntry(entry);
+                        parse(child, slea);
+                        child.finish();
+                        entry.addChild(child);
+                    }
+                } else {
+                    log.warn("Canvas marker != 1 ({})", marker);
+                }
+                int width = WZTool.readValue(slea);
+                int height = WZTool.readValue(slea);
+                int format = WZTool.readValue(slea);
+                int format2 = slea.readByte();
+                slea.readInt();
+                int dataLength = slea.readInt() - 1;
+                slea.readByte();
+
+                if (provideImages) {
+                    byte[] pngdata = slea.read(dataLength);
+                    entry.setData(new PNGMapleCanvas(width, height, dataLength, format + format2, pngdata));
+                } else {
+                    entry.setData(new PNGMapleCanvas(width, height, dataLength, format + format2, null));
+                    slea.skip(dataLength);
+                }
+                break;
             }
-        } else if (type.equals("Shape2D#Vector2D")) {
-            entry.setType(MapleDataType.VECTOR);
-            int x = WZTool.readValue(slea);
-            int y = WZTool.readValue(slea);
-            entry.setData(new Point(x, y));
-        } else if (type.equals("Shape2D#Convex2D")) {
-            int children = WZTool.readValue(slea);
-            for (int i = 0; i < children; i++) {
-                WZIMGEntry cEntry = new WZIMGEntry(entry);
-                parseExtended(cEntry, slea, 0);
-                cEntry.finish();
-                entry.addChild(cEntry);
+            case "Shape2D#Vector2D":
+                entry.setType(MapleDataType.VECTOR);
+                int x = WZTool.readValue(slea);
+                int y = WZTool.readValue(slea);
+                entry.setData(new Point(x, y));
+                break;
+            case "Shape2D#Convex2D": {
+                int children = WZTool.readValue(slea);
+                for (int i = 0; i < children; ++i) {
+                    WZIMGEntry cEntry = new WZIMGEntry(entry);
+                    parseExtended(cEntry, slea, 0);
+                    cEntry.finish();
+                    entry.addChild(cEntry);
+                }
+                break;
             }
-        } else if (type.equals("Sound_DX8")) {
-            entry.setType(MapleDataType.SOUND);
-            slea.readByte();
-            int dataLength = WZTool.readValue(slea);
-            WZTool.readValue(slea);
-            int offset = (int) slea.getPosition();
-            entry.setData(new ImgMapleSound(dataLength, offset - file.getOffset()));
-            slea.seek(endOfExtendedBlock);
-        } else if (type.equals("UOL")) {
-            entry.setType(MapleDataType.UOL);
-            slea.readByte();
-            byte uolmarker = slea.readByte();
-            switch (uolmarker) {
-                case 0:
-                    entry.setData(WZTool.readDecodedString(slea));
-                    break;
-                case 1:
-                    entry.setData(WZTool.readDecodedStringAtOffsetAndReset(slea, file.getOffset() + slea.readInt()));
-                    break;
-                default:
-                    log.error("Unknown UOL marker: {} {}", uolmarker, entry.getName());
+            case "Sound_DX8": {
+                entry.setType(MapleDataType.SOUND);
+                slea.readByte();
+                int dataLength = WZTool.readValue(slea);
+                WZTool.readValue(slea);
+                int offset = (int) slea.getPosition();
+                entry.setData(new ImgMapleSound(dataLength, offset - file.getOffset()));
+                slea.seek(endOfExtendedBlock);
+                break;
             }
-        } else {
-            throw new RuntimeException("Unhandeled extended type: " + type);
+            case "UOL":
+                entry.setType(MapleDataType.UOL);
+                slea.readByte();
+                byte uolmarker = slea.readByte();
+                switch (uolmarker) {
+                    case 0:
+                        entry.setData(WZTool.readDecodedString());
+                        break;
+                    case 1:
+                        entry.setData(WZTool.readDecodedStringAtOffsetAndReset(slea, file.getOffset() + slea.readInt()));
+                        break;
+                    default:
+                        log.error("Unknown UOL marker: {} {}", uolmarker, entry.getName());
+                }
+                break;
+            default:
+                throw new RuntimeException("Unhandeled extended type: " + type);
         }
     }
 }

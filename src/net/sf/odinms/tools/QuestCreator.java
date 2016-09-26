@@ -66,7 +66,7 @@ public class QuestCreator {
                     sb.append("all_world=true").append("\r\n"); 
                     sb.append("world="); 
                 } else if (all_world.equals("false")) { 
-                    sb.append("all_world=false").append("\r\n");; 
+                    sb.append("all_world=false").append("\r\n");
                     try { 
                         p.load(new FileInputStream("moople.ini")); 
                     } catch (Exception e) { 
@@ -96,7 +96,7 @@ public class QuestCreator {
                 } 
                  
                 if (dir.equals("true")) { 
-                    sb.append("npc_dir=").append("scripts/npc").append("\r\n");; 
+                    sb.append("npc_dir=").append("scripts/npc").append("\r\n");
                 } else if (dir.equals("false")) { 
                     sb.append("npc_dir=").append(con.readLine("  Type your NPC direction here: ")).append("\r\n"); 
                 } 
@@ -118,7 +118,7 @@ public class QuestCreator {
             } 
         } else { 
             System.out.println("Config file succesfully loaded.\r\nStart creating Quest"); 
-            sb.append("# Created Quest (ID: " + p.getProperty("next_quest") + ")").append("\r\n\r\n"); 
+            sb.append("# Created Quest (ID: ").append(p.getProperty("next_quest")).append(")").append("\r\n\r\n");
              
             sb.append("# Quest Name as String").append("\r\n"); 
             sb.append("Title=").append(con.readLine("   Quest Title: ")).append("\r\n\r\n"); 
@@ -231,7 +231,7 @@ public class QuestCreator {
                         } 
                          
                         int worlds = Integer.parseInt(ini.getProperty("worlds")); 
-                        for (int x = 0; x < worlds; x++) { 
+                        for (int x = 0; x < worlds; ++x) {
                             createQuestScript(id, npcid, "scripts/npc/world" + x); 
                         } 
                     } else { 

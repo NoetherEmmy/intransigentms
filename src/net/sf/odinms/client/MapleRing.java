@@ -11,11 +11,11 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleRing implements Comparable<MapleRing> {
 
-    private int ringId;
-    private int ringId2;
-    private int partnerId;
-    private int itemId;
-    private String partnerName;
+    private final int ringId;
+    private final int ringId2;
+    private final int partnerId;
+    private final int itemId;
+    private final String partnerName;
     private boolean equipped;
 
     private MapleRing(int id, int id2, int partnerId, int itemid, String partnername) {
@@ -81,15 +81,13 @@ public class MapleRing implements Comparable<MapleRing> {
             ps.close();
             MapleInventoryManipulator.addRing(partner1, itemid, ringID[0]);
             MapleInventoryManipulator.addRing(partner2, itemid, ringID[1]);
-            TimerManager.getInstance().schedule(new Runnable() {
-                public void run() {
-                    partner1.getClient().getSession().write(MaplePacketCreator.getCharInfo(partner1));
-                    partner1.getMap().removePlayer(partner1);
-                    partner1.getMap().addPlayer(partner1);
-                    partner2.getClient().getSession().write(MaplePacketCreator.getCharInfo(partner2));
-                    partner2.getMap().removePlayer(partner2);
-                    partner2.getMap().addPlayer(partner2);
-                }
+            TimerManager.getInstance().schedule(() -> {
+                partner1.getClient().getSession().write(MaplePacketCreator.getCharInfo(partner1));
+                partner1.getMap().removePlayer(partner1);
+                partner1.getMap().addPlayer(partner1);
+                partner2.getClient().getSession().write(MaplePacketCreator.getCharInfo(partner2));
+                partner2.getMap().removePlayer(partner2);
+                partner2.getMap().addPlayer(partner2);
             }, 1000);
             partner1.dropMessage(5, "Congratulations to you and " + partner2.getName() + ".");
             partner1.dropMessage(5, "Please log off and log back in if the rings do not work.");
@@ -132,11 +130,7 @@ public class MapleRing implements Comparable<MapleRing> {
     @Override
     public boolean equals(Object o) {
         if (o instanceof MapleRing) {
-            if (((MapleRing) o).getRingId() == getRingId()) {
-                return true;
-            } else {
-                return false;
-            }
+            return ((MapleRing) o).getRingId() == getRingId();
         }
         return false;
     }
@@ -191,7 +185,7 @@ public class MapleRing implements Comparable<MapleRing> {
             ps.setInt(1, otherId);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException ex) {
+        } catch (SQLException ignored) {
         }
     }
 }

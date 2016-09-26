@@ -9,7 +9,7 @@ public enum MapleQuestRequirementType {
 
     final byte type;
 
-    private MapleQuestRequirementType(int type) {
+    MapleQuestRequirementType(int type) {
         this.type = (byte)type;
     }
 
@@ -27,20 +27,37 @@ public enum MapleQuestRequirementType {
     }
 
     public static MapleQuestRequirementType getByWZName(String name) {
-        if (name.equals("job")) return JOB;
-        else if (name.equals("quest")) return QUEST;
-        else if (name.equals("item")) return ITEM;
-        else if (name.equals("lvmin")) return MIN_LEVEL;
-        else if (name.equals("lvmax")) return MAX_LEVEL;
-        else if (name.equals("end")) return END_DATE;
-        else if (name.equals("mob")) return MOB;
-        else if (name.equals("npc")) return NPC;
-        else if (name.equals("fieldEnter")) return FIELD_ENTER;
-        else if (name.equals("interval")) return INTERVAL;
-        else if (name.equals("startscript")) return SCRIPT;
-        else if (name.equals("endscript")) return SCRIPT;
-        else if (name.equals("pet")) return PET;
-        else if (name.equals("pettamenessmin")) return MIN_PET_TAMENESS;
-        else return UNDEFINED;
+        switch (name) {
+            case "job":
+                return JOB;
+            case "quest":
+                return QUEST;
+            case "item":
+                return ITEM;
+            case "lvmin":
+                return MIN_LEVEL;
+            case "lvmax":
+                return MAX_LEVEL;
+            case "end":
+                return END_DATE;
+            case "mob":
+                return MOB;
+            case "npc":
+                return NPC;
+            case "fieldEnter":
+                return FIELD_ENTER;
+            case "interval":
+                return INTERVAL;
+            case "startscript":
+                return SCRIPT;
+            case "endscript":
+                return SCRIPT;
+            case "pet":
+                return PET;
+            case "pettamenessmin":
+                return MIN_PET_TAMENESS;
+            default:
+                return UNDEFINED;
+        }
     }
 }

@@ -5,11 +5,14 @@ import net.sf.odinms.client.MapleCharacter;
 public class MapleGuildCharacter implements java.io.Serializable {
 
     public static final long serialVersionUID = 2058609046116597760L;
-    private int level,  id,  channel,  jobid;
+    private int level;
+    private final int id;
+    private int channel;
+    private int jobid;
     private int guildrank,  guildid;
     private int allianceRank;
     private boolean online;
-    private String name;
+    private final String name;
 
     public MapleGuildCharacter(MapleCharacter c) {
         name = c.getName();

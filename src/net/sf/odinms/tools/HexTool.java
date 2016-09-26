@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import org.apache.mina.common.ByteBuffer;
 
 public class HexTool {
-    static private char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     /**
      * Static class dummy constructor.
@@ -60,7 +60,7 @@ public class HexTool {
      */
     public static String toString(byte[] bytes) {
         StringBuilder hexed = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
+        for (int i = 0; i < bytes.length; ++i) {
             hexed.append(toString(bytes[i]));
             hexed.append(' ');
         }
@@ -76,7 +76,7 @@ public class HexTool {
      */
     public static String toStringFromAscii(byte[] bytes) {
         char[] ret = new char[bytes.length];
-        for (int x = 0; x < bytes.length; x++) {
+        for (int x = 0; x < bytes.length; ++x) {
             if (bytes[x] < 32 && bytes[x] >= 0) {
                 ret[x] = '.';
             } else {
@@ -90,7 +90,7 @@ public class HexTool {
     public static String toPaddedStringFromAscii(byte[] bytes) {
         String str = toStringFromAscii(bytes);
         StringBuilder ret = new StringBuilder(str.length() * 3);
-        for (int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); ++i) {
             ret.append(str.charAt(i));
             ret.append("  ");
         }

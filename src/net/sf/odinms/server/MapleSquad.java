@@ -7,10 +7,10 @@ import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleSquad {
-    private MapleCharacter leader;
-    private List<MapleCharacter> members = new LinkedList<MapleCharacter>();
-    private List<MapleCharacter> bannedMembers = new LinkedList<MapleCharacter>();
-    private int ch;
+    private final MapleCharacter leader;
+    private final List<MapleCharacter> members = new LinkedList<>();
+    private final List<MapleCharacter> bannedMembers = new LinkedList<>();
+    private final int ch;
     private int status = 0;
 
     public MapleSquad(int ch, MapleCharacter leader) {

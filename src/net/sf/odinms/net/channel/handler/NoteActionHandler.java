@@ -32,7 +32,7 @@ public class NoteActionHandler extends AbstractMaplePacketHandler {
             ps.setInt(1, id);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException sqle) {
+        } catch (SQLException ignored) {
         }
     }
 }
