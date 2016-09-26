@@ -85,14 +85,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int jobRank;
     private int jobRankMove;
     private String name;
-    private int level,  reborns, levelAchieved;
+    private int level, reborns, levelAchieved;
     private MapleJob jobAchieved;
-    private int str,  dex,  luk,  int_;
+    private int str, dex, luk, int_;
     private final AtomicInteger exp = new AtomicInteger();
-    private int hp,  maxhp;
-    private int mp,  maxmp;
-    private int mpApUsed,  hpApUsed;
-    private int hair,  face;
+    private int hp, maxhp;
+    private int mp, maxmp;
+    private int mpApUsed, hpApUsed;
+    private int hair, face;
     private final AtomicInteger meso = new AtomicInteger();
     private int remainingAp, remainingSp;
     private final int[] savedLocations;
@@ -103,7 +103,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private transient int localstr, localdex, localluk, localint;
     private transient int magic, watk;
     private transient int accuracy;
-    private transient double speedMod,  jumpMod;
+    private transient double speedMod, jumpMod;
     private transient int localmaxbasedamage;
     private int id;
     private MapleClient client;
@@ -147,9 +147,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int guildid;
     private int guildrank, allianceRank;
     private MapleGuildCharacter mgc = null;
-    private int paypalnx = 0,  maplepoints = 0,  cardnx = 0;
+    private int paypalnx = 0, maplepoints = 0, cardnx = 0;
     private boolean incs, inmts;
-    private int currentPage = 0,  currentType = 0,  currentTab = 1;
+    private int currentPage = 0, currentType = 0, currentTab = 1;
     private MapleMessenger messenger = null;
     private int messengerposition = 4;
     private ScheduledFuture<?> hpDecreaseTask;
@@ -1043,7 +1043,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return pastlives.get(0);
     }
     
-    private void addNewPastLife(int level, int jobid, MapleMapObject lds) {
+    public void addNewPastLife(int level, int jobid, MapleMapObject lds) {
         List<Integer> newpastlife = new LinkedList<>();
         newpastlife.add(level);
         newpastlife.add(jobid);
@@ -1074,7 +1074,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         deathcount = dc;
     }
     
-    private void incrementDeathCount() {
+    public void incrementDeathCount() {
         deathcount++;
     }
     
@@ -1082,7 +1082,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return highestlevelachieved;
     }
     
-    private void setHighestLevelAchieved(int hla) {
+    public void setHighestLevelAchieved(int hla) {
         highestlevelachieved = hla;
     }
     
@@ -1093,8 +1093,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setSuicides(int s) {
         suicides = s;
     }
-    
-    private void incrementSuicides() {
+
+    public void incrementSuicides() {
         suicides++;
     }
     
@@ -1105,24 +1105,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setParagonLevel(int pl) {
         paragonlevel = pl;
     }
-    
-    private void addToParagonLevel(int levelcount) {
+
+    public void addToParagonLevel(int levelcount) {
         paragonlevel += levelcount;
     }
     
     public int getTotalParagonLevel() {
         return totalparagonlevel;
     }
-    
-    private void setTotalParagonLevel(int tpl) {
+
+    public void setTotalParagonLevel(int tpl) {
         totalparagonlevel = tpl;
     }
     
     public void addToTotalParagonLevel(int levelcount) {
         totalparagonlevel += levelcount;
     }
-    
-    private MapleMapObject getLastDamageSource() {
+
+    public MapleMapObject getLastDamageSource() {
         return lastdamagesource;
     }
     
@@ -1140,24 +1140,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public boolean getExpBonus() {
         return expbonus;
     }
-    
-    private void setExpBonus(boolean eb) {
+
+    public void setExpBonus(boolean eb) {
         this.expbonus = eb;
     }
     
     public int getExpBonusMulti() {
         return expbonusmulti;
     }
-    
-    private void setExpBonusMulti(int ebm) {
+
+    public void setExpBonusMulti(int ebm) {
         this.expbonusmulti = ebm;
     }
     
     public long getExpBonusEnd() {
         return expbonusend;
     }
-    
-    private void setExpBonusEnd(long ebe) {
+
+    public void setExpBonusEnd(long ebe) {
         this.expbonusend = ebe;
     }
     
@@ -1184,8 +1184,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setEventPoints(int ep) {
         this.eventpoints = ep;
     }
-    
-    private long getLastElanRecharge() {
+
+    public long getLastElanRecharge() {
         return lastelanrecharge;
     }
     
@@ -1215,16 +1215,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             return "You may recharge your Elans Vital.";
         }
     }
-    
-    private long getLastStrengthening() {
+
+    public long getLastStrengthening() {
         return laststrengthening;
     }
     
     public void setLastStrengthening(long ls) {
         this.laststrengthening = ls;
     }
-    
-    private void updateLastStrengthening() {
+
+    public void updateLastStrengthening() {
         this.laststrengthening = System.currentTimeMillis();
     }
     
@@ -1382,8 +1382,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         
         return this.deathpenalty;
     }
-    
-    private long getLastKillOnMap() {
+
+    public long getLastKillOnMap() {
         return this.lastkillonmap;
     }
     
@@ -1477,9 +1477,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
      
     public int getStory() { 
         return story; 
-    } 
+    }
 
-    private void setStory(int story) {
+    public void setStory(int story) {
         this.story = story; 
     } 
      
@@ -1489,9 +1489,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
          
     public int getStoryPoints() { 
         return storypoints; 
-    } 
-     
-    private void setStoryPoints(int points) {
+    }
+
+    public void setStoryPoints(int points) {
         this.storypoints = points; 
     } 
      
@@ -1501,9 +1501,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public int getOffenseStory() { 
         return offensestory; 
-    } 
-     
-    private void setOffenseStory(int os) {
+    }
+
+    public void setOffenseStory(int os) {
         this.offensestory = os; 
     } 
      
@@ -1513,9 +1513,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public int getBuffStory() { 
         return buffstory; 
-    } 
-     
-    private void setBuffStory(int bs) {
+    }
+
+    public void setBuffStory(int bs) {
         this.buffstory = bs; 
     } 
      
@@ -1546,9 +1546,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 this.questkills2 = kills; 
                 break; 
         } 
-    } 
-     
-    private void doQuestKill(int type) {
+    }
+
+    public void doQuestKill(int type) {
         switch (type) {
             case 1:     
                 questkills++; 
@@ -2270,27 +2270,27 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return fame;
     }
 
-    private int getCP() {
+    public int getCP() {
         return this.CP;
     }
 
-    private int getTeam() {
+    public int getTeam() {
         return this.team;
     }
 
-    private int getTotalCP() {
+    public int getTotalCP() {
         return this.totalCP;
     }
 
-    private void setCP(int cp) {
+    public void setCP(int cp) {
         this.CP = cp;
     }
 
-    private void setTeam(int team) {
+    public void setTeam(int team) {
         this.team = team;
     }
 
-    private void setTotalCP(int totalcp) {
+    public void setTotalCP(int totalcp) {
         this.totalCP = totalcp;
     }
 
@@ -2784,19 +2784,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
     }
     
-    private void setLevelAchieved(int l) {
+    public void setLevelAchieved(int l) {
         this.levelAchieved = l;
     }
     
-    private void setJobAchieved(MapleJob j) {
+    public void setJobAchieved(MapleJob j) {
         this.jobAchieved = j;
     }
     
-    private int getLevelAchieved() {
+    public int getLevelAchieved() {
         return this.levelAchieved;
     }
     
-    private MapleJob getJobAchieved() {
+    public MapleJob getJobAchieved() {
         return this.jobAchieved;
     }
     
@@ -3176,7 +3176,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         client.getSession().write(updatePacket);
     }
 
-    private void updateSingleStat(MapleStat stat, int newval, boolean itemReaction) {
+    public void updateSingleStat(MapleStat stat, int newval, boolean itemReaction) {
         Pair<MapleStat, Integer> statpair = new Pair<>(stat, newval);
         MaplePacket updatePacket = MaplePacketCreator.updatePlayerStats(Collections.singletonList(statpair), itemReaction);
         client.getSession().write(updatePacket);
@@ -3439,7 +3439,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    private boolean isActiveBuffedValue(int skillid) {
+    public boolean isActiveBuffedValue(int skillid) {
         LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillid) {
@@ -3482,7 +3482,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return localdex;
     }
 
-    private int getTotalInt() {
+    public int getTotalInt() {
         return localint;
     }
 
@@ -5394,12 +5394,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         client.getSession().write(MaplePacketCreator.updateBuddyCapacity(getBuddyCapacity()));
     }
 
-    private void maxSkillLevel(int skillid) {
+    public void maxSkillLevel(int skillid) {
         int maxlevel = SkillFactory.getSkill(skillid).getMaxLevel();
         changeSkillLevel(SkillFactory.getSkill(skillid), maxlevel, maxlevel);
     }
-    
-    private void resetSkillLevel(int skillid) {
+
+    public void resetSkillLevel(int skillid) {
         changeSkillLevel(SkillFactory.getSkill(skillid), 0, 0);
     }
 
