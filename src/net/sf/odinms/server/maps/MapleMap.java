@@ -108,7 +108,7 @@ public class MapleMap {
 
     public static int timeSinceLastLatanica(int channel) {
         synchronized (lastLatanicaTimes) {
-            return (int) (System.currentTimeMillis() / 1000 - lastLatanicaTimes.get(channel));
+            return (int) (System.currentTimeMillis() / 1000 - (lastLatanicaTimes.getOrDefault(channel, 0)));
         }
     }
 
