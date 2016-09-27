@@ -39,7 +39,7 @@ public class ExpTable {
 
     public static int getExpNeededForLevel(int level) {
         if (level > 200) {
-            return Integer.MAX_VALUE;
+            return Integer.MAX_VALUE - 100000;
         }
         return exp[level];
     }
