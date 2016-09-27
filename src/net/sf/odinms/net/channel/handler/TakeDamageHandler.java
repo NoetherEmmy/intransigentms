@@ -295,6 +295,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         //System.out.print("damage: " + damage + "\n");
                         player.addMPHP(-damage, -mpattack);
                     }
+                    /*
                     if (c.getPlayer().getMap().getId() == 980010101) {
                         if (monsteridfrom == 9300166) {
                             player.setBombPoints(player.getBombPoints() - 1);
@@ -310,31 +311,23 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 return;
                             }
                         }
-                    } else {
-                        //System.out.print("6deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
-                        if (deadlyattack) {
-                            player.addMPHP(damage, 0);
-                            damage = 0;
-                        }
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
-                        //System.out.print("7deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
-                        if (player.getTrueDamage()) {
-                            player.sendHint("#e#r" + damage + "#k#n" + (removeddamage > 0 ? " #e#b(" + removeddamage + ")#k#n" : ""), 0, 0);
-                        }
-                        if (player.getMount() != null && player.getMount().getSkillId() == 5221006 && player.getMount().isActive()) {
-                            player.decrementBattleshipHp(damage);
-                        }
+                    } else { */
+                    //System.out.print("6deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
+                    if (deadlyattack) {
+                        player.addMPHP(damage, 0);
+                        damage = 0;
                     }
-                    //player.cancelDarkSight();
+                    player.getMap().broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
+                    //System.out.print("7deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
+                    if (player.getTrueDamage()) {
+                        player.sendHint("#e#r" + damage + "#k#n" + (removeddamage > 0 ? " #e#b(" + removeddamage + ")#k#n" : ""), 0, 0);
+                    }
+                    if (player.getMount() != null && (player.getMount().getSkillId() == 5221006 && player.getMount().isActive())) {
+                        player.decrementBattleshipHp(damage);
+                    }
+                    //}
                 }
             }
-            /*
-            try {
-                player.setLastDamageSource(attacker);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            */
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -156,8 +156,8 @@ public class MapleClient {
 
     private Calendar getTempBanCalendar(ResultSet rs) throws SQLException {
         Calendar lTempban = Calendar.getInstance();
-        long blubb = rs.getLong("tempban");
-        if (blubb == 0) {
+        long banExpiryInMillis = rs.getLong("tempban");
+        if (banExpiryInMillis == 0) {
             lTempban.setTimeInMillis(0);
             return lTempban;
         }

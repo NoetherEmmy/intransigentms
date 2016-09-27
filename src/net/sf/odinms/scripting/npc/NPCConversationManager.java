@@ -1445,15 +1445,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return "";
         }
     }
-    
+
     public String plainEquipList() {
+        return plainEquipList(4);
+    }
+    
+    public String plainEquipList(int itemsPerLine) {
         StringBuilder str = new StringBuilder();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
         List<String> stra = new LinkedList<>();
         ArrayList<IItem> equiplist = new ArrayList<>();
-        for (IItem equipitem : equip.list()) {
-            equiplist.add(equipitem);
-        }
+        equiplist.addAll(equip.list());
         
         // This sorts the items by their position in the inventory
         Collections.sort(equiplist, (o1, o2) -> {
@@ -1468,9 +1470,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 }
             }
         });
-        
+
+        int itemsInLine = 0;
         for (IItem equipitem : equiplist) {
             stra.add("#L" + equipitem.getPosition() + "##i" + equipitem.getItemId() + "##l");
+            itemsInLine++;
+            if (itemsPerLine > 0 && itemsInLine >= itemsPerLine) {
+                stra.add("\r\n");
+                itemsInLine = 0;
+            }
         }
         if (!stra.isEmpty()) {
             for (String strb : stra) {

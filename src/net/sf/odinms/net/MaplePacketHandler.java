@@ -15,7 +15,7 @@ public interface MaplePacketHandler {
      * handlePacket is recommended.
      *
      * @param c the client
-     * @return true if the state of the client is valid to send this packettype
+     * @return true if the state of the client is valid to send this packet type
      */
     boolean validateState(MapleClient c);
 }
