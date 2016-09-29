@@ -776,11 +776,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(66, completedallquests ? 1 : 0);
             ps.setInt(67, scpqflag ? 1 : 0);
             if (update) {
-                ps.setInt(67, id);
+                ps.setInt(68, id);
             } else {
-                ps.setInt(67, accountid);
-                ps.setString(68, name);
-                ps.setInt(69, world);
+                ps.setInt(68, accountid);
+                ps.setString(69, name);
+                ps.setInt(70, world);
             }
             if (!full) {
                 ps.executeUpdate();
