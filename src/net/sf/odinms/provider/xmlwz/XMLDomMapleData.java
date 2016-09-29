@@ -49,7 +49,14 @@ public class XMLDomMapleData implements MapleData {
         for (int x = 0; x < segments.length; ++x) {
             NodeList childNodes = myNode.getChildNodes();
             boolean foundChild = false;
-            for (int i = 0; i < childNodes.getLength(); ++i) {
+            int numChildNodes;
+            try {
+                numChildNodes = childNodes.getLength();
+            } catch (NullPointerException npe) {
+                System.out.print("Exception in XMLDomMapleData.getChildByPath() for path " + path + ", " + npe + "\n");
+                numChildNodes = 0;
+            }
+            for (int i = 0; i < numChildNodes; ++i) {
                 Node childNode = childNodes.item(i);
                 if (childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segments[x])) {
                     myNode = childNode;

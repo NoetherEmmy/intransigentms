@@ -55,7 +55,7 @@ public class MapleMap {
 
     private static final int MAX_OID = 20000;
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(MapleMapObjectType.ITEM, MapleMapObjectType.MONSTER, MapleMapObjectType.DOOR, MapleMapObjectType.SUMMON, MapleMapObjectType.REACTOR);
-    private final Map<Integer, MapleMapObject> mapobjects = new LinkedHashMap<>();
+    private final Map<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(10, 0.9f, 2);
     private final Collection<SpawnPoint> monsterSpawn = new LinkedList<>();
     private final AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
     private final Collection<MapleCharacter> characters = new LinkedHashSet<>();
@@ -191,14 +191,16 @@ public class MapleMap {
 
     private void incrementRunningOid() {
         runningOid++;
-        for (int numIncrements = 1; numIncrements < MAX_OID; ++numIncrements) {
-            if (runningOid > MAX_OID) {
-                runningOid = 100;
-            }
-            if (this.mapobjects.containsKey(runningOid)) {
-                runningOid++;
-            } else {
-                return;
+        synchronized(this.mapobjects) {
+            for (int numIncrements = 1; numIncrements < MAX_OID; ++numIncrements) {
+                if (runningOid > MAX_OID) {
+                    runningOid = 100;
+                }
+                if (this.mapobjects.containsKey(runningOid)) {
+                    runningOid++;
+                } else {
+                    return;
+                }
             }
         }
         throw new RuntimeException("Out of OIDs on map " + mapid + " (channel: " + channel + ")");
@@ -206,9 +208,7 @@ public class MapleMap {
 
     public void removeMapObject(int num) {
         synchronized (this.mapobjects) {
-            if (mapobjects.containsKey(num)) {
-                this.mapobjects.remove(num);
-            }
+            this.mapobjects.remove(num);
         }
     }
 
@@ -698,7 +698,9 @@ public class MapleMap {
 
     public void resetReactors() {
         synchronized (this.mapobjects) {
-            for (MapleMapObject o : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = this.mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject o = mmoiter.next();
                 if (o.getType() == MapleMapObjectType.REACTOR) {
                     ((MapleReactor) o).setState((byte) 0);
                     ((MapleReactor) o).setTimerActive(false);
@@ -711,13 +713,17 @@ public class MapleMap {
     public void shuffleReactors() {
         List<Point> points = new ArrayList<>();
         synchronized (this.mapobjects) {
-            for (MapleMapObject o : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter1 = this.mapobjects.values().iterator();
+            while (mmoiter1.hasNext()) {
+                MapleMapObject o = mmoiter1.next();
                 if (o.getType() == MapleMapObjectType.REACTOR) {
                     points.add(o.getPosition());
                 }
             }
             Collections.shuffle(points);
-            for (MapleMapObject o : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter2 = this.mapobjects.values().iterator();
+            while (mmoiter2.hasNext()) {
+                MapleMapObject o = mmoiter2.next();
                 if (o.getType() == MapleMapObjectType.REACTOR) {
                     o.setPosition(points.remove(points.size() - 1));
                 }
@@ -763,12 +769,21 @@ public class MapleMap {
     }
 
     public Collection<MapleMapObject> getMapObjects() {
-        return Collections.unmodifiableCollection(mapobjects.values());
+        LinkedList<MapleMapObject> ret = new LinkedList<>();
+        synchronized (mapobjects) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                ret.add(mmoiter.next());
+            }
+        }
+        return ret;
     }
 
     public boolean containsNPC(int npcid) {
         synchronized (mapobjects) {
-            for (MapleMapObject obj : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject obj = mmoiter.next();
                 if (obj.getType() == MapleMapObjectType.NPC) {
                     if (((MapleNPC) obj).getId() == npcid) {
                         return true;
@@ -780,7 +795,9 @@ public class MapleMap {
     }
 
     public MapleMapObject getMapObject(int oid) {
-        return mapobjects.get(oid);
+        synchronized (mapobjects) {
+            return mapobjects.get(oid);
+        }
     }
 
     public MapleMonster getMonsterByOid(int oid) {
@@ -807,7 +824,9 @@ public class MapleMap {
 
     public MapleReactor getReactorByName(String name) {
         synchronized (mapobjects) {
-            for (MapleMapObject obj : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject obj = mmoiter.next();
                 if (obj.getType() == MapleMapObjectType.REACTOR) {
                     if (((MapleReactor) obj).getName().equals(name)) {
                         return (MapleReactor) obj;
@@ -1058,7 +1077,9 @@ public class MapleMap {
     private void activateItemReactors(MapleMapItem drop) {
         IItem item = drop.getItem();
         final TimerManager tMan = TimerManager.getInstance();
-        for (MapleMapObject o : mapobjects.values()) {
+        Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+        while (mmoiter.hasNext()) {
+            MapleMapObject o = mmoiter.next();
             if (o.getType() == MapleMapObjectType.REACTOR) {
                 if (((MapleReactor) o).getReactorType() == 100) {
                     if (((MapleReactor) o).getReactItem().getLeft() == item.getItemId() && ((MapleReactor) o).getReactItem().getRight() <= item.getQuantity()) {
@@ -1332,7 +1353,9 @@ public class MapleMap {
     }
 
     private void sendObjectPlacement(MapleClient mapleClient) {
-        for (MapleMapObject o : mapobjects.values()) {
+        Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+        while (mmoiter.hasNext()) {
+            MapleMapObject o = mmoiter.next();
             if (isNonRangedType(o.getType())) {
                 o.sendSpawnData(mapleClient);
             } else if (o.getType() == MapleMapObjectType.MONSTER) {
@@ -1361,7 +1384,9 @@ public class MapleMap {
     public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> types) {
         List<MapleMapObject> ret = new LinkedList<>();
         synchronized (mapobjects) {
-            for (MapleMapObject l : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject l = mmoiter.next();
                 if (types.contains(l.getType())) {
                     if (from.distanceSq(l.getPosition()) <= rangeSq) {
                         ret.add(l);
@@ -1375,7 +1400,9 @@ public class MapleMap {
     public List<MapleMapObject> getItemsInRange(Point from, double rangeSq) {
         List<MapleMapObject> ret = new LinkedList<>();
         synchronized (mapobjects) {
-            for (MapleMapObject l : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject l = mmoiter.next();
                 if (l.getType() == MapleMapObjectType.ITEM) {
                     if (from.distanceSq(l.getPosition()) <= rangeSq) {
                         ret.add(l);
@@ -1389,7 +1416,9 @@ public class MapleMap {
     public List<MapleMapObject> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> types) {
         List<MapleMapObject> ret = new LinkedList<>();
         synchronized (mapobjects) {
-            for (MapleMapObject l : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject l = mmoiter.next();
                 if (types.contains(l.getType())) {
                     if (box.contains(l.getPosition())) {
                         ret.add(l);
@@ -1524,9 +1553,9 @@ public class MapleMap {
         List<MapleMapObject> visibleObjectsNow = new ArrayList<>();
         //Set<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
         synchronized (player.getVisibleMapObjects()) {
-            Iterator<MapleMapObject> moiter = player.getVisibleMapObjects().iterator();
-            while (moiter.hasNext()) {
-                visibleObjectsNow.add(moiter.next());
+            Iterator<MapleMapObject> mmoiter = player.getVisibleMapObjects().iterator();
+            while (mmoiter.hasNext()) {
+                visibleObjectsNow.add(mmoiter.next());
             }
         }
         //MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
@@ -1536,18 +1565,20 @@ public class MapleMap {
             visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
         }
         */
-        for (MapleMapObject mo : visibleObjectsNow) {
-            if (mapobjects.get(mo.getObjectId()) == mo) {
-                updateMapObjectVisibility(player, mo);
-            } else {
-                player.removeVisibleMapObject(mo);
+        synchronized (mapobjects) {
+            for (MapleMapObject mmo : visibleObjectsNow) {
+                if (mapobjects.get(mmo.getObjectId()) == mmo) {
+                    updateMapObjectVisibility(player, mmo);
+                } else {
+                    player.removeVisibleMapObject(mmo);
+                }
             }
-        }
-        for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), MapleCharacter.MAX_VIEW_RANGE_SQ,
-                rangedMapobjectTypes)) {
-            if (!player.isMapObjectVisible(mo)) {
-                mo.sendSpawnData(player.getClient());
-                player.addVisibleMapObject(mo);
+            for (MapleMapObject mmo : getMapObjectsInRange(player.getPosition(), MapleCharacter.MAX_VIEW_RANGE_SQ,
+                    rangedMapobjectTypes)) {
+                if (!player.isMapObjectVisible(mmo)) {
+                    mmo.sendSpawnData(player.getClient());
+                    player.addVisibleMapObject(mmo);
+                }
             }
         }
     }
@@ -1572,7 +1603,9 @@ public class MapleMap {
                     spawnedMonstersOnMap + " spawnpoints: " + monsterSpawn.size() +
                     " maxRegularSpawn: " + getMaxRegularSpawn());
             int numMonsters = 0;
-            for (MapleMapObject mo : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject mo = mmoiter.next();
                 if (mo instanceof MapleMonster) {
                     numMonsters++;
                 }
@@ -1832,7 +1865,9 @@ public class MapleMap {
 
     public void setReactorState() {
         synchronized (this.mapobjects) {
-            for (MapleMapObject o : mapobjects.values()) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject o = mmoiter.next();
                 if (o.getType() == MapleMapObjectType.REACTOR) {
                     ((MapleReactor) o).setState((byte) 1);
                     broadcastMessage(MaplePacketCreator.triggerReactor((MapleReactor) o, 1));

@@ -35,8 +35,13 @@ public class MapleQuestRequirement {
             case QUEST:
                 for (MapleData questEntry : getData().getChildren()) {
                     MapleData iddata = questEntry.getChildByPath("id");
+                    MapleData statedata = questEntry.getChildByPath("state");
                     if (iddata == null) {
                         System.out.print("Getting quest ID failed in MapleQuestRequirement.check(): " + questEntry.getName() + "\n");
+                        return false;
+                    }
+                    if (statedata == null) {
+                        System.out.print("Getting quest state failed in MapleQuestRequirement.check(): " + questEntry.getName() + "\n");
                         return false;
                     }
                     MapleQuestStatus q = c.getQuest(MapleQuest.getInstance(MapleDataTool.getInt(questEntry.getChildByPath("id"))));
