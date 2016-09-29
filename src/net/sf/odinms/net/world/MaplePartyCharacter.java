@@ -19,6 +19,7 @@ public class MaplePartyCharacter implements Serializable {
     private int doorTarget = 999999999;
     private Point doorPosition = new Point(0, 0);
     private boolean online;
+    private boolean scpqFlag = false;
 
     public MaplePartyCharacter(MapleCharacter maplechar) {
         this.name = maplechar.getName();
@@ -35,11 +36,23 @@ public class MaplePartyCharacter implements Serializable {
         }
         this.gender = maplechar.getGender();
         this.married = maplechar.isMarried();
+        this.scpqFlag = maplechar.isScpqFlagged();
     }
 
     public MaplePartyCharacter() {
         this.name = "";
-    //default values for everything o.o
+        this.id = 0;
+        this.level = 1;
+        this.channel = 1;
+        this.jobid = 0;
+        this.mapid = 0;
+        this.gender = 0;
+        this.married = false;
+        this.doorTown = 999999999;
+        this.doorTarget = 999999999;
+        this.doorPosition = new Point(0, 0);
+        this.online = false;
+        this.scpqFlag = false;
     }
 
     public int getLevel() {
@@ -48,6 +61,10 @@ public class MaplePartyCharacter implements Serializable {
 
     public int getChannel() {
         return channel;
+    }
+
+    public boolean isScpqFlagged() {
+        return this.scpqFlag;
     }
 
     public boolean isOnline() {

@@ -265,7 +265,7 @@ public class MapleMap {
             toDrop.add(monster.getDrop());
         }
         //
-        if (dropOwner.getEventInstance() == null) {
+        if (dropOwner.getEventInstance() == null && dropOwner.getPartyQuest() == null) {
             int chance = (int) (Math.random() * 150); // 1/150 droprate
             if (chance < 1) {
                 toDrop.add(4001126); // Maple leaf
@@ -1217,6 +1217,9 @@ public class MapleMap {
         }
         if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted()) {
             chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
+        }
+        if (chr.getPartyQuest() != null && chr.getPartyQuest().isTimerStarted()) {
+            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (chr.getPartyQuest().getTimeLeft() / 1000)));
         }
         if (hasClock()) {
             Calendar cal = Calendar.getInstance();

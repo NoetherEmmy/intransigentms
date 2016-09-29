@@ -26,7 +26,7 @@ import net.sf.odinms.server.maps.MapleMapFactory;
 public class EventInstanceManager {
     private final List<MapleCharacter> chars = new LinkedList<>();
     private final List<MapleMonster> mobs = new LinkedList<>();
-    private final Map<MapleCharacter,Integer> killCount = new HashMap<>();
+    private final Map<MapleCharacter, Integer> killCount = new HashMap<>();
     private EventManager em;
     private MapleMapFactory mapFactory;
     private final String name;
@@ -94,9 +94,9 @@ public class EventInstanceManager {
         mob.setEventInstance(null);
         if (mobs.isEmpty()) {
             try {
-                    em.getIv().invokeFunction("allMonstersDead", this);
+                em.getIv().invokeFunction("allMonstersDead", this);
             } catch (ScriptException | NoSuchMethodException ex) {
-                    Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -151,10 +151,11 @@ public class EventInstanceManager {
 
     public int getKillCount(MapleCharacter chr) {
         Integer kc = killCount.get(chr);
-        if (kc == null)
+        if (kc == null) {
             return 0;
-        else
+        } else {
             return kc;
+        }
     }
 
     public void dispose() {

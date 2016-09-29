@@ -41,13 +41,16 @@ public class PartyOperationHandler extends AbstractMaplePacketHandler {
                     try {
                         if (partyplayer.equals(party.getLeader())) {
                             wci.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
-                            if (player.getEventInstance() != null) {
+                            if (player.getEventInstance() != null || player.getPartyQuest() != null) {
                                 player.getEventInstance().disbandParty();
                             }
                         } else {
                             wci.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
                             if (player.getEventInstance() != null) {
                                 player.getEventInstance().leftParty(player);
+                            }
+                            if (player.getPartyQuest() != null) {
+                                player.getPartyQuest().leftParty(player);
                             }
                         }
                     } catch (Exception e) {
@@ -111,7 +114,11 @@ public class PartyOperationHandler extends AbstractMaplePacketHandler {
                                     player.getEventInstance().disbandParty();
                                 }
                             }
-
+                            if (player.getPartyQuest() != null) {
+                                if (expelled.isOnline()) {
+                                    player.getPartyQuest().disbandParty();
+                                }
+                            }
                         } catch (Exception e) {
                             c.getChannelServer().reconnectWorld();
                         }

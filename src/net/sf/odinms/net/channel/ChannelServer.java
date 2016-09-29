@@ -270,6 +270,9 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             if (chr.getEventInstance() != null) {
                 chr.getEventInstance().playerDisconnected(chr);
             }
+            if (chr.getPartyQuest() != null) {
+                chr.getPartyQuest().playerDisconnected(chr);
+            }
             if (!chr.getClient().isGuest()) {
                 chr.saveToDB(true, true);
             }

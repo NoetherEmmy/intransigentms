@@ -599,6 +599,9 @@ public class MapleClient {
             if (chr.getEventInstance() != null) {
                 chr.getEventInstance().playerDisconnected(chr);
             }
+            if (chr.getPartyQuest() != null) {
+                chr.getPartyQuest().playerDisconnected(chr);
+            }
             IPlayerInteractionManager interaction = chr.getInteraction();
             if (interaction != null) {
                 if (interaction.isOwner(chr)) {

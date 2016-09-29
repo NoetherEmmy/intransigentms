@@ -921,12 +921,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         for (MaplePartyCharacter chr_ : getPlayer().getParty().getMembers()) {
             MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr_.getName());
             if ((curChar.getEventInstance() == null && c.getPlayer().getEventInstance() == null) || curChar.getEventInstance() == getPlayer().getEventInstance()) {
-                curChar.changeMap(mapId);
-                if (exp > 0) {
-                    curChar.gainExp(exp, true, false, true);
-                }
-                if (meso > 0) {
-                    curChar.gainMeso(meso, true);
+                if ((curChar.getPartyQuest() == null && c.getPlayer().getPartyQuest() == null) || curChar.getPartyQuest() == getPlayer().getPartyQuest()) {
+                    curChar.changeMap(mapId);
+                    if (exp > 0) {
+                        curChar.gainExp(exp, true, false, true);
+                    }
+                    if (meso > 0) {
+                        curChar.gainMeso(meso, true);
+                    }
                 }
             }
         }

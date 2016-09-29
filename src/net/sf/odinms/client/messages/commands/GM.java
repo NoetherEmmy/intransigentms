@@ -226,7 +226,7 @@ public class GM implements Command {
                 int npcid;
                 try {
                     npcid = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (NumberFormatException ignored) {
                     return;
                 }
                 MapleNPC npc = MapleLifeFactory.getNPC(npcid);

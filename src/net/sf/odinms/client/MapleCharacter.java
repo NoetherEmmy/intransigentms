@@ -34,6 +34,7 @@ import net.sf.odinms.client.anticheat.CheatTracker;
 import net.sf.odinms.database.DatabaseException;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.channel.PartyQuest;
 import net.sf.odinms.net.world.MapleMessengerCharacter;
 import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.net.world.PlayerBuffValueHolder;
@@ -130,6 +131,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int APQScore;
     private MapleParty party;
     private EventInstanceManager eventInstance = null;
+    private PartyQuest partyQuest = null;
     private final MapleInventory[] inventory;
     private final Map<MapleQuest, MapleQuestStatus> quests;
     private final Set<MapleMonster> controlled = new LinkedHashSet<>();
@@ -1452,6 +1454,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void setScpqFlag(boolean sf) {
         this.scpqflag = sf;
+        this.silentPartyUpdate();
     }
     
     public void setBattleshipHp(int bhp) {
@@ -4615,6 +4618,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         this.eventInstance = eventInstance;
     }
 
+    public PartyQuest getPartyQuest() {
+        return this.partyQuest;
+    }
+
+    public void setPartyQuest(PartyQuest pq) {
+        this.partyQuest = pq;
+    }
+
     public void addDoor(MapleDoor door) {
         doors.add(door);
     }
@@ -5847,10 +5858,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     if (getEventInstance() != null) {
                         getEventInstance().disbandParty();
                     }
+                    if (getPartyQuest() != null) {
+                        getPartyQuest().disbandParty();
+                    }
                 } else {
                     wci.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
                     if (getEventInstance() != null) {
                         getEventInstance().leftParty(this);
+                    }
+                    if (getPartyQuest() != null) {
+                        getPartyQuest().leftParty(this);
                     }
                 }
             } catch (RemoteException re) {
