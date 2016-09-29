@@ -66,7 +66,7 @@ public class SpawnPoint {
         if (mobTime == 0) {
             nextPossibleSpawn = System.currentTimeMillis() + 5000;
         }
-        if (Math.random() < 0.001d) {
+        if (Math.random() < 0.004d) {
             mapleMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400570), pos);
         }
         return mob;
