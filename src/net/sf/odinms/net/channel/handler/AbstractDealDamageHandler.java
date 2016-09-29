@@ -193,7 +193,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 switch (attack.skill) {
                     case 1221011: // sanctuary
                         if (attack.isHH) {
-                            // TODO min damage still needs calculated. Using -20% as mindamage in the meantime... seems to work.
+                            // TODO min damage still needs calculated. Using -20% as minimum damage in the meantime... seems to work.
                             int HHDmg = player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100);
                             HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * .80) + HHDmg * .80));
                             map.damageMonster(player, monster, HHDmg);
@@ -266,6 +266,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                     }
                                 }
                             }
+                            /*
                             if ((attack.skill == 4121003 || attack.skill == 4221003) && !monster.isBuffed(MonsterStatus.SHOWDOWN)) {
                                 MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SHOWDOWN, player.getSkillLevel(SkillFactory.getSkill(attack.skill))), SkillFactory.getSkill(attack.skill), false);
                                 // System.out.print(player.getSkillLevel(SkillFactory.getSkill(attack.skill)) + "\n" + attack.skill + "\n" + player.getName() + "\n");
@@ -273,6 +274,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                 //monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.WDEF, player.getSkillLevel(SkillFactory.getSkill(attack.skill)) + 10), SkillFactory.getSkill(attack.skill), false);
                                 //monster.applyStatus(player, monsterStatusEffect, false, Long.MAX_VALUE);
                             }
+                            */
                         }
                         break;
                 }
@@ -309,7 +311,6 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             case 4121003:
                             case 4221003:
                                 // Fixing Taunt skill
-                                System.out.print("Fixing taunt skill, level: " + player.getSkillLevel(SkillFactory.getSkill(attack.skill)) + "\n");
                                 Map<MonsterStatus, Integer> tauntstati = new LinkedHashMap<>(3);
                                 tauntstati.put(MonsterStatus.WDEF, 300);
                                 tauntstati.put(MonsterStatus.MDEF, 300);

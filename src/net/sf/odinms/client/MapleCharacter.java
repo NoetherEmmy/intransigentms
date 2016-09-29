@@ -235,6 +235,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private ScheduledFuture<?> magicarmorcanceltask = null;
     
     private boolean completedallquests = false;
+
+    private boolean scpqflag = false;
     //
 
     public MapleCharacter() {
@@ -268,7 +270,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (!rs.next()) {
             rs.close();
             ps.close();
-            throw new RuntimeException("Loading the Char Failed (char not found)");
+            throw new RuntimeException("Loading the character failed (character not found).");
         }
         ret.name = rs.getString("name");
         ret.level = rs.getInt("level");
@@ -360,6 +362,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.deathfactor = rs.getInt("deathfactor");
         ret.truedamage = rs.getInt("truedamage") != 0;
         ret.completedallquests = rs.getInt("completedallquests") != 0;
+        ret.scpqflag = rs.getInt("scpqflag") != 0;
         ret.battleshiphp = 0;
         //
         if (ret.guildid > 0) {
@@ -656,6 +659,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.APQScore = 0;
         ret.maplemount = null;
         ret.completedallquests = false;
+        ret.scpqflag = false;
         ret.setDefaultKeyMap();
         ret.recalcLocalStats();
         return ret;
@@ -668,9 +672,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             con.setAutoCommit(false);
             PreparedStatement ps;
             if (update) {
-                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ? WHERE id = ?");
+                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ? WHERE id = ?");
             } else {
-                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -770,6 +774,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(64, truedamage ? 1 : 0);
             ps.setInt(65, expbonusmulti);
             ps.setInt(66, completedallquests ? 1 : 0);
+            ps.setInt(67, scpqflag ? 1 : 0);
             if (update) {
                 ps.setInt(67, id);
             } else {
@@ -1439,6 +1444,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public void setCompletedAllQuests(boolean caq) {
         this.completedallquests = caq;
+    }
+
+    public boolean isScpqFlagged() {
+        return this.scpqflag;
+    }
+
+    public void setScpqFlag(boolean sf) {
+        this.scpqflag = sf;
     }
     
     public void setBattleshipHp(int bhp) {
@@ -2848,6 +2861,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setBuffStory(0);
         setQuestId(0);
         setCompletedAllQuests(false);
+        setScpqFlag(false);
         setMonsterTrialPoints(0);
         setMonsterTrialTier(0);
         setLastTrialTime((long) 0);

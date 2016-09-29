@@ -34,11 +34,18 @@ public class MapleQuestRequirement {
                 return false;
             case QUEST:
                 for (MapleData questEntry : getData().getChildren()) {
-                    MapleQuestStatus q = c.getQuest(MapleQuest.getInstance(MapleDataTool.getInt(questEntry.getChildByPath("id"))));
-                    if (q == null && MapleQuestStatus.Status.getById(MapleDataTool.getInt(questEntry.getChildByPath("state"))).equals(MapleQuestStatus.Status.NOT_STARTED))
-                        continue;
-                    if (q == null || !q.getStatus().equals(MapleQuestStatus.Status.getById(MapleDataTool.getInt(questEntry.getChildByPath("state")))))
+                    MapleData iddata = questEntry.getChildByPath("id");
+                    if (iddata == null) {
+                        System.out.print("Getting quest ID failed in MapleQuestRequirement.check(): " + questEntry.getName() + "\n");
                         return false;
+                    }
+                    MapleQuestStatus q = c.getQuest(MapleQuest.getInstance(MapleDataTool.getInt(questEntry.getChildByPath("id"))));
+                    if (q == null && MapleQuestStatus.Status.getById(MapleDataTool.getInt(questEntry.getChildByPath("state"))).equals(MapleQuestStatus.Status.NOT_STARTED)) {
+                        continue;
+                    }
+                    if (q == null || !q.getStatus().equals(MapleQuestStatus.Status.getById(MapleDataTool.getInt(questEntry.getChildByPath("state"))))) {
+                        return false;
+                    }
                 }
                 return true;
             case ITEM:
@@ -80,8 +87,8 @@ public class MapleQuestRequirement {
                 return false;
             case INTERVAL:
                 return !c.getQuest(quest).getStatus().equals(MapleQuestStatus.Status.COMPLETED) || c.getQuest(quest).getCompletionTime() <= System.currentTimeMillis() - MapleDataTool.getInt(getData()) * 60 * 1000;
-//            case PET:
-//            case MIN_PET_TAMENESS:
+            //case PET:
+            //case MIN_PET_TAMENESS:
             default:
                 return true;
         }

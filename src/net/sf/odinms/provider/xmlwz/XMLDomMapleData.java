@@ -72,7 +72,7 @@ public class XMLDomMapleData implements MapleData {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); ++i) {
             Node childNode = childNodes.item(i);
-            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE) {
                 XMLDomMapleData child = new XMLDomMapleData(childNode);
                 child.imageDataDir = new File(imageDataDir, getName());
                 ret.add(child);
@@ -151,6 +151,7 @@ public class XMLDomMapleData implements MapleData {
             case "null":
                 return MapleDataType.IMG_0x00;
         }
+        System.out.print("Returning null in XMLDomMapleData.getType(): node's name: " + nodeName + ", " + "node's URI: " + node.getBaseURI() + "\n");
         return null;
     }
 
