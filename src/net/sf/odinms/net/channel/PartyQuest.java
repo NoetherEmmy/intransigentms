@@ -9,9 +9,13 @@ public class PartyQuest {
     private final String name;
     private long timeStarted = 0;
     private long eventTime = 0;
+    private int minPlayers;
+    private int exitMapId;
 
-    public PartyQuest(String name) {
+    public PartyQuest(String name, int minPlayers, int exitMapId) {
         this.name = name;
+        this.minPlayers = minPlayers;
+        this.exitMapId = exitMapId;
     }
 
     public void registerPlayer(MapleCharacter player) {
@@ -19,32 +23,46 @@ public class PartyQuest {
         player.setPartyQuest(this);
     }
 
-    public void unregisterPlayer(MapleCharacter player) {
+    private void unregisterPlayer(MapleCharacter player) {
         chars.remove(player);
         player.setPartyQuest(null);
     }
 
+    private void removePlayer(MapleCharacter player) {
+        unregisterPlayer(player);
+        player.changeMap(exitMapId);
+    }
+
     public void leftParty(MapleCharacter player) {
+        if (chars.size() < minPlayers) {
+            dispose();
+        } else {
+            removePlayer(player);
+        }
     }
 
     public void disbandParty() {
+        dispose();
     }
 
     public void playerDisconnected(MapleCharacter player) {
-        if (isLeader(player) || playerparty.size() < minPlayers) { // Check for party leader or party size less than minimum players.
-            // Boot whole party and end
-            var party = eim.getPlayers();
-            for (var i = 0; i < party.size(); i++) {
-                if (party.get(i).equals(player)) {
-                    removePlayer(eim, player); // Sets map only. Cant possible changeMap because player is offline.
-                } else {
-                    playerExit(eim, party.get(i)); // Removes all other characters from the instance.
-                }
-            }
-            eim.dispose();
-        } else { // non leader.
-            removePlayer(eim, player); // Sets map only. Cant possible changeMap because player is offline.
+        removePlayer(player);
+        if (isLeader(player) || chars.size() < minPlayers) { // Check for party leader or party size less than minimum players.
+            // Boot whole party and end.
+            dispose();
         }
+    }
+
+    public void playerDead(MapleCharacter player) {
+        unregisterPlayer(player);
+    }
+
+    public void dispose() {
+        for (MapleCharacter char_ : chars) {
+            char_.changeMap(exitMapId);
+            unregisterPlayer(char_);
+        }
+        chars.clear();
     }
 
     public void startTimer(long time) {
@@ -61,6 +79,6 @@ public class PartyQuest {
     }
 
     public boolean isLeader(MapleCharacter player) {
-        return (player.getParty().getLeader().getId() == player.getId());
+        return player.getParty().getLeader().getId() == player.getId();
     }
 }

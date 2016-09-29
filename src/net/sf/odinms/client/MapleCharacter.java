@@ -2924,6 +2924,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setMaxMp(5);
         updateSingleStat(MapleStat.MAXHP, 50);
         updateSingleStat(MapleStat.MAXMP, 5);
+        if (getPartyQuest() != null) {
+            getPartyQuest().playerDead(this);
+        }
         checkBerserk();
         try {
             addNewPastLife(levelAchieved, jobAchieved.getId(), lds);
