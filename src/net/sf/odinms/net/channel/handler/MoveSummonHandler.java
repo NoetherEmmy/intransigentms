@@ -2,6 +2,8 @@ package net.sf.odinms.net.channel.handler;
 
 import java.awt.Point;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -11,7 +13,8 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import net.sf.odinms.tools.data.input.StreamUtil;
 
-public class MoveSummonHandler extends AbstractMovementPacketHandler {
+public class
+MoveSummonHandler extends AbstractMovementPacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -31,7 +34,15 @@ public class MoveSummonHandler extends AbstractMovementPacketHandler {
             // player = ((MapleCharacter) c.getPlayer().getMap().getMapObject(30000));
             player.getMap().broadcastMessage(player, MaplePacketCreator.moveSummon(player.getId(), oid, startPos, res), summon.getPosition());
         } else {
-            player.getSummons().remove(summon.getSkill());
+            List<Integer> summonKeys = new LinkedList<>();
+            for (Integer key : player.getSummons().keySet()) {
+                if (player.getSummons().get(key) == null) {
+                    summonKeys.add(key);
+                }
+            }
+            for (Integer key : summonKeys) {
+                player.getSummons().remove(key);
+            }
         }
     }
 }

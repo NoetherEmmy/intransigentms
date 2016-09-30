@@ -23,7 +23,7 @@ public class EventScriptManager extends AbstractScriptManager {
         public final EventManager em;
     }
 
-    private final Map<String,EventEntry> events = new LinkedHashMap<>();
+    private final Map<String, EventEntry> events = new LinkedHashMap<>();
 
     public EventScriptManager(ChannelServer cserv, String[] scripts) {
         super();

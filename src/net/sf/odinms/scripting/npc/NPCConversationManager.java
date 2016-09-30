@@ -1577,20 +1577,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
         }
         
-        /*int[] equipids = new int[equip.list().size()];
-        for (IItem equipitem : equip.list()) {
-            tempitem = (Equip) equipitem;
-            if(equipitem.getPosition() != leavebehind) {
-                if(tempitem.getStr() != 0 || tempitem.getDex() != 0 || tempitem.getInt() != 0 || tempitem.getLuk() != 0 || tempitem.getHp() != 0 || tempitem.getMp() != 0 || tempitem.getWatk() != 0 || tempitem.getMatk() != 0 || tempitem.getWdef() != 0 || tempitem.getMdef() != 0 || tempitem.getAcc() != 0 || tempitem.getAvoid() != 0 || tempitem.getSpeed() != 0 || tempitem.getJump() != 0 || tempitem.getUpgradeSlots() != 0) {
-                    equipids[i] = equipitem.getItemId();
-                    i++;
-                }
-            }
-        }*/
-        
         for (byte j = 0; j < i; ++j) {
-            //equip.removeSlot(equipslots[j]);
-            //MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(equip.getItem(equipslots[j]).getItemId()), equip.getItem(equipslots[j]).getItemId(), 1, true, false);
             MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(equip.getItem(equipslots[j]).getItemId()), equipslots[j], (short) 1, false);
         }
         i = 0;
@@ -1600,8 +1587,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             i++;
         }
         for (byte j = 0; j < i; ++j) {
-            //use.removeSlot(useslots[j]);
-            //MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(use.getItem(useslots[j]).getItemId()), use.getItem(useslots[j]).getItemId(), 1, true, false);
             MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(use.getItem(useslots[j]).getItemId()), useslots[j], use.getItem(useslots[j]).getQuantity(), false);
         }
         i = 0;
@@ -1611,8 +1596,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             i++;
         }
         for (byte j = 0; j < i; ++j) {
-            //etc.removeSlot(etcslots[j]);
-            //MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(etc.getItem(etcslots[j]).getItemId()), etc.getItem(etcslots[j]).getItemId(), 1, true, false);
             MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(etc.getItem(etcslots[j]).getItemId()), etcslots[j], etc.getItem(etcslots[j]).getQuantity(), false);
         }
     }

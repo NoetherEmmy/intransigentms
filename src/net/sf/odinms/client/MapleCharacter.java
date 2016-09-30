@@ -137,7 +137,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private final Set<MapleMonster> controlled = new LinkedHashSet<>();
     private final Set<MapleMapObject> visibleMapObjects = Collections.synchronizedSet(new LinkedHashSet<MapleMapObject>());
     private final Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
-    private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentHashMap<>(8, 0.9f, 2);
+    private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentHashMap<>(8, 0.8f, 2);
     private final HashMap<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
     private final List<MapleDoor> doors = new ArrayList<>();
     private final Map<Integer, MapleSummon> summons = new LinkedHashMap<>();

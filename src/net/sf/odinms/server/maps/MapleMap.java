@@ -36,6 +36,7 @@ import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.channel.PartyQuestMapInstance;
 import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MaplePortal;
@@ -55,7 +56,7 @@ public class MapleMap {
 
     private static final int MAX_OID = 20000;
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(MapleMapObjectType.ITEM, MapleMapObjectType.MONSTER, MapleMapObjectType.DOOR, MapleMapObjectType.SUMMON, MapleMapObjectType.REACTOR);
-    private final Map<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(10, 0.9f, 2);
+    private final Map<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(10, 0.7f, 2);
     private final Collection<SpawnPoint> monsterSpawn = new LinkedList<>();
     private final AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
     private final Collection<MapleCharacter> characters = new LinkedHashSet<>();
@@ -87,6 +88,7 @@ public class MapleMap {
     private ScheduledFuture<?> periodicMonsterDrop = null;
     private ScheduledFuture<?> cancelPeriodicMonsterDrop = null;
     private static final Map<Integer, Integer> lastLatanicaTimes = new ConcurrentHashMap<>(4, 0.75f, 1);
+    private PartyQuestMapInstance partyQuestInstance = null;
 
     public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
         this.mapid = mapid;
@@ -1013,6 +1015,24 @@ public class MapleMap {
         this.cancelPeriodicMonsterDrop = null;
     }
 
+    public PartyQuestMapInstance getPartyQuestInstance() {
+        return partyQuestInstance;
+    }
+
+    public void registerPartyQuestInstance(PartyQuestMapInstance newInstance) {
+        if (this.partyQuestInstance != null) {
+            this.partyQuestInstance.dispose();
+        }
+        this.partyQuestInstance = newInstance;
+    }
+
+    public void unregisterPartyQuestInstance() {
+        if (this.partyQuestInstance != null) {
+            this.partyQuestInstance.dispose();
+        }
+        this.partyQuestInstance = null;
+    }
+
     private class TimerDestroyWorker implements Runnable {
 
         @Override
@@ -1923,7 +1943,11 @@ public class MapleMap {
             case 922010800:
                 return true;
             default:
-                return false;
+                if (getId() / 1000 == 5) {
+                    return true;
+                } else {
+                    return false;
+                }
         }
     }
 

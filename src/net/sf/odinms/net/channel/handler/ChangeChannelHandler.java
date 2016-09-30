@@ -31,6 +31,11 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
+        if (player.getPartyQuest() != null) {
+            player.dropMessage(5, "You may not change channels while in " + player.getPartyQuest().getName() + ".");
+            c.getSession().write(MaplePacketCreator.enableActions());
+            return;
+        }
         if (PublicChatHandler.getPublicChatHolder().containsKey(player.getId())) {
             PublicChatHandler.getPublicChatHolder().remove(player.getId());
             PublicChatHandler.getPublicChatHolder().put(player.getId(), channel);

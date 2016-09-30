@@ -100,6 +100,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private int PvPis;
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
+    private final Map<String, PartyQuest> partyQuests = new HashMap<>(1);
     private static final Map<Integer, ChannelServer> instances = new HashMap<>();
     private static final Map<String, ChannelServer> pendingInstances = new HashMap<>();
     private final Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
@@ -464,6 +465,18 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         eventSM.cancel();
         eventSM = new EventScriptManager(this, props.getProperty("net.sf.odinms.channel.events").split(","));
         eventSM.init();
+    }
+
+    public PartyQuest getPartyQuest(String name) {
+        return partyQuests.get(name);
+    }
+
+    public void registerPartyQuest(PartyQuest pq) {
+        partyQuests.put(pq.getName(), pq);
+    }
+
+    public void unregisterPartyQuest(String name) {
+        partyQuests.remove(name);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             System.out.println("Loading the char failed" + e);
         }
         c.setAccID(player.getAccountID());
-        c.getSession().write(MaplePacketCreator.setGender(player)); //////////////////
+        c.getSession().write(MaplePacketCreator.setGender(player));
         int state = c.getLoginState();
         boolean allowLogin = true;
         ChannelServer channelServer = c.getChannelServer();
@@ -92,11 +92,9 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             e.printStackTrace();
             c.getChannelServer().reconnectWorld();
         }
-        //
         if (player.isDead()) {
             player.permadeath();
         }
-        //
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT SkillID,StartTime,length FROM cooldowns WHERE charid = ?");
@@ -194,6 +192,21 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             player.changeMap(240040700, 0);
         } else if (player.getMapId() == 3000) {
             player.changeMap(player.getBossReturnMap(), 0);
+        }
+        if (player.getMap() != null) {
+            if (player.getMap().getPartyQuestInstance() != null) {
+                player.getMap().getPartyQuestInstance().getPartyQuest().playerReconnected(player);
+            } else {
+                if (player.getMap().isPQMap() && player.getParty() != null) {
+                    if (player.getMapId() / 100 == player.getParty().getLeader().getMapid() / 100 && player.getMapId() != player.getParty().getLeader().getMapid()) {
+                        player.changeMap(player.getParty().getLeader().getMapid(), 0);
+                    } else {
+                        player.changeMap(100000000, 0);
+                    }
+                } else if (player.getMap().isPQMap()) {
+                    player.changeMap(100000000, 0);
+                }
+            }
         }
         player.checkMessenger();
         player.checkBerserk();
