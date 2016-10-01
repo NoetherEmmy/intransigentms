@@ -35,7 +35,7 @@ public abstract class AbstractScriptManager {
             if (engine == null) {
                 File scriptFile = new File(path);
                 if (!scriptFile.exists()) {
-                    System.out.print("path0: "+path+"\n");
+                    System.out.print("path0: " + path + "\n");
                     return null;
                 }
                 engine = sem.getEngineByName("javascript");
@@ -44,22 +44,12 @@ public abstract class AbstractScriptManager {
                 }
                 FileReader fr = new FileReader(scriptFile);
                 engine.eval(fr);
-                /*
-                try (Stream<String> stream = Files.lines(scriptFile.toPath())) {
-                    String lines = "load('nashorn:mozilla_compat.js');";
-                    lines += stream.collect(Collectors.joining(System.lineSeparator()));
-                    engine.eval(lines);
-                } catch (final ScriptException | IOException t) {
-                    System.out.println(t);
-                    return null;
-                }
-                */
                 fr.close();
             }
             return (Invocable) engine;
         } catch (Exception e) {
             log.error("Error executing script.", e);
-            System.out.print("path1: "+path+"\n");
+            System.out.print("path1: " + path + "\n");
             return null;
         }
     }

@@ -80,12 +80,13 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@deathpenalty - | - Displays your current death penalty level and its effects, as well as how long until you can next rest.");
             mc.dropMessage("@monsterhp - | - Displays the current HP % of all mobs on the map.");
             mc.dropMessage("@bosshp - | - Displays the current HP % of all bosses on the map.");
-            mc.dropMessage("@truedamage - | - Toggles the display of true damage received (only useful when damage scale != 1.0).");
+            mc.dropMessage("@truedamage - | - Toggles the display of true damage received.");
             mc.dropMessage("@whodrops - | - Allows selection of an item and lists monsters who drop the selected item.");
             mc.dropMessage("@whodrops <itemid> - | - Lists monsters who drop the item with that ID.");
             mc.dropMessage("@whodrops <searchstring> - | - Lists monsters who drop the item with the name that is the closest fit for <searchstring>.");
             mc.dropMessage("@monsterdrops <monsterid> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
             mc.dropMessage("@monsterdrops <searchstring> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
+            mc.dropMessage("@pqpoints - | - Toggles the display of current PQ point total.");
             mc.dropMessage("@donated - | - Allows access to donator benefits.");
             mc.dropMessage("@vote - | - Displays the amount of time left until you may vote again.");
             if (player.getClient().getChannelServer().extraCommands()) {
@@ -968,6 +969,10 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@sell")) {
             NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9201081);
+        } else if (splitted[0].equals("@pqpoints")) {
+            player.toggleShowPqPoints();
+            String s = player.showPqPoints() ? "on" : "off";
+            mc.dropMessage("PQ point display is now turned " + s + ".");
         }
     }
 
@@ -1057,7 +1062,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("monsterdrops", 0),
             new CommandDefinition("cancelquest", 0),
             new CommandDefinition("vote", 0),
-            new CommandDefinition("sell", 0)
+            new CommandDefinition("sell", 0),
+            new CommandDefinition("pqpoints", 0)
         };
     }
 }

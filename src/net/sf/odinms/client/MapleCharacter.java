@@ -47,6 +47,7 @@ import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.MapleStorage;
 import net.sf.odinms.server.MapleTrade;
 import net.sf.odinms.server.TimerManager;
+import net.sf.odinms.server.life.MobSkillFactory;
 import net.sf.odinms.server.maps.AbstractAnimatedMapleMapObject;
 import net.sf.odinms.server.maps.MapleDoor;
 import net.sf.odinms.server.maps.MapleMapObjectType;
@@ -239,6 +240,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private boolean completedallquests = false;
 
     private boolean scpqflag = false;
+    private boolean showpqpoints = true;
     //
 
     public MapleCharacter() {
@@ -1439,6 +1441,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void toggleTrueDamage() {
         this.truedamage = !this.truedamage;
     }
+
+    public boolean showPqPoints() {
+        return this.showpqpoints;
+    }
+
+    public void setShowPqPoints(boolean spqp) {
+        this.showpqpoints = spqp;
+    }
+
+    public void toggleShowPqPoints() {
+        this.showpqpoints = !this.showpqpoints;
+    }
     
     public boolean completedAllQuests() {
         return this.completedallquests;
@@ -1459,10 +1473,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public void setBattleshipHp(int bhp) {
         this.battleshiphp = bhp;
-        //System.out.print("this.battleshiphp = " + bhp + "\n");
         MapleStatEffect battleshipeffect = this.getStatForBuff(MapleBuffStat.MONSTER_RIDING);
         if (this.battleshiphp < 1 && battleshipeffect != null) {
-            //System.out.print("cancelEffect on battleshipeffect with sourceid " + battleshipeffect.getSourceId() + "\n");
             this.cancelBuffsBySourceId(5221006);
             ISkill battleship = SkillFactory.getSkill(5221006);
             long cooldowntime = (long) battleship.getEffect(getSkillLevel(battleship)).getCooldown() * (long) 1000;
@@ -1479,17 +1491,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
     
     public int decrementBattleshipHp(int decrement) {
-        //System.out.print("decrementBattleshipHp(" + decrement + ")\n");
         this.battleshiphp -= decrement;
         MapleStatEffect battleshipeffect = this.getStatForBuff(MapleBuffStat.MONSTER_RIDING);
         if (this.battleshiphp < 1 && battleshipeffect != null) {
-            //System.out.print("cancelEffect on battleshipeffect with sourceid " + battleshipeffect.getSourceId() + "\n");
             this.cancelBuffsBySourceId(5221006);
             ISkill battleship = SkillFactory.getSkill(5221006);
             long cooldowntime = (long) battleship.getEffect(getSkillLevel(battleship)).getCooldown() * (long) 1000;
             this.giveCoolDowns(5221006, System.currentTimeMillis(), cooldowntime, true);
         }
-        //System.out.print("new battleshiphp: " + this.battleshiphp + "\n");
         return this.battleshiphp;
     }
     
@@ -3404,23 +3413,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return accountid;
     }
 
-    public void mobKilled(int id) {
+    public void mobKilled(int mobId) {
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() == MapleQuestStatus.Status.COMPLETED || q.getQuest().canComplete(this, null)) {
                 continue;
             }
-            if (q.mobKilled(id) && !(q.getQuest() instanceof MapleCustomQuest)) {
+            if (q.mobKilled(mobId) && !(q.getQuest() instanceof MapleCustomQuest)) {
                 client.getSession().write(MaplePacketCreator.updateQuestMobKills(q));
                 if (q.getQuest().canComplete(this, null)) {
                     client.getSession().write(MaplePacketCreator.getShowQuestCompletion(q.getQuest().getId()));
                 }
             }
         }
-        //
-        if ((id == getCQuest().getTargetId(1)) || (id == getCQuest().getTargetId(2))) {
-            makeQuestProgress(id, 0);
+        if ((mobId == getCQuest().getTargetId(1)) || (mobId == getCQuest().getTargetId(2))) {
+            makeQuestProgress(mobId, 0);
         }
-        //
+        if (getPartyQuest() != null) {
+            getPartyQuest().getMapInstance(getMap()).invokeEvent("killedMob", mobId, this);
+        }
     }
 
     public final List<MapleQuestStatus> getStartedQuests() {
@@ -5147,6 +5157,48 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         rs.first();
         client.getSession().write(MaplePacketCreator.showNotes(rs, count));
         ps.close();
+    }
+
+    public void giveDebuff(int debuff, int level) {
+        giveDebuff(debuff, level, (long) -1);
+    }
+
+    public void giveDebuff(int debuff, int level, long time) {
+        final MobSkill ms = MobSkillFactory.getMobSkill(debuff, level);
+        MapleDisease disease;
+        switch (debuff) {
+            case 120:
+                disease = MapleDisease.SEAL;
+                break;
+            case 121:
+                disease = MapleDisease.DARKNESS;
+                break;
+            case 122:
+                disease = MapleDisease.WEAKEN;
+                break;
+            case 123:
+                disease = MapleDisease.STUN;
+                break;
+            case 124:
+                disease = MapleDisease.CURSE;
+                break;
+            case 125:
+                disease = MapleDisease.POISON;
+                break;
+            case 126:
+                disease = MapleDisease.SLOW;
+                break;
+            case 128:
+                disease = MapleDisease.SEDUCE;
+                break;
+            default:
+                System.out.println("Failed to apply debuff of skill ID " + debuff + " and skill level " + level + " to player " + getName() + ". Function: giveDebuff()");
+                return;
+        }
+        if (time > (long) 0) {
+            ms.setDuration(time);
+        }
+        giveDebuff(disease, ms);
     }
 
     public boolean isMarried() {

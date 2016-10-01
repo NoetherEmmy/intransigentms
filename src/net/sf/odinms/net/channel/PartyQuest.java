@@ -2,11 +2,14 @@ package net.sf.odinms.net.channel;
 
 import java.util.List;
 import java.util.LinkedList;
+
 import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.net.world.MapleParty;
+import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.server.maps.MapleMap;
 
 public class PartyQuest {
-    private final List<MapleCharacter> chars = new LinkedList<>();
+    private final List<MapleCharacter> players = new LinkedList<>();
     private final List<PartyQuestMapInstance> mapInstances = new LinkedList<>();
     private final String name;
     private long timeStarted = 0;
@@ -26,15 +29,15 @@ public class PartyQuest {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public List<MapleCharacter> getChars() {
-        return this.chars;
+    public List<MapleCharacter> getPlayers() {
+        return players;
     }
 
     public List<PartyQuestMapInstance> getMapInstances() {
-        return this.mapInstances;
+        return mapInstances;
     }
 
     public PartyQuestMapInstance getMapInstance(MapleMap map) {
@@ -46,25 +49,13 @@ public class PartyQuest {
         return null;
     }
 
-    public PartyQuestMapInstance getMapInstanceByMapId(int mapId) {
+    public PartyQuestMapInstance getMapInstance(int mapId) {
         for (PartyQuestMapInstance pqmi : this.mapInstances) {
             if (mapId == pqmi.getMap().getId()) {
                 return pqmi;
             }
         }
         return null;
-    }
-
-    private void registerMapInstance(PartyQuestMapInstance pqmi) {
-        this.mapInstances.add(pqmi);
-    }
-
-    public void removeMapInstance(PartyQuestMapInstance pqmi) {
-        this.mapInstances.remove(pqmi);
-    }
-
-    private void unregisterMapInstance(PartyQuestMapInstance pqmi) {
-        pqmi.dispose();
     }
 
     public void registerMap(int mapId) {
@@ -75,7 +66,8 @@ public class PartyQuest {
         newMap.resetReactors();
         PartyQuestMapInstance newInstance = new PartyQuestMapInstance(this, newMap);
         newMap.registerPartyQuestInstance(newInstance);
-        registerMapInstance(newInstance);
+        mapInstances.remove(newInstance);
+        newInstance.invokeEvent("init");
     }
 
     public void unregisterMap(int mapId) {
@@ -83,33 +75,59 @@ public class PartyQuest {
         if (!this.mapInstances.contains(oldMap.getPartyQuestInstance())) {
             throw new IllegalStateException("Attempting to deregister map that is not owned by the PartyQuest.");
         }
-        unregisterMapInstance(oldMap.getPartyQuestInstance());
-        oldMap.unregisterPartyQuestInstance();
+        oldMap.getPartyQuestInstance().dispose();
     }
 
     public int getExitMapId() {
-        return this.exitMapId;
+        return exitMapId;
     }
 
     public int getPoints() {
-        return this.points;
+        return points;
     }
 
     public void setPoints(int points) {
+        int pointChange = points - this.points;
         this.points = points;
+        String color;
+        if (pointChange > 0) {
+            color = "#b(+";
+        } else if (pointChange < 0) {
+            color = "#r(-";
+        } else {
+            color = "(";
+        }
+        for (MapleCharacter p : players) {
+            if (p.showPqPoints()) {
+                p.sendHint("PQ points: #e" + this.points + "#n " + color + pointChange + ")#k");
+            }
+        }
     }
 
     public void addPoints(int increment) {
         this.points += increment;
+        String color;
+        if (increment > 0) {
+            color = "#b(+";
+        } else if (increment < 0) {
+            color = "#r(-";
+        } else {
+            color = "(";
+        }
+        for (MapleCharacter p : players) {
+            if (p.showPqPoints()) {
+                p.sendHint("PQ points: #e" + this.points + "#n " + color + increment + ")#k");
+            }
+        }
     }
 
     public void registerPlayer(MapleCharacter player) {
-        chars.add(player);
+        players.add(player);
         player.setPartyQuest(this);
     }
 
     private void unregisterPlayer(MapleCharacter player) {
-        chars.remove(player);
+        players.remove(player);
         player.setPartyQuest(null);
     }
 
@@ -118,9 +136,16 @@ public class PartyQuest {
         player.changeMap(exitMapId);
     }
 
+    public void registerParty(MapleParty party, MapleMap map) {
+        for (MaplePartyCharacter pc : party.getMembers()) {
+            MapleCharacter player = map.getCharacterById(pc.getId());
+            registerPlayer(player);
+        }
+    }
+
     public void leftParty(MapleCharacter player) {
         removePlayer(player);
-        if (chars.size() < minPlayers) {
+        if (players.size() < minPlayers) {
             dispose();
         }
     }
@@ -131,7 +156,7 @@ public class PartyQuest {
 
     public void playerDisconnected(MapleCharacter player) {
         removePlayer(player);
-        if (isLeader(player) || chars.size() < minPlayers) {
+        if (isLeader(player) || players.size() < minPlayers) {
             dispose();
         }
     }
@@ -141,11 +166,14 @@ public class PartyQuest {
     }
 
     public void dispose() {
-        for (MapleCharacter char_ : chars) {
-            char_.changeMap(exitMapId);
-            char_.setPartyQuest(null);
+        for (MapleCharacter p : players) {
+            p.changeMap(exitMapId);
+            p.setPartyQuest(null);
         }
-        chars.clear();
+        players.clear();
+        for (PartyQuestMapInstance pqmi : mapInstances) {
+            pqmi.dispose();
+        }
         mapInstances.clear();
         ChannelServer.getInstance(channel).unregisterPartyQuest(name);
     }
@@ -163,12 +191,17 @@ public class PartyQuest {
         return eventTime - (System.currentTimeMillis() - timeStarted);
     }
 
+    public void cancelTimer() {
+        timeStarted = 0;
+        eventTime = 0;
+    }
+
     public boolean isLeader(MapleCharacter player) {
         return player.getParty().getLeader().getId() == player.getId();
     }
 
     public void playerReconnected(MapleCharacter player) {
-        if (!chars.contains(player)) {
+        if (!players.contains(player)) {
             registerPlayer(player);
         } else if (player.getPartyQuest() == null) {
             player.setPartyQuest(this);
@@ -190,6 +223,18 @@ public class PartyQuest {
             dispose();
         } else {
             player.changeMap(pqmiMinPlayers.getMap().getId());
+        }
+    }
+
+    public void invokeInAllInstances(String functionName) {
+        for (PartyQuestMapInstance pqmi : mapInstances) {
+            pqmi.invokeEvent(functionName);
+        }
+    }
+
+    public void invokeInAllInstances(String functionName, Object... args) {
+        for (PartyQuestMapInstance pqmi : mapInstances) {
+            pqmi.invokeEvent(functionName, args);
         }
     }
 }

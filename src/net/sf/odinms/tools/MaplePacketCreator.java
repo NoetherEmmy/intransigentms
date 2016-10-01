@@ -5475,7 +5475,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static void sendUnkwnNote(String to, String msg, String from) throws SQLException { // WTF ?
+    public static void sendUnkwnNote(String to, String msg, String from) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`) VALUES (?, ?, ?, ?)");
         ps.setString(1, to);
@@ -6488,7 +6488,7 @@ public class MaplePacketCreator {
         mplew.writeShort(SendPacketOpcode.MONSTER_BOOK.getValue());
         mplew.write(5 - cardAmount);
         mplew.writeInt(itemid);
-        mplew.writeInt(1); //probably rank, no indication though
+        mplew.writeInt(1); // Probably rank, no indication though
 
         return mplew.getPacket();
     }
@@ -6497,12 +6497,12 @@ public class MaplePacketCreator {
      * Makes any NPC in the game scriptable.
      * @param npcId - The NPC's ID, found in WZ files/MCDB
      * @param description - If the NPC has quests, this will be the text of the menu item
-     * @return 
+     * @return packet
      */
     public static MaplePacket setNPCScriptable(int npcId, String description) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.SET_NPC_SCRIPTABLE.getValue());
-        mplew.write(1); // following structure is repeated n times
+        mplew.write(1);
         mplew.writeInt(npcId);
         mplew.writeMapleAsciiString(description);
         mplew.writeInt(0); // start time

@@ -50,19 +50,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             int mpattack = 0;
             MapleMonster attacker = null;
             int removeddamage = 0;
-            
-            //System.out.print("0deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
-            
-            //
-            //System.out.print("damage: " + damage + "\n");
+
             float damagescale = player.getDamageScale();
-            //System.out.print("damagescale: " + damagescale + "\n");
-            //int excessdamage = damage;
             damage = (int) (((float) damage) * damagescale);
-            //System.out.print("damage, post: " + damage + "\n");
-            //excessdamage = damage - excessdamage;
-            //System.out.print("excessdamage: " + excessdamage + "\n");
-            //
+
             if (damagefrom == -2) {
                 int debuffLevel = slea.readByte();
                 int debuffId = slea.readByte();
@@ -83,7 +74,6 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             } else {
                 monsteridfrom = slea.readInt();
                 oid = slea.readInt();
-                // if (monsteridfrom != 0 && damage != -1) {
                 try {
                     attacker = (MapleMonster) player.getMap().getMapObject(oid);
                 } catch (ClassCastException ignored) {
@@ -95,24 +85,14 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 }
                 direction = slea.readByte();
             }
-            /*
-            try {
-                player.setLastDamageSource(attacker);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            */
             if (damagefrom != -1 && damagefrom != -2 && attacker != null) {
                 MobAttackInfo attackInfo = MobAttackInfoFactory.getMobAttackInfo(attacker, damagefrom);
                 if (damage != -1) {
-                    //System.out.print("1deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
                     if (attackInfo != null && attackInfo.isDeadlyAttack()) {
                         deadlyattack = true;
                         mpattack = 0; // mpattack = player.getMp() - 1;
-                        //System.out.print("2deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
                         if (damage != 0) {
                             damage = 0;
-                            //System.out.print("3deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
                         } else {
                             return;
                         }
@@ -132,15 +112,11 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 if (skill != null && damage > 0) {
                     skill.applyEffect(player, attacker, false);
                 }
-
                 if (attackInfo != null) {
                     attacker.setMp(attacker.getMp() - attackInfo.getMpCon());
                 }
             }
-            //System.out.print("4deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
-            //System.out.print("5deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
             boolean smokescreened = false;
-            //Collection<MapleMapObject> mmocollection = player.getMap().getMapObjects();
             synchronized (player.getMap().getMapObjects()) {
                 try {
                     Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
@@ -166,7 +142,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got damage removed by smokescreen don't get to stun mobs
                 int job = player.getJob().getId() / 10 - 40;
                 fake = 4020002 + (job * 100000);
-                if (damagefrom == -1 && damagefrom != -2 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
+                if (damagefrom == -1 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
                     int[] guardianSkillId = {1120005, 1220006};
                     for (int guardian : guardianSkillId) {
                         ISkill guardianSkill = SkillFactory.getSkill(guardian);
@@ -188,10 +164,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             if (damage > 0 && !deadlyattack) {
                 player.getCheatTracker().setAttacksWithoutHit(0);
                 player.getCheatTracker().resetHPRegen();
-                //
                 player.resetAfkTime();
-                //
-                //System.out.print("damagefrom: " + damagefrom + "\n");
+                if (player.getPartyQuest() != null) {
+                    player.getPartyQuest().getMapInstance(player.getMap()).invokeEvent("playerHit", player, damage, attacker);
+                }
                 if (!player.isHidden() && player.isAlive()) {
                     if (player.getBuffedValue(MapleBuffStat.MORPH) != null) {
                         player.cancelMorphs();
@@ -206,7 +182,6 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bouncedamage), false, true);
                             player.checkMonsterAggro(attacker);
                         }
-                        //System.out.print("boop\n");
                         if (damagefrom == -1 && player.getSkillLevel(SkillFactory.getSkill(2310000)) != 0) {
                             boolean iswearingshield = false;
                             for (IItem item : player.getInventory(MapleInventoryType.EQUIPPED)) {
@@ -218,7 +193,6 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             }
                             if (iswearingshield) {
                                 int bouncedamage = (int) ((double) damage * ((10.0 * (double) player.getSkillLevel(SkillFactory.getSkill(2310000))) / 100.0));
-                                //System.out.print("raw bouncedamage: " + bouncedamage + "\n");
                                 bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 2);
                                 player.getMap().damageMonster(player, attacker, bouncedamage);
                                 player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bouncedamage), true, true);
@@ -292,7 +266,6 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         }
                         player.addMPHP(-damage, -mpattack);
                     } else {
-                        //System.out.print("damage: " + damage + "\n");
                         player.addMPHP(-damage, -mpattack);
                     }
                     /*
@@ -311,21 +284,20 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 return;
                             }
                         }
-                    } else { */
-                    //System.out.print("6deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
+                    } else {
+                    */
                     if (deadlyattack) {
                         player.addMPHP(damage, 0);
                         damage = 0;
                     }
                     player.getMap().broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
-                    //System.out.print("7deadlyattack: " + deadlyattack + " damage: " + damage + "\n");
                     if (player.getTrueDamage()) {
                         player.sendHint("#e#r" + damage + "#k#n" + (removeddamage > 0 ? " #e#b(" + removeddamage + ")#k#n" : ""), 0, 0);
                     }
                     if (player.getMount() != null && (player.getMount().getSkillId() == 5221006 && player.getMount().isActive())) {
                         player.decrementBattleshipHp(damage);
                     }
-                    //}
+                    // }
                 }
             }
         } catch (Exception e) {

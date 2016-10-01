@@ -321,19 +321,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (mltpercent != 1.0d) {
                     personalExp = (long) (personalExp * mltpercent);
                 }
-                //Integer taunt = 
             }
-            //
-            //attacker.dropMessage(Long.toString(personalExp) + " | " + this.getName());
-            
+
             personalExp *= attacker.getAbsoluteXp();
-            
-            //attacker.dropMessage(Long.toString(personalExp) + " | " + Double.toString(Math.floor(0.05 * (double) attacker.getLevel())));
-            
             personalExp = (long) (((double) personalExp) * attacker.getRelativeXp(this.getLevel()));
-            
-            //attacker.dropMessage(Long.toString(personalExp) + " | " + Double.toString(relativeLevelMultiplier));
-            //
+
             while (personalExp > Integer.MAX_VALUE) {
                 attacker.gainExp(Integer.MAX_VALUE, true, false, highestDamage, false);
                 personalExp -= Integer.MAX_VALUE;

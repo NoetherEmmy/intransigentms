@@ -1094,6 +1094,16 @@ public class MapleMap {
         mapTimer = null;
     }
 
+    public int clearDrops() {
+        double range = Double.POSITIVE_INFINITY;
+        List<MapleMapObject> items = getMapObjectsInRange(new Point(0, 0), range, Collections.singletonList(MapleMapObjectType.ITEM));
+        for (MapleMapObject itemmo : items) {
+            removeMapObject(itemmo);
+            broadcastMessage(MaplePacketCreator.removeItemFromMap(itemmo.getObjectId(), 0, 0));
+        }
+        return items.size();
+    }
+
     private void activateItemReactors(MapleMapItem drop) {
         IItem item = drop.getItem();
         final TimerManager tMan = TimerManager.getInstance();
@@ -1247,6 +1257,8 @@ public class MapleMap {
             int min = cal.get(Calendar.MINUTE);
             int second = cal.get(Calendar.SECOND);
             chr.getClient().getSession().write((MaplePacketCreator.getClockTime(hour, min, second)));
+        } else if (getPartyQuestInstance() != null && getPartyQuestInstance().getPartyQuest().isTimerStarted()) {
+            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (getPartyQuestInstance().getPartyQuest().getTimeLeft() / 1000)));
         }
         if (hasBoat() == 2) {
             chr.getClient().getSession().write((MaplePacketCreator.boatPacket(true)));
@@ -1943,11 +1955,7 @@ public class MapleMap {
             case 922010800:
                 return true;
             default:
-                if (getId() / 1000 == 5) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return getId() / 1000 == 5;
         }
     }
 

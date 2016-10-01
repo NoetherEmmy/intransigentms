@@ -32,7 +32,7 @@ public class TimerManager implements TimerManagerMBean {
 
     public void start() {
         if (ses != null && !ses.isShutdown() && !ses.isTerminated()) {
-            return; //starting the same timermanager twice is no - op
+            return; // Starting the same TimerManager twice is no-op
         }
         ScheduledThreadPoolExecutor stpe = new ScheduledThreadPoolExecutor(4, new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);

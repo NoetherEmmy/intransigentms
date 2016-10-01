@@ -37,7 +37,7 @@ public class NPCScriptManager extends AbstractScriptManager {
             }
             if (iv == null || NPCScriptManager.getInstance() == null) {
                 if (iv == null) {
-                    cm.sendOk("Hello, I hope that you are having a good time on our server!");
+                    cm.sendOk("Hey, I hope you're having a good time on our server!");
                 }
                 cm.dispose();
                 return;

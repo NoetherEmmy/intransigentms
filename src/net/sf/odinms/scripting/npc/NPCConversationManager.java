@@ -628,41 +628,41 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public int calculateLevelGroup(int level) {
-	int lg = 0;
-	if (level >= 20) {
+	    int lg = 0;
+        if (level >= 20) {
             lg++;
-	}
-	if (level >= 26) {
+        }
+        if (level >= 26) {
             lg++;
-	}
-	if (level >= 31) {
+        }
+        if (level >= 31) {
             lg++;
-	}
-	if (level >= 41) {
+        }
+        if (level >= 41) {
             lg++;
-	}
-	if (level >= 51) {
+        }
+        if (level >= 51) {
             lg++;
-	}
-	if (level >= 71) {
+        }
+        if (level >= 71) {
             lg++;
-	}
-	if (level >= 91) {
+        }
+        if (level >= 91) {
             lg++;
-	}
-	if (level >= 101) {
+        }
+        if (level >= 101) {
             lg++;
-	}
-	if (level >= 121) {
+        }
+        if (level >= 121) {
             lg++;
-	}
+        }
         if (level >= 141) {
             lg++;
         }
         if (level >= 161) {
             lg++;
         }
-	return lg;
+	    return lg;
     }
     
     public boolean enterMonsterTrial() {
@@ -692,12 +692,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 final int returnmapid = getPlayer().getTrialReturnMap();
                 final MapleCharacter player = getPlayer();
                 TimerManager tMan = TimerManager.getInstance();
-		final Runnable endTrialTask = () -> {
-            if (player.getMapId() >= 1000 && player.getMapId() <= 1006) {
-                player.changeMap(returnmapid, 0);
-            }
-        };
-                //getPlayer().getMap().broadcastMessage(MaplePacketCreator.getClock(600), getPlayer().getPosition());
+                final Runnable endTrialTask = () -> {
+                    if (player.getMapId() >= 1000 && player.getMapId() <= 1006) {
+                        player.changeMap(returnmapid, 0);
+                    }
+                };
                 getPlayer().getClient().getSession().write(MaplePacketCreator.getClock(1200)); // 20 minutes
                 int monsterchoices[] = monsters[calculateLevelGroup(getPlayer().getLevel()) - 1];
                 int monsterchoice = monsterchoices[(int) Math.floor(Math.random() * monsterchoices.length)];
@@ -705,7 +704,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 int monstercount = monsterchoice % 10;
                 Point monsterspawnpoint = new Point(-336, -11); // (-336, 101)
                 for (int i = 0; i < monstercount; ++i) {
-                    //map.spawnMonster(MapleLifeFactory.getMonster(monsterid));
                     try {
                         map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(monsterid), monsterspawnpoint);
                     } catch (NullPointerException npe) {
@@ -1395,7 +1393,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 disease = MapleDisease.SEDUCE;
                 break;
             default:
-                System.out.print("Failed to apply debuff of skill ID " + debuff + " and skill level " + level + " to player " + getPlayer().getName() + " from NPC with ID " + this.getNpc() + ". Function: giveDebuff");
+                System.out.println("Failed to apply debuff of skill ID " + debuff + " and skill level " + level + " to player " + getPlayer().getName() + " from NPC with ID " + this.getNpc() + ". Function: giveDebuff");
                 return;
         }
         getPlayer().giveDebuff(disease, ms);
