@@ -7,7 +7,10 @@ import javax.script.ScriptException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
 
+import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.server.maps.MapleMap;
 
 public class PartyQuestMapInstance {
@@ -16,6 +19,7 @@ public class PartyQuestMapInstance {
     private final MapleMap map;
     private final String path;
     private final Invocable invocable;
+    private final Map<MapleCharacter, Map<String, Object>> playerPropertyMap = new HashMap<>(6, 0.9f);
 
     PartyQuestMapInstance(PartyQuest partyQuest, MapleMap map) {
         this.partyQuest = partyQuest;
@@ -40,11 +44,15 @@ public class PartyQuestMapInstance {
         } finally {
             this.invocable = (Invocable) scriptEngine;
         }
+        for (MapleCharacter p : this.partyQuest.getPlayers()) {
+            this.playerPropertyMap.put(p, new HashMap<>(3, 0.75f));
+        }
     }
 
     public void dispose() {
         partyQuest.getMapInstances().remove(this);
         map.unregisterPartyQuestInstance();
+        playerPropertyMap.clear();
         invokeEvent("dispose");
     }
 
@@ -74,5 +82,36 @@ public class PartyQuestMapInstance {
             se.printStackTrace();
         } catch (NoSuchMethodException ignored) {
         }
+    }
+
+    public void setPlayerProperty(MapleCharacter player, String property, Object value) {
+        if (!partyQuest.getPlayers().contains(player)) {
+            return;
+        }
+        if (!playerPropertyMap.containsKey(player)) {
+            playerPropertyMap.put(player, new HashMap<>(3, 0.75f));
+        }
+        playerPropertyMap.get(player).put(property, value);
+    }
+
+    public void setPlayerPropertyIfNotSet(MapleCharacter player, String property, Object value) {
+        if (!partyQuest.getPlayers().contains(player)) {
+            return;
+        }
+        if (!playerPropertyMap.containsKey(player)) {
+            playerPropertyMap.put(player, new HashMap<>(3, 0.75f));
+        }
+        playerPropertyMap.get(player).putIfAbsent(property, value);
+    }
+
+    public Object getPlayerProperty(MapleCharacter player, String property) {
+        if (!playerPropertyMap.containsKey(player)) {
+            return null;
+        }
+        return playerPropertyMap.get(player).get(property);
+    }
+
+    public boolean playerHasProperty(MapleCharacter player, String property) {
+        return playerPropertyMap.containsKey(player) && playerPropertyMap.get(player).containsKey(property);
     }
 }

@@ -953,8 +953,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 if (storage != null) {
                     storage.saveToDB();
                 }
-                
-                //
+
                 ps = con.prepareStatement("SELECT * FROM pastlives WHERE characterid = ? ORDER BY death DESC");
                 ps.setInt(1, id);
                 ResultSet rs = ps.executeQuery();
@@ -975,7 +974,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     ps.executeUpdate();
                 }
                 ps.close();
-                //
             }
             con.commit();
         } catch (Exception e) {
@@ -1140,13 +1138,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public void setLastDamageSource(MapleMapObject lds) {
         lastdamagesource = lds;
-        /*
-        if (lastdamagesource != null) {
-            System.out.print("Type of dmg source: " + lastdamagesource.getType().toString() + " Object ID: " + lastdamagesource.getObjectId() + " Last damage source.toString(): " + lastdamagesource.toString() + "\n");
-        } else {
-            System.out.print("lastdamagesource == null\n");
-        }
-        */
     }
     
     public boolean getExpBonus() {

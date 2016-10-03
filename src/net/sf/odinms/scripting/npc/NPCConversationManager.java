@@ -177,7 +177,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     /**
      * use getPlayer().getMeso() instead
-     * @return
+     * @return player's meso count
      */
     @Deprecated
     public int getMeso() {
@@ -202,7 +202,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     /**
      * use getPlayer().getLevel() instead
-     * @return
+     * @return level of player
      */
     @Deprecated
     public int getLevel() {
@@ -226,7 +226,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     /**
      * Use getPlayer() instead (for consistency with MapleClient)
-     * @return
+     * @return the player in the conversation
      */
     @Deprecated
     public MapleCharacter getChar() {
@@ -289,84 +289,83 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getPlayer().updateSingleStat(MapleStat.SKIN, color);
         getPlayer().equipChanged();
     }
-    
-    //
-    public int getStory() { 
-        return getPlayer().getStory(); 
+
+    public int getStory() {
+        return getPlayer().getStory();
     }
-    
+
     public int getStoryPoints() {
         return getPlayer().getStoryPoints();
     }
-    
+
     public int getOffenseStory() {
         return getPlayer().getOffenseStory();
     }
-    
+
     public int getBuffStory() {
         return getPlayer().getBuffStory();
     }
-     
-    public void startCQuest(int id) { 
+
+    public void startCQuest(int id) {
         getPlayer().getCQuest().loadQuest(id);
         getPlayer().setQuestId(id);
         getPlayer().setQuestKills(1, 0);
         getPlayer().setQuestKills(2, 0);
-        if (id == 0) { 
-            getPlayer().sendHint("#eQuest canceled."); 
-        } else {     
-            getPlayer().sendHint("#eQuest start: " + getPlayer().getCQuest().getTitle()); 
-        } 
-    } 
-     
-    public boolean onQuest() { 
-        return getPlayer().getQuestId() > 0; 
-    } 
-     
-    public boolean onQuest(int questid) { 
-        return getPlayer().getQuestId() == questid; 
-    } 
-     
-    public boolean canComplete() { 
-        return getPlayer().canComplete(); 
-    } 
-     
-    public String selectQuest(int questid, String msg) { 
-        String intro = msg + "\r\n\r\n#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L0#"; 
-        String selection = "#k[" + (getPlayer().getQuestId() == 0 ? "#rAvailable" : (getPlayer().getQuestId() == questid && !canComplete()) ? "#dIn progress" : "#gComplete") + "#k]"; 
-        return intro + selection + " #e" + getPlayer().getCQuest().loadTitle(questid); 
-    } 
-         
-    public String showReward(String msg) { 
-        StringBuilder sb = new StringBuilder(); 
-        sb.append(msg); 
-        sb.append("\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n\r\n"); 
-        sb.append("#fUI/UIWindow.img/QuestIcon/8/0#  ").append(getPlayer().makeNumberReadable(getPlayer().getCQuest().getReward(1))).append("\r\n"); 
-        sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ").append(getPlayer().makeNumberReadable(getPlayer().getCQuest().getReward(2))).append("\r\n");     
-        if (getPlayer().getCQuest().getReward(3) > 0) { 
-            sb.append("\r\n#i").append(getPlayer().getCQuest().getReward(3)).append("#  ").append(getPlayer().makeNumberReadable(getPlayer().getCQuest().getItemRewardAmount())); 
+        if (id == 0) {
+            getPlayer().sendHint("#eQuest canceled.");
+        } else {
+            getPlayer().sendHint("#eQuest start: " + getPlayer().getCQuest().getTitle());
         }
-        return sb.toString(); 
-    } 
-     
+    }
+
+    public boolean onQuest() {
+        return getPlayer().getQuestId() > 0;
+    }
+
+    public boolean onQuest(int questid) {
+        return getPlayer().getQuestId() == questid;
+    }
+
+    public boolean canComplete() {
+        return getPlayer().canComplete();
+    }
+
+    public String selectQuest(int questid, String msg) {
+        String intro = msg + "\r\n\r\n#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L0#";
+        String selection = "#k[" + (getPlayer().getQuestId() == 0 ? "#rAvailable" : (getPlayer().getQuestId() == questid && !canComplete()) ? "#dIn progress" : "#gComplete") + "#k]";
+        return intro + selection + " #e" + getPlayer().getCQuest().loadTitle(questid);
+    }
+
+    public String showReward(String msg) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(msg);
+        sb.append("\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n\r\n");
+        sb.append("#fUI/UIWindow.img/QuestIcon/8/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getReward(1))).append("\r\n");
+        sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getReward(2))).append("\r\n");
+        if (getPlayer().getCQuest().getReward(3) > 0) {
+            sb.append("\r\n#i").append(getPlayer().getCQuest().getReward(3)).append("#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getItemRewardAmount()));
+        }
+        return sb.toString();
+    }
+
     public void rewardPlayer(int story, int storypoints) {
-        MapleCQuests q = getPlayer().getCQuest(); 
+        MapleCQuests q = getPlayer().getCQuest();
         int questid = q.getId();
         getPlayer().addStory(story);
         getPlayer().addStoryPoints(storypoints);
         gainExp(q.getReward(1));
         gainMeso(q.getReward(2));
         if (q.getReward(3) > 0) {
-            gainItem(q.getReward(3), (short) (q.getItemRewardAmount() > 0 ? q.getItemRewardAmount() : 1)); 
+            gainItem(q.getReward(3), (short) (q.getItemRewardAmount() > 0 ? q.getItemRewardAmount() : 1));
         }
         if (q.getItemId(1) > 0) {
-            gainItem(q.getItemId(1), (short) (-1 * q.getToCollect(1))); 
+            gainItem(q.getItemId(1), (short) (-1 * q.getToCollect(1)));
         }
         if (q.getItemId(2) > 0) {
-            gainItem(q.getItemId(2), (short) (-1 * q.getToCollect(2))); 
+            gainItem(q.getItemId(2), (short) (-1 * q.getToCollect(2)));
         }
-        c.getSession().write(MaplePacketCreator.playSound("Dojan/clear")); 
-        c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear")); 
+        c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
+        c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
         startCQuest(0);
         if (completedAllQuests() && (questid / 1000 == 1 || questid / 1000 == 2) && !c.getPlayer().completedAllQuests()) {
             MapleInventoryManipulator.addById(c, 3992027, (short) 1);
@@ -374,7 +373,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             c.getPlayer().setCompletedAllQuests(true);
         }
     }
-    
+
     public void fourthRewardPlayer(int offensestory, int buffstory) {
         MapleCQuests q = getPlayer().getCQuest(); 
         getPlayer().addOffenseStory(offensestory);
@@ -396,76 +395,76 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void rewardPlayer() {
-        rewardPlayer(1, 1); 
-    } 
+        rewardPlayer(1, 1);
+    }
 
-    public String showQuestProgress() { 
+    public String showQuestProgress() {
         MapleCQuests q = getPlayer().getCQuest();
         boolean mob1 = q.getTargetId(1) > 0;
         boolean mob2 = q.getTargetId(2) > 0;
-        boolean item1 = q.getItemId(1) > 0; 
-        boolean item2 = q.getItemId(2) > 0; 
-        boolean killed1 = getPlayer().getQuestKills(1) >= q.getToKill(1); 
-        boolean killed2 = getPlayer().getQuestKills(2) >= q.getToKill(2); 
-        boolean collected1 = false; 
-        boolean collected2 = false; 
-        if (item1) { 
-            if (itemQuantity(q.getItemId(1)) >= q.getToCollect(1)) { 
-                collected1 = true; 
-            } 
-        } 
-        if (item2) { 
-            if (itemQuantity(q.getItemId(2)) >= q.getToCollect(2)) { 
-                collected2 = true; 
-            } 
-        } 
-        StringBuilder sb = new StringBuilder(); 
-        sb.append("Your quest info for:\r\n#e#r").append(q.getTitle()).append("#n#k\r\n\r\n"); 
-        if (mob1 || mob2) { 
-            sb.append("#eMonster targets: #n\r\n"); 
-            if (mob1) { 
-                sb.append(q.getTargetName(1)).append(": ").append(killed1 ? "#g" : "#r").append(getPlayer().getQuestKills(1)).append(" #k/ ").append(q.getToKill(1)).append("\r\n"); 
-            } 
-            if (mob2) { 
-                sb.append(q.getTargetName(2)).append(": ").append(killed2 ? "#g" : "#r").append(getPlayer().getQuestKills(2)).append(" #k/ ").append(q.getToKill(2)).append("\r\n"); 
-            } 
-            sb.append("\r\n"); 
-        } 
-        if (item1 || item2) { 
-            sb.append("#eItems to collect: #n\r\n"); 
-            if (item1) { 
-                sb.append(q.getItemName(1)).append(": ").append(collected1 ? "#g" : "#r").append(itemQuantity(q.getItemId(1))).append(" #k/ ").append(q.getToCollect(1)).append("\r\n"); 
-            } 
-            if (item2) { 
-                sb.append(q.getItemName(2)).append(": ").append(collected2 ? "#g" : "#r").append(itemQuantity(q.getItemId(2))).append(" #k/ ").append(q.getToCollect(2)).append("\r\n"); 
-            } 
-            sb.append("\r\n"); 
-        } 
-        sb.append("#eQuest NPC: #n\r\n#d").append(q.getNPC()).append("#k\r\n"); 
-        sb.append("#eQuest info: #n\r\n").append(q.getInfo()); 
-        return sb.toString(); 
-    } 
-     
-    public String randomText(int type) { 
-        switch (type) { 
-            case 1: 
-                return "Hey, what's up?"; 
-            case 2: 
-                return "Very well done."; 
-            case 3: 
-                return "Aw, what a shame."; 
-            case 4:  
-                return "You already accepted: "; 
-            case 5: 
-                return ". Do you want to cancel it?"; 
-            case 6: 
-                return "Quest complete!"; 
-            case 7: 
-                return "You haven't completed your task yet! You can look it up by typing #b@questinfo#k in the chat.\r\nDo you want to cancel this quest?"; 
-        } 
-        return ""; 
+        boolean item1 = q.getItemId(1) > 0;
+        boolean item2 = q.getItemId(2) > 0;
+        boolean killed1 = getPlayer().getQuestKills(1) >= q.getToKill(1);
+        boolean killed2 = getPlayer().getQuestKills(2) >= q.getToKill(2);
+        boolean collected1 = false;
+        boolean collected2 = false;
+        if (item1) {
+            if (itemQuantity(q.getItemId(1)) >= q.getToCollect(1)) {
+                collected1 = true;
+            }
+        }
+        if (item2) {
+            if (itemQuantity(q.getItemId(2)) >= q.getToCollect(2)) {
+                collected2 = true;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Your quest info for:\r\n#e#r").append(q.getTitle()).append("#n#k\r\n\r\n");
+        if (mob1 || mob2) {
+            sb.append("#eMonster targets: #n\r\n");
+            if (mob1) {
+                sb.append(q.getTargetName(1)).append(": ").append(killed1 ? "#g" : "#r").append(getPlayer().getQuestKills(1)).append(" #k/ ").append(q.getToKill(1)).append("\r\n");
+            }
+            if (mob2) {
+                sb.append(q.getTargetName(2)).append(": ").append(killed2 ? "#g" : "#r").append(getPlayer().getQuestKills(2)).append(" #k/ ").append(q.getToKill(2)).append("\r\n");
+            }
+            sb.append("\r\n");
+        }
+        if (item1 || item2) {
+            sb.append("#eItems to collect: #n\r\n");
+            if (item1) {
+                sb.append(q.getItemName(1)).append(": ").append(collected1 ? "#g" : "#r").append(itemQuantity(q.getItemId(1))).append(" #k/ ").append(q.getToCollect(1)).append("\r\n");
+            }
+            if (item2) {
+                sb.append(q.getItemName(2)).append(": ").append(collected2 ? "#g" : "#r").append(itemQuantity(q.getItemId(2))).append(" #k/ ").append(q.getToCollect(2)).append("\r\n");
+            }
+            sb.append("\r\n");
+        }
+        sb.append("#eQuest NPC: #n\r\n#d").append(q.getNPC()).append("#k\r\n");
+        sb.append("#eQuest info: #n\r\n").append(q.getInfo());
+        return sb.toString();
     }
-    
+
+    public String randomText(int type) {
+        switch (type) {
+            case 1:
+                return "Hey, what's up?";
+            case 2:
+                return "Very well done.";
+            case 3:
+                return "Aw, what a shame.";
+            case 4:
+                return "You already accepted: ";
+            case 5:
+                return ". Do you want to cancel it?";
+            case 6:
+                return "Quest complete!";
+            case 7:
+                return "You haven't completed your task yet! You can look it up by typing #b@questinfo#k in the chat.\r\nDo you want to cancel this quest?";
+        }
+        return "";
+    }
+
     public String showNextQuest() {
         String s = "";
         MapleCQuests q = new MapleCQuests();
@@ -486,7 +485,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public boolean completedAllQuests() {
         if (getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000)) {
             return false;
-        } else return !getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000);
+        } else {
+            return !getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000);
+        }
     }
     
     public String getAllItemStats(int itemid) {
@@ -584,9 +585,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getPlayer().updateSingleStat(MapleStat.HP, getPlayer().getHp());
         getPlayer().dropMessage(5, "You've lost " + dmg + " HP.");
     }
-    //
-    
-    //
+
     public boolean isInMonsterTrial() {
         if (getPlayer().getMapId() >= 1000 && getPlayer().getMapId() <= 1006) {
             if (getPlayer().getHp() > 0) {
@@ -750,7 +749,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             for (MapleCharacter p : partymembers) {
                 p.getClient().getSession().write(MaplePacketCreator.getClock(40 * 60)); // 40 minutes
             }
-            //map.spawnMonster(MapleLifeFactory.getMonster(bossid));
             Point monsterspawnpos = new Point(-474, -304); // (-474, -204)
             try {
                 map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(bossid), monsterspawnpos);
@@ -905,7 +903,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
     */
-    //
 
     public String getSkillNameById(int skillid) {
         return SkillFactory.getSkillName(skillid);
@@ -1066,7 +1063,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
         }
         if (!message.toString().contains("#L")) {
-            return "No Item's Found";
+            return "No items found.";
         }
         return message.toString();
     }
@@ -1253,7 +1250,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getPlayer().changeKeybinding(key, newbinding);
     }
 
-    public Equip getEquipById(int id) { // we can do getEquipById(2349823).setStr(545); etc.
+    public Equip getEquipById(int id) { // Can do getEquipById(2349823).setStr(545); etc.
         MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(id);
         return (Equip) getPlayer().getInventory(type).findById(id);
     }
@@ -1966,7 +1963,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean getHiredMerchantItems(boolean tempTable) {
-        boolean temp = false, completed = false;
+        boolean temp = false;
         String Table = "";
         if (tempTable) {
             Table = "temp";
@@ -2023,11 +2020,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             rs.close();
             ps.close();
-            completed = true;
         } catch (SQLException se) {
             se.printStackTrace();
-            return completed;
+            return false;
         }
-        return completed;
+        return true;
     }
 }
