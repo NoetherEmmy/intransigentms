@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
 import net.sf.odinms.client.Equip;
 import net.sf.odinms.client.IItem;
 import net.sf.odinms.client.MapleClient;
@@ -53,6 +55,14 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Integer> getMesoCache = new HashMap<>();
     protected final Map<Integer, Integer> getExpCache = new HashMap<>();
     private static final Random rand = new Random();
+    private static final List<List<Integer>> maleFaceCache = new ArrayList<>();
+    private static final List<List<Integer>> femaleFaceCache = new ArrayList<>();
+    private static final List<List<Integer>> ungenderedFaceCache = new ArrayList<>();
+    private static final List<List<Integer>> maleHairCache = new ArrayList<>();
+    private static final List<List<Integer>> femaleHairCache = new ArrayList<>();
+    private static final List<List<Integer>> ungenderedHairCache = new ArrayList<>();
+    private static boolean facesCached = false;
+    private static boolean hairsCached = false;
 
     /** Creates a new instance of MapleItemInformationProvider */
     protected MapleItemInformationProvider() {
@@ -662,6 +672,219 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
+    /** Called by Coco NPC the first time someone starts a conversation with them. */
+    public void cacheFaceData() {
+        if (!facesCached) {
+            MapleDataDirectoryEntry root = equipData.getRoot();
+            for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
+                if (topDir.getName().equals("Face")) {
+                    for (MapleDataFileEntry iFile : topDir.getFiles()) {
+                        Integer id = Integer.parseInt(iFile.getName().substring(3, 8)); // Gets just the ID without leading zeroes.
+                        List<List<Integer>> faceLists;
+                        if (id >= 20000 && id < 30000) { // Just in case.
+                            if ((id / 1000) % 10 == 0) {
+                                faceLists = maleFaceCache;
+                            } else if ((id / 1000) % 10 == 1) {
+                                faceLists = femaleFaceCache;
+                            } else {
+                                faceLists = ungenderedFaceCache;
+                            }
+                            List<Integer> faceList = faceLists.get(faceLists.size() - 1);
+                            // Match condition is that all decimal places EXCEPT for the hundreds place match. Simpler than it looks.
+                            if (faceList.size() < 300 || faceList.stream().anyMatch(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(id - (id % 1000 / 100 * 100)))) {
+                                faceList.add(id);
+                            } else {
+                                List<Integer> newFaceList = new ArrayList<>();
+                                newFaceList.add(id);
+                                faceLists.add(newFaceList);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
+            maleFaceCache.forEach(l -> l.sort(Integer::compareTo));
+            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo));
+            ungenderedFaceCache.forEach(l -> l.sort(Integer::compareTo));
+            maleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
+            femaleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
+            ungenderedFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
+
+            facesCached = true;
+        }
+    }
+
+    /** Called by Coco NPC the first time someone starts a conversation with them. */
+    public void cacheHairData() {
+        if (!hairsCached) {
+            MapleDataDirectoryEntry root = equipData.getRoot();
+            for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
+                if (topDir.getName().equals("Hair")) {
+                    for (MapleDataFileEntry iFile : topDir.getFiles()) {
+                        Integer id = Integer.parseInt(iFile.getName().substring(3, 8)); // Gets just the ID without leading zeroes.
+                        List<List<Integer>> hairLists;
+                        if (id >= 30000 && id < 50000) { // Just in case.
+                            if ((id / 1000) % 10 == 0) {
+                                hairLists = maleHairCache;
+                            } else if ((id / 1000) % 10 == 1) {
+                                hairLists = femaleHairCache;
+                            } else {
+                                hairLists = ungenderedHairCache;
+                            }
+                            List<Integer> hairList = hairLists.get(hairLists.size() - 1);
+                            if (hairList.size() < 300 || hairList.stream().anyMatch(x -> Integer.valueOf(x / 10).equals(id / 10))) {
+                                hairList.add(id);
+                            } else {
+                                List<Integer> newHairList = new ArrayList<>();
+                                newHairList.add(id);
+                                hairLists.add(newHairList);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
+            maleHairCache.forEach(l -> l.sort(Integer::compareTo));
+            femaleHairCache.forEach(l -> l.sort(Integer::compareTo));
+            ungenderedHairCache.forEach(l -> l.sort(Integer::compareTo));
+            maleHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
+            femaleHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
+            ungenderedHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
+
+            hairsCached = true;
+        }
+    }
+
+    public List<List<Integer>> getFaceData(int gender) {
+        switch (gender) {
+            case 0:
+                return maleFaceCache;
+            case 1:
+                return femaleFaceCache;
+            default:
+                return ungenderedFaceCache;
+        }
+    }
+
+    public List<List<Integer>> getHairData(int gender) {
+        switch (gender) {
+            case 0:
+                return maleHairCache;
+            case 1:
+                return femaleHairCache;
+            default:
+                return ungenderedHairCache;
+        }
+    }
+
+    public List<Integer> getFaceData(int gender, int index) {
+        switch (gender) {
+            case 0:
+                return maleFaceCache.get(index);
+            case 1:
+                return femaleFaceCache.get(index);
+            default:
+                return ungenderedFaceCache.get(index);
+        }
+    }
+
+    public List<Integer> getHairData(int gender, int index) {
+        switch (gender) {
+            case 0:
+                return maleHairCache.get(index);
+            case 1:
+                return femaleHairCache.get(index);
+            default:
+                return ungenderedHairCache.get(index);
+        }
+    }
+
+    public int getFaceListCount(int gender) {
+        switch (gender) {
+            case 0:
+                return maleFaceCache.size();
+            case 1:
+                return femaleFaceCache.size();
+            default:
+                return ungenderedFaceCache.size();
+        }
+    }
+
+    public int getHairListCount(int gender) {
+        switch (gender) {
+            case 0:
+                return maleHairCache.size();
+            case 1:
+                return femaleHairCache.size();
+            default:
+                return ungenderedHairCache.size();
+        }
+    }
+
+    public List<Integer> getAllColors(int id) {
+        List<Integer> ret = new ArrayList<>();
+        if (id >= 20000 && id < 30000) { // Face
+            int match = id - (id % 1000 / 100 * 100); // Hundreds place set to zero.
+            switch ((id / 1000) % 10) {
+                case 0:
+                    for (List<Integer> faceList : maleFaceCache) {
+                        if (faceList.contains(id)) {
+                            ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
+                            break;
+                        }
+                    }
+                    break;
+                case 1:
+                    for (List<Integer> faceList : femaleFaceCache) {
+                        if (faceList.contains(id)) {
+                            ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    for (List<Integer> faceList : ungenderedFaceCache) {
+                        if (faceList.contains(id)) {
+                            ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
+                            break;
+                        }
+                    }
+                    break;
+            }
+        } else { // Hair
+            int match = id / 10;
+            switch ((id / 1000) % 10) {
+                case 0:
+                    for (List<Integer> hairList : maleHairCache) {
+                        if (hairList.contains(id)) {
+                            ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
+                            break;
+                        }
+                    }
+                    break;
+                case 1:
+                    for (List<Integer> hairList : femaleHairCache) {
+                        if (hairList.contains(id)) {
+                            ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    for (List<Integer> hairList : ungenderedHairCache) {
+                        if (hairList.contains(id)) {
+                            ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
+                            break;
+                        }
+                    }
+                    break;
+            }
+        }
+        return ret;
+    }
+
     /** returns the maximum of items in one slot
      * @param c
      * @param itemId
@@ -767,7 +990,7 @@ public class MapleItemInformationProvider {
             return -1;
         }
 
-        double pEntry = 0.0d;
+        double pEntry;
         MapleData pData = item.getChildByPath("info/unitPrice");
         if (pData != null) {
             try {
@@ -942,8 +1165,9 @@ public class MapleItemInformationProvider {
                     case 2049100:
                     case 2049101:
                     case 2049102:
+                    case 2049122: // Chaos Scroll of Goodness
                         int increase = 1;
-                        if (Math.ceil(Math.random() * 100.0) <= 50) {
+                        if (Math.ceil(Math.random() * 100.0) <= 50 && scrollId != 2049122) {
                             increase = increase * -1;
                         }
                         if (nEquip.getStr() > 0) {
@@ -1003,6 +1227,25 @@ public class MapleItemInformationProvider {
                             nEquip.setMp(newStat);
                         }
                         break;
+                    case 2049604: // Innocence Scroll 60%
+                        Map<String, Integer> innoStats = getEquipStats(nEquip.getItemId());
+                        nEquip.setStr(innoStats.getOrDefault("STR", 0).shortValue());
+                        nEquip.setDex(innoStats.getOrDefault("DEX", 0).shortValue());
+                        nEquip.setInt(innoStats.getOrDefault("INT", 0).shortValue());
+                        nEquip.setLuk(innoStats.getOrDefault("LUK", 0).shortValue());
+                        nEquip.setWatk(innoStats.getOrDefault("PAD", 0).shortValue());
+                        nEquip.setWdef(innoStats.getOrDefault("PDD", 0).shortValue());
+                        nEquip.setMatk(innoStats.getOrDefault("MAD", 0).shortValue());
+                        nEquip.setMdef(innoStats.getOrDefault("MDD", 0).shortValue());
+                        nEquip.setAcc(innoStats.getOrDefault("ACC", 0).shortValue());
+                        nEquip.setAvoid(innoStats.getOrDefault("EVA", 0).shortValue());
+                        nEquip.setSpeed(innoStats.getOrDefault("Speed", 0).shortValue());
+                        nEquip.setJump(innoStats.getOrDefault("Jump", 0).shortValue());
+                        nEquip.setHp(innoStats.getOrDefault("MHP", 0).shortValue());
+                        nEquip.setMp(innoStats.getOrDefault("MMP", 0).shortValue());
+                        nEquip.setUpgradeSlots(innoStats.getOrDefault("tuc", 0).byteValue());
+                        nEquip.setLevel((byte) 0);
+                        break;
                     default:
                         for (Entry<String, Integer> stat : stats.entrySet()) {
                             if (stat.getKey().equals("STR")) {
@@ -1033,7 +1276,6 @@ public class MapleItemInformationProvider {
                                 nEquip.setHp((short) (nEquip.getHp() + stat.getValue()));
                             } else if (stat.getKey().equals("MMP")) {
                                 nEquip.setMp((short) (nEquip.getMp() + stat.getValue()));
-                            } else if (stat.getKey().equals("afterImage")) {
                             }
                         }
                         break;
@@ -1043,7 +1285,7 @@ public class MapleItemInformationProvider {
                     MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, 2022118, 1, true, false);
                 }
 
-                if (!isCleanSlate(scrollId)) {
+                if (!isCleanSlate(scrollId) && scrollId != 2049604) {
                     if (!isGM) {
                         nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
                     }

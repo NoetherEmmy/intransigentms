@@ -163,6 +163,9 @@ public class PartyQuest {
 
     public void playerDead(MapleCharacter player) {
         unregisterPlayer(player);
+        if (isLeader(player) || players.size() < minPlayers) {
+            dispose();
+        }
     }
 
     public void dispose() {

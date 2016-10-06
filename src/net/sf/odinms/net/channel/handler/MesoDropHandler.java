@@ -20,10 +20,9 @@ public class MesoDropHandler extends AbstractMaplePacketHandler {
         }
         if (meso <= c.getPlayer().getMeso() && meso >= 10 && meso <= 50000) {
             c.getPlayer().gainMeso(-meso, false, true);
-            c.getPlayer().getMap().spawnMesoDrop(meso, meso, c.getPlayer().getPosition(), c.getPlayer(), c.getPlayer(), false);
+            c.getPlayer().getMap().spawnMesoDrop(meso, meso, c.getPlayer().getPosition(), c.getPlayer(), c.getPlayer(), true);
         } else {
             c.getPlayer().setMeso(0);
-            return;
         }
     }
 }

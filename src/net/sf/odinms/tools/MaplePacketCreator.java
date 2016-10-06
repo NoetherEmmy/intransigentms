@@ -3128,6 +3128,23 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
+    public static MaplePacket getNPCTalkStyle(int npc, String talk, List<Integer> styles) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+
+        mplew.writeShort(SendPacketOpcode.NPC_TALK.getValue());
+        mplew.write(4); // ?
+
+        mplew.writeInt(npc);
+        mplew.write(7);
+        mplew.writeMapleAsciiString(talk);
+        mplew.write(styles.size());
+        for (int i = 0; i < styles.size(); ++i) {
+            mplew.writeInt(styles.get(i));
+        }
+
+        return mplew.getPacket();
+    }
+
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

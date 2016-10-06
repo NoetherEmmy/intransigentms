@@ -59,7 +59,7 @@ public class CheatTracker {
      * 
      * @param limit
      * @param type
-     * @return
+     * @return whether or not it's spam
      */
     public synchronized boolean Spam(int limit, int type) {
         if (type < 0 || lastTime.length < type) {

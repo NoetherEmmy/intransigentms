@@ -51,8 +51,8 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             }
         }
         if (summon == null) {
-            summons.remove(summon);
-            player.getMap().removeMapObject(summon);
+            summons.removeIf(s -> s == null);
+            player.getMap().removeMapObject(oid);
             return;
         }
         ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());

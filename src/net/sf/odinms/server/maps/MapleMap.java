@@ -437,8 +437,8 @@ public class MapleMap {
                         final int dmesos = tempmeso;
                         if (dmesos > 0) {
                             final MapleCharacter dropChar = dropOwner;
-                            final boolean publicLoott = this.isPQMap();
-                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(dmesos * cc, dmesos, dropPos, dropMonster, dropChar, explosive || publicLoott), monster.getAnimationTime("die1"));
+                            final boolean publicLoot = this.isPQMap();
+                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(dmesos * cc, dmesos, dropPos, dropMonster, dropChar, explosive || publicLoot), monster.getAnimationTime("die1"));
                         }
                     } else {
                         final int mesoRate = ChannelServer.getInstance(dropOwner.getClient().getChannel()).getMesoRate();
@@ -455,8 +455,8 @@ public class MapleMap {
                         if (meso > 0) {
                             final MapleMonster dropMonster = monster;
                             final MapleCharacter dropChar = dropOwner;
-                            final boolean publicLoott = this.isPQMap();
-                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(meso * mesoRate, meso, dropPos, dropMonster, dropChar, explosive || publicLoott), monster.getAnimationTime("die1"));
+                            final boolean publicLoot = this.isPQMap();
+                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(meso * mesoRate, meso, dropPos, dropMonster, dropChar, explosive || publicLoot), monster.getAnimationTime("die1"));
                         }
                     }
                 } else {
@@ -610,7 +610,7 @@ public class MapleMap {
         }
         if (monster.getId() == 8810018) {
             try {
-                chr.getClient().getChannelServer().getWorldInterface().broadcastMessage(chr.getName(), MaplePacketCreator.serverNotice(6, "To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
+                chr.getClient().getChannelServer().getWorldInterface().broadcastMessage(chr.getName(), MaplePacketCreator.serverNotice(6, "To those of the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!").getBytes());
             } catch (RemoteException e) {
                 chr.getClient().getChannelServer().reconnectWorld();
             }
@@ -1027,14 +1027,10 @@ public class MapleMap {
     }
 
     public void unregisterPartyQuestInstance() {
-        if (this.partyQuestInstance != null) {
-            this.partyQuestInstance.dispose();
-        }
         this.partyQuestInstance = null;
     }
 
     private class TimerDestroyWorker implements Runnable {
-
         @Override
         public void run() {
             if (mapTimer != null) {
@@ -1044,17 +1040,17 @@ public class MapleMap {
                 mapTimer = null;
                 if (warpMap != -1) {
                     MapleMap map2wa2 = ChannelServer.getInstance(channel).getMapFactory().getMap(warpMap);
-                    String warpmsg = "You will now be warped to " + map2wa2.getStreetName() + " : " + map2wa2.getMapName();
+                    String warpmsg = "You will now be warped to " + map2wa2.getStreetName() + " : " + map2wa2.getMapName() + ".";
                     broadcastMessage(MaplePacketCreator.serverNotice(6, warpmsg));
                     for (MapleCharacter chr : getCharacters()) {
                         try {
                             if (chr.getLevel() >= minWarp && chr.getLevel() <= maxWarp) {
                                 chr.changeMap(map2wa2, map2wa2.getPortal(0));
                             } else {
-                                chr.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "You are not at least level " + minWarp + " or you are higher than level " + maxWarp + "."));
+                                chr.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "You are not at yet level " + minWarp + ", or you are higher than level " + maxWarp + "."));
                             }
                         } catch (Exception ex) {
-                            String errormsg = "There was a problem warping you. Please contact a GM";
+                            String errormsg = "There was a problem warping you. Please contact a GM.";
                             chr.getClient().getSession().write(MaplePacketCreator.serverNotice(5, errormsg));
                         }
                     }

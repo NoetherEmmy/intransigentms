@@ -7,7 +7,6 @@ import net.sf.odinms.client.IItem;
 import net.sf.odinms.client.ISkill;
 import net.sf.odinms.client.MapleBuffStat;
 import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleStat;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.client.status.MonsterStatus;
@@ -50,6 +49,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             int mpattack = 0;
             MapleMonster attacker = null;
             int removeddamage = 0;
+            boolean belowlevellimit = player.getMap().getPartyQuestInstance() != null && player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
 
             float damagescale = player.getDamageScale();
             damage = (int) (((float) damage) * damagescale);
@@ -161,6 +161,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 return;
             }
             player.getCheatTracker().checkTakeDamage();
+            if (belowlevellimit && damage > 1) {
+                removeddamage += damage - 1;
+                damage = 1;
+            }
             if (damage > 0 && !deadlyattack) {
                 player.getCheatTracker().setAttacksWithoutHit(0);
                 player.getCheatTracker().resetHPRegen();
@@ -172,7 +176,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     if (player.getBuffedValue(MapleBuffStat.MORPH) != null) {
                         player.cancelMorphs();
                     }
-                    if (attacker != null) {
+                    if (!belowlevellimit && attacker != null) {
                         if (damagefrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) {
                             int bouncedamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / 100));
                             bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 10);
@@ -217,7 +221,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             }
                         }
                     }
-                    if (damagefrom == -1) {
+                    if (!belowlevellimit && damagefrom == -1) {
                         try {
                             int[] achillesSkillId = {1120004, 1220005, 1320005};
                             for (int achilles : achillesSkillId) {
@@ -235,7 +239,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             System.out.println("Failed to handle achilles: " + e);
                         }
                     }
-                    if (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null && mpattack == 0) {
+                    if (!belowlevellimit && player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null && mpattack == 0) {
                         int mploss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0));
                         int hploss = damage - mploss;
                         int hypotheticalmploss = 0;
@@ -253,7 +257,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             mploss = hypotheticalmploss;
                         }
                         removeddamage += mploss;
-                    } else if (player.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
+                    } else if (!belowlevellimit && player.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
                         int olddamage = damage;
                         damage = (damage % 2 == 0) ? damage / 2 : (damage / 2) + 1; // Damage rounds up!
                         removeddamage += olddamage - damage;

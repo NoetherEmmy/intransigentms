@@ -76,14 +76,25 @@ public class XMLDomMapleData implements MapleData {
     @Override
     public List<MapleData> getChildren() {
         List<MapleData> ret = new ArrayList<>();
-        NodeList childNodes = node.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); ++i) {
-            Node childNode = childNodes.item(i);
-            if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE) {
-                XMLDomMapleData child = new XMLDomMapleData(childNode);
-                child.imageDataDir = new File(imageDataDir, getName());
-                ret.add(child);
+        try {
+            NodeList childNodes = node.getChildNodes();
+            if (childNodes != null && childNodes.getLength() > 0) {
+                for (int i = 0; i < childNodes.getLength(); ++i) {
+                    Node childNode = childNodes.item(i);
+                    if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE) {
+                        XMLDomMapleData child = new XMLDomMapleData(childNode);
+                        child.imageDataDir = new File(imageDataDir, getName());
+                        ret.add(child);
+                    }
+                }
             }
+        } catch (NullPointerException npe) {
+            try {
+                System.out.println("NPE in XMLDomMapleData.java in method getChildren(), XML file path: " + imageDataDir.getCanonicalPath());
+            } catch (IOException ioe) {
+                System.out.println("NPE and IOE in XMLDomMapleData.java in method getChildren()");
+            }
+            return new ArrayList<>();
         }
         return ret;
     }

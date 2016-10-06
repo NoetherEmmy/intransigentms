@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.server.maps.MapleMap;
@@ -20,6 +22,7 @@ public class PartyQuestMapInstance {
     private final String path;
     private final Invocable invocable;
     private final Map<MapleCharacter, Map<String, Object>> playerPropertyMap = new HashMap<>(6, 0.9f);
+    private int levelLimit = 0;
 
     PartyQuestMapInstance(PartyQuest partyQuest, MapleMap map) {
         this.partyQuest = partyQuest;
@@ -113,5 +116,37 @@ public class PartyQuestMapInstance {
 
     public boolean playerHasProperty(MapleCharacter player, String property) {
         return playerPropertyMap.containsKey(player) && playerPropertyMap.get(player).containsKey(property);
+    }
+
+    public boolean propertyExists(String property) {
+        for (Map<String, Object> propMap : playerPropertyMap.values()) {
+            for (String propName : propMap.keySet()) {
+                if (propName.equals(property)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Set<MapleCharacter> playersWithProperty(String property) {
+        Set<MapleCharacter> ret = new HashSet<>(3, 0.7f);
+        for (Map.Entry<MapleCharacter, Map<String, Object>> entry : playerPropertyMap.entrySet()) {
+            for (String propName : entry.getValue().keySet()) {
+                if (propName.equals(property)) {
+                    ret.add(entry.getKey());
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+
+    public void setLevelLimit(int ll) {
+        levelLimit = ll;
+    }
+
+    public int getLevelLimit() {
+        return levelLimit;
     }
 }

@@ -14,10 +14,10 @@ import net.sf.odinms.tools.MaplePacketCreator;
 public class PlayerNPCs extends AbstractMapleMapObject {
 
     private final Map<Byte, Integer> equips = new HashMap<>();
-    private int npcId,  mapid,  face,  hair;
-    private byte skin,  dir, gender;
+    private int npcId, mapid, face, hair;
+    private byte skin, dir, gender;
     private String name = "";
-    private int FH,  RX0,  RX1,  CY;
+    private int FH, RX0, RX1, CY;
 
     public PlayerNPCs(ResultSet rs) {
         try {

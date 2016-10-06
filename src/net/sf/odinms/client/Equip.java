@@ -6,7 +6,7 @@ public class Equip extends Item implements IEquip {
     private byte level;
     private byte locked;
     private MapleJob job;
-    private short str,  dex,  _int,  luk,  hp,  mp,  watk,  matk,  wdef,  mdef,  acc,  avoid,  hands,  speed,  jump;
+    private short str, dex, _int, luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump;
     private int ringid;
 
     public Equip(int id, byte position) {
