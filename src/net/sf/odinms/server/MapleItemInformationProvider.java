@@ -689,9 +689,12 @@ public class MapleItemInformationProvider {
                             } else {
                                 faceLists = ungenderedFaceCache;
                             }
-                            List<Integer> faceList = faceLists.get(faceLists.size() - 1);
+                            List<Integer> faceList = null;
+                            if (!faceLists.isEmpty()) {
+                                faceList = faceLists.get(faceLists.size() - 1);
+                            }
                             // Match condition is that all decimal places EXCEPT for the hundreds place match. Simpler than it looks.
-                            if (faceList.size() < 300 || faceList.stream().anyMatch(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(id - (id % 1000 / 100 * 100)))) {
+                            if (faceList != null && (faceList.size() < 300 || faceList.stream().anyMatch(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(id - (id % 1000 / 100 * 100))))) {
                                 faceList.add(id);
                             } else {
                                 List<Integer> newFaceList = new ArrayList<>();
@@ -704,8 +707,8 @@ public class MapleItemInformationProvider {
                 }
             }
 
-            maleFaceCache.forEach(l -> l.sort(Integer::compareTo));
-            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo));
+            maleFaceCache.forEach(l -> l.sort(Integer::compareTo)); // These sorts are just to make sure the IDs are ordered,
+            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo)); // although they should really already be ordered.
             ungenderedFaceCache.forEach(l -> l.sort(Integer::compareTo));
             maleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
             femaleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
@@ -732,8 +735,11 @@ public class MapleItemInformationProvider {
                             } else {
                                 hairLists = ungenderedHairCache;
                             }
-                            List<Integer> hairList = hairLists.get(hairLists.size() - 1);
-                            if (hairList.size() < 300 || hairList.stream().anyMatch(x -> Integer.valueOf(x / 10).equals(id / 10))) {
+                            List<Integer> hairList = null;
+                            if (!hairLists.isEmpty()) {
+                                hairList = hairLists.get(hairLists.size() - 1);
+                            }
+                            if (hairList != null && (hairList.size() < 300 || hairList.stream().anyMatch(x -> Integer.valueOf(x / 10).equals(id / 10)))) {
                                 hairList.add(id);
                             } else {
                                 List<Integer> newHairList = new ArrayList<>();
