@@ -1,15 +1,9 @@
 package net.sf.odinms.net.channel.handler;
 
 import java.util.List;
-import net.sf.odinms.client.IEquip;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.InventoryException;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.SkillFactory;
-import net.sf.odinms.client.MapleInventory;
-import net.sf.odinms.client.MapleInventoryType;
+
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.IEquip.ScrollResult;
-import net.sf.odinms.client.ISkill;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.MaplePacketCreator;
@@ -53,32 +47,36 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
         }
+
         if (whiteScroll) {
             wscroll = useInventory.findById(2340000);
             if (wscroll == null || wscroll.getItemId() != 2340000) {
                 whiteScroll = false;
-                log.info("[h4x] Player {} is trying to scroll with non existant white scroll", new Object[]{c.getPlayer().getName()});
+                log.info("[h4x] Player {} is trying to scroll with non-existent white scroll", new Object[]{c.getPlayer().getName()});
             }
         }
-        if (scroll.getItemId() != 2049100 && !ii.isCleanSlate(scroll.getItemId())) {
+        if (scroll.getItemId() != 2049100 && scroll.getItemId() != 2049122 && scroll.getItemId() != 2049004 && !ii.isCleanSlate(scroll.getItemId())) {
             if (!ii.canScroll(scroll.getItemId(), toScroll.getItemId())) {
-                log.info("[h4x] Player {} is trying to scroll {} with {} which should not work", new Object[]{
+                log.info("[h4x] Player {} is trying to scroll {} with {}, which should not work.", new Object[]{
                     c.getPlayer().getName(), toScroll.getItemId(), scroll.getItemId()
                 });
                 return;
             }
         }
+
         if (scroll.getQuantity() <= 0) {
             throw new InventoryException("<= 0 quantity when scrolling");
         }
         IEquip scrolled = (IEquip) ii.scrollEquipWithId(c, toScroll, scroll.getItemId(), whiteScroll);
         ScrollResult scrollSuccess = IEquip.ScrollResult.FAIL; // fail
+
         if (scrolled == null) {
             scrollSuccess = IEquip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || (ii.isCleanSlate(scroll.getItemId()) && scrolled.getLevel() == oldLevel + 1)) {
+        } else if (scrolled.getLevel() > oldLevel || (ii.isCleanSlate(scroll.getItemId()) && scrolled.getLevel() == oldLevel + 1) || (scroll.getItemId() == 2049004 && scrolled.getUpgradeSlots() == ((Equip) ii.getEquipById(scrolled.getItemId())).getUpgradeSlots())) {
             scrollSuccess = IEquip.ScrollResult.SUCCESS;
         }
         useInventory.removeItem(scroll.getPosition(), (short) 1, false);
+
         if (whiteScroll) {
             useInventory.removeItem(wscroll.getPosition(), (short) 1, false);
             if (wscroll.getQuantity() < 1) {

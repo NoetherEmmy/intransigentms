@@ -1233,7 +1233,7 @@ public class MapleItemInformationProvider {
                             nEquip.setMp(newStat);
                         }
                         break;
-                    case 2049604: // Innocence Scroll 60%
+                    case 2049004: // Innocence Scroll 60%
                         Map<String, Integer> innoStats = getEquipStats(nEquip.getItemId());
                         nEquip.setStr(innoStats.getOrDefault("STR", 0).shortValue());
                         nEquip.setDex(innoStats.getOrDefault("DEX", 0).shortValue());
@@ -1291,7 +1291,7 @@ public class MapleItemInformationProvider {
                     MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, 2022118, 1, true, false);
                 }
 
-                if (!isCleanSlate(scrollId) && scrollId != 2049604) {
+                if (!isCleanSlate(scrollId) && scrollId != 2049004) {
                     if (!isGM) {
                         nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
                     }
