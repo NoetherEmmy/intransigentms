@@ -190,7 +190,7 @@ public class CommandProcessor implements CommandProcessorMBean {
                         Command newInstance = (Command) clasz.newInstance();
                         registerCommand(newInstance);
                     } catch (Exception e) {
-                        System.out.println("ERROR INSTANCIATING COMMAND CLASS: " + e);
+                        System.out.println("Error instantiating command class: " + e);
                     }
                 }
             }

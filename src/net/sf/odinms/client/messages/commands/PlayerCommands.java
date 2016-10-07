@@ -976,7 +976,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("PQ point display is now turned " + s + ".");
         } else if (splitted[0].equals("@readingtime")) {
             if (player.getReadingTime() > 0) {
-                long sittingTime = System.currentTimeMillis() - (player.getReadingTime() * 1000);
+                long sittingTime = System.currentTimeMillis() - ((long) player.getReadingTime() * 1000);
                 long hours = sittingTime / (long) 3600000;
                 sittingTime %= (long) 3600000;
                 long minutes = sittingTime / (long) 60000;

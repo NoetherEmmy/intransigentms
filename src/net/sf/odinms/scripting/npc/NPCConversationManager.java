@@ -105,7 +105,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void sendSimple(String text) {
         if (!text.contains("#L")) {
-            getPlayer().dropMessage(6, "!!! This NPC is broken. @gm someone and tell them you got this messasge. If no one is online, just remember for later. !!!");
+            getPlayer().dropMessage(6, "!!! This NPC is broken. @gm someone and tell them you got this message. If no one is online, just remember for later. !!!");
             dispose();
         } else {
             getClient().getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 4, text, ""));
