@@ -79,7 +79,8 @@ import net.sf.odinms.server.maps.MapleSummon;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements InventoryContainer {
 
-    public static final double MAX_VIEW_RANGE_SQ = 850 * 850;
+    public static final double MAX_VIEW_RANGE_SQ = 850d * 850d;
+    private static final double READING_PRIZE_PROP = 0.017d;
     private int world;
     private int accountid;
     private int rank;
@@ -241,6 +242,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     private boolean scpqflag = false;
     private boolean showpqpoints = true;
+
+    private int readingTime = 0;
+    ScheduledFuture<?> readingTask = null;
+    private int pastLifeExp = 1;
     //
 
     public MapleCharacter() {
@@ -1506,6 +1511,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public MapleMount getMount() {
         return this.maplemount;
     }
+
+    public void setPastLifeExp(int ple) {
+        this.pastLifeExp = ple;
+    }
+
+    public int getPastLifeExp() {
+        return this.pastLifeExp;
+    }
+
+    public void updatePastLifeExp() {
+        int pastLifeLevel = 1;
+        for (List<Integer> pastLife : pastlives) {
+            if (pastLife.get(0) > 1) {
+                pastLifeLevel = pastLife.get(0);
+                break;
+            }
+        }
+        pastLifeExp = Math.max(pastLifeLevel / 20, 1);
+    }
     //
 
     //
@@ -1723,9 +1747,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             date *= 1000;
             rs.close();
             ps.close();
-            //System.out.print("System.currentTimeMillis(), date, System.currentTimeMillis() - date: " + System.currentTimeMillis() + ", " + date + ", " + (System.currentTimeMillis() - date) + "\n");
             long timeleft = (24 * 60 * 60 * 1000) - (System.currentTimeMillis() - date);
-            //System.out.print("timeleft: " + timeleft + "\n");
             if (timeleft < 1) {
                 dropMessage("You may vote right now! Remember to log out when voting to get your rewards!");
             } else {
@@ -1750,6 +1772,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
         return 0;
+    }
+
+    public void setReadingTime(int rt) {
+        this.readingTime = rt;
+    }
+
+    public int getReadingTime() {
+        return this.readingTime;
     }
     //
     
@@ -2931,6 +2961,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         try {
             addNewPastLife(levelAchieved, jobAchieved.getId(), lds);
             incrementDeathCount();
+            updatePastLifeExp();
             String jobachieved = MapleJob.getJobName(getJobAchieved().getId());
             String causeofdeath;
             if (lastdamagesource == null) {
@@ -4485,6 +4516,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getPetIndex(MaplePet pet) {
+        if (pet == null) {
+            return -1;
+        }
         for (int i = 0; i < 3; ++i) {
             if (pets[i] != null) {
                 if (pets[i].getUniqueId() == pet.getUniqueId()) {
@@ -4666,6 +4700,54 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void setChair(int chair) {
         this.chair = chair;
+        if (this.chair == 3010117 && getMapId() / 100 == 9100000) { // Reading Chair
+            setReadingTime((int) (System.currentTimeMillis() / 1000));
+
+            TimerManager tMan = TimerManager.getInstance();
+            readingTask = tMan.register(() -> {
+                if (this.chair == 3010117 && getMapId() / 100 == 9100000) {
+                    if (Math.random() < MapleCharacter.READING_PRIZE_PROP) {
+                        int rewardId = getReadingReward();
+                        if (rewardId == 0) {
+                            dropMessage("It looks like you don't have a book to read! Talk to Saeko to get one.");
+                        } else {
+                            MapleInventoryType type = MapleInventoryType.ETC;
+                            if (MapleInventoryManipulator.checkSpace(getClient(), rewardId, 1, "")) {
+                                MapleInventoryManipulator.addById(getClient(), rewardId, (short) 1);
+                                getClient().getSession().write(MaplePacketCreator.getShowItemGain(rewardId, (short) 1, true));
+                                sendHint("Nice reading! You've just gained a #bknowledge essence#k!");
+                            } else {
+                                dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
+                                setUnclaimedItem(rewardId, (short) 1);
+                            }
+                        }
+                    }
+                } else {
+                    cancelReadingTask();
+                }
+            }, 60 * 1000, 60 * 1000);
+        } else { // No longer sitting in Reading Chair
+            setReadingTime(0);
+            cancelReadingTask();
+        }
+    }
+
+    public void cancelReadingTask() {
+        this.readingTask.cancel(false);
+        this.readingTask = null;
+    }
+
+    public int getReadingReward() {
+        int ret = 0;
+        int rewardSet[] = {4031762, 4031755, 4031750, 4031764, 4031753, 4031756};
+        int tomeSet[] =   {4031056, 4161002, 4031157, 4031158, 4031159, 4031900};
+        for (int i = 0; i < tomeSet.length; ++i) {
+            int tomeId = tomeSet[i];
+            if (this.getItemQuantity(tomeId, false) > 0) {
+                ret = rewardSet[i];
+            }
+        }
+        return ret;
     }
 
     public void setItemEffect(int itemEffect) {
@@ -5046,17 +5128,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    public void giveDebuff(MapleDisease disease, MobSkill skill) {
+    public void giveDebuff(MapleDisease disease, MobSkill mobSkill) {
         synchronized (diseases) {
             if (isAlive() && !isActiveBuffedValue(2321005) && !diseases.contains(disease) && diseases.size() < 2) {
                 diseases.add(disease);
-                List<Pair<MapleDisease, Integer>> debuff = Collections.singletonList(new Pair<>(disease, skill.getX()));
+                List<Pair<MapleDisease, Integer>> debuff = Collections.singletonList(new Pair<>(disease, mobSkill.getX()));
                 long mask = 0;
                 for (Pair<MapleDisease, Integer> statup : debuff) {
                     mask |= statup.getLeft().getValue();
                 }
-                getClient().getSession().write(MaplePacketCreator.giveDebuff(mask, debuff, skill));
-                getMap().broadcastMessage(this, MaplePacketCreator.giveForeignDebuff(id, mask, skill), false);
+                getClient().getSession().write(MaplePacketCreator.giveDebuff(mask, debuff, mobSkill));
+                if (disease != MapleDisease.POISON) {
+                    getMap().broadcastMessage(this, MaplePacketCreator.giveForeignDebuff(id, mask, mobSkill), false);
+                }
                 if (isAlive()) {
                     final MapleCharacter character = this;
                     final MapleDisease disease_ = disease;
@@ -5064,7 +5148,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                         if (character.diseases.contains(disease_)) {
                             dispelDebuff(disease_);
                         }
-                    }, skill.getDuration());
+                    }, mobSkill.getDuration());
                 }
             }
         }
@@ -5405,7 +5489,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
     
     public int getAbsoluteXp() {
-        int absLevelMultiplier = (int) Math.floor(0.1 * (double) getLevel());
+        int absLevelMultiplier = Math.max(getLevel() / 10, pastLifeExp);
         int currentexpbonus = getExpBonus() ? getExpBonusMulti() : 1;
         if (absLevelMultiplier >= 1) {
             return absLevelMultiplier * currentexpbonus;

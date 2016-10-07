@@ -212,6 +212,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.checkBerserk();
         player.setMagicArmor(false);
         player.setMagicArmorCancelTask(null);
+        player.updatePastLifeExp();
         player.reactivateExpBonus();
         player.dropVoteTime();
         //

@@ -294,7 +294,9 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         player.addMPHP(damage, 0);
                         damage = 0;
                     }
-                    player.getMap().broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
+                    if (MapleLifeFactory.getMonster(monsteridfrom) != null) {
+                        player.getMap().broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
+                    }
                     if (player.getTrueDamage()) {
                         player.sendHint("#e#r" + damage + "#k#n" + (removeddamage > 0 ? " #e#b(" + removeddamage + ")#k#n" : ""), 0, 0);
                     }

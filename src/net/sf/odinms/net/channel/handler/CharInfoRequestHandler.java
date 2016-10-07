@@ -13,7 +13,11 @@ public class CharInfoRequestHandler extends AbstractMaplePacketHandler {
         c.getPlayer().resetAfkTime();
         slea.readInt();
         int cid = slea.readInt();
-        c.getSession().write(MaplePacketCreator.charInfo(((MapleCharacter) c.getPlayer().getMap().getMapObject(cid))));
-        return;
+        MapleCharacter chr = (MapleCharacter) c.getPlayer().getMap().getMapObject(cid);
+        if (chr != null) {
+            c.getSession().write(MaplePacketCreator.charInfo(chr));
+        } else {
+            c.getSession().write(MaplePacketCreator.enableActions());
+        }
     }
 }

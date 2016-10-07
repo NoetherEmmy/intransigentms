@@ -707,9 +707,9 @@ public class MapleItemInformationProvider {
                 }
             }
 
-            maleFaceCache.forEach(l -> l.sort(Integer::compareTo)); // These sorts are just to make sure the IDs are ordered,
-            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo)); // although they should really already be ordered.
-            ungenderedFaceCache.forEach(l -> l.sort(Integer::compareTo));
+            maleFaceCache.forEach(l -> l.sort(Integer::compareTo));       // These sorts are just to make sure the IDs are ordered,
+            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo));     // although they should really already be ordered.
+            ungenderedFaceCache.forEach(l -> l.sort(Integer::compareTo)); // Luckily this code only runs once.
             maleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
             femaleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
             ungenderedFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
@@ -727,7 +727,7 @@ public class MapleItemInformationProvider {
                     for (MapleDataFileEntry iFile : topDir.getFiles()) {
                         Integer id = Integer.parseInt(iFile.getName().substring(3, 8)); // Gets just the ID without leading zeroes.
                         List<List<Integer>> hairLists;
-                        if (id >= 30000 && id < 50000) { // Just in case.
+                        if (id >= 30000 && id < 40000) { // Filtering out IDs that cannot be rendered by the client.
                             if ((id / 1000) % 10 == 0) {
                                 hairLists = maleHairCache;
                             } else if ((id / 1000) % 10 == 1) {

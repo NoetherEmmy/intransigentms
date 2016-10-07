@@ -66,9 +66,12 @@ public class SpawnPoint {
         if (mobTime == 0) {
             nextPossibleSpawn = System.currentTimeMillis() + 5000;
         }
+        // The conditional below is for events with monsters that spawn on all maps.
+        /*
         if (Math.random() < 0.004d) {
             mapleMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400570), pos);
         }
+        */
         return mob;
     }
 }

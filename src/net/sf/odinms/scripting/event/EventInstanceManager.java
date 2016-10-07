@@ -42,12 +42,14 @@ public class EventInstanceManager {
     }
 
     public void registerPlayer(MapleCharacter chr) {
-        try {
-            chars.add(chr);
-            chr.setEventInstance(this);
-            em.getIv().invokeFunction("playerEntry", this, chr);
-        } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
+        if (chr != null) {
+            try {
+                chars.add(chr);
+                chr.setEventInstance(this);
+                em.getIv().invokeFunction("playerEntry", this, chr);
+            } catch (ScriptException | NoSuchMethodException ex) {
+                Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -73,7 +75,9 @@ public class EventInstanceManager {
 
     public void unregisterPlayer(MapleCharacter chr) {
         chars.remove(chr);
-        chr.setEventInstance(null);
+        if (chr != null) {
+            chr.setEventInstance(null);
+        }
     }
 
     public int getPlayerCount() {

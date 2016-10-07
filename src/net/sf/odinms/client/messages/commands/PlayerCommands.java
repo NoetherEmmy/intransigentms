@@ -87,6 +87,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@monsterdrops <monsterid> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
             mc.dropMessage("@monsterdrops <searchstring> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
             mc.dropMessage("@pqpoints - | - Toggles the display of current PQ point total.");
+            mc.dropMessage("@readingtime - | - Displays how long you've been reading.");
             mc.dropMessage("@donated - | - Allows access to donator benefits.");
             mc.dropMessage("@vote - | - Displays the amount of time left until you may vote again.");
             if (player.getClient().getChannelServer().extraCommands()) {
@@ -973,6 +974,18 @@ public class PlayerCommands implements Command {
             player.toggleShowPqPoints();
             String s = player.showPqPoints() ? "on" : "off";
             mc.dropMessage("PQ point display is now turned " + s + ".");
+        } else if (splitted[0].equals("@readingtime")) {
+            if (player.getReadingTime() > 0) {
+                long sittingTime = System.currentTimeMillis() - (player.getReadingTime() * 1000);
+                long hours = sittingTime / (long) 3600000;
+                sittingTime %= (long) 3600000;
+                long minutes = sittingTime / (long) 60000;
+                sittingTime %= (long) 60000;
+                long seconds = sittingTime / (long) 1000;
+                player.dropMessage("You've been reading for a total of " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds this session.");
+            } else {
+                player.dropMessage("It doesn't look like you're reading at the moment.");
+            }
         }
     }
 
