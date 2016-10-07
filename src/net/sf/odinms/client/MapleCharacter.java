@@ -1536,99 +1536,99 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public MapleCQuests getCQuest() {
         return quest;
     }
-     
+
     public int getStory() { 
         return story; 
     }
 
     public void setStory(int story) {
         this.story = story; 
-    } 
-     
-    public void addStory(int amt) { 
-        story += amt; 
-    } 
+    }
+
+    public void addStory(int amt) {
+        story += amt;
+    }
          
-    public int getStoryPoints() { 
-        return storypoints; 
+    public int getStoryPoints() {
+        return storypoints;
     }
 
     public void setStoryPoints(int points) {
-        this.storypoints = points; 
-    } 
-     
-    public void addStoryPoints(int amt) { 
-        storypoints += amt; 
+        this.storypoints = points;
     }
-    
-    public int getOffenseStory() { 
-        return offensestory; 
+
+    public void addStoryPoints(int amt) {
+        storypoints += amt;
+    }
+
+    public int getOffenseStory() {
+        return offensestory;
     }
 
     public void setOffenseStory(int os) {
-        this.offensestory = os; 
-    } 
-     
-    public void addOffenseStory(int amt) { 
+        this.offensestory = os;
+    }
+
+    public void addOffenseStory(int amt) {
         offensestory += amt;
     }
-    
-    public int getBuffStory() { 
-        return buffstory; 
+
+    public int getBuffStory() {
+        return buffstory;
     }
 
     public void setBuffStory(int bs) {
-        this.buffstory = bs; 
-    } 
-     
-    public void addBuffStory(int amt) { 
+        this.buffstory = bs;
+    }
+
+    public void addBuffStory(int amt) {
         buffstory += amt;
     }
-     
+
     public int getQuestKills(int type) {
         switch (type) {
-            case 1: 
+            case 1:
                 return questkills;
-            case 2: 
+            case 2:
                 return questkills2;
         }
         return 0;
     }
-    
+
     public int getQuestCollected(int type) {
         return getItemQuantity(getCQuest().getItemId(type), false);
     }
-    
+
     public void setQuestKills(int type, int kills) {
         switch (type) {
             case 1:
-                this.questkills = kills; 
-                break; 
-            case 2: 
-                this.questkills2 = kills; 
-                break; 
-        } 
+                this.questkills = kills;
+                break;
+            case 2:
+                this.questkills2 = kills;
+                break;
+        }
     }
 
     public void doQuestKill(int type) {
         switch (type) {
-            case 1:     
-                questkills++; 
-                break; 
-            case 2:     
-                questkills2++; 
-                break; 
+            case 1:
+                questkills++;
+                break;
+            case 2:
+                questkills2++;
+                break;
         }
     }
-     
+
     public int getQuestId() {
         return questidd;
     }
-     
+
     public void setQuestId(int id) {
-        this.questidd = id; 
+        this.questidd = id;
     }
-     
+
     public boolean canComplete() {
         int done = 0;
         int toDo = 0;

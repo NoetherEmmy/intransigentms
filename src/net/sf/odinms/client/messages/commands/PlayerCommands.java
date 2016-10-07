@@ -1076,7 +1076,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("cancelquest", 0),
             new CommandDefinition("vote", 0),
             new CommandDefinition("sell", 0),
-            new CommandDefinition("pqpoints", 0)
+            new CommandDefinition("pqpoints", 0),
+            new CommandDefinition("readingtime", 0)
         };
     }
 }
