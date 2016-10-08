@@ -678,7 +678,7 @@ public class MapleItemInformationProvider {
             MapleDataDirectoryEntry root = equipData.getRoot();
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Face")) {
-                    for (MapleDataFileEntry iFile : topDir.getFiles()) {
+                    topDir.getFiles().stream().sorted().forEachOrdered((iFile) -> {
                         Integer id = Integer.parseInt(iFile.getName().substring(3, 8)); // Gets just the ID without leading zeroes.
                         List<List<Integer>> faceLists;
                         if (id >= 20000 && id < 30000) { // Just in case.
@@ -702,18 +702,18 @@ public class MapleItemInformationProvider {
                                 faceLists.add(newFaceList);
                             }
                         }
-                    }
+                    });
                     break;
                 }
             }
-
-            maleFaceCache.forEach(l -> l.sort(Integer::compareTo));       // These sorts are just to make sure the IDs are ordered,
-            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo));     // although they should really already be ordered.
-            ungenderedFaceCache.forEach(l -> l.sort(Integer::compareTo)); // Luckily this code only runs once.
+            /*
+            maleFaceCache.forEach(l -> l.sort(Integer::compareTo));
+            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo));
+            ungenderedFaceCache.forEach(l -> l.sort(Integer::compareTo));
             maleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
             femaleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
             ungenderedFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-
+            */
             facesCached = true;
         }
     }
@@ -724,7 +724,7 @@ public class MapleItemInformationProvider {
             MapleDataDirectoryEntry root = equipData.getRoot();
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Hair")) {
-                    for (MapleDataFileEntry iFile : topDir.getFiles()) {
+                    topDir.getFiles().stream().sorted().forEachOrdered((iFile) -> {
                         Integer id = Integer.parseInt(iFile.getName().substring(3, 8)); // Gets just the ID without leading zeroes.
                         List<List<Integer>> hairLists;
                         if (id >= 30000 && id < 40000) { // Filtering out IDs that cannot be rendered by the client.
@@ -747,18 +747,18 @@ public class MapleItemInformationProvider {
                                 hairLists.add(newHairList);
                             }
                         }
-                    }
+                    });
                     break;
                 }
             }
-
+            /*
             maleHairCache.forEach(l -> l.sort(Integer::compareTo));
             femaleHairCache.forEach(l -> l.sort(Integer::compareTo));
             ungenderedHairCache.forEach(l -> l.sort(Integer::compareTo));
             maleHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
             femaleHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
             ungenderedHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-
+            */
             hairsCached = true;
         }
     }

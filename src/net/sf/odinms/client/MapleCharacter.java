@@ -1528,7 +1528,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 break;
             }
         }
-        pastLifeExp = Math.max(pastLifeLevel / 20, 1);
+        pastLifeExp = Math.max(pastLifeLevel / 20 + pastLifeLevel % 2, 1);
     }
     //
 
@@ -4733,7 +4733,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void cancelReadingTask() {
-        this.readingTask.cancel(false);
+        if (this.readingTask != null) {
+            this.readingTask.cancel(false);
+        }
         this.readingTask = null;
     }
 
