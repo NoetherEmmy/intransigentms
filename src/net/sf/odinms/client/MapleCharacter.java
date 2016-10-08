@@ -1681,7 +1681,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         } 
     }
     
-        public void sendHint(String ms) { 
+    public void sendHint(String ms) {
         sendHint(ms, 275, 10); 
     } 
      

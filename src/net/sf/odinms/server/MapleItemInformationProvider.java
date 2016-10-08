@@ -701,14 +701,6 @@ public class MapleItemInformationProvider {
                     break;
                 }
             }
-            /*
-            maleFaceCache.forEach(l -> l.sort(Integer::compareTo));
-            femaleFaceCache.forEach(l -> l.sort(Integer::compareTo));
-            ungenderedFaceCache.forEach(l -> l.sort(Integer::compareTo));
-            maleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-            femaleFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-            ungenderedFaceCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-            */
             facesCached = true;
         }
     }
@@ -746,14 +738,6 @@ public class MapleItemInformationProvider {
                     break;
                 }
             }
-            /*
-            maleHairCache.forEach(l -> l.sort(Integer::compareTo));
-            femaleHairCache.forEach(l -> l.sort(Integer::compareTo));
-            ungenderedHairCache.forEach(l -> l.sort(Integer::compareTo));
-            maleHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-            femaleHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-            ungenderedHairCache.sort((x, y) -> x.get(0).compareTo(y.get(0)));
-            */
             hairsCached = true;
         }
     }
