@@ -17,12 +17,7 @@ import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.client.MapleWeaponType;
 import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.net.channel.ChannelServer;
-import net.sf.odinms.provider.MapleData;
-import net.sf.odinms.provider.MapleDataDirectoryEntry;
-import net.sf.odinms.provider.MapleDataFileEntry;
-import net.sf.odinms.provider.MapleDataProvider;
-import net.sf.odinms.provider.MapleDataProviderFactory;
-import net.sf.odinms.provider.MapleDataTool;
+import net.sf.odinms.provider.*;
 import net.sf.odinms.tools.Pair;
 
 public class MapleItemInformationProvider {
@@ -678,8 +673,8 @@ public class MapleItemInformationProvider {
             MapleDataDirectoryEntry root = equipData.getRoot();
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Face")) {
-                    topDir.getFiles().stream().sorted().forEachOrdered((iFile) -> {
-                        Integer id = Integer.parseInt(iFile.getName().substring(3, 8)); // Gets just the ID without leading zeroes.
+                    topDir.getFiles().stream().map(MapleDataEntry::getName).sorted().forEachOrdered((iFile) -> {
+                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID without leading zeroes.
                         List<List<Integer>> faceLists;
                         if (id >= 20000 && id < 30000) { // Just in case.
                             if ((id / 1000) % 10 == 0) {
@@ -724,8 +719,8 @@ public class MapleItemInformationProvider {
             MapleDataDirectoryEntry root = equipData.getRoot();
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Hair")) {
-                    topDir.getFiles().stream().sorted().forEachOrdered((iFile) -> {
-                        Integer id = Integer.parseInt(iFile.getName().substring(3, 8)); // Gets just the ID without leading zeroes.
+                    topDir.getFiles().stream().map(MapleDataEntry::getName).sorted().forEachOrdered((iFile) -> {
+                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID without leading zeroes.
                         List<List<Integer>> hairLists;
                         if (id >= 30000 && id < 40000) { // Filtering out IDs that cannot be rendered by the client.
                             if ((id / 1000) % 10 == 0) {
