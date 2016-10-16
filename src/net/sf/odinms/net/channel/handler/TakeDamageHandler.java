@@ -50,6 +50,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             MapleMonster attacker = null;
             int removeddamage = 0;
             boolean belowlevellimit = player.getMap().getPartyQuestInstance() != null && player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
+            boolean dodge = false;
 
             float damagescale = player.getDamageScale();
             damage = (int) (((float) damage) * damagescale);
@@ -116,9 +117,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     attacker.setMp(attacker.getMp() - attackInfo.getMpCon());
                 }
             }
+
             boolean smokescreened = false;
-            synchronized (player.getMap().getMapObjects()) {
-                try {
+            try {
+                synchronized (player.getMap().getMapObjects()) {
                     Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
                     while (mmoiter.hasNext()) {
                         MapleMapObject mmo = mmoiter.next();
@@ -134,11 +136,12 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             }
                         }
                     }
-                } catch (Exception e) {
-                    System.out.println("Unable to handle smokescreen:");
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                System.out.println("Unable to handle smokescreen:");
+                e.printStackTrace();
             }
+
             if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got damage removed by smokescreen don't get to stun mobs
                 int job = player.getJob().getId() / 10 - 40;
                 fake = 4020002 + (job * 100000);
@@ -170,9 +173,26 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 player.getCheatTracker().resetHPRegen();
                 player.resetAfkTime();
                 if (player.getPartyQuest() != null) {
-                    player.getPartyQuest().getMapInstance(player.getMap()).invokeEvent("playerHit", player, damage, attacker);
+                    player.getPartyQuest().getMapInstance(player.getMap()).invokeMethod("playerHit", player, damage, attacker);
                 }
                 if (!player.isHidden() && player.isAlive()) {
+                    if (player.getTotalWdef() > 1999 && damagefrom == -1) {
+                        int olddamage = damage;
+                        damage = Math.max(damage - (player.getTotalWdef() - 1999), 1);
+
+                        double dodgeChance = (Math.log1p(player.getTotalWdef() - 1999) / Math.log(2.0d)) / 25.0d;
+                        if (Math.random() < dodgeChance) {
+                            damage = 0;
+                            dodge = true;
+                        }
+                        removeddamage += olddamage - damage;
+                    }
+                    if (player.getTotalMdef() > 1999 && (damagefrom == 0 || damagefrom == 1)) {
+                        int olddamage = damage;
+                        damage = (int) Math.max(damage - Math.pow(player.getTotalMdef() - 1999.0d, 1.2d), 1);
+                        removeddamage += olddamage - damage;
+                    }
+
                     if (player.getBuffedValue(MapleBuffStat.MORPH) != null) {
                         player.cancelMorphs();
                     }
@@ -272,24 +292,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     } else {
                         player.addMPHP(-damage, -mpattack);
                     }
-                    /*
-                    if (c.getPlayer().getMap().getId() == 980010101) {
-                        if (monsteridfrom == 9300166) {
-                            player.setBombPoints(player.getBombPoints() - 1);
-                            if (player.getBombPoints() < 1) {
-                                player.setHp(0);
-                                player.updateSingleStat(MapleStat.HP, 0);
-                                player.setBombPoints(10);
-                                c.getPlayer().dropMessage("[" + c.getChannelServer().getServerName() + "] You have died in Battle at the Bomberman Arena.");
-                                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(1, "[" + c.getChannelServer().getServerName() + "] The person " + player.getName() + " has died in Bomberman PvP."));
-                                return;
-                            } else {
-                                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(1, "[" + c.getChannelServer().getServerName() + "] The player " + player.getName() + " now has " + player.getBombPoints() + " points left in Bomberman PvP."));
-                                return;
-                            }
-                        }
-                    } else {
-                    */
+
                     if (deadlyattack) {
                         player.addMPHP(damage, 0);
                         damage = 0;
@@ -298,12 +301,11 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         player.getMap().broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
                     }
                     if (player.getTrueDamage()) {
-                        player.sendHint("#e#r" + damage + "#k#n" + (removeddamage > 0 ? " #e#b(" + removeddamage + ")#k#n" : ""), 0, 0);
+                        player.sendHint("#e" + (dodge ? "MISS! " : "") + "#r" + damage + "#k#n" + (removeddamage > 0 ? " #e#b(" + removeddamage + ")#k#n" : ""), 0, 0);
                     }
                     if (player.getMount() != null && (player.getMount().getSkillId() == 5221006 && player.getMount().isActive())) {
                         player.decrementBattleshipHp(damage);
                     }
-                    // }
                 }
             }
         } catch (Exception e) {

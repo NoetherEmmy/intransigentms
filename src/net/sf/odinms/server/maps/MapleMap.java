@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -283,7 +282,7 @@ public class MapleMap {
                 }
             }
             if (dropOwner.getQuest(MapleQuest.getInstance(7104 /* A Piece of Crack */)).getStatus() == MapleQuestStatus.Status.STARTED && (monster.getId() == 8141100 || monster.getId() == 8143000)) {
-                chance = (int) (Math.random() * 200); // 1/200 droprate
+                chance = (int) (Math.random() * 180); // 1/180 droprate
                 switch (chance) {
                     case 1:
                         toDrop.add(4031176); // Piece of Cracked Dimension A
@@ -303,6 +302,14 @@ public class MapleMap {
                     toDrop.add(4031507);
                 } else {
                     toDrop.add(4031508);
+                }
+            }
+            if (dropOwner.getMapId() >= 1000 && dropOwner.getMapId() <= 1006 && monster.isBoss()) {
+                int timelessItems[] = {1302081, 1312037, 1322060, 1332073, 1332074, 1372044, 1382057, 1402046,
+                                       1412033, 1422037, 1432047, 1442063, 1452057, 1462050, 1472068, 1482023,
+                                       1492023};
+                if (Math.random() < 0.15d) {
+                    toDrop.add(timelessItems[(int) (Math.random() * timelessItems.length)]);
                 }
             }
             if (partyevent && dropOwner.getParty() != null) {
@@ -583,11 +590,6 @@ public class MapleMap {
 
     @SuppressWarnings("static-access")
     public void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean secondTime, int animation) {
-        /*
-        if ((monster.getId() == chr.getCQuest().getTargetId(1)) || (monster.getId() == chr.getCQuest().getTargetId(2))) {
-            chr.makeQuestProgress(monster.getId(), 0);
-        }
-        */
         if (monster.getId() == 8810018 && !secondTime) {
             TimerManager.getInstance().schedule(() -> {
                 killMonster(monster, chr, withDrops, true, 1);
@@ -654,7 +656,7 @@ public class MapleMap {
     public void killAllMonsters(boolean drop) {
         List<MapleMapObject> players = null;
         if (drop) {
-            players = getAllPlayer();
+            players = getAllPlayers();
         }
         List<MapleMapObject> monsters = getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER));
         for (MapleMapObject monstermo : monsters) {
@@ -674,13 +676,21 @@ public class MapleMap {
         for (MapleMapObject mmo : getMapObjects()) {
             if (mmo instanceof MapleMonster) {
                 if (((MapleMonster) mmo).getId() == monsId) {
-                    this.killMonster((MapleMonster) mmo, (MapleCharacter) getAllPlayer().get(0), false);
+                    this.killMonster((MapleMonster) mmo, (MapleCharacter) getAllPlayers().get(0), false);
                 }
             }
         }
     }
 
-    public List<MapleMapObject> getAllPlayer() {
+    public void silentKillMonster(int oid) {
+        MapleMonster monster = getMonsterByOid(oid);
+        spawnedMonstersOnMap.decrementAndGet();
+        monster.setHp(0);
+        broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), true), monster.getPosition());
+        removeMapObject(monster);
+    }
+
+    public List<MapleMapObject> getAllPlayers() {
         return getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.PLAYER));
     }
 
@@ -887,7 +897,7 @@ public class MapleMap {
             spawnAndAddRangedMapObject(monster, c -> {
                 c.getSession().write(MaplePacketCreator.spawnMonster(monster, true));
                 if (monster.getId() == 9300166) {
-                    TimerManager.getInstance().schedule(() -> killMonster(monster, (MapleCharacter) getAllPlayer().get(0), false, false, 3), new Random().nextInt(4500 + 500));
+                    TimerManager.getInstance().schedule(() -> killMonster(monster, (MapleCharacter) getAllPlayers().get(0), false, false, 3), new Random().nextInt(4500 + 500));
                 }
             }, null);
             updateMonsterController(monster);

@@ -56,7 +56,7 @@ public class PartyQuestMapInstance {
         partyQuest.getMapInstances().remove(this);
         map.unregisterPartyQuestInstance();
         playerPropertyMap.clear();
-        invokeEvent("dispose");
+        invokeMethod("dispose");
     }
 
     public MapleMap getMap() {
@@ -67,24 +67,26 @@ public class PartyQuestMapInstance {
         return partyQuest;
     }
 
-    public void invokeEvent(String name) {
+    public Object invokeMethod(String name) {
         try {
-            invocable.invokeFunction(name);
+            return invocable.invokeFunction(name);
         } catch (ScriptException se) {
             System.out.println("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
             se.printStackTrace();
         } catch (NoSuchMethodException ignored) {
         }
+        return null;
     }
 
-    public void invokeEvent(String name, Object... args) {
+    public Object invokeMethod(String name, Object... args) {
         try {
-            invocable.invokeFunction(name, args);
+            return invocable.invokeFunction(name, args);
         } catch (ScriptException se) {
             System.out.println("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
             se.printStackTrace();
         } catch (NoSuchMethodException ignored) {
         }
+        return null;
     }
 
     public void setPlayerProperty(MapleCharacter player, String property, Object value) {
@@ -105,6 +107,15 @@ public class PartyQuestMapInstance {
             playerPropertyMap.put(player, new HashMap<>(3, 0.75f));
         }
         playerPropertyMap.get(player).putIfAbsent(property, value);
+    }
+
+    public void setPropertyForAll(String property, Object value) {
+        for (MapleCharacter p : partyQuest.getPlayers()) {
+            if (!playerPropertyMap.containsKey(p)) {
+                playerPropertyMap.put(p, new HashMap<>(3, 0.75f));
+            }
+            playerPropertyMap.get(p).put(property, value);
+        }
     }
 
     public Object getPlayerProperty(MapleCharacter player, String property) {

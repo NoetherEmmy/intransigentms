@@ -39,6 +39,12 @@ public class EnterCashShopHandler extends AbstractMaplePacketHandler {
             if (player.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
                 player.cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
             }
+            if (player.getStatForBuff(MapleBuffStat.SUMMON) != null) {
+                player.cancelEffect(player.getStatForBuff(MapleBuffStat.SUMMON), false, -1);
+            }
+            if (player.getStatForBuff(MapleBuffStat.PUPPET) != null) {
+                player.cancelEffect(player.getStatForBuff(MapleBuffStat.PUPPET), false, -1);
+            }
             try {
                 WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
                 wci.addBuffsToStorage(player.getId(), player.getAllBuffs());

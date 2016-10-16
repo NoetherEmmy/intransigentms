@@ -30,7 +30,7 @@ public class UseCatchItemHandler extends AbstractMaplePacketHandler {
                 if (itemid == 2270002) {
                     c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterid, itemid, (byte) 1));
                 }
-                mob.getMap().killMonster(mob, (MapleCharacter) mob.getMap().getAllPlayer().get(0), false, false, 0);
+                mob.getMap().killMonster(mob, (MapleCharacter) mob.getMap().getAllPlayers().get(0), false, false, 0);
                 c.getPlayer().setAPQScore(c.getPlayer().getAPQScore() + 1);
                 c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.updateAriantPQRanking(c.getPlayer().getName(), c.getPlayer().getAPQScore(), false));
             } else {
