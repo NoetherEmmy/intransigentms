@@ -61,7 +61,7 @@ public class EventManager {
         }, timestamp);
     }
 
-    public ScheduledFuture<?> scheduleAtFixedRate(final String methodName, long delay) { // Ehh Fully copied and pasted, im lazy.
+    public ScheduledFuture<?> scheduleAtFixedRate(final String methodName, long delay) {
         return TimerManager.getInstance().register(() -> {
             try {
                 iv.invokeFunction(methodName, (Object) null);

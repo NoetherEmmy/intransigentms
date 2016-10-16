@@ -63,7 +63,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         }
         
         try {
-            IItem weapon_item = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) - 11);
+            IItem weapon_item = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
             MapleWeaponType weapon = null;
             if (weapon_item != null) {
                 weapon = MapleItemInformationProvider.getInstance().getWeaponType(weapon_item.getItemId());
@@ -107,7 +107,6 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         }
                         attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
                         for (Integer additionald : additionaldmg) {
-                            //c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                             player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
                         }
                     }
@@ -122,7 +121,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     if (dmg != null) {
                         monster = player.getMap().getMonsterByOid(dmg.getLeft());
                     }
-                    if (monster != null && dmg != null) {
+                    if (monster != null) {
                         ElementalEffectiveness ee = monster.getAddedEffectiveness(skillused.getElement());
                         if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) && monster.getEffectiveness(skillused.getElement()) == ElementalEffectiveness.WEAK) {
                             continue;
@@ -132,40 +131,27 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         List<Integer> newdmg = new LinkedList<>();
                         switch (ee) {
                             case WEAK:
-                                multiplier = 1.5;
-                                for (Integer dmgnumber : dmg.getRight()) {
-                                    additionaldmg.add((int) (dmgnumber * (multiplier - 1.0)));
-                                    newdmg.add((int) (dmgnumber * multiplier));
-                                }
-                                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                                for (Integer additionald : additionaldmg) {
-                                    player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                                }
+                                multiplier = 1.5d;
                                 break;
                             case STRONG:
-                                multiplier = 0.5;
-                                for (Integer dmgnumber : dmg.getRight()) {
-                                    additionaldmg.add((int) (dmgnumber * (multiplier - 1.0)));
-                                    newdmg.add((int) (dmgnumber * multiplier));
-                                }
-                                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                                for (Integer additionald : additionaldmg) {
-                                    player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                                }
+                                multiplier = 0.5d;
                                 break;
                             case IMMUNE:
-                                multiplier = 0.0;
-                                for (Integer dmgnumber : dmg.getRight()) {
-                                    additionaldmg.add((int) (dmgnumber * (multiplier - 1.0)));
-                                    newdmg.add((int) (dmgnumber * multiplier));
-                                }
-                                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                                for (Integer additionald : additionaldmg) {
-                                    player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                                }
+                                multiplier = 0.0d;
                                 break;
                             default:
+                                multiplier = 1.0d;
                                 break;
+                        }
+                        if (multiplier != 1.0d) {
+                            for (Integer dmgnumber : dmg.getRight()) {
+                                additionaldmg.add((int) (dmgnumber * (multiplier - 1.0)));
+                                newdmg.add((int) (dmgnumber * multiplier));
+                            }
+                            attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
+                            for (Integer additionald : additionaldmg) {
+                                player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
+                            }
                         }
                     }
                 }
@@ -173,7 +159,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             
             if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
                 if (player.hasMagicArmor()) { // If player has Magic Armor on them currently.
-                    double magicarmorradius = 70000.0; // Squared distance
+                    final double magicarmorradius = 70000.0; // Squared distance
                     int magicarmorlevel = player.getSkillLevel(SkillFactory.getSkill(2001003));
                     if (magicarmorlevel > 0) { // Their Magic Armor level should be greater than 0 if they have the buff on, but this is to make absolutely sure.
                         int splashedmonstercount = (magicarmorlevel / 10) + 1; // Magic Armor strikes 1 additional mob at lvls 1 - 9, 2 at lvls 10 - 19, and 3 at lvl 20.

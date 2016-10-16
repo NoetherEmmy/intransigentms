@@ -78,6 +78,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@deathinfo <playername> - | - Displays death count, highest level achieved, paragon level, and suicide count of player.");
             mc.dropMessage("@expboostinfo - | - Displays how much time you have left on your EXP bonus.");
             mc.dropMessage("@deathpenalty - | - Displays your current death penalty level and its effects, as well as how long until you can next rest.");
+            mc.dropMessage("@defense/@defence - | - Displays your true current weapon and magic defense.");
             mc.dropMessage("@monsterhp - | - Displays the current HP % of all mobs on the map.");
             mc.dropMessage("@bosshp - | - Displays the current HP % of all bosses on the map.");
             mc.dropMessage("@truedamage - | - Toggles the display of true damage received.");
@@ -132,35 +133,6 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("@mapfix failed: " + e);
                 e.printStackTrace();
             }
-            /*
-            if (System.currentTimeMillis() - player.getAfkTime() < 7000) { // 7 seconds
-                mc.dropMessage("Make sure you have not taken any actions or damage for at least 7 seconds before using mapfix.");
-            } else {
-                MapleMap target = c.getChannelServer().getMapFactory().getMap(player.getMapId());
-                MaplePortal portal = target.getPortal(0);
-                player.changeMap(target, portal);
-            }
-            */
-        } else if (splitted[0].equals("@emo")) { // !!! DEPRECATED !!!
-            //player.setHp(0);
-            //player.updateSingleStat(MapleStat.HP, 0);
-        } else if (splitted[0].equals("@deathfix")) { // !!! DEPRECATED !!!
-            /*
-            if (player.isDead()) {
-                player.addMPHP(1, 1);
-                mc.dropMessage("You have been deathfixed.");
-            } else {
-                mc.dropMessage("You're not dead.");
-            }
-            */
-        } else if (splitted[0].equals("@rebirth") || splitted[0].equals("@reborn")) { // !!! DEPRECATED !!!
-            /*
-            if (player.getLevel() >= 200) {
-                player.doReborn();
-            } else {
-                mc.dropMessage("You must be at least level 200.");
-            }
-            */
         } else if (splitted[0].equals("@questinfo")) {
             MapleCQuests q;
             q = player.getCQuest();
@@ -219,7 +191,7 @@ public class PlayerCommands implements Command {
             if (splitted.length < 2) {
                 return;
             }
-            if (true) { // !player.getCheatTracker().Spam(300000, 1)
+            if (true) {
                 try {
                     c.getChannelServer().getWorldInterface().broadcastGMMessage(null, MaplePacketCreator.serverNotice(6, "Channel: " + c.getChannel() + "  " + player.getName() + ": " + StringUtil.joinStringFrom(splitted, 1)).getBytes());
                 } catch (RemoteException ex) {
@@ -229,32 +201,6 @@ public class PlayerCommands implements Command {
             } else {
                 player.dropMessage(1, "Please don't flood GMs with your messages.");
             }
-        } else if (splitted[0].equals("@revive")) { // currently disabled, likely will never be enabled
-            /*if (splitted.length == 2) {
-                MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
-                if (player != victim) {
-                    if (player.getMeso() >= 50000000) { // 50 mil
-                        if (victim != null) {
-                            if (!victim.isAlive()) {
-                                victim.setHp((victim.getMaxHp() / 2));
-                                player.gainMeso(-50000000);
-                                victim.updateSingleStat(MapleStat.HP, (victim.getMaxHp() / 2));
-                                mc.dropMessage("You have revived " + victim.getName() + ".");
-                            } else {
-                                mc.dropMessage(victim.getName() + " is not dead.");
-                            }
-                        } else {
-                            mc.dropMessage("The player is not online.");
-                        }
-                    } else {
-                        mc.dropMessage("You need 50 million mesos to do this.");
-                    }
-                } else {
-                    mc.dropMessage("You can't revive yourself.");
-                }
-            } else {
-                mc.dropMessage("Syntax: @revive <player name>");
-            }*/
         } else if (splitted[0].equals("@afk")) {
             if (splitted.length >= 2) {
                 String name = splitted[1];
@@ -572,7 +518,7 @@ public class PlayerCommands implements Command {
                         }
                         searchstring = searchstring.toUpperCase();
                         List<String> retItems = new ArrayList<>();
-                        MapleData data = null;
+                        MapleData data;
                         MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
                         data = dataProvider.getData("Mob.img");
                         List<Pair<Integer, String>> mobPairList = new LinkedList<>();
@@ -986,6 +932,8 @@ public class PlayerCommands implements Command {
             } else {
                 player.dropMessage("It doesn't look like you're reading at the moment.");
             }
+        } else if (splitted[0].equals("@defense") || splitted[0].equals("@defence")) {
+            player.dropMessage("Weapon defense: " + player.getTotalWdef() + ", magic defense: " + player.getTotalMdef());
         }
     }
 
@@ -1040,9 +988,6 @@ public class PlayerCommands implements Command {
             new CommandDefinition("expfix", 0),
             new CommandDefinition("dispose", 0),
             new CommandDefinition("mapfix", 0),
-            new CommandDefinition("emo", 0),
-            new CommandDefinition("rebirth", 0),
-            new CommandDefinition("reborn", 0),
             new CommandDefinition("questinfo", 0),
             new CommandDefinition("togglesmega", 0),
             new CommandDefinition("str", 0),
@@ -1050,7 +995,6 @@ public class PlayerCommands implements Command {
             new CommandDefinition("int", 0),
             new CommandDefinition("luk", 0),
             new CommandDefinition("gm", 0),
-            new CommandDefinition("revive", 0),
             new CommandDefinition("afk", 0),
             new CommandDefinition("onlinetime", 0),
             new CommandDefinition("monstertrialtime", 0),
@@ -1077,7 +1021,9 @@ public class PlayerCommands implements Command {
             new CommandDefinition("vote", 0),
             new CommandDefinition("sell", 0),
             new CommandDefinition("pqpoints", 0),
-            new CommandDefinition("readingtime", 0)
+            new CommandDefinition("readingtime", 0),
+            new CommandDefinition("defense", 0),
+            new CommandDefinition("defence", 0)
         };
     }
 }

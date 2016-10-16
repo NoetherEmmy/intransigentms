@@ -1,16 +1,19 @@
 package net.sf.odinms.net.channel;
 
 import java.util.List;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.net.world.MapleParty;
 import net.sf.odinms.net.world.MaplePartyCharacter;
+import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.maps.MapleMap;
 
 public class PartyQuest {
-    private final List<MapleCharacter> players = new LinkedList<>();
-    private final List<PartyQuestMapInstance> mapInstances = new LinkedList<>();
+    private final List<MapleCharacter> players = new ArrayList<>(6);
+    private final List<PartyQuestMapInstance> mapInstances = new ArrayList<>(3);
     private final String name;
     private long timeStarted = 0;
     private long eventTime = 0;
@@ -18,6 +21,7 @@ public class PartyQuest {
     private final int exitMapId;
     private final int channel;
     private int points;
+    private final List<Integer> pqItems = new ArrayList<>(4);
 
     public PartyQuest(int channel, String name, int minPlayers, int exitMapId) {
         this.channel = channel;
@@ -67,7 +71,7 @@ public class PartyQuest {
         PartyQuestMapInstance newInstance = new PartyQuestMapInstance(this, newMap);
         newMap.registerPartyQuestInstance(newInstance);
         mapInstances.remove(newInstance);
-        newInstance.invokeEvent("init");
+        newInstance.invokeMethod("init");
     }
 
     public void unregisterMap(int mapId) {
@@ -121,12 +125,23 @@ public class PartyQuest {
         }
     }
 
+    public void addPqItem(int id) {
+        pqItems.add(id);
+    }
+
+    public List<Integer> getPqItems() {
+        return pqItems;
+    }
+
     public void registerPlayer(MapleCharacter player) {
         players.add(player);
         player.setPartyQuest(this);
     }
 
     private void unregisterPlayer(MapleCharacter player) {
+        for (int itemId : pqItems) {
+            MapleInventoryManipulator.removeAllById(player.getClient(), itemId, true);
+        }
         players.remove(player);
         player.setPartyQuest(null);
     }
@@ -170,6 +185,9 @@ public class PartyQuest {
 
     public void dispose() {
         for (MapleCharacter p : players) {
+            for (int itemId : pqItems) {
+                MapleInventoryManipulator.removeAllById(p.getClient(), itemId, true);
+            }
             p.changeMap(exitMapId);
             p.setPartyQuest(null);
         }
@@ -178,6 +196,7 @@ public class PartyQuest {
             pqmi.dispose();
         }
         mapInstances.clear();
+        pqItems.clear();
         ChannelServer.getInstance(channel).unregisterPartyQuest(name);
     }
 
@@ -201,6 +220,15 @@ public class PartyQuest {
 
     public boolean isLeader(MapleCharacter player) {
         return player.getParty().getLeader().getId() == player.getId();
+    }
+
+    public MapleCharacter getLeader() {
+        for (MapleCharacter p : players) {
+            if (isLeader(p)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     public void playerReconnected(MapleCharacter player) {
@@ -229,15 +257,19 @@ public class PartyQuest {
         }
     }
 
-    public void invokeInAllInstances(String functionName) {
+    public Map<PartyQuestMapInstance, Object> invokeInAllInstances(String functionName) {
+        Map<PartyQuestMapInstance, Object> ret = new HashMap<>(Math.max(mapInstances.size(), 1), 0.9f);
         for (PartyQuestMapInstance pqmi : mapInstances) {
-            pqmi.invokeEvent(functionName);
+            ret.put(pqmi, pqmi.invokeMethod(functionName));
         }
+        return ret;
     }
 
-    public void invokeInAllInstances(String functionName, Object... args) {
+    public Map<PartyQuestMapInstance, Object> invokeInAllInstances(String functionName, Object... args) {
+        Map<PartyQuestMapInstance, Object> ret = new HashMap<>(Math.max(mapInstances.size(), 1), 0.9f);
         for (PartyQuestMapInstance pqmi : mapInstances) {
-            pqmi.invokeEvent(functionName, args);
+            ret.put(pqmi, pqmi.invokeMethod(functionName, args));
         }
+        return ret;
     }
 }

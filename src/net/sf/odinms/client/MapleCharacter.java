@@ -1690,29 +1690,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         getClient().getSession().write(MaplePacketCreator.enableActions()); 
     }       
      
-    public static String makeNumberReadable(int nr) { 
-        StringBuilder sb = new StringBuilder(); 
-        String readable; 
-        String num = "" + nr;   
-        String first_num = "";  
-        String left_num = "";  
-        int repeat = 0;  
-        if (num.length() > 3) { 
-            first_num += num; 
-            while (first_num.length() > 3) {  
-                first_num = first_num.substring(0, first_num.length() - 3);  
-                repeat++;  
-            } 
-            sb.append(first_num).append(",");  
-            left_num += num.substring(first_num.length(), num.length());  
+    public static String makeNumberReadable(int nr) {
+        StringBuilder sb = new StringBuilder();
+        String readable;
+        String num = "" + nr;
+        String first_num = "";
+        String left_num = "";
+        int repeat = 0;
+        if (num.length() > 3) {
+            first_num += num;
+            while (first_num.length() > 3) {
+                first_num = first_num.substring(0, first_num.length() - 3);
+                repeat++;
+            }
+            sb.append(first_num).append(",");
+            left_num += num.substring(first_num.length(), num.length());
             for (int x = 0; x < repeat; ++x) {
-                sb.append(left_num.substring((3 * x), (3 * x) + 3)).append(","); 
-            } 
-            readable = sb.toString().substring(0, sb.toString().length() - 1);         
-        } else {     
-            readable = num; 
-        } 
-        return readable; 
+                sb.append(left_num.substring(3 * x, 3 * x + 3)).append(",");
+            }
+            readable = sb.toString().substring(0, sb.toString().length() - 1);
+        } else {
+            readable = num;
+        }
+        return readable;
     }
     
     public Date getLastDailyPrize() {
@@ -3451,7 +3451,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             makeQuestProgress(mobId, 0);
         }
         if (getPartyQuest() != null) {
-            getPartyQuest().getMapInstance(getMap()).invokeEvent("killedMob", mobId, this);
+            getPartyQuest().getMapInstance(getMap()).invokeMethod("killedMob", mobId, this);
         }
     }
 
@@ -4241,6 +4241,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (accbuff != null) {
             accuracy += accbuff;
         }
+
+        Integer wdefbuff = getBuffedValue(MapleBuffStat.WDEF);
+        if (wdefbuff != null) {
+            wdef += wdefbuff;
+        }
+
+        Integer mdefbuff = getBuffedValue(MapleBuffStat.MDEF);
+        if (mdefbuff != null) {
+            mdef += mdefbuff;
+        }
+
+        mdef += localint;
         
         // What follows is code for getting accuracy from passives; currently useless as Magic Armor is the only skill that needs accuracy calculation,
         // and mages do not have any passives that grant accuracy.
