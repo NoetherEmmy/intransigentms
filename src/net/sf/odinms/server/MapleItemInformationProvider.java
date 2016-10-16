@@ -58,6 +58,8 @@ public class MapleItemInformationProvider {
     private static final List<List<Integer>> ungenderedHairCache = new ArrayList<>();
     private static boolean facesCached = false;
     private static boolean hairsCached = false;
+    private static final Map<String, Integer> cashEquips = new HashMap<>();
+    private static boolean cashEquipsCached = false;
 
     /** Creates a new instance of MapleItemInformationProvider */
     protected MapleItemInformationProvider() {
@@ -1034,6 +1036,53 @@ public class MapleItemInformationProvider {
         boolean cash = MapleDataTool.getInt("cash", info, 0) == 1;
         cashCache.put(itemId, cash);
         return cash;
+    }
+
+    public void cacheCashEquips() {
+        if (!cashEquipsCached) {
+            MapleDataDirectoryEntry root = equipData.getRoot();
+            root.getSubdirectories().forEach((topDir) -> {
+                if (!topDir.getName().equals("Afterimage") && !topDir.getName().equals("TamingMob")) {
+                    topDir.getFiles().forEach((iFile) -> {
+                        int id = Integer.parseInt(iFile.getName().substring(1, 8));
+                        if (isCash(id)) {
+                            cashEquips.put(getName(id), id);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    public List<Entry<String, Integer>> getCashEquips(int type) {
+        return cashEquips.entrySet().stream().filter(e -> e.getValue() / 10000 == type).collect(Collectors.toList());
+    }
+
+    public int cashEquipSearch(String query) {
+        query = query.toUpperCase();
+        Map.Entry<String, Integer> bestMatch = null;
+        for (Map.Entry<String, Integer> e : cashEquips.entrySet()) {
+            String newKey = e.getKey().toUpperCase();
+            String bestKey = bestMatch == null ? null : bestMatch.getKey().toUpperCase();
+            if (bestKey == null || (newKey.contains(query) && (newKey.indexOf(query) < bestKey.indexOf(query) || newKey.length() < bestKey.length()))) {
+                bestMatch = e;
+            }
+        }
+        return bestMatch == null || !bestMatch.getKey().toUpperCase().contains(query) ? 0 : bestMatch.getValue();
+    }
+
+    public List<Integer> cashEquipSearchResults(String query) {
+        final String _query = query.toUpperCase();
+        return cashEquips.entrySet()
+                .stream()
+                .filter(e -> e.getKey().contains(_query))
+                .sorted((e1, e2) -> {
+                    String name1 = e1.getKey();
+                    String name2 = e2.getKey();
+                    return e1.getKey().length() != e2.getKey().length() ? e1.getKey().length() - e2.getKey().length() : e1.getKey().indexOf(_query) - e2.getKey().indexOf(_query);
+                })
+                .map(Entry::getValue)
+                .collect(Collectors.toList());
     }
 
     public int getReqLevel(int itemId) {
