@@ -2007,13 +2007,15 @@ public class GM implements Command {
                 int target = getOptionalIntArg(splitted, 2, victim.getLevel() + 1);
                 int startlevel = victim.getLevel();
                 for (int i = 0; i < target - startlevel; ++i) {
-                    //victim.setLevel(victim.getLevel() + 1);
                     victim.levelUp();
                     victim.setExp(0);
                     victim.updateSingleStat(MapleStat.EXP, 0);
                 }
                 break;
             }
+            case "cachecashequips":
+                MapleItemInformationProvider.getInstance().cacheCashEquips();
+                break;
         }
     }
 
@@ -2152,7 +2154,8 @@ public class GM implements Command {
             new CommandDefinition("resetdailyprize", 3),
             new CommandDefinition("sha1", 3),
             new CommandDefinition("sendmedamagepacket", 3),
-            new CommandDefinition("levelpersongrad", 3)
+            new CommandDefinition("levelpersongrad", 3),
+            new CommandDefinition("cachecashequips", 3)
         };
     }
 }

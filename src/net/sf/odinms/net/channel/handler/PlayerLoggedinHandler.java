@@ -24,6 +24,7 @@ import net.sf.odinms.net.world.PlayerCoolDownValueHolder;
 import net.sf.odinms.net.world.guild.MapleAlliance;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
+import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
@@ -222,6 +223,6 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9010000, "Maple Administrator"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(2051001, "Kay"));
         //
-
+        MapleItemInformationProvider.getInstance().cacheCashEquips();
     }
 }

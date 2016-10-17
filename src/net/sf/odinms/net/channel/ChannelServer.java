@@ -600,7 +600,6 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 }
             }
         });
-        MapleItemInformationProvider.getInstance().cacheCashEquips();
     }
 
     public MapleSquad getMapleSquad(MapleSquadType type) {
