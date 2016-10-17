@@ -1036,6 +1036,10 @@ public class MapleItemInformationProvider {
         return cashEquips.entrySet().stream().filter(e -> e.getValue() / 10000 == type).collect(Collectors.toList());
     }
 
+    public boolean cashEquipExists(int id) {
+        return cashEquips.containsValue(id);
+    }
+
     public int singleCashEquipSearch(String query) {
         if (query.length() < 1) return 0;
         query = query.toUpperCase();
@@ -1057,6 +1061,7 @@ public class MapleItemInformationProvider {
                                               .distinct()
                                               .collect(Collectors.toList());
         splitQuery.remove("");
+        splitQuery.stream().filter((s) -> s.contains("g")).collect(Collectors.toList());
         if (splitQuery.isEmpty()) return new ArrayList<>();
         return cashEquips
                 .entrySet()

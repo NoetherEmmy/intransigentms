@@ -43,14 +43,8 @@ import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.net.world.remote.WorldRegistry;
 import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.scripting.event.EventScriptManager;
-import net.sf.odinms.server.AutobanManager;
-import net.sf.odinms.server.ClanHolder;
-import net.sf.odinms.server.MapleSquad;
-import net.sf.odinms.server.MapleSquadType;
-import net.sf.odinms.server.MapleTrade;
+import net.sf.odinms.server.*;
 import net.sf.odinms.server.PlayerInteraction.HiredMerchant;
-import net.sf.odinms.server.ShutdownServer;
-import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.server.maps.MapleMapFactory;
 import net.sf.odinms.server.maps.MapleMapObject;
@@ -606,6 +600,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 }
             }
         });
+        MapleItemInformationProvider.getInstance().cacheCashEquips();
     }
 
     public MapleSquad getMapleSquad(MapleSquadType type) {

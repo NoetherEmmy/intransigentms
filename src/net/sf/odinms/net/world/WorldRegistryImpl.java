@@ -386,10 +386,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     public boolean increaseGuildCapacity(int gid) {
         MapleGuild g = guilds.get(gid);
-        if (g != null) {
-            return g.increaseCapacity();
-        }
-        return false;
+        return g != null && g.increaseCapacity();
     }
 
     public void gainGP(int gid, int amount) {

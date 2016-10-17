@@ -222,5 +222,6 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9010000, "Maple Administrator"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(2051001, "Kay"));
         //
+
     }
 }
