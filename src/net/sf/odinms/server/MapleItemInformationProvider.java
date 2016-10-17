@@ -1,12 +1,7 @@
 package net.sf.odinms.server;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -812,61 +807,42 @@ public class MapleItemInformationProvider {
 
     public List<Integer> getAllColors(int id) {
         List<Integer> ret = new ArrayList<>();
+        List<List<Integer>> cache;
         if (id >= 20000 && id < 30000) { // Face
             int match = id - (id % 1000 / 100 * 100); // Hundreds place set to zero.
             switch ((id / 1000) % 10) {
                 case 0:
-                    for (List<Integer> faceList : maleFaceCache) {
-                        if (faceList.contains(id)) {
-                            ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
-                            break;
-                        }
-                    }
+                    cache = maleFaceCache;
                     break;
                 case 1:
-                    for (List<Integer> faceList : femaleFaceCache) {
-                        if (faceList.contains(id)) {
-                            ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
-                            break;
-                        }
-                    }
+                    cache = femaleFaceCache;
                     break;
                 default:
-                    for (List<Integer> faceList : ungenderedFaceCache) {
-                        if (faceList.contains(id)) {
-                            ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
-                            break;
-                        }
-                    }
+                    cache = ungenderedFaceCache;
+            }
+            for (List<Integer> faceList : cache) {
+                if (faceList.contains(id)) {
+                    ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
                     break;
+                }
             }
         } else { // Hair
             int match = id / 10;
             switch ((id / 1000) % 10) {
                 case 0:
-                    for (List<Integer> hairList : maleHairCache) {
-                        if (hairList.contains(id)) {
-                            ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
-                            break;
-                        }
-                    }
+                    cache = maleHairCache;
                     break;
                 case 1:
-                    for (List<Integer> hairList : femaleHairCache) {
-                        if (hairList.contains(id)) {
-                            ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
-                            break;
-                        }
-                    }
+                    cache = femaleHairCache;
                     break;
                 default:
-                    for (List<Integer> hairList : ungenderedHairCache) {
-                        if (hairList.contains(id)) {
-                            ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
-                            break;
-                        }
-                    }
+                    cache = ungenderedHairCache;
+            }
+            for (List<Integer> hairList : cache) {
+                if (hairList.contains(id)) {
+                    ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
                     break;
+                }
             }
         }
         return ret;
@@ -918,7 +894,7 @@ public class MapleItemInformationProvider {
         if (item == null) {
             return -1;
         }
-        int pEntry = 0;
+        int pEntry;
         MapleData pData = item.getChildByPath("info/meso");
         if (pData == null) {
             return -1;
@@ -937,7 +913,7 @@ public class MapleItemInformationProvider {
         if (item == null) {
             return 0;
         }
-        int pEntry = 0;
+        int pEntry;
         MapleData pData = item.getChildByPath("spec/exp");
         if (pData == null) {
             return 0;
@@ -957,7 +933,7 @@ public class MapleItemInformationProvider {
             return -1;
         }
 
-        int pEntry = 0;
+        int pEntry;
         MapleData pData = item.getChildByPath("info/price");
         if (pData == null) {
             return -1;
@@ -1040,9 +1016,10 @@ public class MapleItemInformationProvider {
 
     public void cacheCashEquips() {
         if (!cashEquipsCached) {
+            final List<String> excludes = Arrays.asList("Afterimage", "TamingMob", "Face", "Hair", "PetEquip");
             MapleDataDirectoryEntry root = equipData.getRoot();
             root.getSubdirectories().forEach((topDir) -> {
-                if (!topDir.getName().equals("Afterimage") && !topDir.getName().equals("TamingMob")) {
+                if (!excludes.contains(topDir.getName())) {
                     topDir.getFiles().forEach((iFile) -> {
                         int id = Integer.parseInt(iFile.getName().substring(1, 8));
                         if (isCash(id)) {
@@ -1051,38 +1028,85 @@ public class MapleItemInformationProvider {
                     });
                 }
             });
+            cashEquipsCached = true;
         }
     }
 
-    public List<Entry<String, Integer>> getCashEquips(int type) {
+    public List<Entry<String, Integer>> getCashEquipEntries(final int type) {
         return cashEquips.entrySet().stream().filter(e -> e.getValue() / 10000 == type).collect(Collectors.toList());
     }
 
-    public int cashEquipSearch(String query) {
+    public int singleCashEquipSearch(String query) {
+        if (query.length() < 1) return 0;
         query = query.toUpperCase();
         Map.Entry<String, Integer> bestMatch = null;
         for (Map.Entry<String, Integer> e : cashEquips.entrySet()) {
             String newKey = e.getKey().toUpperCase();
             String bestKey = bestMatch == null ? null : bestMatch.getKey().toUpperCase();
-            if (bestKey == null || (newKey.contains(query) && (newKey.indexOf(query) < bestKey.indexOf(query) || newKey.length() < bestKey.length()))) {
+            if (bestKey == null || (newKey.contains(query) && (newKey.indexOf(query) < bestKey.indexOf(query) || (newKey.indexOf(query) == bestKey.indexOf(query) && newKey.length() < bestKey.length())))) {
                 bestMatch = e;
             }
         }
         return bestMatch == null || !bestMatch.getKey().toUpperCase().contains(query) ? 0 : bestMatch.getValue();
     }
 
-    public List<Integer> cashEquipSearchResults(String query) {
-        final String _query = query.toUpperCase();
-        return cashEquips.entrySet()
+    public List<Integer> cashEquipSearch(String query) {
+        if (query.length() < 1) return new ArrayList<>();
+        query = query.toUpperCase();
+        final List<String> splitQuery = Arrays.stream(query.split("\\s+"))
+                                              .distinct()
+                                              .collect(Collectors.toList());
+        splitQuery.remove("");
+        if (splitQuery.isEmpty()) return new ArrayList<>();
+        return cashEquips
+                .entrySet()
                 .stream()
-                .filter(e -> e.getKey().contains(_query))
+                .filter(e -> {
+                    String name = e.getKey().toUpperCase();
+                    for (String token : splitQuery) {
+                        if (name.contains(token)) return true;
+                    }
+                    return false;
+                })
                 .sorted((e1, e2) -> {
-                    String name1 = e1.getKey();
-                    String name2 = e2.getKey();
-                    return e1.getKey().length() != e2.getKey().length() ? e1.getKey().length() - e2.getKey().length() : e1.getKey().indexOf(_query) - e2.getKey().indexOf(_query);
+                    String name1 = e1.getKey().toUpperCase();
+                    String name2 = e2.getKey().toUpperCase();
+                    if (name1.equals(name2)) return 0;
+                    int tokenCount1 = 0;
+                    int tokenCount2 = 0;
+                    int combinedIndices1 = 0;
+                    int combinedIndices2 = 0;
+                    for (String token : splitQuery) {
+                        if (name1.contains(token)) {
+                            tokenCount1++;
+                            combinedIndices1 += name1.indexOf(token);
+                        }
+                        if (name2.contains(token)) {
+                            tokenCount2++;
+                            combinedIndices2 += name2.indexOf(token);
+                        }
+                    }
+                    if (tokenCount1 != tokenCount2) {
+                        return tokenCount2 - tokenCount1;
+                    }
+                    return combinedIndices1 != combinedIndices2 ? combinedIndices1 - combinedIndices2 : name1.length() - name2.length();
                 })
                 .map(Entry::getValue)
                 .collect(Collectors.toList());
+    }
+
+    public List<Integer> cashEquipsByType(final int type) {
+        return cashEquips.values().stream().filter((id) -> {
+            int t = id / 10000;
+            return t == type;
+        }).collect(Collectors.toList());
+    }
+
+    public List<Integer> cashEquipsByType(final int lowerType, final int upperType) {
+        return cashEquips.values().stream().filter((id) -> {
+            int type = id / 10000;
+            return type >= lowerType && type <= upperType;
+        }).collect(Collectors.toList());
     }
 
     public int getReqLevel(int itemId) {
@@ -1143,7 +1167,6 @@ public class MapleItemInformationProvider {
                 return MapleWeaponType.KNUCKLE;
             case 49:
                 return MapleWeaponType.GUN;
-
         }
         return MapleWeaponType.NOT_A_WEAPON;
     }

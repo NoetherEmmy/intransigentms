@@ -246,6 +246,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int readingTime = 0;
     ScheduledFuture<?> readingTask = null;
     private int pastLifeExp = 1;
+
+    private boolean genderFilter = true;
     //
 
     public MapleCharacter() {
@@ -1530,9 +1532,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         pastLifeExp = Math.max(pastLifeLevel / 20 + pastLifeLevel % 2, 1);
     }
-    //
 
-    //
+    public void toggleGenderFilter() {
+        genderFilter = !genderFilter;
+    }
+
+    public boolean genderFilter() {
+        return genderFilter;
+    }
+
     public MapleCQuests getCQuest() {
         return quest;
     }
