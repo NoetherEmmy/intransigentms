@@ -25,71 +25,70 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         c.getPlayer().resetAfkTime();
         AttackInfo attack = parseDamage(slea, false);
         MapleCharacter player = c.getPlayer();
-        try {
-            ISkill skillused = SkillFactory.getSkill(attack.skill);
-            if (skillused != null && skillused.getElement() != Element.NEUTRAL) {
-                for (int i = 0; i < attack.allDamage.size(); ++i) {
-                    Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    MapleMonster monster = null;
-                    if (dmg != null) {
-                        monster = player.getMap().getMonsterByOid(dmg.getLeft());
-                    }
-                    if (monster != null) {
-                        ElementalEffectiveness ee = monster.getAddedEffectiveness(skillused.getElement());
-                        if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) && monster.getEffectiveness(skillused.getElement()) == ElementalEffectiveness.WEAK) {
-                            continue;
-                        }
-                        double multiplier;
-                        List<Integer> additionaldmg = new LinkedList<>();
-                        List<Integer> newdmg = new LinkedList<>();
-                        switch (ee) {
-                            case WEAK:
-                                multiplier = 1.5d;
-                                break;
-                            case STRONG:
-                                multiplier = 0.5d;
-                                break;
-                            case IMMUNE:
-                                multiplier = 0.0d;
-                                break;
-                            default:
-                                multiplier = 1.0d;
-                                break;
-                        }
-                        if (multiplier != 1.0d) {
-                            for (Integer dmgnumber : dmg.getRight()) {
-                                additionaldmg.add((int) (dmgnumber * (multiplier - 1.0)));
-                                newdmg.add((int) (dmgnumber * multiplier));
-                            }
-                            attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                            for (Integer additionald : additionaldmg) {
-                                player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                            }
-                        }
-                    }
+
+        ISkill skillused = SkillFactory.getSkill(attack.skill);
+        if (attack.allDamage != null && skillused != null && skillused.getElement() != Element.NEUTRAL) {
+            for (int i = 0; i < attack.allDamage.size(); ++i) {
+                Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                MapleMonster monster = null;
+                if (dmg != null && dmg.getLeft() != null) {
+                    monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 }
-            }
-            
-            if (player.getDeathPenalty() > 0) {
-                double dpmultiplier = Math.max(1.0 - (double) player.getDeathPenalty() * 0.03, 0.0);
-                for (int i = 0; i < attack.allDamage.size(); ++i) {
-                    Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    if (dmg != null) {
-                        List<Integer> additionaldmg = new LinkedList<>();
-                        List<Integer> newdmg = new LinkedList<>();
-                        for (Integer dmgnumber : dmg.getRight()) {
-                            additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0)));
-                            newdmg.add((int) (dmgnumber * dpmultiplier));
+                if (monster != null) {
+                    ElementalEffectiveness ee = monster.getAddedEffectiveness(skillused.getElement());
+                    if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) && monster.getEffectiveness(skillused.getElement()) == ElementalEffectiveness.WEAK) {
+                        continue;
+                    }
+                    double multiplier;
+                    List<Integer> additionaldmg = new LinkedList<>();
+                    List<Integer> newdmg = new LinkedList<>();
+                    switch (ee) {
+                        case WEAK:
+                            multiplier = 1.5d;
+                            break;
+                        case STRONG:
+                            multiplier = 0.5d;
+                            break;
+                        case IMMUNE:
+                            multiplier = 0.0d;
+                            break;
+                        default:
+                            multiplier = 1.0d;
+                            break;
+                    }
+                    if (multiplier != 1.0d && dmg.getRight() != null) {
+                        for (Integer dmgnumber : dmg.getRight()){
+                            additionaldmg.add((int) (dmgnumber * (multiplier - 1.0)));
+                            newdmg.add((int) (dmgnumber * multiplier));
                         }
                         attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                        for (Integer additionald : additionaldmg) {
+                        for (Integer additionald : additionaldmg){
                             player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
                         }
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+
+        if (player.getDeathPenalty() > 0 && attack.allDamage != null) {
+            double dpmultiplier = Math.max(1.0 - (double) player.getDeathPenalty() * 0.03, 0.0);
+            for (int i = 0; i < attack.allDamage.size(); ++i) {
+                Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                if (dmg != null && dmg.getLeft() != null && dmg.getRight() != null) {
+                    List<Integer> additionaldmg = new LinkedList<>();
+                    List<Integer> newdmg = new LinkedList<>();
+                    for (Integer dmgnumber : dmg.getRight()) {
+                        if (dmgnumber != null) {
+                            additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0)));
+                            newdmg.add((int) (dmgnumber * dpmultiplier));
+                        }
+                    }
+                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
+                    for (Integer additionald : additionaldmg) {
+                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
+                    }
+                }
+            }
         }
 
         MaplePacket packet = MaplePacketCreator.magicAttack(player.getId(), attack.skill, attack.stance, attack.numAttackedAndDamage, attack.allDamage, -1, attack.speed);
@@ -102,9 +101,12 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         // TODO fix magic damage calculation
         //maxdamage = 999999;
         ISkill skill = SkillFactory.getSkill(attack.skill);
-        int skillLevel = c.getPlayer().getSkillLevel(skill);
-        MapleStatEffect effect_ = skill.getEffect(skillLevel);
-        if (effect_.getCooldown() > 0) {
+        MapleStatEffect effect_ = null;
+        if (skill != null) {
+            int skillLevel = c.getPlayer().getSkillLevel(skill);
+            effect_ = skill.getEffect(skillLevel);
+        }
+        if (effect_ != null && effect_.getCooldown() > 0) {
             if (player.skillIsCooling(attack.skill)) {
                 //player.getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                 return;
@@ -118,10 +120,15 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         // MP Eater
         for (int i = 1; i <= 3; ++i) {
             ISkill eaterSkill = SkillFactory.getSkill(2000000 + i * 100000);
-            int eaterLevel = player.getSkillLevel(eaterSkill);
-            if (eaterLevel > 0) {
+            int eaterLevel = 0;
+            if (eaterSkill != null) {
+                eaterLevel = player.getSkillLevel(eaterSkill);
+            }
+            if (eaterLevel > 0 && attack.allDamage != null) {
                 for (Pair<Integer, List<Integer>> singleDamage : attack.allDamage) {
-                    eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage.getLeft()));
+                    if (singleDamage != null && singleDamage.getLeft() != null) {
+                        eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage.getLeft()));
+                    }
                 }
                 break;
             }

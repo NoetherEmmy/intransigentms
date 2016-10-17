@@ -78,7 +78,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void sessionClosed(IoSession session) throws Exception {
+    public void sessionClosed(final IoSession session) throws Exception {
         synchronized (session) {
             MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
             if (client != null) {
@@ -103,7 +103,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 //from = "from " + client.getPlayer().getName() + " ";
             //}
             //if (packetHandler == null) {
-                //log.info("Got unhandeled Message {} ({}) {}\n{}", new Object[]{from, content.length, HexTool.toString(content), HexTool.toStringFromAscii(content)});
+                //log.info("Got unhandled Message {} ({}) {}\n{}", new Object[]{from, content.length, HexTool.toString(content), HexTool.toStringFromAscii(content)});
             //}
         //}
         if (packetHandler != null && packetHandler.validateState(client)) {
@@ -128,11 +128,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
     @Override
     public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
         MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        /*
         if (client != null && client.getPlayer() != null) {
-            //
-            //System.out.println("Player " + client.getPlayer().getName() + " went idle.");
-            //
+            System.out.println("Player " + client.getPlayer().getName() + " went idle.");
         }
+        */
         if (client != null) {
             client.sendPing();
         }

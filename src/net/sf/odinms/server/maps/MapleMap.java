@@ -527,10 +527,13 @@ public class MapleMap {
         this.periodicMonsterDrop = pmd;
     }
 
-    public boolean damageMonster(MapleCharacter chr, MapleMonster monster, int damage) {
+    public boolean damageMonster(MapleCharacter chr, final MapleMonster monster, int damage) {
         if (monster.getId() == 8800000) {
             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
             for (MapleMapObject object : objects) {
+                if (object == null) {
+                    continue;
+                }
                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
                 if (mons != null) {
                     if (mons.getId() >= 8800003 && mons.getId() <= 8800010) {
@@ -552,6 +555,9 @@ public class MapleMap {
                         if (monster.getId() >= 8810002 && monster.getId() <= 8810009) {
                             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
                             for (MapleMapObject object : objects) {
+                                if (object == null) {
+                                    continue;
+                                }
                                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
                                 if (mons != null) {
                                     if (mons.getId() == 8810018) {
@@ -564,6 +570,9 @@ public class MapleMap {
                         if (monster.getId() >= 8810002 && monster.getId() <= 8810009) {
                             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
                             for (MapleMapObject object : objects) {
+                                if (object == null) {
+                                    continue;
+                                }
                                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
                                 if (mons != null) {
                                     if (mons.getId() == 8810018) {

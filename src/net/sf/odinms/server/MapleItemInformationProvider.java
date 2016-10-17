@@ -1045,6 +1045,7 @@ public class MapleItemInformationProvider {
         query = query.toUpperCase();
         Map.Entry<String, Integer> bestMatch = null;
         for (Map.Entry<String, Integer> e : cashEquips.entrySet()) {
+            if (e.getKey() == null) continue;
             String newKey = e.getKey().toUpperCase();
             String bestKey = bestMatch == null ? null : bestMatch.getKey().toUpperCase();
             if (bestKey == null || (newKey.contains(query) && (newKey.indexOf(query) < bestKey.indexOf(query) || (newKey.indexOf(query) == bestKey.indexOf(query) && newKey.length() < bestKey.length())))) {
@@ -1061,12 +1062,12 @@ public class MapleItemInformationProvider {
                                               .distinct()
                                               .collect(Collectors.toList());
         splitQuery.remove("");
-        splitQuery.stream().filter((s) -> s.contains("g")).collect(Collectors.toList());
         if (splitQuery.isEmpty()) return new ArrayList<>();
         return cashEquips
                 .entrySet()
                 .stream()
                 .filter(e -> {
+                    if (e.getKey() == null || e.getValue() == null) return false;
                     String name = e.getKey().toUpperCase();
                     for (String token : splitQuery) {
                         if (name.contains(token)) return true;
@@ -1094,7 +1095,13 @@ public class MapleItemInformationProvider {
                     if (tokenCount1 != tokenCount2) {
                         return tokenCount2 - tokenCount1;
                     }
-                    return combinedIndices1 != combinedIndices2 ? combinedIndices1 - combinedIndices2 : name1.length() - name2.length();
+                    if (combinedIndices1 != combinedIndices2) {
+                        return combinedIndices1 - combinedIndices2;
+                    }
+                    if (name1.length() != name2.length()) {
+                        return name1.length() - name2.length();
+                    }
+                    return name1.compareTo(name2);
                 })
                 .map(Entry::getValue)
                 .collect(Collectors.toList());

@@ -66,7 +66,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         MapleStatEffect attackEffect = null;
         if (attack.skill != 0) {
             theSkill = SkillFactory.getSkill(attack.skill);
-            attackEffect = attack.getAttackEffect(player, theSkill);
+            if (theSkill != null) {
+                attackEffect = attack.getAttackEffect(player, theSkill);
+            }
             if (attackEffect == null) {
                 player.getClient().getSession().write(MaplePacketCreator.enableActions());
                 return;
@@ -79,7 +81,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 } else {
                     player.getClient().getSession().write(MaplePacketCreator.enableActions());
                 }
-            } else if (SkillFactory.getSkill(attack.skill).isGMSkill() && !player.isGM()) {
+            } else if (theSkill.isGMSkill() && !player.isGM()) {
                 player.getClient().getSession().close();
                 return;
             }
@@ -96,53 +98,52 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         int totDamage = 0;
         final MapleMap map = player.getMap();
 
-        /* PvP Checks.
-        if (attack.skill != 2301002 && attack.skill != 4201004 && attack.skill != 1111008) {
-            int MapChannel = player.getClient().getChannel();
-            int PvPis = player.getClient().getChannelServer().PvPis();
-            if (PvPis >= 100000000) MapChannel = player.getMapId();
-            if (MapChannel == PvPis) {
-                PvPLibrary.doPvP(player, attack);
-            }
-        }
-        // End of PvP Checks. */
-
-        if (attack.skill == 4211006) { // Meso explosion.
+        if (attack.skill == 4211006 && attack.allDamage != null) { // Meso explosion.
             int delay = 0;
             for (Pair<Integer, List<Integer>> oned : attack.allDamage) {
-                MapleMapObject mapobject = map.getMapObject(oned.getLeft());
-                if (mapobject != null && mapobject.getType() == MapleMapObjectType.ITEM) {
-                    final MapleMapItem mapitem = (MapleMapItem) mapobject;
-                    if (mapitem.getMeso() >= 10) {
-                        synchronized (mapitem) {
-                            if (mapitem.isPickedUp()) {
-                                return;
+                if (oned != null && oned.getLeft() != null) {
+                    MapleMapObject mapObject = map.getMapObject(oned.getLeft());
+                    if (mapObject != null && mapObject.getType() == MapleMapObjectType.ITEM) {
+                        final MapleMapItem mapItem = (MapleMapItem) mapObject;
+                        if (mapItem != null && mapItem.getMeso() >= 10) {
+                            synchronized (mapItem) {
+                                if (mapItem.isPickedUp()) {
+                                    player.getClient().getSession().write(MaplePacketCreator.enableActions());
+                                    return;
+                                }
+                                TimerManager.getInstance().schedule(() -> {
+                                    map.removeMapObject(mapItem);
+                                    map.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapItem.getObjectId(), 4, 0), mapItem.getPosition());
+                                    mapItem.setPickedUp(true);
+                                }, delay);
+                                delay += 100;
                             }
-                            TimerManager.getInstance().schedule(() -> {
-                                map.removeMapObject(mapitem);
-                                map.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 4, 0), mapitem.getPosition());
-                                mapitem.setPickedUp(true);
-                            }, delay);
-                            delay += 100;
+                        } else if (mapItem != null && mapItem.getMeso() == 0) {
+                            player.getCheatTracker().registerOffense(CheatingOffense.ETC_EXPLOSION);
+                            return;
                         }
-                    } else if (mapitem.getMeso() == 0) {
-                        player.getCheatTracker().registerOffense(CheatingOffense.ETC_EXPLOSION);
+                    } else if (mapObject != null && mapObject.getType() != MapleMapObjectType.MONSTER) {
+                        player.getCheatTracker().registerOffense(CheatingOffense.EXPLODING_NONEXISTANT);
                         return;
                     }
-                } else if (mapobject != null && mapobject.getType() != MapleMapObjectType.MONSTER) {
-                    player.getCheatTracker().registerOffense(CheatingOffense.EXPLODING_NONEXISTANT);
-                    return;
                 }
             }
         }
 
+        if (attack.allDamage == null) {
+            player.getClient().getSession().write(MaplePacketCreator.enableActions());
+            return;
+        }
         for (Pair<Integer, List<Integer>> oned : attack.allDamage) {
+            if (oned == null || oned.getLeft() == null) {
+                continue;
+            }
             MapleMonster monster = map.getMonsterByOid(oned.getLeft());
 
-            if (monster != null) {
+            if (monster != null && oned.getRight() != null) {
                 int totDamageToOneMonster = 0;
                 for (Integer eachd : oned.getRight()) {
-                    totDamageToOneMonster += eachd;
+                    if (eachd != null) totDamageToOneMonster += eachd;
                 }
                 totDamage += totDamageToOneMonster;
 
