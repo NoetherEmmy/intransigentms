@@ -1048,7 +1048,11 @@ public class MapleItemInformationProvider {
             if (e.getKey() == null) continue;
             String newKey = e.getKey().toUpperCase();
             String bestKey = bestMatch == null ? null : bestMatch.getKey().toUpperCase();
-            if (bestKey == null || (newKey.contains(query) && (newKey.indexOf(query) < bestKey.indexOf(query) || (newKey.indexOf(query) == bestKey.indexOf(query) && newKey.length() < bestKey.length())))) {
+            if ((bestKey == null &&  newKey.contains(query))
+                                 || (bestKey != null && newKey.contains(query)
+                                 && (newKey.indexOf(query) < bestKey.indexOf(query)
+                                 || (newKey.indexOf(query) == bestKey.indexOf(query)
+                                 &&  newKey.length() < bestKey.length())))) {
                 bestMatch = e;
             }
         }
