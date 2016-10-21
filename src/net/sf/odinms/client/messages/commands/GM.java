@@ -2144,7 +2144,8 @@ public class GM implements Command {
             new CommandDefinition("sha1", 3),
             new CommandDefinition("sendmedamagepacket", 3),
             new CommandDefinition("levelpersongrad", 3),
-            new CommandDefinition("cachecashequips", 3)
+            new CommandDefinition("cachecashequips", 3),
+            new CommandDefinition("cleardropcache", 3)
         };
     }
 }
