@@ -1,8 +1,8 @@
 package net.sf.odinms.net;
 
+import net.sf.odinms.net.channel.handler.*;
 import net.sf.odinms.net.handler.KeepAliveHandler;
 import net.sf.odinms.net.handler.LoginRequiringNoOpHandler;
-import net.sf.odinms.net.channel.handler.*;
 import net.sf.odinms.net.login.handler.*;
 
 public final class PacketProcessor {

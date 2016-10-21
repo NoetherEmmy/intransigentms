@@ -1,6 +1,12 @@
 package net.sf.odinms.client;
 
-import java.awt.Point;
+import net.sf.odinms.database.DatabaseConnection;
+import net.sf.odinms.server.MapleItemInformationProvider;
+import net.sf.odinms.server.movement.AbsoluteLifeMovement;
+import net.sf.odinms.server.movement.LifeMovement;
+import net.sf.odinms.server.movement.LifeMovementFragment;
+
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,11 +14,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.odinms.database.DatabaseConnection;
-import net.sf.odinms.server.MapleItemInformationProvider;
-import net.sf.odinms.server.movement.AbsoluteLifeMovement;
-import net.sf.odinms.server.movement.LifeMovement;
-import net.sf.odinms.server.movement.LifeMovementFragment;
 
 public class MaplePet extends Item {
 

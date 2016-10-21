@@ -1,7 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import net.sf.odinms.client.IItem;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.MapleInventoryType;
@@ -10,6 +8,8 @@ import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UseItemEffectHandler extends AbstractMaplePacketHandler {
 

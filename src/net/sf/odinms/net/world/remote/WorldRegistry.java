@@ -1,9 +1,10 @@
 package net.sf.odinms.net.world.remote;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 import net.sf.odinms.net.channel.remote.ChannelWorldInterface;
 import net.sf.odinms.net.login.remote.LoginWorldInterface;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public interface WorldRegistry extends Remote {
     WorldChannelInterface registerChannelServer(String authKey, ChannelWorldInterface cb) throws RemoteException;

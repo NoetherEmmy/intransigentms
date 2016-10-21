@@ -1,13 +1,14 @@
 package net.sf.odinms.net.channel.handler;
 
 import net.sf.odinms.client.MapleBuffStat;
+import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.maps.MapleSummon;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
 import java.util.Iterator;
-import net.sf.odinms.client.MapleCharacter;
 
 public class DamageSummonHandler extends AbstractMaplePacketHandler {
 

@@ -1,16 +1,17 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.List;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.anticheat.CheatingOffense;
 import net.sf.odinms.net.MaplePacket;
+import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.server.movement.AbsoluteLifeMovement;
-import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.movement.LifeMovementFragment;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.List;
 
 public class MovePlayerHandler extends AbstractMovementPacketHandler {
 

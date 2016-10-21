@@ -1,13 +1,14 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.awt.Point;
-import java.util.List;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.server.movement.LifeMovementFragment;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import net.sf.odinms.tools.data.input.StreamUtil;
+
+import java.awt.*;
+import java.util.List;
 
     public class MovePetHandler extends AbstractMovementPacketHandler {
     //private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MovePetHandler.class);

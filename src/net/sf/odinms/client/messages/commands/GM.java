@@ -1,6 +1,32 @@
 package net.sf.odinms.client.messages.commands;
 
-import java.awt.Point;
+import net.sf.odinms.client.*;
+import net.sf.odinms.client.messages.Command;
+import net.sf.odinms.client.messages.CommandDefinition;
+import net.sf.odinms.client.messages.CommandProcessor;
+import net.sf.odinms.client.messages.MessageCallback;
+import net.sf.odinms.database.DatabaseConnection;
+import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
+import net.sf.odinms.net.world.remote.CheaterData;
+import net.sf.odinms.net.world.remote.WorldChannelInterface;
+import net.sf.odinms.net.world.remote.WorldLocation;
+import net.sf.odinms.provider.MapleData;
+import net.sf.odinms.provider.MapleDataProvider;
+import net.sf.odinms.provider.MapleDataProviderFactory;
+import net.sf.odinms.provider.MapleDataTool;
+import net.sf.odinms.scripting.npc.NPCScriptManager;
+import net.sf.odinms.server.*;
+import net.sf.odinms.server.life.*;
+import net.sf.odinms.server.maps.FakeCharacter;
+import net.sf.odinms.server.maps.MapleMap;
+import net.sf.odinms.server.maps.MapleMapObject;
+import net.sf.odinms.server.maps.MapleMapObjectType;
+import net.sf.odinms.tools.MaplePacketCreator;
+import net.sf.odinms.tools.Pair;
+import net.sf.odinms.tools.StringUtil;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -10,62 +36,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleInventoryType;
-import net.sf.odinms.client.MaplePet;
-import net.sf.odinms.client.MapleStat;
-import net.sf.odinms.client.Equip;
-import net.sf.odinms.client.messages.Command;
-import net.sf.odinms.client.messages.MessageCallback;
-import net.sf.odinms.server.MapleInventoryManipulator;
-import net.sf.odinms.server.MapleItemInformationProvider;
-import net.sf.odinms.tools.MaplePacketCreator;
-import net.sf.odinms.net.channel.ChannelServer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.List;
 
-import net.sf.odinms.client.LoginCrypto;
-import net.sf.odinms.client.MapleCharacterUtil;
-import net.sf.odinms.client.MapleDisease;
-import net.sf.odinms.client.MapleJob;
-import net.sf.odinms.client.MapleRing;
-import net.sf.odinms.client.SkillFactory;
-import net.sf.odinms.client.messages.CommandDefinition;
-import net.sf.odinms.client.messages.CommandProcessor;
-import net.sf.odinms.database.DatabaseConnection;
-import net.sf.odinms.net.world.remote.CheaterData;
-import net.sf.odinms.provider.MapleData;
-import net.sf.odinms.provider.MapleDataProvider;
-import net.sf.odinms.provider.MapleDataProviderFactory;
-import net.sf.odinms.provider.MapleDataTool;
-import net.sf.odinms.scripting.npc.NPCScriptManager;
-import net.sf.odinms.server.MaplePortal;
-import net.sf.odinms.server.MapleShopFactory;
-import net.sf.odinms.server.life.MapleLifeFactory;
-import net.sf.odinms.server.life.MapleMonster;
-import net.sf.odinms.server.life.MapleMonsterStats;
-import net.sf.odinms.server.life.MapleNPC;
-import net.sf.odinms.server.life.MobSkillFactory;
-import net.sf.odinms.server.maps.MapleMap;
-import net.sf.odinms.server.maps.MapleMapObject;
-import net.sf.odinms.server.maps.MapleMapObjectType;
-import net.sf.odinms.tools.Pair;
-import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
-import net.sf.odinms.net.world.remote.WorldChannelInterface;
-import net.sf.odinms.net.world.remote.WorldLocation;
-import net.sf.odinms.server.MapleTrade;
-import net.sf.odinms.server.maps.FakeCharacter;
-import static net.sf.odinms.client.messages.CommandProcessor.getNamedDoubleArg;
-import static net.sf.odinms.client.messages.CommandProcessor.getNamedIntArg;
-import static net.sf.odinms.client.messages.CommandProcessor.getOptionalIntArg;
-import static net.sf.odinms.client.messages.CommandProcessor.joinAfterString;
-import net.sf.odinms.tools.StringUtil;
+import static net.sf.odinms.client.messages.CommandProcessor.*;
 
 public class GM implements Command {
 
@@ -973,7 +952,7 @@ public class GM implements Command {
                 if (victim == null) {
                     return;
                 }
-                builder.append(MapleClient.getLogMessage(victim, "")); // Could use null i think ?
+                builder.append(MapleClient.getLogMessage(victim, "")); // Could use null, I think?
 
                 mc.dropMessage(builder.toString());
 
@@ -1394,14 +1373,16 @@ public class GM implements Command {
                 } catch (NumberFormatException nfe) {
                     return;
                 }
-            /*if (num > 20) {
-                mc.dropMessage("Remember that we know what you're doing ;] please dont over summon");
-            }*/
+
                 Integer hp = getNamedIntArg(splitted, 1, "hp");
                 Integer exp = getNamedIntArg(splitted, 1, "exp");
                 Double php = getNamedDoubleArg(splitted, 1, "php");
                 Double pexp = getNamedDoubleArg(splitted, 1, "pexp");
                 MapleMonster onemob = MapleLifeFactory.getMonster(mid);
+                if (onemob == null) {
+                    player.dropMessage("Could not find mob ID specified.");
+                    break;
+                }
                 int newhp;
                 int newexp;
                 if (hp != null) {
@@ -1430,6 +1411,7 @@ public class GM implements Command {
                 }
                 for (int i = 0; i < num; ++i) {
                     MapleMonster mob = MapleLifeFactory.getMonster(mid);
+                    if (mob == null) continue;
                     mob.setHp(newhp);
                     mob.setOverrideStats(overrideStats);
                     player.getMap().spawnMonsterOnGroudBelow(mob, player.getPosition());

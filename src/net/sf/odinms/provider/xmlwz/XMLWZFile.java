@@ -1,14 +1,15 @@
 package net.sf.odinms.provider.xmlwz;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataDirectoryEntry;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.wz.WZDirectoryEntry;
 import net.sf.odinms.provider.wz.WZFileEntry;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class XMLWZFile implements MapleDataProvider {
     private final File root;

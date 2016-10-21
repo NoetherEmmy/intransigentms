@@ -1,9 +1,9 @@
 package net.sf.odinms.net.channel.handler;
 
 import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.net.AbstractMaplePacketHandler;
-import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.client.MapleInventory;
+import net.sf.odinms.client.MapleInventoryType;
+import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;

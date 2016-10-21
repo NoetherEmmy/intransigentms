@@ -1,9 +1,5 @@
 package net.sf.odinms.server.PlayerInteraction;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 import net.sf.odinms.client.Equip;
 import net.sf.odinms.client.IItem;
 import net.sf.odinms.client.MapleCharacter;
@@ -13,6 +9,11 @@ import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.maps.AbstractMapleMapObject;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class PlayerInteractionManager extends AbstractMapleMapObject implements IPlayerInteractionManager {
 

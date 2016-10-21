@@ -1,11 +1,12 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.Arrays;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.Arrays;
 
 public class HiredMerchantRequest extends AbstractMaplePacketHandler {
 

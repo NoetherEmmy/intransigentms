@@ -1,7 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.net.InetAddress;
-import java.rmi.RemoteException;
 import net.sf.odinms.client.MapleBuffStat;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -16,6 +14,9 @@ import net.sf.odinms.server.PlayerInteraction.MaplePlayerShop;
 import net.sf.odinms.server.PublicChatHandler;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.net.InetAddress;
+import java.rmi.RemoteException;
 
 public class ChangeChannelHandler extends AbstractMaplePacketHandler {
 

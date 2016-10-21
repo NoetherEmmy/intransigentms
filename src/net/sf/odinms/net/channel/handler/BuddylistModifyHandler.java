@@ -1,17 +1,6 @@
 package net.sf.odinms.net.channel.handler;
 
-import static net.sf.odinms.client.BuddyList.BuddyOperation.ADDED;
-import static net.sf.odinms.client.BuddyList.BuddyOperation.DELETED;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import net.sf.odinms.client.BuddyList;
-import net.sf.odinms.client.BuddylistEntry;
-import net.sf.odinms.client.CharacterNameAndId;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleClient;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.BuddyList.BuddyAddResult;
 import net.sf.odinms.client.BuddyList.BuddyOperation;
 import net.sf.odinms.database.DatabaseConnection;
@@ -20,6 +9,15 @@ import net.sf.odinms.net.channel.remote.ChannelWorldInterface;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static net.sf.odinms.client.BuddyList.BuddyOperation.ADDED;
+import static net.sf.odinms.client.BuddyList.BuddyOperation.DELETED;
 
 public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
 

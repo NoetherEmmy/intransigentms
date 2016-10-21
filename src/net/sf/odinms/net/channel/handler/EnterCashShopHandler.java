@@ -1,6 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.rmi.RemoteException;
 import net.sf.odinms.client.MapleBuffStat;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -10,6 +9,8 @@ import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.server.maps.SavedLocationType;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.rmi.RemoteException;
 
 public class EnterCashShopHandler extends AbstractMaplePacketHandler {
 

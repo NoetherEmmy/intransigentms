@@ -1,17 +1,11 @@
 package net.sf.odinms.server;
 
-import java.awt.Point;
+import net.sf.odinms.client.*;
+import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
-import net.sf.odinms.client.Equip;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.InventoryException;
-import net.sf.odinms.client.Item;
-import net.sf.odinms.client.MapleBuffStat;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleInventoryType;
-import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleInventoryManipulator {
 

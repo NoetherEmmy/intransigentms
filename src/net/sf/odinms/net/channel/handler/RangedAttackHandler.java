@@ -1,19 +1,7 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.ISkill;
-import net.sf.odinms.client.InventoryException;
-import net.sf.odinms.client.MapleBuffStat;
-import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.MapleCharacter.CancelCooldownAction;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleInventory;
-import net.sf.odinms.client.MapleInventoryType;
-import net.sf.odinms.client.MapleWeaponType;
-import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.MapleItemInformationProvider;
@@ -25,6 +13,10 @@ import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 public class RangedAttackHandler extends AbstractDealDamageHandler {
 

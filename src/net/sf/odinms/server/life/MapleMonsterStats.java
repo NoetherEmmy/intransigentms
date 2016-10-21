@@ -1,11 +1,8 @@
 package net.sf.odinms.server.life;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.sf.odinms.tools.Pair;
+
+import java.util.*;
 
 public class MapleMonsterStats {
 

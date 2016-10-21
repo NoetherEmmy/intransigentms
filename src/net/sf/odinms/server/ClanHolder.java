@@ -1,5 +1,8 @@
 package net.sf.odinms.server;
 
+import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.database.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,8 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.database.DatabaseConnection;
 
 public class ClanHolder {
 

@@ -1,17 +1,15 @@
 package net.sf.odinms.client.anticheat;
 
-import java.awt.Point;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.server.AutobanManager;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.StringUtil;
+
+import java.awt.*;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 public class CheatTracker {
 

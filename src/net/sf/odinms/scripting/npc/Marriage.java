@@ -1,10 +1,11 @@
 package net.sf.odinms.scripting.npc;
 
+import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.database.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.database.DatabaseConnection;
 
 public class Marriage {
 

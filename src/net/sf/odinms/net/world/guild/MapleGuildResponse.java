@@ -1,7 +1,7 @@
 package net.sf.odinms.net.world.guild;
 
-import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.net.MaplePacket;
+import net.sf.odinms.tools.MaplePacketCreator;
 
 public enum MapleGuildResponse {
 

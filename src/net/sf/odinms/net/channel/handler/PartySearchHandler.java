@@ -1,9 +1,10 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.ArrayList;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.ArrayList;
 
 public class PartySearchHandler extends AbstractMaplePacketHandler {
     //All bolleans as for now, all is useless... just for testing somehow, but I changed method while making

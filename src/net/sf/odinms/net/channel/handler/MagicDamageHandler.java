@@ -1,8 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import net.sf.odinms.client.ISkill;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleCharacter.CancelCooldownAction;
@@ -17,6 +14,10 @@ import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 public class MagicDamageHandler extends AbstractDealDamageHandler {
 

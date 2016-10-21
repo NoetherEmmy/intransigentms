@@ -1,9 +1,10 @@
 package net.sf.odinms.tools.data.output;
 
-import java.io.ByteArrayOutputStream;
 import net.sf.odinms.net.ByteArrayMaplePacket;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.tools.HexTool;
+
+import java.io.ByteArrayOutputStream;
 
 public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
     private final ByteArrayOutputStream baos;

@@ -1,24 +1,6 @@
 package net.sf.odinms.server.life;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Map.Entry;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import net.sf.odinms.client.ISkill;
-import net.sf.odinms.client.MapleBuffStat;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleJob;
-import net.sf.odinms.client.SkillFactory;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
 import net.sf.odinms.net.MaplePacket;
@@ -34,6 +16,14 @@ import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.tools.ArrayMap;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
+
+import java.awt.*;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
@@ -63,6 +53,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private final Map<Element, ElementalEffectiveness> originalEffectiveness = new HashMap<>();
     private ScheduledFuture<?> cancelEffectivenessTask = null;
     public final AtomicInteger dropShareCount = new AtomicInteger(0);
+    private long lastHitFromOtherMobs = 0;
 
     public MapleMonster(int id, MapleMonsterStats stats) {
         super(id);
@@ -156,6 +147,18 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return overrideStats.getExp();
         }
         return stats.getExp();
+    }
+
+    @Override
+    protected void positionChanged(Point newPosition) {
+        if (getId() == 9500196 && System.currentTimeMillis() - lastHitFromOtherMobs > 2500) {
+            boolean isHit = !getMap().getMapObjectsInRange(newPosition, 1000d, Collections.singletonList(MapleMapObjectType.MONSTER)).isEmpty();
+            if (isHit) {
+                lastHitFromOtherMobs = System.currentTimeMillis();
+                getMap().broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), 1));
+                getMap().damageMonster(new MapleCharacter(), this, 1);
+            }
+        }
     }
 
     public int getLevel() {
@@ -362,14 +365,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             TimerManager.getInstance().schedule(() -> {
                 for (Integer mid : toSpawn) {
                     MapleMonster mob = MapleLifeFactory.getMonster(mid);
-                    if (eventInstance != null) {
-                        eventInstance.registerMonster(mob);
+                    if (mob != null) {
+                        if (eventInstance != null) {
+                            eventInstance.registerMonster(mob);
+                        }
+                        mob.setPosition(getPosition());
+                        if (dropsDisabled()) {
+                            mob.disableDrops();
+                        }
+                        reviveMap.spawnRevives(mob);
                     }
-                    mob.setPosition(getPosition());
-                    if (dropsDisabled()) {
-                        mob.disableDrops();
-                    }
-                    reviveMap.spawnRevives(mob);
                 }
             }, this.getAnimationTime("die1"));
         }
@@ -1012,13 +1017,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         @Override
         public void run() {
             int damage;
-            //System.out.print("run() minPoisonDamage, maxPoisonDamage: " + minPoisonDamage + ", " + maxPoisonDamage + "\n");
             if (minPoisonDamage == maxPoisonDamage) {
                 damage = maxPoisonDamage;
             } else {
-                damage = (int) (minPoisonDamage + Math.random() * (maxPoisonDamage - minPoisonDamage + 1));
+                damage = (int) (minPoisonDamage + StrictMath.random() * (maxPoisonDamage - minPoisonDamage + 1));
             }
-            //System.out.print("run() damage: " + damage + "\n");
             if (damage >= hp) {
                 damage = hp - 1;
                 if (!shadowWeb) {

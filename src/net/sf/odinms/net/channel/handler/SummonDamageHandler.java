@@ -1,8 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import net.sf.odinms.client.ISkill;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -16,6 +13,10 @@ import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.maps.MapleSummon;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class SummonDamageHandler extends AbstractMaplePacketHandler {
 

@@ -1,9 +1,5 @@
 package net.sf.odinms.server.PlayerInteraction;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.concurrent.ScheduledFuture;
 import net.sf.odinms.client.IItem;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -14,6 +10,11 @@ import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.concurrent.ScheduledFuture;
 
 public class HiredMerchant extends PlayerInteractionManager {
 

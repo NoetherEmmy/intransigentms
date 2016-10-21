@@ -1,20 +1,7 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.ISkill;
-import net.sf.odinms.client.MapleBuffStat;
-import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.MapleCharacter.CancelCooldownAction;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleInventoryType;
-import net.sf.odinms.client.MapleJob;
-import net.sf.odinms.client.MapleStat;
-import net.sf.odinms.client.MapleWeaponType;
-import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MapleStatEffect;
@@ -28,6 +15,11 @@ import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 

@@ -1,30 +1,19 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.Collections;
-import java.util.Iterator;
-import net.sf.odinms.client.IEquip;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.ISkill;
-import net.sf.odinms.client.MapleBuffStat;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.SkillFactory;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
-import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.AutobanManager;
-import net.sf.odinms.server.life.MapleLifeFactory;
-import net.sf.odinms.server.life.MapleMonster;
-import net.sf.odinms.server.life.MobAttackInfo;
-import net.sf.odinms.server.life.MobAttackInfoFactory;
-import net.sf.odinms.server.life.MobSkill;
-import net.sf.odinms.server.life.MobSkillFactory;
+import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.server.maps.MapleMist;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.Collections;
+import java.util.Iterator;
 
 public class TakeDamageHandler extends AbstractMaplePacketHandler {
 

@@ -1,11 +1,12 @@
 package net.sf.odinms.client;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.life.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Skill implements ISkill {
 

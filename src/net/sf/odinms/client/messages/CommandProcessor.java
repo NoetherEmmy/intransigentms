@@ -1,21 +1,5 @@
 package net.sf.odinms.client.messages;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.SkillFactory;
@@ -27,6 +11,17 @@ import net.sf.odinms.tools.ClassFinder;
 import net.sf.odinms.tools.MockIOSession;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.*;
 
 public class CommandProcessor implements CommandProcessorMBean {
 
