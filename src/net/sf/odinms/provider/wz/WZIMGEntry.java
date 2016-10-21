@@ -1,11 +1,12 @@
 package net.sf.odinms.provider.wz;
 
+import net.sf.odinms.provider.MapleData;
+import net.sf.odinms.provider.MapleDataEntity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import net.sf.odinms.provider.MapleData;
-import net.sf.odinms.provider.MapleDataEntity;
 
 public class WZIMGEntry implements MapleData {
     private String name;

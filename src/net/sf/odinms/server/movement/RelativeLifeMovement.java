@@ -1,7 +1,8 @@
 package net.sf.odinms.server.movement;
 
-import java.awt.Point;
 import net.sf.odinms.tools.data.output.LittleEndianWriter;
+
+import java.awt.*;
 
 public class RelativeLifeMovement extends AbstractLifeMovement {
     public RelativeLifeMovement(int type, Point position, int duration, int newstate) {

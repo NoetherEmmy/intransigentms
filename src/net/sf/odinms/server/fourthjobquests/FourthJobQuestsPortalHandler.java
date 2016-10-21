@@ -1,6 +1,5 @@
 package net.sf.odinms.server.fourthjobquests;
 
-import java.util.Collection;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleJob;
 import net.sf.odinms.client.messages.ServernoticeMapleClientMessageCallback;
@@ -8,6 +7,8 @@ import net.sf.odinms.net.StringValueHolder;
 import net.sf.odinms.net.world.MapleParty;
 import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.util.Collection;
 
 public class FourthJobQuestsPortalHandler {
 	

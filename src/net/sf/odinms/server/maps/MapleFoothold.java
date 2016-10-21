@@ -1,6 +1,6 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Point;
+import java.awt.*;
 
 public class MapleFoothold implements Comparable<MapleFoothold> {
 

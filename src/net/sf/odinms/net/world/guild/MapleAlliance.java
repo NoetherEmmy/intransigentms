@@ -1,18 +1,19 @@
 
 package net.sf.odinms.net.world.guild;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.util.LinkedList;
-import java.util.List;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MapleAlliance implements java.io.Serializable {
 

@@ -1,8 +1,6 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.awt.Point;
-import java.util.List;
-import java.util.Random;
+import net.sf.odinms.client.MapleCharacterUtil;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.server.life.MapleMonster;
@@ -16,6 +14,11 @@ import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.awt.*;
+import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Random;
 
 public class MoveLifeHandler extends AbstractMovementPacketHandler {
 
@@ -90,6 +93,21 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         if (res != null) {
             if (slea.available() != 9) {
                 log.warn("slea.available != 9 (movement parsing error)");
+                try {
+                    c.getChannelServer()
+                     .getWorldInterface()
+                     .broadcastGMMessage(null,
+                             MaplePacketCreator.serverNotice(6,
+                                     "WARNING: It appears that the player with name " +
+                                     MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
+                                     " on channel " +
+                                     c.getChannel() +
+                                     " is vac hacking."
+                             ).getBytes()
+                     );
+                } catch (RemoteException ex) {
+                    c.getChannelServer().reconnectWorld();
+                }
                 return;
             }
             MaplePacket packet = MaplePacketCreator.moveMonster(skillByte, skill, skill_1, skill_2, skill_3, objectid, startPos, res);

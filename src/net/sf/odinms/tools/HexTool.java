@@ -1,7 +1,8 @@
 package net.sf.odinms.tools;
 
-import java.io.ByteArrayOutputStream;
 import org.apache.mina.common.ByteBuffer;
+
+import java.io.ByteArrayOutputStream;
 
 public class HexTool {
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };

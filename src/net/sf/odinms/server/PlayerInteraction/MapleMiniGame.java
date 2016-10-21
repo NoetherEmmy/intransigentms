@@ -1,5 +1,11 @@
 package net.sf.odinms.server.PlayerInteraction;
 
+import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.client.MapleClient;
+import net.sf.odinms.database.DatabaseConnection;
+import net.sf.odinms.server.maps.MapleMapObjectType;
+import net.sf.odinms.tools.MaplePacketCreator;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,11 +13,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.database.DatabaseConnection;
-import net.sf.odinms.server.maps.MapleMapObjectType;
-import net.sf.odinms.tools.MaplePacketCreator;
 
 public class MapleMiniGame extends PlayerInteractionManager {
 

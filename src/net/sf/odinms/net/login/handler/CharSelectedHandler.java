@@ -1,7 +1,5 @@
 package net.sf.odinms.net.login.handler;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.net.login.LoginServer;
@@ -9,6 +7,9 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class CharSelectedHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(CharSelectedHandler.class);

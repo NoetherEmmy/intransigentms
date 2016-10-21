@@ -1,5 +1,8 @@
 package net.sf.odinms.server.quest;
 
+import net.sf.odinms.client.MapleQuestStatus;
+import net.sf.odinms.database.DatabaseConnection;
+
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.sql.Blob;
@@ -7,8 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
-import net.sf.odinms.client.MapleQuestStatus;
-import net.sf.odinms.database.DatabaseConnection;
 
 public class MapleCustomQuest extends MapleQuest {
 

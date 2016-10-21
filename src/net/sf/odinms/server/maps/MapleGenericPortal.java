@@ -1,6 +1,5 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Point;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.anticheat.CheatingOffense;
@@ -9,6 +8,8 @@ import net.sf.odinms.scripting.portal.PortalScriptManager;
 import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.fourthjobquests.FourthJobQuestsPortalHandler;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.awt.*;
 
 public class MapleGenericPortal implements MaplePortal {
 

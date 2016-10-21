@@ -1,9 +1,10 @@
 package net.sf.odinms.tools.data.input;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class RandomAccessByteStream implements SeekableInputStreamBytestream {
     private final RandomAccessFile raf;

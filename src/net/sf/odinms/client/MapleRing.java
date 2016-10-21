@@ -1,13 +1,14 @@
 package net.sf.odinms.client;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MapleRing implements Comparable<MapleRing> {
 

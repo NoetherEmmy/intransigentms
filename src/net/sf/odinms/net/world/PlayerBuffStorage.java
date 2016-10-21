@@ -1,9 +1,10 @@
 package net.sf.odinms.net.world;
 
+import net.sf.odinms.tools.Pair;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import net.sf.odinms.tools.Pair;
 
 @SuppressWarnings("serial")
 public class PlayerBuffStorage implements Serializable {

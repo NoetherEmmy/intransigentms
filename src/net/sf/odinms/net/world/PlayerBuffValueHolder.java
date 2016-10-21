@@ -1,7 +1,8 @@
 package net.sf.odinms.net.world;
 
-import java.io.Serializable;
 import net.sf.odinms.server.MapleStatEffect;
+
+import java.io.Serializable;
 
 public class PlayerBuffValueHolder implements Serializable {
     static final long serialVersionUID = 9179541993413738569L;

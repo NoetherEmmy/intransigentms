@@ -1,6 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.net.InetAddress;
 import net.sf.odinms.client.MapleBuffStat;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -11,6 +10,8 @@ import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.net.InetAddress;
 
 public class ChangeMapHandler extends AbstractMaplePacketHandler {
 

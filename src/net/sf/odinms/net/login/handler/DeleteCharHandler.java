@@ -1,10 +1,11 @@
 package net.sf.odinms.net.login.handler;
 
-import java.util.Calendar;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.Calendar;
 
 public class DeleteCharHandler extends AbstractMaplePacketHandler {
 

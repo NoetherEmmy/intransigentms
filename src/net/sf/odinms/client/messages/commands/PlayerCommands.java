@@ -1,31 +1,12 @@
 package net.sf.odinms.client.messages.commands;
 
-import java.awt.Point;
-import java.io.File;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import net.sf.odinms.client.MapleCQuests;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleCharacterUtil;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleInventoryType;
-import net.sf.odinms.client.MapleJob;
-import net.sf.odinms.net.world.remote.WorldChannelInterface;
-import net.sf.odinms.client.MapleStat;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.messages.Command;
 import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -41,6 +22,20 @@ import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
+
+import java.awt.*;
+import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PlayerCommands implements Command {
 
@@ -191,16 +186,13 @@ public class PlayerCommands implements Command {
             if (splitted.length < 2) {
                 return;
             }
-            if (true) {
-                try {
-                    c.getChannelServer().getWorldInterface().broadcastGMMessage(null, MaplePacketCreator.serverNotice(6, "Channel: " + c.getChannel() + "  " + player.getName() + ": " + StringUtil.joinStringFrom(splitted, 1)).getBytes());
-                } catch (RemoteException ex) {
-                    c.getChannelServer().reconnectWorld();
-                }
-                mc.dropMessage("Message sent.");
-            } else {
-                player.dropMessage(1, "Please don't flood GMs with your messages.");
+            try {
+                c.getChannelServer().getWorldInterface().broadcastGMMessage(null, MaplePacketCreator.serverNotice(6, "Channel: " + c.getChannel() + "  " + player.getName() + ": " + StringUtil.joinStringFrom(splitted, 1)).getBytes());
+            } catch (RemoteException ex) {
+                c.getChannelServer().reconnectWorld();
             }
+            mc.dropMessage("Message sent.");
+            // player.dropMessage(1, "Please don't flood GMs with your messages.");
         } else if (splitted[0].equals("@afk")) {
             if (splitted.length >= 2) {
                 String name = splitted[1];
@@ -611,7 +603,6 @@ public class PlayerCommands implements Command {
                 }
             }
         } else if (splitted[0].equals("@online")) {
-
             for (ChannelServer cs : ChannelServer.getAllInstances()) {
                 if (!cs.getPlayerStorage().getAllCharacters().isEmpty()) {
                     StringBuilder sb = new StringBuilder();

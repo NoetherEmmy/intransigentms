@@ -1,9 +1,10 @@
 package net.sf.odinms.server.PlayerInteraction;
 
-import java.util.List;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.MaplePacket;
+
+import java.util.List;
 
 public interface IPlayerInteractionManager {
 

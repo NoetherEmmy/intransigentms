@@ -1,9 +1,10 @@
 package net.sf.odinms.provider;
 
-import java.io.File;
-import java.io.IOException;
 import net.sf.odinms.provider.wz.WZFile;
 import net.sf.odinms.provider.xmlwz.XMLWZFile;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MapleDataProviderFactory {
     private static final String wzPath = System.getProperty("net.sf.odinms.wzpath");

@@ -1,7 +1,8 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Point;
 import net.sf.odinms.client.MapleClient;
+
+import java.awt.*;
 
 public interface MapleMapObject {
     int getObjectId();

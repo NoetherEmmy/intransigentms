@@ -1,15 +1,5 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Rectangle;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.awt.Point;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.database.DatabaseConnection;
@@ -25,6 +15,16 @@ import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.life.MapleNPC;
 import net.sf.odinms.tools.MockIOSession;
 import net.sf.odinms.tools.StringUtil;
+
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class MapleMapFactory {
 

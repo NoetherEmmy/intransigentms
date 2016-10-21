@@ -1,16 +1,13 @@
 package net.sf.odinms.client;
 
+import net.sf.odinms.database.DatabaseConnection;
+import net.sf.odinms.tools.MaplePacketCreator;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import net.sf.odinms.database.DatabaseConnection;
-import net.sf.odinms.tools.MaplePacketCreator;
+import java.util.*;
 
 public class BuddyList {
 

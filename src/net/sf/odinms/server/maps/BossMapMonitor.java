@@ -1,8 +1,9 @@
 package net.sf.odinms.server.maps;
 
 import net.sf.odinms.server.MaplePortal;
-import java.util.concurrent.ScheduledFuture;
 import net.sf.odinms.server.TimerManager;
+
+import java.util.concurrent.ScheduledFuture;
 
 public class BossMapMonitor {
 

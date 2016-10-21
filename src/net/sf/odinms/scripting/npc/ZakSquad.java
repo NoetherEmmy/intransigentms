@@ -1,10 +1,11 @@
 package net.sf.odinms.scripting.npc;
 
+import net.sf.odinms.database.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import net.sf.odinms.database.DatabaseConnection;
 
 public class ZakSquad {
     private static ResultSet rs;

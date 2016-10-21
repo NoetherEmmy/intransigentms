@@ -1,10 +1,11 @@
 package net.sf.odinms.server;
 
+import net.sf.odinms.client.MapleClient;
+import net.sf.odinms.database.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.database.DatabaseConnection;
 
 
 public class AutoRegister {

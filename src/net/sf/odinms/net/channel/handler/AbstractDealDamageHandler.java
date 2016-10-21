@@ -1,16 +1,6 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import net.sf.odinms.client.ISkill;
-import net.sf.odinms.client.MapleBuffStat;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleJob;
-import net.sf.odinms.client.SkillFactory;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.anticheat.CheatingOffense;
 import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
@@ -25,10 +15,13 @@ import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleMapItem;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
-import net.sf.odinms.server.maps.pvp.PvPLibrary;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.LittleEndianAccessor;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandler {
     //private static Logger log = LoggerFactory.getLogger(AbstractDealDamageHandler.class);

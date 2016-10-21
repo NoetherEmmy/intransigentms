@@ -1,16 +1,17 @@
 package net.sf.odinms.server.life;
 
-import java.awt.Point;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.tools.Pair;
+
+import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MobSkillFactory {
     private static final Map<Pair<Integer, Integer>, MobSkill> mobSkills = new HashMap<>();

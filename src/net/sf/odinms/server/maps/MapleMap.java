@@ -1,35 +1,6 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.Calendar;
-import java.util.Iterator;
-import net.sf.odinms.client.Equip;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.Item;
-import net.sf.odinms.client.MapleBuffStat;
-import net.sf.odinms.client.MapleCharacter;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleInventoryType;
-import net.sf.odinms.client.MaplePet;
-import net.sf.odinms.client.MapleQuestStatus;
-import net.sf.odinms.client.SkillFactory;
+import net.sf.odinms.client.*;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
@@ -50,6 +21,14 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.awt.*;
+import java.rmi.RemoteException;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MapleMap {
 
@@ -84,8 +63,7 @@ public class MapleMap {
     private int protectItem = 0;
     private boolean town;
     private boolean showGate = false;
-    private ScheduledFuture<?> periodicMonsterDrop = null;
-    private ScheduledFuture<?> cancelPeriodicMonsterDrop = null;
+    private final List<Pair<PeriodicMonsterDrop, ScheduledFuture<?>>> periodicMonsterDrops = new ArrayList<>(2);
     private static final Map<Integer, Integer> lastLatanicaTimes = new ConcurrentHashMap<>(4, 0.75f, 1);
     private PartyQuestMapInstance partyQuestInstance = null;
 
@@ -336,6 +314,12 @@ public class MapleMap {
                     }
                 }
             }
+            if (monster.getId() == 9500196) {
+                chance = (int) (Math.random() * 5); // 1/5 droprate
+                if (chance == 2) { // Arbitrary
+                    toDrop.add(4031203);
+                }
+            }
         }
         //
         Set<Integer> alreadyDropped = new HashSet<>();
@@ -495,39 +479,26 @@ public class MapleMap {
     }
     
     public void startPeriodicMonsterDrop(MapleCharacter chr, MapleMonster monster, long period, long duration) {
-        List<Pair<MapleCharacter, MapleMonster>> drops = new ArrayList<>(1);
-        drops.add(new Pair<>(chr, monster));
-        startPeriodicMonsterDrop(drops, period, duration);
-    }
-    
-    public void startPeriodicMonsterDrop(List<Pair<MapleCharacter, MapleMonster>> drops, long period, long duration) {
-        cancelCancelPeriodicMonsterDrop();
-        cancelPeriodicMonsterDrop();
-        
         TimerManager timerManager = TimerManager.getInstance();
-        final Runnable cancelTask = this::cancelPeriodicMonsterDrop;
-        
-        setPeriodicMonsterDrop(timerManager.register(new PeriodicMonsterDrop(drops, cancelTask), period, period));
-        ScheduledFuture<?> schedule = timerManager.schedule(cancelTask, duration);
-        setCancelPeriodicMonsterDrop(schedule);
+
+        final PeriodicMonsterDrop pmd = new PeriodicMonsterDrop(chr, monster);
+        final ScheduledFuture<?> dropTask = timerManager.register(pmd, period, period);
+        pmd.setTask(dropTask);
+        final Runnable cancelTask = () -> dropTask.cancel(false);
+        final ScheduledFuture<?> schedule = timerManager.schedule(cancelTask, duration);
+        addPeriodicMonsterDrop(pmd, schedule);
     }
     
-    public void cancelPeriodicMonsterDrop() {
-        if (periodicMonsterDrop != null) {
-            periodicMonsterDrop.cancel(false);
-        }
-        periodicMonsterDrop = null;
-    }
-    
-    public void setCancelPeriodicMonsterDrop(ScheduledFuture<?> cpmd) {
-        this.cancelPeriodicMonsterDrop = cpmd;
-    }
-    
-    public void setPeriodicMonsterDrop(ScheduledFuture<?> pmd) {
-        this.periodicMonsterDrop = pmd;
+    private void addPeriodicMonsterDrop(PeriodicMonsterDrop pmd, ScheduledFuture<?> cancelTask) {
+        periodicMonsterDrops.add(new Pair<>(pmd, cancelTask));
     }
 
     public boolean damageMonster(MapleCharacter chr, final MapleMonster monster, int damage) {
+        boolean withDrops = true;
+        if (monster.getId() == 9500196) { // Ghost
+            damage = 1;
+            withDrops = false;
+        }
         if (monster.getId() == 8800000) {
             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
             for (MapleMapObject object : objects) {
@@ -551,7 +522,7 @@ public class MapleMap {
                     int monsterhp = monster.getHp();
                     monster.damage(chr, damage, true);
                     if (!monster.isAlive()) {
-                        killMonster(monster, chr, true);
+                        killMonster(monster, chr, withDrops);
                         if (monster.getId() >= 8810002 && monster.getId() <= 8810009) {
                             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
                             for (MapleMapObject object : objects) {
@@ -599,6 +570,7 @@ public class MapleMap {
 
     @SuppressWarnings("static-access")
     public void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean secondTime, int animation) {
+        monster.stopOtherMobHitChecking();
         if (monster.getId() == 8810018 && !secondTime) {
             TimerManager.getInstance().schedule(() -> {
                 killMonster(monster, chr, withDrops, true, 1);
@@ -659,6 +631,9 @@ public class MapleMap {
                 dropOwner = chr;
             }
             dropFromMonster(dropOwner, monster);
+        }
+        if (hasPeriodicMonsterDrop(monster.getObjectId())) {
+            cancelPeriodicMonsterDrops(monster.getObjectId());
         }
     }
 
@@ -902,11 +877,22 @@ public class MapleMap {
 
     public void spawnMonster(final MapleMonster monster) {
         monster.setMap(this);
-        synchronized (this.mapobjects) {
+        synchronized (mapobjects) {
             spawnAndAddRangedMapObject(monster, c -> {
                 c.getSession().write(MaplePacketCreator.spawnMonster(monster, true));
                 if (monster.getId() == 9300166) {
                     TimerManager.getInstance().schedule(() -> killMonster(monster, (MapleCharacter) getAllPlayers().get(0), false, false, 3), new Random().nextInt(4500 + 500));
+                } else if (monster.getId() == 9500196) {
+                    monster.startOtherMobHitChecking(() -> {
+                        final MapleMap map = monster.getMap();
+                        MapleCharacter damager = monster.getController();
+                        if (damager == null) damager = (MapleCharacter) map.getAllPlayers().get(0);
+                        if (damager != null) {
+                            map.broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), 1));
+                            map.damageMonster(damager, monster, 1);
+                        }
+                    }, 800, 750);
+                    startPeriodicMonsterDrop(monster.getController() != null ? monster.getController() : (MapleCharacter) getAllPlayers().get(0), monster, 2500, 125000);
                 }
             }, null);
             updateMonsterController(monster);
@@ -1027,11 +1013,45 @@ public class MapleMap {
         activateItemReactors(drop);
     }
 
-    private void cancelCancelPeriodicMonsterDrop() {
-        if (this.cancelPeriodicMonsterDrop != null) {
-            this.cancelPeriodicMonsterDrop.cancel(false);
+    public boolean hasPeriodicMonsterDrop(int monsterOid) {
+        return periodicMonsterDrops.stream().anyMatch((pmd) -> pmd.getLeft().getMonsterOid() == monsterOid);
+    }
+
+    private void cancelCancelPeriodicMonsterDrop(final int monsterOid) {
+        periodicMonsterDrops.forEach((pmdh) -> {
+            if (pmdh.getLeft().getMonsterOid() == monsterOid) {
+                pmdh.getRight().cancel(false);
+            }
+        });
+    }
+
+    public void cancelPeriodicMonsterDrops(final int monsterOid) {
+        for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
+            if (periodicMonsterDrops.get(i).getLeft().getMonsterOid() == monsterOid) {
+                periodicMonsterDrops.get(i--).getLeft().selfCancel();
+            }
         }
-        this.cancelPeriodicMonsterDrop = null;
+    }
+
+    public void cancelAllPeriodicMonsterDrops() {
+        for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
+            periodicMonsterDrops.get(i--).getLeft().selfCancel();
+        }
+        periodicMonsterDrops.clear();
+    }
+
+    private void cancelPeriodicMonsterDrop(final PeriodicMonsterDrop pmd) {
+        Pair<PeriodicMonsterDrop, ScheduledFuture<?>> pmdh = null;
+        for (Pair<PeriodicMonsterDrop, ScheduledFuture<?>> _pmdh : periodicMonsterDrops) {
+            if (_pmdh.getLeft().equals(pmd)) {
+                pmdh = _pmdh;
+                break;
+            }
+        }
+        if (pmdh != null) {
+            pmdh.getRight().cancel(false);
+        }
+        periodicMonsterDrops.remove(pmdh);
     }
 
     public PartyQuestMapInstance getPartyQuestInstance() {
@@ -1660,7 +1680,7 @@ public class MapleMap {
                     numMonsters++;
                 }
             }
-            mc.dropMessage("actual monsters: " + numMonsters);
+            mc.dropMessage("Actual monsters: " + numMonsters);
         }
     }
 
@@ -1827,22 +1847,38 @@ public class MapleMap {
     }
     
     private class PeriodicMonsterDrop implements Runnable {
-        private final List<Pair<MapleCharacter, MapleMonster>> drops;
-        private final Runnable canceltask;
+        private final MapleCharacter chr;
+        private final MapleMonster monster;
+        private ScheduledFuture<?> task = null;
                 
-        public PeriodicMonsterDrop(List<Pair<MapleCharacter, MapleMonster>> drops, Runnable canceltask) {
-            this.drops = drops;
-            this.canceltask = canceltask;
+        public PeriodicMonsterDrop(MapleCharacter chr, MapleMonster monster) {
+            this.chr = chr;
+            this.monster = monster;
         }
         
         @Override
         public void run() {
-            for (Pair<MapleCharacter, MapleMonster> drop : drops) {
-                if (drop.getLeft() != null && drop.getRight() != null) {
-                    if (drop.getLeft().getMap() == drop.getRight().getMap() && drop.getLeft().isAlive() && drop.getRight().isAlive()) {
-                        drop.getRight().getMap().dropFromMonster(drop.getLeft(), drop.getRight());
-                    }
+            if (chr != null && monster != null) {
+                if (monster.isAlive()) {
+                    monster.getMap().dropFromMonster(chr, monster);
+                } else {
+                    selfCancel();
                 }
+            }
+        }
+
+        public void setTask(ScheduledFuture<?> task) {
+            this.task = task;
+        }
+
+        public int getMonsterOid() {
+            return monster.getObjectId();
+        }
+
+        public void selfCancel() {
+            if (task != null) {
+                MapleMap.this.cancelPeriodicMonsterDrop(this);
+                task.cancel(false);
             }
         }
     }

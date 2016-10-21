@@ -1,6 +1,7 @@
 package net.sf.odinms.net.channel.handler;
 
 import net.sf.odinms.client.MapleClient;
+import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.client.MaplePet;
 import net.sf.odinms.client.anticheat.CheatingOffense;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
@@ -10,7 +11,6 @@ import net.sf.odinms.server.maps.MapleMapItem;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import net.sf.odinms.client.MapleInventoryType;
 
 public class PetLootHandler extends AbstractMaplePacketHandler {
 

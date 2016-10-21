@@ -1,32 +1,5 @@
 package net.sf.odinms.net.channel;
 
-import java.awt.Point;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.net.InetSocketAddress;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.messages.CommandProcessor;
 import net.sf.odinms.database.DatabaseConnection;
@@ -57,6 +30,24 @@ import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
+
+import javax.management.*;
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+import java.awt.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.net.InetSocketAddress;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.List;
 
 public class ChannelServer implements Runnable, ChannelServerMBean {
 
@@ -600,6 +591,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 }
             }
         });
+        MapleItemInformationProvider.getInstance().cacheCashEquips();
     }
 
     public MapleSquad getMapleSquad(MapleSquadType type) {

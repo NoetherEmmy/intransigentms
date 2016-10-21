@@ -1,8 +1,8 @@
 // object for custom quests
 package net.sf.odinms.client;
 
-import java.util.Properties;
 import java.io.FileInputStream;
+import java.util.Properties;
 
 public class MapleCQuests { 
      

@@ -1,12 +1,13 @@
 package net.sf.odinms.net.channel.handler;
 
+import net.sf.odinms.client.MapleClient;
+import net.sf.odinms.database.DatabaseConnection;
+import net.sf.odinms.net.AbstractMaplePacketHandler;
+import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.database.DatabaseConnection;
-import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import net.sf.odinms.net.AbstractMaplePacketHandler;
 
 public class NoteActionHandler extends AbstractMaplePacketHandler {
 

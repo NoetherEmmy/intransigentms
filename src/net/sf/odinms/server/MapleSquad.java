@@ -1,10 +1,11 @@
 package net.sf.odinms.server;
 
-import java.util.LinkedList;
-import java.util.List;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class MapleSquad {
     private final MapleCharacter leader;

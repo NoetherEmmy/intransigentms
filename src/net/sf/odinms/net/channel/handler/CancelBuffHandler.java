@@ -4,8 +4,8 @@ import net.sf.odinms.client.ISkill;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
-import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import net.sf.odinms.tools.MaplePacketCreator;
+import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CancelBuffHandler extends AbstractMaplePacketHandler {
 

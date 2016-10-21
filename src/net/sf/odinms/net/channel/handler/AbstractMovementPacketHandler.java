@@ -1,19 +1,13 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.maps.AnimatedMapleMapObject;
-import net.sf.odinms.server.movement.AbsoluteLifeMovement;
-import net.sf.odinms.server.movement.ChairMovement;
-import net.sf.odinms.server.movement.ChangeEquipSpecialAwesome;
-import net.sf.odinms.server.movement.JumpDownMovement;
-import net.sf.odinms.server.movement.LifeMovement;
-import net.sf.odinms.server.movement.LifeMovementFragment;
-import net.sf.odinms.server.movement.RelativeLifeMovement;
-import net.sf.odinms.server.movement.TeleportMovement;
+import net.sf.odinms.server.movement.*;
 import net.sf.odinms.tools.data.input.LittleEndianAccessor;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketHandler {
 
@@ -118,9 +112,11 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                 }
             }
         }
+        /*
         if (numCommands != res.size()) {
-            //log.warn("numCommands ({}) does not match the number of deserialized movement commands ({})", numCommands, res.size());
+            log.warn("numCommands ({}) does not match the number of deserialized movement commands ({})", numCommands, res.size());
         }
+        */
         return res;
     }
 

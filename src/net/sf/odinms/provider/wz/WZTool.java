@@ -1,6 +1,5 @@
 package net.sf.odinms.provider.wz;
 
-import java.io.IOException;
 import net.sf.odinms.tools.data.input.LittleEndianAccessor;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import net.sf.odinms.tools.data.output.LittleEndianWriter;

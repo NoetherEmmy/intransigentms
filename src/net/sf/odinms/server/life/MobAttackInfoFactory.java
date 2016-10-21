@@ -1,14 +1,15 @@
 package net.sf.odinms.server.life;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MobAttackInfoFactory {
 	

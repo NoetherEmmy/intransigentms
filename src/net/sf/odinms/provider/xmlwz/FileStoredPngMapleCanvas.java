@@ -1,10 +1,11 @@
 package net.sf.odinms.provider.xmlwz;
 
+import net.sf.odinms.provider.MapleCanvas;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import net.sf.odinms.provider.MapleCanvas;
 
 public class FileStoredPngMapleCanvas implements MapleCanvas {
     private final File file;

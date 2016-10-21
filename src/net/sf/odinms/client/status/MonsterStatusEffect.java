@@ -1,9 +1,10 @@
 package net.sf.odinms.client.status;
 
+import net.sf.odinms.client.ISkill;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
-import net.sf.odinms.client.ISkill;
 //import net.sf.odinms.tools.ArrayMap;
 
 public class MonsterStatusEffect {

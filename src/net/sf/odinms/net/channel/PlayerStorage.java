@@ -1,9 +1,10 @@
 package net.sf.odinms.net.channel;
 
+import net.sf.odinms.client.MapleCharacter;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import net.sf.odinms.client.MapleCharacter;
 
 public class PlayerStorage implements IPlayerStorage {
 

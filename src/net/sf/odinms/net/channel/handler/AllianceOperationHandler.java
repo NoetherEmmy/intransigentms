@@ -1,11 +1,12 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.rmi.RemoteException;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.net.world.guild.MapleAlliance;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
+
+import java.rmi.RemoteException;
 
 public class AllianceOperationHandler extends AbstractMaplePacketHandler {
 

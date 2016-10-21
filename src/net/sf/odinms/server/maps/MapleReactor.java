@@ -1,12 +1,13 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Rectangle;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.scripting.reactor.ReactorScriptManager;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
+
+import java.awt.*;
 
 public class MapleReactor extends AbstractMapleMapObject {
     //private static Logger log = LoggerFactory.getLogger(MapleReactor.class);

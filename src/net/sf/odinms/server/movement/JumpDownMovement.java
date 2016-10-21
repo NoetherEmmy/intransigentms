@@ -1,7 +1,8 @@
 package net.sf.odinms.server.movement;
 
-import java.awt.Point;
 import net.sf.odinms.tools.data.output.LittleEndianWriter;
+
+import java.awt.*;
 
 public class JumpDownMovement extends AbstractLifeMovement {
     private Point pixelsPerSecond;

@@ -1,10 +1,11 @@
 package net.sf.odinms.server;
 
-import java.awt.Point;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.server.maps.MapleGenericPortal;
 import net.sf.odinms.server.maps.MapleMapPortal;
+
+import java.awt.*;
 
 public class PortalFactory {
     private int nextDoorPortal;

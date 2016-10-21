@@ -1,18 +1,15 @@
 package net.sf.odinms.provider.wz;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.tools.data.input.GenericLittleEndianAccessor;
 import net.sf.odinms.tools.data.input.InputStreamByteStream;
 import net.sf.odinms.tools.data.input.LittleEndianAccessor;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 public class ListWZFile {
     private List<String> entries = new ArrayList<>();

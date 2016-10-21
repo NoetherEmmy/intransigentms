@@ -1,6 +1,5 @@
 package net.sf.odinms.client.messages.commands;
 
-import java.util.HashMap;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.messages.Command;
@@ -9,6 +8,8 @@ import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.maps.SavedLocationType;
+
+import java.util.HashMap;
 
 public class Extras implements Command {
 

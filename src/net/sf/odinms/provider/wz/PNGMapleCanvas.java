@@ -1,16 +1,11 @@
 package net.sf.odinms.provider.wz;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.PixelInterleavedSampleModel;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
+import net.sf.odinms.provider.MapleCanvas;
+
+import java.awt.*;
+import java.awt.image.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-import net.sf.odinms.provider.MapleCanvas;
 
 public class PNGMapleCanvas implements MapleCanvas {
     private static final int[] ZAHLEN = new int[] { 2, 1, 0, 3 };

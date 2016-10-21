@@ -1,11 +1,11 @@
 package net.sf.odinms.net.channel.handler;
 
-import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
-import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.scripting.npc.Marriage;
+import net.sf.odinms.scripting.npc.NPCScriptManager;
+import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class RingActionHandler extends AbstractMaplePacketHandler {
 

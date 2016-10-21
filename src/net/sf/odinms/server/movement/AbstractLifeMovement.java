@@ -1,6 +1,6 @@
 package net.sf.odinms.server.movement;
 
-import java.awt.Point;
+import java.awt.*;
 
 public abstract class AbstractLifeMovement implements LifeMovement {
     private final Point position;

@@ -1,14 +1,11 @@
 package net.sf.odinms.client.anticheat;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.server.TimerManager;
+
+import java.sql.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class CheatingOffensePersister {
 

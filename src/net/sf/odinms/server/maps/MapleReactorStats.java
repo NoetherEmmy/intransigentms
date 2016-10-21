@@ -1,9 +1,10 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Point;
+import net.sf.odinms.tools.Pair;
+
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.odinms.tools.Pair;
 
 public class MapleReactorStats {
     private Point tl;

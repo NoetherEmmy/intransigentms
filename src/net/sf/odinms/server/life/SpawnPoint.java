@@ -1,9 +1,9 @@
 package net.sf.odinms.server.life;
 
-import java.awt.Point;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import net.sf.odinms.server.maps.MapleMap;
+
+import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SpawnPoint {
     private final MapleMonster monster;
@@ -30,13 +30,13 @@ public class SpawnPoint {
         return shouldSpawn(System.currentTimeMillis());
     }
 
-    // intentionally package private
+    // Intentionally package private
     boolean shouldSpawn(long now) {
         if (mobTime < 0) {
             return false;
         }
-        // regular spawnpoints should spawn a maximum of 3 monsters; immobile spawnpoints or spawnpoints with mobtime a
-        // maximum of 1
+        // Regular spawnpoints should spawn a maximum of 3 monsters: these are immobile spawnpoints
+        // or spawnpoints with a maximum mobtime of 1
         if (((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {
             return false;
         }
@@ -66,12 +66,12 @@ public class SpawnPoint {
         if (mobTime == 0) {
             nextPossibleSpawn = System.currentTimeMillis() + 5000;
         }
+
         // The conditional below is for events with monsters that spawn on all maps.
-        /*
-        if (Math.random() < 0.004d) {
-            mapleMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400570), pos);
+        if (Math.random() < 0.003d) {
+            mapleMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9500196), pos);
         }
-        */
+
         return mob;
     }
 }

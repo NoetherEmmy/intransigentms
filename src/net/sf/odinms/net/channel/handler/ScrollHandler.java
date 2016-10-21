@@ -1,7 +1,5 @@
 package net.sf.odinms.net.channel.handler;
 
-import java.util.List;
-
 import net.sf.odinms.client.*;
 import net.sf.odinms.client.IEquip.ScrollResult;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
@@ -10,6 +8,8 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class ScrollHandler extends AbstractMaplePacketHandler {
 

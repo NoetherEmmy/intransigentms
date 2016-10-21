@@ -1,19 +1,14 @@
 package net.sf.odinms.server;
 
+import net.sf.odinms.client.*;
+import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.provider.*;
+import net.sf.odinms.tools.Pair;
+
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import net.sf.odinms.client.Equip;
-import net.sf.odinms.client.IItem;
-import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.client.MapleInventoryType;
-import net.sf.odinms.client.MapleWeaponType;
-import net.sf.odinms.client.SkillFactory;
-import net.sf.odinms.net.channel.ChannelServer;
-import net.sf.odinms.provider.*;
-import net.sf.odinms.tools.Pair;
 
 public class MapleItemInformationProvider {
 

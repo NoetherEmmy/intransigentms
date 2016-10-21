@@ -1,7 +1,8 @@
 package net.sf.odinms.net.world;
 
-import java.io.Serializable;
 import net.sf.odinms.client.MapleCharacter;
+
+import java.io.Serializable;
 
 public class MapleMessengerCharacter implements Serializable {
     private static final long serialVersionUID = 6215463252132450750L;

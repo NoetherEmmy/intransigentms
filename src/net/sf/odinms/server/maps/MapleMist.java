@@ -1,7 +1,5 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import net.sf.odinms.client.ISkill;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
@@ -9,6 +7,8 @@ import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.tools.MaplePacketCreator;
+
+import java.awt.*;
 
 public class MapleMist extends AbstractMapleMapObject {
     private final Rectangle mistPosition;
@@ -45,7 +45,7 @@ public class MapleMist extends AbstractMapleMapObject {
 
     @Override
     public void setPosition(Point position) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("MapleMist cannot be moved. ");
     }
 
     public MaplePacket makeDestroyData() {

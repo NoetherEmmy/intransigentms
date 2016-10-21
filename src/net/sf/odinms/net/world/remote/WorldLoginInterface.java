@@ -1,10 +1,11 @@
 package net.sf.odinms.net.world.remote;
 
+import net.sf.odinms.net.world.guild.MapleGuildCharacter;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.Properties;
-import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 
 public interface WorldLoginInterface extends Remote {
     Properties getDatabaseProperties() throws RemoteException;

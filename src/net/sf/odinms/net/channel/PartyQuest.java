@@ -1,15 +1,15 @@
 package net.sf.odinms.net.channel;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.net.world.MapleParty;
 import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.maps.MapleMap;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PartyQuest {
     private final List<MapleCharacter> players = new ArrayList<>(6);
