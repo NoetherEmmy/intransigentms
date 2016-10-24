@@ -6,6 +6,7 @@ import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.CommandProcessor;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.database.DatabaseConnection;
+import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
 import net.sf.odinms.net.world.remote.CheaterData;
@@ -22,6 +23,9 @@ import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
+import net.sf.odinms.server.movement.AbsoluteLifeMovement;
+import net.sf.odinms.server.movement.LifeMovement;
+import net.sf.odinms.server.movement.LifeMovementFragment;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
@@ -328,7 +332,7 @@ public class GM implements Command {
                 player.updateSingleStat(MapleStat.EXP, 0);
                 break;
             }
-            case "!online": {
+            case "!allonline": {
                 int i = 0;
                 for (ChannelServer cs : ChannelServer.getAllInstances()) {
                     if (!cs.getPlayerStorage().getAllCharacters().isEmpty()) {
@@ -2002,8 +2006,41 @@ public class GM implements Command {
                 }
                 break;
             }
-            case "cachecashequips":
+            case "!cachecashequips":
                 MapleItemInformationProvider.getInstance().cacheCashEquips();
+                break;
+            case "!moveup":
+                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                if (victim == null) {
+                    player.dropMessage("No such player could be found.");
+                    break;
+                }
+                try {
+                    final List<LifeMovementFragment> res = new ArrayList<>(1);
+                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(0, new Point(victim.getPosition().x, victim.getPosition().y), 1, 1);
+                    alm.setUnk(1);
+                    alm.setPixelsPerSecond(new Point(1, 1));
+                    res.add(alm);
+                    
+                    MaplePacket packet = MaplePacketCreator.movePlayer(victim.getId(), res);
+                    if (!player.isHidden()) {
+                        victim.getMap().broadcastMessage(player, packet, false);
+                    } else {
+                        victim.getMap().broadcastGMMessage(player, packet, false);
+                    }
+                    for (LifeMovementFragment move : res) {
+                        if (move instanceof LifeMovement) {
+                            if (move instanceof AbsoluteLifeMovement) {
+                                Point position = move.getPosition();
+                                victim.setPosition(position);
+                            }
+                            victim.setStance(((LifeMovement) move).getNewstate());
+                        }
+                    }
+                    victim.getMap().movePlayer(victim, victim.getPosition());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
@@ -2026,7 +2063,7 @@ public class GM implements Command {
             new CommandDefinition("noname", 3),
             new CommandDefinition("dropmesos", 3),
             new CommandDefinition("level", 3),
-            new CommandDefinition("online", 3),
+            new CommandDefinition("allonline", 3),
             new CommandDefinition("banreason", 3),
             new CommandDefinition("whitechat", 3),
             new CommandDefinition("joinguild", 3),
@@ -2145,7 +2182,8 @@ public class GM implements Command {
             new CommandDefinition("sendmedamagepacket", 3),
             new CommandDefinition("levelpersongrad", 3),
             new CommandDefinition("cachecashequips", 3),
-            new CommandDefinition("cleardropcache", 3)
+            new CommandDefinition("cleardropcache", 3),
+            new CommandDefinition("moveup", 3)
         };
     }
 }

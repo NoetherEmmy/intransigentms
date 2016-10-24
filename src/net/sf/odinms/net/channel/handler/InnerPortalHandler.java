@@ -9,7 +9,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 	
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-/*
+        /*
         // TODO Need to code this check somehow =/
         [5D 00] // Opcode
         [02] // Map Portal
@@ -26,6 +26,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
         int X = slea.readShort();
         int Y = slea.readShort();
         log.info("[Hacks] Player {} is trying to jump to a different map portal rather than the correct one");
- */
+        */
     }
 }

@@ -2774,10 +2774,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             newhp = localmaxhp;
         }
         this.hp = newhp;
-        
-        //
-        
-        //
 
         if (!silent) {
             updatePartyMemberHP();
@@ -2972,6 +2968,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
             npcsm.dispose(client);
         }
+
+        // Do cleanup if in a party quest map instance
+        if (getPartyQuest() != null && getPartyQuest().getMapInstance(getMap()) != null) {
+            getPartyQuest().getMapInstance(getMap()).invokeMethod("playerDead", this);
+        }
         
         // If they are 110+ they don't die immediately, but can be resurrected
         if (getLevel() >= 110) {
@@ -2983,8 +2984,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
             NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(getClient(), 2041024); // Open up Tombstone, who asks if you want to use a candle or instantly exits if you have no candles
-            
-            //final MapleCharacter p = this;
+
             TimerManager tMan = TimerManager.getInstance();
             tMan.schedule(() -> {
                 if (isDead()) {
@@ -3419,9 +3419,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         if ((mobId == getCQuest().getTargetId(1)) || (mobId == getCQuest().getTargetId(2))) {
             makeQuestProgress(mobId, 0);
-        }
-        if (getPartyQuest() != null) {
-            getPartyQuest().getMapInstance(getMap()).invokeMethod("killedMob", mobId, this);
         }
     }
 

@@ -28,7 +28,6 @@ public class FourthJobQuestsPortalHandler {
     }
 
     private FourthJobQuestsPortalHandler() {
-
     }
 
     //c.getClient().getSession().write(MaplePacketCreator.enableActions());
@@ -76,10 +75,7 @@ public class FourthJobQuestsPortalHandler {
     }
 
     private static boolean checkPartyLeader(MapleCharacter c) {
-        if (c.getParty() == null) {
-            return false;
-        }
-        return c.getParty().getLeader().getId() == c.getId();
+        return c.getParty() != null && c.getParty().getLeader().getId() == c.getId();
     }
 
     private static boolean checkBerserk(MapleCharacter c) {

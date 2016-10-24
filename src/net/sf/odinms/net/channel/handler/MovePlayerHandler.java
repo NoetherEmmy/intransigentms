@@ -20,43 +20,43 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         try {
-        c.getPlayer().resetAfkTime();
-        slea.readByte();
-        slea.readInt();
-        // log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
-        final List<LifeMovementFragment> res = parseMovement(slea);
-        if (res != null) {
-            if (slea.available() != 18) {
-                return;
-            }
-            MapleCharacter player = c.getPlayer();
-            MaplePacket packet = MaplePacketCreator.movePlayer(player.getId(), res);
-            if (!player.isHidden()) {
-                c.getPlayer().getMap().broadcastMessage(player, packet, false);
-            } else {
-                c.getPlayer().getMap().broadcastGMMessage(player, packet, false);
-            }
-            // c.getSession().write(MaplePacketCreator.movePlayer(30000, res));
-            if (CheatingOffense.FAST_MOVE.isEnabled() || CheatingOffense.HIGH_JUMP.isEnabled()) {
-                checkMovementSpeed(c.getPlayer(), res);
-            }
-            updatePosition(res, c.getPlayer(), 0);
-            c.getPlayer().getMap().movePlayer(c.getPlayer(), c.getPlayer().getPosition());
+            c.getPlayer().resetAfkTime();
+            slea.readByte();
+            slea.readInt();
+            // log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
+            final List<LifeMovementFragment> res = parseMovement(slea);
+            if (res != null) {
+                if (slea.available() != 18) {
+                    return;
+                }
+                MapleCharacter player = c.getPlayer();
+                MaplePacket packet = MaplePacketCreator.movePlayer(player.getId(), res);
+                if (!player.isHidden()) {
+                    c.getPlayer().getMap().broadcastMessage(player, packet, false);
+                } else {
+                    c.getPlayer().getMap().broadcastGMMessage(player, packet, false);
+                }
+                // c.getSession().write(MaplePacketCreator.movePlayer(30000, res));
+                if (CheatingOffense.FAST_MOVE.isEnabled() || CheatingOffense.HIGH_JUMP.isEnabled()) {
+                    checkMovementSpeed(c.getPlayer(), res);
+                }
+                updatePosition(res, c.getPlayer(), 0);
+                c.getPlayer().getMap().movePlayer(c.getPlayer(), c.getPlayer().getPosition());
 
-            if (c.getPlayer().hasFakeChar()) {
-                int i = 1;
-                for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
-                    if (ch.follow() && ch.getFakeChar().getMap() == player.getMap()) {
-                        TimerManager.getInstance().schedule(() -> {
-                            ch.getFakeChar().getMap().broadcastMessage(ch.getFakeChar(), MaplePacketCreator.movePlayer(ch.getFakeChar().getId(), res), false);
-                            updatePosition(res, ch.getFakeChar(), 0);
-                            ch.getFakeChar().getMap().movePlayer(ch.getFakeChar(), ch.getFakeChar().getPosition());
-                        }, i * 300);
-                        i++;
+                if (c.getPlayer().hasFakeChar()) {
+                    int i = 1;
+                    for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
+                        if (ch.follow() && ch.getFakeChar().getMap() == player.getMap()) {
+                            TimerManager.getInstance().schedule(() -> {
+                                ch.getFakeChar().getMap().broadcastMessage(ch.getFakeChar(), MaplePacketCreator.movePlayer(ch.getFakeChar().getId(), res), false);
+                                updatePosition(res, ch.getFakeChar(), 0);
+                                ch.getFakeChar().getMap().movePlayer(ch.getFakeChar(), ch.getFakeChar().getPosition());
+                            }, i * 300);
+                            i++;
+                        }
                     }
                 }
             }
-        }
         } catch (Exception e) {
             e.printStackTrace();
         }

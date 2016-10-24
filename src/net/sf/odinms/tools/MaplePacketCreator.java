@@ -1392,7 +1392,7 @@ public class MaplePacketCreator {
         mplew.writeShort(life.getPosition().x);
         mplew.writeShort(life.getPosition().y);
         mplew.write(life.getStance());
-//		mplew.writeShort(life.getStartFh()); // Makes monster looks like being vacced...
+      /*mplew.writeShort(life.getStartFh()); // Makes monster look like it's being vacced*/
         mplew.writeShort(0);
         mplew.writeShort(life.getFh());
         if (effect > 0) {

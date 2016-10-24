@@ -59,14 +59,10 @@ public class PortalScriptManager {
         return script;
     }
 
-    // Rhino is thread safe so this should be fine without synchronisation.
+    // Nashorn is thread-safe so this should be fine without synchronization.
     public boolean executePortalScript(MaplePortal portal, MapleClient c) {
         PortalScript script = getPortalScript(portal.getScriptName());
-        if (script != null) {
-            return script.enter(new PortalPlayerInteraction(c, portal));
-        } else {
-            return false;
-        }
+        return script != null && script.enter(new PortalPlayerInteraction(c, portal));
     }
 
     public void clearScripts() {

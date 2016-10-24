@@ -8,7 +8,7 @@ public class PortalPlayerInteraction extends AbstractPlayerInteraction {
     private final MaplePortal portal;
 
     public PortalPlayerInteraction(MapleClient c, MaplePortal portal) {
-        super (c);
+        super(c);
         this.portal = portal;
     }
 

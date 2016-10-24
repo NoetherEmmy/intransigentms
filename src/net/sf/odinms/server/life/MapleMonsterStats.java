@@ -7,7 +7,7 @@ import java.util.*;
 public class MapleMonsterStats {
 
     private int exp;
-    private int hp,  mp;
+    private int hp, mp;
     private int level;
     private int removeAfter;
     private boolean boss;

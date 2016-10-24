@@ -3,6 +3,7 @@ package net.sf.odinms.net.channel.handler;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.maps.MapleReactor;
+import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ReactorHitHandler extends AbstractMaplePacketHandler {
@@ -19,7 +20,7 @@ public class ReactorHitHandler extends AbstractMaplePacketHandler {
             reactor.hitReactor(charPos, stance, c);
         } else { // player hit a destroyed reactor, likely due to lag
             //log.trace(c.getPlayer().getName() + "<" + c.getPlayer().getId() + "> attempted to hit destroyed reactor with oid " + oid);
-            return;
+            c.getSession().write(MaplePacketCreator.enableActions());
         }
     }
 }

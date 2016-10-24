@@ -20,8 +20,7 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
             switch (command) {
                 case 0: // Normal move
                 case 5:
-                case 17: // Float
-                {
+                case 17: { // Float
                     int xpos = lea.readShort();
                     int ypos = lea.readShort();
                     int xwobble = lea.readShort();
@@ -42,8 +41,7 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                 case 6: // FJ
                 case 12:
                 case 13: // Shot-jump-back
-                case 16: // Float
-                {
+                case 16: { // Float
                     int xmod = lea.readShort();
                     int ymod = lea.readShort();
                     int newstate = lea.readByte();
@@ -70,13 +68,11 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                     res.add(tm);
                     break;
                 }
-                case 10: // Change equip
-                {
+                case 10: { // Change equip
                     res.add(new ChangeEquipSpecialAwesome(lea.readByte()));
                     break;
                 }
-                case 11: // Chair
-                {
+                case 11: { // Chair
                     int xpos = lea.readShort();
                     int ypos = lea.readShort();
                     int unk = lea.readShort();

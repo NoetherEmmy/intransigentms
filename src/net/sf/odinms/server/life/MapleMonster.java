@@ -347,6 +347,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 attacker.gainExp((int) personalExp, true, false, highestDamage, false);
             }
             attacker.mobKilled(this.getId());
+            if (attacker.getPartyQuest() != null) {
+                attacker.getPartyQuest().getMapInstance(getMap()).invokeMethod("mobKilled", this, attacker);
+            }
         }
     }
 
@@ -1137,6 +1140,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             this.chrid = from.getId();
             this.cserv = cserv;
         }
+
         @Override
         public void addDamage(MapleCharacter from, int damage, boolean updateAttackTime) {
             if (chrid == from.getId()) {
@@ -1148,6 +1152,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 lastAttackTime = System.currentTimeMillis();
             }
         }
+
         @Override
         public List<AttackingMapleCharacter> getAttackers() {
             MapleCharacter chr = cserv.getPlayerStorage().getCharacterById(chrid);
@@ -1157,14 +1162,17 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 return Collections.emptyList();
             }
         }
+
         @Override
         public boolean contains(MapleCharacter chr) {
             return chrid == chr.getId();
         }
+
         @Override
         public int getDamage() {
             return damage;
         }
+
         @Override
         public void killedMob(MapleMap map, int baseExp, boolean mostDamage, boolean isboss) {
             MapleCharacter chr = cserv.getPlayerStorage().getCharacterById(chrid);
@@ -1172,10 +1180,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 giveExpToCharacter(chr, baseExp, mostDamage, 1);
             }
         }
+
         @Override
         public int hashCode() {
             return chrid;
         }
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
