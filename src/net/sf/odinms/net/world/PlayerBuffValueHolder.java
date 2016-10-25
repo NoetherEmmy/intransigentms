@@ -13,7 +13,7 @@ public class PlayerBuffValueHolder implements Serializable {
     public PlayerBuffValueHolder(long startTime, MapleStatEffect effect) {
         this.startTime = startTime;
         this.effect = effect;
-        this.id = (int) (Math.random()*100);
+        this.id = (int) (Math.random() * 100);
     }
 
     @Override
@@ -26,12 +26,9 @@ public class PlayerBuffValueHolder implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final PlayerBuffValueHolder other = (PlayerBuffValueHolder) obj;
         return id == other.id;
     }

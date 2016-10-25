@@ -2011,32 +2011,31 @@ public class GM implements Command {
                 break;
             case "!moveup":
                 MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                int displacement = getOptionalIntArg(splitted, 2, 20);
                 if (victim == null) {
                     player.dropMessage("No such player could be found.");
                     break;
                 }
                 try {
                     final List<LifeMovementFragment> res = new ArrayList<>(1);
-                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(0, new Point(victim.getPosition().x, victim.getPosition().y), 1, 1);
+                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(0, new Point(victim.getPosition().x, victim.getPosition().y - displacement), 1, 1);
                     alm.setUnk(1);
                     alm.setPixelsPerSecond(new Point(1, 1));
                     res.add(alm);
                     
                     MaplePacket packet = MaplePacketCreator.movePlayer(victim.getId(), res);
                     if (!player.isHidden()) {
-                        victim.getMap().broadcastMessage(player, packet, false);
+                        victim.getMap().broadcastMessage(player, packet, true);
                     } else {
-                        victim.getMap().broadcastGMMessage(player, packet, false);
+                        victim.getMap().broadcastGMMessage(player, packet, true);
                     }
-                    for (LifeMovementFragment move : res) {
-                        if (move instanceof LifeMovement) {
-                            if (move instanceof AbsoluteLifeMovement) {
-                                Point position = move.getPosition();
-                                victim.setPosition(position);
-                            }
-                            victim.setStance(((LifeMovement) move).getNewstate());
+                    res.stream().filter(move -> move instanceof LifeMovement).forEach(move -> {
+                        if (move instanceof AbsoluteLifeMovement) {
+                            Point position = move.getPosition();
+                            victim.setPosition(position);
                         }
-                    }
+                        victim.setStance(((LifeMovement) move).getNewstate());
+                    });
                     victim.getMap().movePlayer(victim, victim.getPosition());
                 } catch (Exception e) {
                     e.printStackTrace();

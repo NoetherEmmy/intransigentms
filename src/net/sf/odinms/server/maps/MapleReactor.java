@@ -20,6 +20,7 @@ public class MapleReactor extends AbstractMapleMapObject {
     private boolean alive;
     private String name;
     private boolean timerActive;
+    private boolean obstacle = false;
 
     public MapleReactor(MapleReactorStats stats, int rid) {
         this.stats = stats;
@@ -122,20 +123,20 @@ public class MapleReactor extends AbstractMapleMapObject {
                 // get next state
                 state = stats.getNextState(state);
 
-                if (stats.getNextState(state) == -1) { //end of reactor
-                    if (stats.getType(state) < 100) { //reactor broken
+                if (stats.getNextState(state) == -1) { // end of reactor
+                    if (stats.getType(state) < 100) { // reactor broken
                         if (delay > 0) {
                             map.destroyReactor(getObjectId());
-                        } else { //trigger as normal
+                        } else { // trigger as normal
                             map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
                         }
-                    } else { //item-triggered on final step
+                    } else { // item-triggered on final step
                         map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
                     }
                     ReactorScriptManager.getInstance().act(c, this);
-                } else { //reactor not broken yet
+                } else { // reactor not broken yet
                     map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-                    if (state == stats.getNextState(state)) { //current state = next state, looping reactor
+                    if (state == stats.getNextState(state)) { // current state = next state, looping reactor
                         ReactorScriptManager.getInstance().act(c, this);
                     }
                 }
@@ -149,12 +150,11 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     public Rectangle getArea() {
         int height = stats.getBR().y - stats.getTL().y;
-        int width = stats.getBR().x - stats.getTL().x;
-        int origX = getPosition().x + stats.getTL().x;
-        int origY = getPosition().y + stats.getTL().y;
+        int width  = stats.getBR().x - stats.getTL().x;
+        int origX  = getPosition().x + stats.getTL().x;
+        int origY  = getPosition().y + stats.getTL().y;
 
         return new Rectangle(origX, origY, width, height);
-
     }
 
     public String getName() {

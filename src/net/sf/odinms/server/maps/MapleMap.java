@@ -727,7 +727,7 @@ public class MapleMap {
         }
     }
 
-    public void updateMonsterController(MapleMonster monster) {
+    public void updateMonsterController(final MapleMonster monster) {
         synchronized (monster) {
             if (!monster.isAlive()) {
                 return;
@@ -1614,7 +1614,7 @@ public class MapleMap {
         }
     }
 
-    public void movePlayer(MapleCharacter player, Point newPosition) {
+    public void movePlayer(final MapleCharacter player, Point newPosition) {
         if (player.isFake()) {
             return;
         }
@@ -1643,13 +1643,13 @@ public class MapleMap {
                     player.removeVisibleMapObject(mmo);
                 }
             }
-            for (MapleMapObject mmo : getMapObjectsInRange(player.getPosition(), MapleCharacter.MAX_VIEW_RANGE_SQ,
-                    rangedMapobjectTypes)) {
-                if (!player.isMapObjectVisible(mmo)) {
+            getMapObjectsInRange(player.getPosition(), MapleCharacter.MAX_VIEW_RANGE_SQ, rangedMapobjectTypes)
+                .stream()
+                .filter(mmo -> !player.isMapObjectVisible(mmo))
+                .forEach(mmo -> {
                     mmo.sendSpawnData(player.getClient());
                     player.addVisibleMapObject(mmo);
-                }
-            }
+                });
         }
     }
 

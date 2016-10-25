@@ -20,7 +20,8 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         try {
-            c.getPlayer().resetAfkTime();
+            final MapleCharacter player = c.getPlayer();
+            player.resetAfkTime();
             slea.readByte();
             slea.readInt();
             // log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
@@ -29,23 +30,22 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
                 if (slea.available() != 18) {
                     return;
                 }
-                MapleCharacter player = c.getPlayer();
                 MaplePacket packet = MaplePacketCreator.movePlayer(player.getId(), res);
                 if (!player.isHidden()) {
-                    c.getPlayer().getMap().broadcastMessage(player, packet, false);
+                    player.getMap().broadcastMessage(player, packet, false);
                 } else {
-                    c.getPlayer().getMap().broadcastGMMessage(player, packet, false);
+                    player.getMap().broadcastGMMessage(player, packet, false);
                 }
                 // c.getSession().write(MaplePacketCreator.movePlayer(30000, res));
                 if (CheatingOffense.FAST_MOVE.isEnabled() || CheatingOffense.HIGH_JUMP.isEnabled()) {
-                    checkMovementSpeed(c.getPlayer(), res);
+                    checkMovementSpeed(player, res);
                 }
-                updatePosition(res, c.getPlayer(), 0);
-                c.getPlayer().getMap().movePlayer(c.getPlayer(), c.getPlayer().getPosition());
+                updatePosition(res, player, 0);
+                player.getMap().movePlayer(player, player.getPosition());
 
-                if (c.getPlayer().hasFakeChar()) {
+                if (player.hasFakeChar()) {
                     int i = 1;
-                    for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
+                    for (final FakeCharacter ch : player.getFakeChars()) {
                         if (ch.follow() && ch.getFakeChar().getMap() == player.getMap()) {
                             TimerManager.getInstance().schedule(() -> {
                                 ch.getFakeChar().getMap().broadcastMessage(ch.getFakeChar(), MaplePacketCreator.movePlayer(ch.getFakeChar().getId(), res), false);
@@ -56,6 +56,12 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
                         }
                     }
                 }
+                if (player.getPartyQuest() != null && player.getMap().getPartyQuestInstance() != null) {
+                    if (player.getMap().getPartyQuestInstance().isListeningForPlayerMovement()) {
+                        player.getMap().getPartyQuestInstance().heardPlayerMovement(player, player.getPosition());
+                        player.getMap().getPartyQuestInstance().invokeMethod("heardPlayerMovement", player, player.getPosition());
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,9 +70,9 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
 
     private static void checkMovementSpeed(MapleCharacter chr, List<LifeMovementFragment> moves) {
         // boolean wasALM = true;
-        // Point oldPosition = new Point (c.getPlayer().getPosition());
+        // Point oldPosition = new Point (player.getPosition());
         double playerSpeedMod = chr.getSpeedMod() + 0.005;
-        // double playerJumpMod = c.getPlayer().getJumpMod() + 0.005;
+        // double playerJumpMod = player.getJumpMod() + 0.005;
         boolean encounteredUnk0 = false;
         for (LifeMovementFragment lmf : moves) {
             if (lmf.getClass() == AbsoluteLifeMovement.class) {

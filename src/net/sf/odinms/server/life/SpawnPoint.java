@@ -68,7 +68,7 @@ public class SpawnPoint {
         }
 
         // The conditional below is for events with monsters that spawn on all maps.
-        if (Math.random() < 0.003d) {
+        if (Math.random() < 0.006d) {
             mapleMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9500196), pos);
         }
 

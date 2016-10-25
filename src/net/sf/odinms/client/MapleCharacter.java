@@ -4952,7 +4952,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public static class MapleCoolDownValueHolder {
-
         public final int skillId;
         public final long startTime;
         public final long length;
