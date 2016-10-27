@@ -15,7 +15,6 @@ public class CPUSampler {
     private int totalSamples = 0;
 
     private CPUSampler() {
-
     }
 
     public static CPUSampler getInstance() {

@@ -155,6 +155,7 @@ public class MobSkill {
                 if (monster.getMap().getSpawnedMonstersOnMap() < 80) {
                     for (Integer mobId : getSummons()) {
                         MapleMonster toSpawn = MapleLifeFactory.getMonster(mobId);
+                        if (toSpawn == null) break;
                         toSpawn.setPosition(monster.getPosition());
                         int ypos, xpos;
                         xpos = (int) monster.getPosition().getX();

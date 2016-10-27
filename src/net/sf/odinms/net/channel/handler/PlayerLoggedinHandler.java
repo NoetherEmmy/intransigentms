@@ -29,12 +29,13 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int cid = slea.readInt();
-        MapleCharacter player = null;
+        MapleCharacter player;
         try {
             player = MapleCharacter.loadCharFromDB(cid, c, true);
             c.setPlayer(player);
         } catch (SQLException e) {
             System.out.println("Loading the char failed" + e);
+            return;
         }
         c.setAccID(player.getAccountID());
         c.getSession().write(MaplePacketCreator.setGender(player));

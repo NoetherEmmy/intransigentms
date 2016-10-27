@@ -5186,8 +5186,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 delta.addAll(questEntry.getKey().getQuestItemsToShowOnlyIfQuestIsActivated());
             }
         }
-        List<Integer> returnThis = new ArrayList<>();
-        returnThis.addAll(delta);
+        List<Integer> returnThis = new ArrayList<>(delta);
         return Collections.unmodifiableList(returnThis);
     }
 
@@ -5850,8 +5849,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 energybar = 10000;
             }
             getClient().getSession().write(MaplePacketCreator.giveEnergyCharge(energybar));
-        } else {
-            /*
+        }/*else {
+            
             TimerManager.getInstance().schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -5859,8 +5858,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     energybar = 0;
                 }
             }, ceffect.getDuration());
-            */
-        }
+        }*/
     }
 
     public int getEnergyBar() {

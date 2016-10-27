@@ -17,8 +17,10 @@ import net.sf.odinms.server.life.MapleNPC;
 import net.sf.odinms.server.life.SpawnPoint;
 import net.sf.odinms.server.maps.pvp.PvPLibrary;
 import net.sf.odinms.server.quest.MapleQuest;
+import net.sf.odinms.tools.Direction;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
+import net.sf.odinms.tools.Vect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1653,17 +1655,36 @@ public class MapleMap {
         }
     }
 
-    public MaplePortal findClosestSpawnpoint(Point from) {
-        MaplePortal closest = null;
-        double shortestDistance = Double.POSITIVE_INFINITY;
-        for (MaplePortal portal : portals.values()) {
-            double distance = portal.getPosition().distanceSq(from);
-            if (portal.getType() >= 0 && portal.getType() <= 2 && distance < shortestDistance && portal.getTargetMapId() == 999999999) {
-                closest = portal;
-                shortestDistance = distance;
-            }
+    public MaplePortal findClosestSpawnpoint(final Point from) {
+        return portals.values()
+                      .stream()
+                      .filter(p -> p.getType() >= 0 && p.getType() <= 2 && p.getTargetMapId() == 999999999)
+                      .reduce(null, (b, p) -> {
+                          if (b == null || p.getPosition().distanceSq(from) < b.getPosition().distanceSq(from)) {
+                              return p;
+                          }
+                          return b;
+                      });
+    }
+
+    public MaplePortal findClosestSpawnpointInDirection(final Point from, Direction dir) {
+        return findClosestSpawnpointInDirection(from, Collections.singleton(dir));
+    }
+    
+    public MaplePortal findClosestSpawnpointInDirection(final Point from, final Set<Direction> dirs) {
+        if (dirs.isEmpty()) {
+            return null;
         }
-        return closest;
+        return portals.values()
+                      .stream()
+                      .filter(p -> p.getType() >= 0 && p.getType() <= 2 && p.getTargetMapId() == 999999999 &&
+                              Direction.directionsOf(Vect.point(p.getPosition()).subtract(Vect.point(from))).stream().anyMatch(dirs::contains))
+                      .reduce(null, (b, p) -> {
+                          if (b == null || p.getPosition().distanceSq(from) < b.getPosition().distanceSq(from)) {
+                              return p;
+                          }
+                          return b;
+                      });
     }
 
     public void spawnDebug(MessageCallback mc) {

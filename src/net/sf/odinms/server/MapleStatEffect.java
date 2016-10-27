@@ -93,7 +93,7 @@ public class MapleStatEffect implements Serializable {
             ret.mobCount *= 2; // Doubling the number of mobs potentially affected by Threaten
         }
         //
-
+        
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
@@ -751,7 +751,7 @@ public class MapleStatEffect implements Serializable {
                 MapleCharacter affected = (MapleCharacter) affectedmo;
                 //this is new and weird...
                 //System.out.print("affected: " + (affected == null ? "null" : affected.getName()) + ", applyfrom: " + applyfrom.getName() + ", affected.getParty(): " + (affected == null ? "N/A" : affected.getParty().getId()) + ", applyfrom.getParty(): " + applyfrom.getParty().getId() + "\n");
-                if (affected != null && applyfrom != null && isHeal() && affected != applyfrom && affected.getParty() != null && affected.getParty() == applyfrom.getParty() && affected.isAlive()) {
+                if (affected != null && isHeal() && affected != applyfrom && affected.getParty() != null && affected.getParty() == applyfrom.getParty() && affected.isAlive()) {
                     int expadd = (int) ((((double) calcHPChange(applyfrom, true) / 10.0) * ((double) applyfrom.getAbsoluteXp() * (double) applyfrom.getClient().getChannelServer().getExpRate() + ((Math.random() * 10.0) + 30.0)) * ((Math.random() * (double) applyfrom.getSkillLevel(SkillFactory.getSkill(2301002)) / 100.0) * ((double) applyfrom.getLevel() / 30.0))) / 4.0);
                     //System.out.print("applyfrom.getAbsoluteXp(), applyfrom.getClient().getChannelServer().getExpRate(), applyfrom.getSkillLevel(SkillFactory.getSkill(2301002)), applyfrom.getLevel(): " + applyfrom.getAbsoluteXp() + ", " + applyfrom.getClient().getChannelServer().getExpRate() + ", " + applyfrom.getSkillLevel(SkillFactory.getSkill(2301002)) + ", " + applyfrom.getLevel() + "\n");
                     //System.out.print("expadd: " + expadd + "\n");

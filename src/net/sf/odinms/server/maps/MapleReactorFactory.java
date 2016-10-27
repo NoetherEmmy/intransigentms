@@ -23,7 +23,7 @@ public class MapleReactorFactory {
             MapleData reactorData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
             MapleData link = reactorData.getChildByPath("info/link");
             if (link != null) {
-                infoId = MapleDataTool.getIntConvert("info/link",reactorData);
+                infoId = MapleDataTool.getIntConvert("info/link", reactorData);
                 stats = reactorStats.get(infoId);
             }
             if (stats == null) {
@@ -36,16 +36,16 @@ public class MapleReactorFactory {
                     int i = 0;
                     while (reactorInfoData != null) {
                         Pair<Integer,Integer> reactItem = null;
-                        int type = MapleDataTool.getIntConvert("type",reactorInfoData);
+                        int type = MapleDataTool.getIntConvert("type", reactorInfoData);
                         if (type == 100) { // Reactor waits for item.
                             reactItem = new Pair<>(MapleDataTool.getIntConvert("0", reactorInfoData), MapleDataTool.getIntConvert("1", reactorInfoData));
                             if (!areaSet) { // only set area of effect for item-triggered reactors once.
-                                stats.setTL(MapleDataTool.getPoint("lt",reactorInfoData));
-                                stats.setBR(MapleDataTool.getPoint("rb",reactorInfoData));
+                                stats.setTL(MapleDataTool.getPoint("lt", reactorInfoData));
+                                stats.setBR(MapleDataTool.getPoint("rb", reactorInfoData));
                                 areaSet = true;
                             }
                         }
-                        byte nextState = (byte)MapleDataTool.getIntConvert("state",reactorInfoData);
+                        byte nextState = (byte)MapleDataTool.getIntConvert("state", reactorInfoData);
                         stats.addState((byte) i, type, reactItem, nextState);
                         i++;
                         reactorInfoData = reactorData.getChildByPath(i + "/event/0");

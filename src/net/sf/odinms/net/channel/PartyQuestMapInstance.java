@@ -1,9 +1,12 @@
 package net.sf.odinms.net.channel;
 
 import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleReactor;
 import net.sf.odinms.server.maps.MapleReactorFactory;
+import net.sf.odinms.tools.Direction;
+import net.sf.odinms.tools.Vect;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -160,25 +163,46 @@ public class PartyQuestMapInstance {
 
     public void heardPlayerMovement(MapleCharacter player, Point position) {
         for (Obstacle o : obstacles.values()) {
-            if (o.getRect().contains(position)) {
-                final Point lastPointHeard = lastPointsHeard.get(player);
+            if (!o.isOpen() && o.getRect().contains(position)) {
+                Point lastPointHeard = lastPointsHeard.get(player);
                 if (lastPointHeard == null) {
                     player.changeMap(map, map.findClosestSpawnpoint(position));
-                } else {
-                    //player.changeMap(map, map.findClosestSpawnpointInQuadrant(subtractPoints(lastPointHeard, position)));
+                    invokeMethod("playerHitObstacle", player, o);
+                    break;
+                } else if (!o.getRect().contains(lastPointHeard)) {
+                    Set<Direction> dirs = o.collision(lastPointHeard, position);
+                    if (!dirs.isEmpty()) {
+                        MaplePortal to = map.findClosestSpawnpointInDirection(position, dirs);
+                        if (to != null) {
+                            player.changeMap(map, to);
+                        }
+                    }
+                    invokeMethod("playerHitObstacle", player, o);
+                    break;
                 }
-                invokeMethod("playerHitObstacle", player, o);
-                return;
             }
         }
+        lastPointsHeard.put(player, position);
     }
 
-    public void registerObstacle(int obsId, int reactorId, Point closed, Point open, boolean defaultClosed) {
-        //obstacles.put(obsId, new Obstacle(reactorId, closed, open, defaultClosed));
+    public void registerObstacle(int obsId, int reactorId, Point closed) {
+        obstacles.put(obsId, new Obstacle(reactorId, closed, null, true));
     }
 
+    public void registerObstacle(int obsId, int reactorId, Point closed, Point open) {
+        obstacles.put(obsId, new Obstacle(reactorId, closed, open, true));
+    }
+    
     public void registerObstacle(int obsId, int reactorId, Point closed, boolean defaultClosed) {
-        //obstacles.put(obsId, new Obstacle(reactorId, closed, null, defaultClosed));
+        obstacles.put(obsId, new Obstacle(reactorId, closed, null, defaultClosed));
+    }
+    
+    public void registerObstacle(int obsId, int reactorId, Point closed, Point open, boolean defaultClosed) {
+        obstacles.put(obsId, new Obstacle(reactorId, closed, open, defaultClosed));
+    }
+
+    public void registerObstacle(int obsId, int reactorId, Point closed, Point open, boolean defaultClosed, Collection<Direction> directions) {
+        obstacles.put(obsId, new Obstacle(reactorId, closed, open, defaultClosed, directions));
     }
 
     public Obstacle getObstacle(int obsId) {
@@ -219,14 +243,14 @@ public class PartyQuestMapInstance {
         private final Point closed;
         private final Point open;
         private final MapleMap map;
-        private final Set<ObstacleDirection> directions;
+        private final Set<Direction> directions;
         private boolean defaultClosed;
 
         /** Pass in <code>open = null</code> to make the reactor destroyed
          ** instead of moved when opened.
          **
          ** <code>closed</code> cannot be null. */
-        Obstacle(int reactorId, Point closed, Point open, boolean defaultClosed, Collection<ObstacleDirection> directions) {
+        Obstacle(int reactorId, Point closed, Point open, boolean defaultClosed, Collection<Direction> directions) {
             map = PartyQuestMapInstance.this.getMap();
             this.reactorId = reactorId;
             this.closed = closed;
@@ -246,6 +270,35 @@ public class PartyQuestMapInstance {
             }
 
             this.directions = new HashSet<>(directions);
+        }
+
+        /** Constructs new <code>Obstacle</code> with a default of all directions
+         ** (<code>UP, DOWN, LEFT, RIGHT</code>). 
+         **
+         ** Pass in <code>open = null</code> to make the reactor destroyed
+         ** instead of moved when opened.
+         **
+         ** <code>closed</code> cannot be null. */
+        Obstacle(int reactorId, Point closed, Point open, boolean defaultClosed) {
+            map = PartyQuestMapInstance.this.getMap();
+            this.reactorId = reactorId;
+            this.closed = closed;
+            this.open = open;
+            this.defaultClosed = defaultClosed;
+
+            reactor = new MapleReactor(MapleReactorFactory.getReactor(reactorId), reactorId);
+            reactor.setDelay(-1);
+            if (this.open != null) {
+                reactor.setPosition(this.defaultClosed ? this.closed : this.open);
+                map.spawnReactor(reactor);
+            } else {
+                reactor.setPosition(this.closed);
+                if (this.defaultClosed) {
+                    map.spawnReactor(reactor);
+                }
+            }
+
+            this.directions = new HashSet<>(Arrays.asList(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT));
         }
 
         public void open() {
@@ -285,20 +338,28 @@ public class PartyQuestMapInstance {
             }
         }
 
-        public boolean checkCollision(Point prevLocation, Point location) {
+        public Set<Direction> collision(Point prevLocation, Point location) {
             if (!getRect().contains(location) || getRect().contains(prevLocation)) {
                 // Not inside the obstacle at all, or already was inside obstacle
-                return false;
+                return Collections.emptySet();
             }
-            // Downward line is from top-left corner to bottom-right corner,
-            //   upward line is from bottom-left corner to top-right corner.
-            // > 0 = true, < 0 = false, 0 = falls on the line.
-            int aboveUpwardLine   =  location.y - (getRect().height / getRect().width * (location.x - getRect().x) + getRect().y - getRect().height);
+            /* 
+             * Downward line is from top-left corner to bottom-right corner,
+             *   upward line is from bottom-left corner to top-right corner.
+             *  > 0 = true, < 0 = false, 0 = falls on the line.
+             */
             int aboveDownwardLine = location.y - (-getRect().height / getRect().width * (location.x - getRect().x) + getRect().y);
-            if (true) {
-                return this.defaultClosed;
+            int aboveUpwardLine   = location.y -  (getRect().height / getRect().width * (location.x - getRect().x) + getRect().y - getRect().height);
+            final Vect direction;
+            if (aboveUpwardLine == 0 || aboveDownwardLine == 0) {
+                direction = new Vect(aboveDownwardLine != 0 ? aboveDownwardLine : -aboveUpwardLine, 
+                                     aboveUpwardLine   != 0 ? aboveUpwardLine   :  aboveDownwardLine);
+            } else if (Integer.signum(aboveDownwardLine) == Integer.signum(aboveUpwardLine)) {
+                direction = new Vect(0, aboveUpwardLine);
+            } else {
+                direction = new Vect(aboveDownwardLine, 0);
             }
-            return false;
+            return directions.stream().filter(d -> !direction.directionalProj(d.unitVect()).isZero()).collect(Collectors.toSet());
         }
 
         public boolean isOpen() {
@@ -316,42 +377,19 @@ public class PartyQuestMapInstance {
         public int getReactorId() {
             return reactorId;
         }
+        
+        public MapleMap getMap() {
+            return map;
+        }
+        
+        public void setDefaultClosed(boolean dc) {
+            defaultClosed = dc;
+        }
 
         public void dispose() {
             if (reactor.isAlive()) {
                 map.destroyReactor(reactor.getObjectId());
             }
         }
-    }
-
-    public enum ObstacleDirection {
-                       UP  (new Point(0,  1)),
-        LEFT (new Point(-1, 0)), RIGHT (new Point(1, 0)),
-                      DOWN (new Point(0, -1));
-
-        private final Point unitVector;
-        private final static Map<Point, ObstacleDirection> map =
-                 stream(ObstacleDirection.values())
-                .collect(toMap(od -> od.unitVector, od -> od));
-
-        ObstacleDirection(Point unitVector) {
-            this.unitVector = unitVector;
-        }
-
-        public static ObstacleDirection valueOf(Point od) {
-            return map.get(new Point(Integer.signum(od.x), Integer.signum(od.y)));
-        }
-    }
-
-    /** Returns a new point (<b>not</b> null) equal to
-     ** {@code a + b} as if by vector addition. */
-    public static Point addPoints(Point a, Point b) {
-        return new Point(a.x + b.x, a.y + b.y);
-    }
-
-    /** Returns a new point (<b>not</b> null) equal to
-     ** {@code a - b} as if by vector subtraction. */
-    public static Point subtractPoints(Point a, Point b) {
-        return new Point(a.x - b.x, a.y - b.y);
     }
 }
