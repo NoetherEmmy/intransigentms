@@ -54,10 +54,10 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             }
         }
 
-        IItem weapon_item = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
+        IItem weaponItem = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
         MapleWeaponType weapon = null;
-        if (weapon_item != null) {
-            weapon = MapleItemInformationProvider.getInstance().getWeaponType(weapon_item.getItemId());
+        if (weaponItem != null) {
+            weapon = MapleItemInformationProvider.getInstance().getWeaponType(weaponItem.getItemId());
         }
         if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
             if (player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null && player.getSkillLevel(SkillFactory.getSkill(2321002)) > 0) {

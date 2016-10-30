@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements InventoryContainer {
@@ -1876,12 +1877,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         mbsvh.value = value;
     }
 
-    private Long getBuffedStarttime(MapleBuffStat effect) {
+    private Long getBuffedStartTime(MapleBuffStat effect) {
         MapleBuffStatValueHolder mbsvh = effects.get(effect);
         if (mbsvh == null) {
             return null;
         }
         return mbsvh.startTime;
+    }
+    
+    public Long getBuffedRemainingTime(MapleBuffStat effect) {
+        MapleBuffStatValueHolder mbsvh = effects.get(effect);
+        if (mbsvh == null) {
+            return null;
+        }
+        return mbsvh.schedule.getDelay(TimeUnit.MILLISECONDS);
     }
 
     public MapleStatEffect getStatForBuff(MapleBuffStat effect) {
@@ -1967,7 +1976,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule) {
+    public void registerEffect(final MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule) {
         if (effect.isHide() && isGM()) {
             this.hidden = true;
             getMap().broadcastNONGMMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
@@ -1982,7 +1991,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         for (int i = 0; i < effect.getStatups().size(); ++i) {
             Pair<MapleBuffStat, Integer> statup = effect.getStatups().get(i);
-            // System.out.print("effects.put(" + statup.getLeft().toString() + ", new MapleBuffStatValueHolder(" + effect.toString() + ", " + starttime + ", " + schedule.toString() + ", " + statup.getRight() + "));\n");
             effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, starttime, schedule, statup.getRight()));
         }
         recalcLocalStats();
@@ -2216,7 +2224,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.COMBO, neworbcount));
             setBuffedValue(MapleBuffStat.COMBO, neworbcount);
             int duration = ceffect.getDuration();
-            duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
+            duration += (int) ((getBuffedStartTime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
             getClient().getSession().write(MaplePacketCreator.giveBuff(1111002, duration, stat));
             getMap().broadcastMessage(this, MaplePacketCreator.giveForeignBuff(getId(), stat, ceffect), false);
         }
@@ -2228,7 +2236,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.COMBO, 1));
         setBuffedValue(MapleBuffStat.COMBO, 1);
         int duration = ceffect.getDuration();
-        duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
+        duration += (int) ((getBuffedStartTime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
         getClient().getSession().write(MaplePacketCreator.giveBuff(1111002, duration, stat));
         getMap().broadcastMessage(this, MaplePacketCreator.giveForeignBuff(getId(), stat, ceffect), false);
     }
@@ -4108,6 +4116,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         wdef = 0;
         mdef = 0;
         accuracy = 0;
+        double shieldMastery = 1.0;
+        if (job.getId() == 421 || job.getId() == 422) { // Chief Bandit / Shadower
+            ISkill shieldMasterySkill = SkillFactory.getSkill(4210000);
+            if (getSkillLevel(shieldMasterySkill) > 0) {
+                shieldMastery = shieldMasterySkill.getEffect(getSkillLevel(shieldMasterySkill)).getX() / 100.0d;
+            }
+        } else if (job.getId() == 111 || job.getId() == 112) { // Crusader / Hero
+            ISkill shieldMasterySkill = SkillFactory.getSkill(1110001);
+            if (getSkillLevel(shieldMasterySkill) > 0) {
+                shieldMastery = shieldMasterySkill.getEffect(getSkillLevel(shieldMasterySkill)).getX() / 100.0d;
+            }
+        } else if (job.getId() == 121 || job.getId() == 122) { // White Knight / Paladin
+            ISkill shieldMasterySkill = SkillFactory.getSkill(1210001);
+            if (getSkillLevel(shieldMasterySkill) > 0) {
+                shieldMastery = shieldMasterySkill.getEffect(getSkillLevel(shieldMasterySkill)).getX() / 100.0d;
+            }
+        }
         for (IItem item : getInventory(MapleInventoryType.EQUIPPED)) {
             IEquip equip = (IEquip) item;
             localmaxhp += equip.getHp();
@@ -4120,7 +4145,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             watk += equip.getWatk();
             speed += equip.getSpeed();
             jump += equip.getJump();
-            wdef += equip.getWdef();
+            if (equip.getItemId() / 10000 == 109) { // Shield
+                wdef += (int) (equip.getWdef() * shieldMastery);
+            } else {
+                wdef += equip.getWdef();
+            }
             mdef += equip.getMdef();
             accuracy += equip.getAcc();
         }
@@ -5099,6 +5128,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             this.target = new WeakReference<>(target);
             this.skillId = skillId;
         }
+        
         @Override
         public void run() {
             MapleCharacter realTarget = target.get();

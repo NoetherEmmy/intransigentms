@@ -5759,7 +5759,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showDashEffecttoOthers(int cid, int x, int y, int duration) {
+    public static MaplePacket showDashEffectToOthers(int cid, int x, int y, int duration) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.GIVE_FOREIGN_BUFF.getValue());

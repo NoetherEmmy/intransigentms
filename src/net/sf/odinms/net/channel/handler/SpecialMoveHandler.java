@@ -83,7 +83,6 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
             if (skillLevel == 0 || skillLevel != __skillLevel) {
                 log.warn(c.getPlayer().getName() + " is using a move skill he doesn't have. ID: " + skill.getId());
                 c.disconnect();
-                return;
             } else {
                 if (c.getPlayer().isAlive()) {
                     if (skill.getId() != 2311002 || c.getPlayer().canDoor()) {

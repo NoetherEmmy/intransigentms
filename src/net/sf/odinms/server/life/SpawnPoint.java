@@ -13,7 +13,7 @@ public class SpawnPoint {
     private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
 
     /**
-     * Whether the spawned monster is immobile
+     * Whether the spawned monster is immobile or not
      */
     private final boolean immobile;
 
@@ -68,7 +68,7 @@ public class SpawnPoint {
         }
 
         // The conditional below is for events with monsters that spawn on all maps.
-        if (Math.random() < 0.009d) {
+        if (Math.random() < 0.02d) {
             mapleMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9500196), pos);
         }
 
