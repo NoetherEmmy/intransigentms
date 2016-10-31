@@ -4,13 +4,13 @@ import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.tools.MaplePacketCreator;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapleSquad {
     private final MapleCharacter leader;
-    private final List<MapleCharacter> members = new LinkedList<>();
-    private final List<MapleCharacter> bannedMembers = new LinkedList<>();
+    private final List<MapleCharacter> members = new ArrayList<>();
+    private final List<MapleCharacter> bannedMembers = new ArrayList<>();
     private final int ch;
     private int status = 0;
 

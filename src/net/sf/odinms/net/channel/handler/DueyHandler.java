@@ -16,7 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DueyHandler extends AbstractMaplePacketHandler {
@@ -219,7 +219,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     public static List<DueyPackages> loadItems(MapleCharacter chr) {
-        List<DueyPackages> packages = new LinkedList<>();
+        List<DueyPackages> packages = new ArrayList<>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE RecieverId = ?"); // PLEASE WORK D:
@@ -242,7 +242,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     public static DueyPackages loadSingleItem(int packageid) {
-        List<DueyPackages> packages = new LinkedList<>();
+        List<DueyPackages> packages = new ArrayList<>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE PackageId = ?"); // PLEASE WORK D:

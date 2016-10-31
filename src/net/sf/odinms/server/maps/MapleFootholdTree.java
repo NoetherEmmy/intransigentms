@@ -2,7 +2,7 @@ package net.sf.odinms.server.maps;
 
 import java.awt.*;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapleFootholdTree {
@@ -11,7 +11,7 @@ public class MapleFootholdTree {
     private MapleFootholdTree ne = null;
     private MapleFootholdTree sw = null;
     private MapleFootholdTree se = null;
-    private final List<MapleFoothold> footholds = new LinkedList<>();
+    private final List<MapleFoothold> footholds = new ArrayList<>();
     private final Point p1;
     private final Point p2;
     private final Point center;
@@ -67,7 +67,7 @@ public class MapleFootholdTree {
     }
 
     private List<MapleFoothold> getRelevants(Point p) {
-        return getRelevants(p, new LinkedList<>());
+        return getRelevants(p, new ArrayList<>());
     }
 
     private List<MapleFoothold> getRelevants(Point p, List<MapleFoothold> list) {
@@ -122,7 +122,7 @@ public class MapleFootholdTree {
     public MapleFoothold findBelow(Point p) {
         List<MapleFoothold> relevants = getRelevants(p);
         // find fhs with matching x coordinates
-        List<MapleFoothold> xMatches = new LinkedList<>();
+        List<MapleFoothold> xMatches = new ArrayList<>();
         for (MapleFoothold fh : relevants) {
             if (fh.getX1() <= p.x && fh.getX2() >= p.x) xMatches.add(fh);
         }

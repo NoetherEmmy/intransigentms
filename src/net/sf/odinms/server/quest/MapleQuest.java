@@ -33,16 +33,16 @@ public class MapleQuest {
     protected static final Logger log = LoggerFactory.getLogger(MapleQuest.class);
 
     protected MapleQuest() {
-            relevantMobs = new LinkedList<>();
+        relevantMobs = new ArrayList<>();
     }
 
     /** Creates a new instance of MapleQuest */
     private MapleQuest(int id) {
         this.id = id;
-        relevantMobs = new LinkedList<>();
+        relevantMobs = new ArrayList<>();
         // read reqs
         MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
-        startReqs = new LinkedList<>();
+        startReqs = new ArrayList<>();
         if (startReqData != null) {
             for (MapleData startReq : startReqData.getChildren()) {
                 MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
@@ -58,7 +58,7 @@ public class MapleQuest {
             }
         }
         MapleData completeReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("1");
-        completeReqs = new LinkedList<>();
+        completeReqs = new ArrayList<>();
         if (completeReqData != null) {
             for (MapleData completeReq : completeReqData.getChildren()) {
                 MapleQuestRequirement req = new MapleQuestRequirement(this, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
@@ -71,7 +71,7 @@ public class MapleQuest {
             }
         }
         MapleData startActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("0");
-        startActs = new LinkedList<>();
+        startActs = new ArrayList<>();
         if (startActData != null) {
             for (MapleData startAct : startActData.getChildren()) {
                 MapleQuestActionType questActionType = MapleQuestActionType.getByWZName(startAct.getName());
@@ -79,7 +79,7 @@ public class MapleQuest {
             }
         }
         MapleData completeActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("1");
-        completeActs = new LinkedList<>();
+        completeActs = new ArrayList<>();
         if (completeActData != null) {
             for (MapleData completeAct : completeActData.getChildren()) {
                 completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, this));
@@ -199,12 +199,11 @@ public class MapleQuest {
 
     public List<Integer> getQuestItemsToShowOnlyIfQuestIsActivated() {
         Set<Integer> delta = new HashSet<>();
-        for(MapleQuestRequirement mqr : this.completeReqs) {
-            if(mqr.getType() != MapleQuestRequirementType.ITEM) continue;
+        for (MapleQuestRequirement mqr : this.completeReqs) {
+            if (mqr.getType() != MapleQuestRequirementType.ITEM) continue;
             delta.addAll(mqr.getQuestItemsToShowOnlyIfQuestIsActivated());
         }
-        List<Integer> returnThis = new ArrayList<>();
-        returnThis.addAll(delta);
+        List<Integer> returnThis = new ArrayList<>(delta);
         return Collections.unmodifiableList(returnThis);
     }
 }

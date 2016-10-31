@@ -15,7 +15,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -41,8 +41,8 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                         continue;
                     }
                     double multiplier;
-                    List<Integer> additionaldmg = new LinkedList<>();
-                    List<Integer> newdmg = new LinkedList<>();
+                    List<Integer> additionaldmg = new ArrayList<>();
+                    List<Integer> newdmg = new ArrayList<>();
                     switch (ee) {
                         case WEAK:
                             multiplier = 1.5d;
@@ -76,8 +76,8 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 if (dmg != null && dmg.getLeft() != null && dmg.getRight() != null) {
-                    List<Integer> additionaldmg = new LinkedList<>();
-                    List<Integer> newdmg = new LinkedList<>();
+                    List<Integer> additionaldmg = new ArrayList<>();
+                    List<Integer> newdmg = new ArrayList<>();
                     for (Integer dmgnumber : dmg.getRight()) {
                         if (dmgnumber != null) {
                             additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0)));

@@ -25,7 +25,7 @@ import java.util.*;
 
 public class CommandProcessor implements CommandProcessorMBean {
 
-    private static final List<Pair<MapleCharacter, String>> gmlog = Collections.synchronizedList(new LinkedList<Pair<MapleCharacter, String>>());
+    private static final List<Pair<MapleCharacter, String>> gmlog = Collections.synchronizedList(new ArrayList<Pair<MapleCharacter, String>>());
     private final Map<String, DefinitionCommandPair> commands = new LinkedHashMap<>();
     private static CommandProcessor instance = new CommandProcessor();
     private static final Runnable persister;

@@ -20,8 +20,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EventInstanceManager {
-    private final List<MapleCharacter> chars = new LinkedList<>();
-    private final List<MapleMonster> mobs = new LinkedList<>();
+    private final List<MapleCharacter> chars = new ArrayList<>();
+    private final List<MapleMonster> mobs = new ArrayList<>();
     private final Map<MapleCharacter, Integer> killCount = new HashMap<>();
     private EventManager em;
     private MapleMapFactory mapFactory;

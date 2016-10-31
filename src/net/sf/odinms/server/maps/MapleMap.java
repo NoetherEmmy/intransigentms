@@ -36,8 +36,8 @@ public class MapleMap {
 
     private static final int MAX_OID = 20000;
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(MapleMapObjectType.ITEM, MapleMapObjectType.MONSTER, MapleMapObjectType.DOOR, MapleMapObjectType.SUMMON, MapleMapObjectType.REACTOR);
-    private final Map<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(10, 0.7f, 2);
-    private final Collection<SpawnPoint> monsterSpawn = new LinkedList<>();
+    private final Map<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(15, 0.7f, 2);
+    private final Collection<SpawnPoint> monsterSpawn = new ArrayList<>();
     private final AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
     private final Collection<MapleCharacter> characters = new LinkedHashSet<>();
     private final Map<Integer, MaplePortal> portals = new HashMap<>();
@@ -767,7 +767,7 @@ public class MapleMap {
     }
 
     public Collection<MapleMapObject> getMapObjects() {
-        LinkedList<MapleMapObject> ret = new LinkedList<>();
+        List<MapleMapObject> ret = new ArrayList<>();
         synchronized (mapobjects) {
             Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
             while (mmoiter.hasNext()) {
@@ -888,7 +888,9 @@ public class MapleMap {
                     monster.startOtherMobHitChecking(() -> {
                         final MapleMap map = monster.getMap();
                         MapleCharacter damager = monster.getController();
-                        if (damager == null) damager = (MapleCharacter) map.getAllPlayers().get(0);
+                        if (damager == null && map.playerCount() > 0) {
+                            damager = (MapleCharacter) map.getAllPlayers().get(0);
+                        }
                         if (damager != null) {
                             map.broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), 1));
                             map.damageMonster(damager, monster, 1);
@@ -1454,7 +1456,7 @@ public class MapleMap {
     }
 
     public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> types) {
-        List<MapleMapObject> ret = new LinkedList<>();
+        List<MapleMapObject> ret = new ArrayList<>();
         synchronized (mapobjects) {
             Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
             while (mmoiter.hasNext()) {
@@ -1470,7 +1472,7 @@ public class MapleMap {
     }
 
     public List<MapleMapObject> getItemsInRange(Point from, double rangeSq) {
-        List<MapleMapObject> ret = new LinkedList<>();
+        List<MapleMapObject> ret = new ArrayList<>();
         synchronized (mapobjects) {
             Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
             while (mmoiter.hasNext()) {
@@ -1486,7 +1488,7 @@ public class MapleMap {
     }
 
     public List<MapleMapObject> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> types) {
-        List<MapleMapObject> ret = new LinkedList<>();
+        List<MapleMapObject> ret = new ArrayList<>();
         synchronized (mapobjects) {
             Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
             while (mmoiter.hasNext()) {
@@ -1502,7 +1504,7 @@ public class MapleMap {
     }
 
     public List<MapleCharacter> getPlayersInRect(Rectangle box, List<MapleCharacter> chr) {
-        List<MapleCharacter> character = new LinkedList<>();
+        List<MapleCharacter> character = new ArrayList<>();
         synchronized (characters) {
             for (MapleCharacter a : characters) {
                 if (chr.contains(a.getClient().getPlayer())) {
@@ -1758,7 +1760,7 @@ public class MapleMap {
     }
 
     public Collection<MapleCharacter> getNearestPvpChar(Point attacker, double maxRange, double maxHeight, Collection<MapleCharacter> chr) {
-        Collection<MapleCharacter> character = new LinkedList<>();
+        Collection<MapleCharacter> character = new ArrayList<>();
         for (MapleCharacter a : characters) {
             if (chr.contains(a.getClient().getPlayer())) {
                 Point attackedPlayer = a.getPosition();

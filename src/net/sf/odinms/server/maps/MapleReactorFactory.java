@@ -45,7 +45,7 @@ public class MapleReactorFactory {
                                 areaSet = true;
                             }
                         }
-                        byte nextState = (byte)MapleDataTool.getIntConvert("state", reactorInfoData);
+                        byte nextState = (byte) MapleDataTool.getIntConvert("state", reactorInfoData);
                         stats.addState((byte) i, type, reactItem, nextState);
                         i++;
                         reactorInfoData = reactorData.getChildByPath(i + "/event/0");

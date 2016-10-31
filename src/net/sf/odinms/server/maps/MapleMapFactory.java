@@ -22,7 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +76,7 @@ public class MapleMapFactory {
                     MaplePortal myPortal = portalFactory.makePortal(type, portal);
                     map.addPortal(myPortal);
                 }
-                List<MapleFoothold> allFootholds = new LinkedList<>();
+                List<MapleFoothold> allFootholds = new ArrayList<>();
                 Point lBound = new Point();
                 Point uBound = new Point();
                 for (MapleData footRoot : mapData.getChildByPath("foothold")) {
@@ -172,12 +172,10 @@ public class MapleMapFactory {
                         if (myLife instanceof MapleMonster) {
                             // ((MapleMonster) myLife).calcFhBounds(allFootholds);
                             MapleMonster monster = (MapleMonster) myLife;
-                            int mobTime = MapleDataTool.getInt("mobTime", life, 0);
-                            //
-                            if (monster.getId() == 9400568) {
+                            if (monster.getId() == 9400568) { // Turkey Commando
                                 continue;
                             }
-                            //
+                            int mobTime = MapleDataTool.getInt("mobTime", life, 0);
                             if (monster.isBoss()) {
                                 mobTime += mobTime / 10 * (2.5 + 10 * Math.random());
                             }

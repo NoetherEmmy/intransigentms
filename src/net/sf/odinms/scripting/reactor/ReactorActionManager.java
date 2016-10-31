@@ -14,7 +14,7 @@ import net.sf.odinms.server.maps.MapleReactor;
 
 import java.awt.*;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReactorActionManager extends AbstractPlayerInteraction {
@@ -38,7 +38,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
         List<DropEntry> chances = getDropChances();
-        List<DropEntry> items = new LinkedList<>();
+        List<DropEntry> items = new ArrayList<>();
         int numItems = 0;
 
         if (meso && Math.random() < (1 / (double) mesoChance)) {
@@ -131,7 +131,6 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
     /**
      * Spawns an NPC at the reactor's location
-     * @param npcId
      */
     public void spawnNpc(int npcId) {
         spawnNpc(npcId, getPosition());
@@ -139,9 +138,6 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
     /**
      * Spawns an NPC at a custom position
-     * @param npcId
-     * @param x
-     * @param y
      */
     public void spawnNpc(int npcId, int x, int y) {
         spawnNpc(npcId, new Point(x, y));

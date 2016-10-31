@@ -99,7 +99,7 @@ public class MapleClient {
 
     public List<MapleCharacter> loadCharacters(int serverId) {
 
-        List<MapleCharacter> chars = new LinkedList<>();
+        List<MapleCharacter> chars = new ArrayList<>();
         for (CharNameAndId cni : loadCharactersInternal(serverId)) {
             try {
                 chars.add(MapleCharacter.loadCharFromDB(cni.id, this, false));
@@ -111,7 +111,7 @@ public class MapleClient {
     }
 
     public List<String> loadCharacterNames(int serverId) {
-        List<String> chars = new LinkedList<>();
+        List<String> chars = new ArrayList<>();
         for (CharNameAndId cni : loadCharactersInternal(serverId)) {
             chars.add(cni.name);
         }
@@ -121,7 +121,7 @@ public class MapleClient {
     private List<CharNameAndId> loadCharactersInternal(int serverId) {
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps;
-        List<CharNameAndId> chars = new LinkedList<>();
+        List<CharNameAndId> chars = new ArrayList<>();
         try {
             ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
             ps.setInt(1, this.accId);
@@ -245,7 +245,7 @@ public class MapleClient {
         Connection con = DatabaseConnection.getConnection();
         try {
             loadMacsIfNescessary();
-            List<String> filtered = new LinkedList<>();
+            List<String> filtered = new ArrayList<>();
             PreparedStatement ps = con.prepareStatement("SELECT filter FROM macfilters");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -959,8 +959,6 @@ public class MapleClient {
             ps.close();
         } catch (SQLException sqe) {
             sqe.printStackTrace();
-            return;
         }
-        return;
     }
 }

@@ -12,7 +12,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PlayerInteractionManager extends AbstractMapleMapObject implements IPlayerInteractionManager {
@@ -23,7 +23,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     private String description = "";
     private final short capacity;
     protected final MapleCharacter[] visitors = new MapleCharacter[3];
-    protected final List<MaplePlayerShopItem> items = new LinkedList<>();
+    protected final List<MaplePlayerShopItem> items = new ArrayList<>();
 
     public PlayerInteractionManager(MapleCharacter owner, int type, String desc, int capacity) {
         this.setPosition(owner.getPosition());

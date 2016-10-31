@@ -20,7 +20,7 @@ public class MapleReactor extends AbstractMapleMapObject {
     private boolean alive;
     private String name;
     private boolean timerActive;
-    private boolean obstacle = false;
+    private Integer trigger = null;
 
     public MapleReactor(MapleReactorStats stats, int rid) {
         this.stats = stats;
@@ -117,6 +117,11 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     public void hitReactor(int charPos, short stance, MapleClient c) {
+        if (trigger != null) {
+            if (map.getPartyQuestInstance() != null) {
+                map.getPartyQuestInstance().trigger(trigger);
+            }
+        }
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
             // type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
             if (!(stats.getType(state) == 2 && (charPos == 0 || charPos == 2))) {
@@ -155,6 +160,18 @@ public class MapleReactor extends AbstractMapleMapObject {
         int origY  = getPosition().y + stats.getTL().y;
 
         return new Rectangle(origX, origY, width, height);
+    }
+    
+    public void setTrigger(int trigger) {
+        this.trigger = trigger;
+    }
+    
+    public int getTrigger() {
+        return trigger;
+    }
+    
+    public boolean isTrigger() {
+        return trigger != null;
     }
 
     public String getName() {

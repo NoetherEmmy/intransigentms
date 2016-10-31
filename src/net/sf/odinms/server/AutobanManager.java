@@ -55,7 +55,7 @@ public class AutobanManager implements Runnable {
             reasonList.add(reason);
         } else {
             this.points.put(acc, points);
-            reasonList = new LinkedList<>();
+            reasonList = new ArrayList<>();
             reasonList.add(reason);
             this.reasons.put(acc, reasonList);
         }

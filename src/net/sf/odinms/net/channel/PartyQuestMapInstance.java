@@ -17,10 +17,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toMap;
 
 public class PartyQuestMapInstance {
     private static final String SCRIPT_PATH = "scripts/pq/";
@@ -32,7 +30,11 @@ public class PartyQuestMapInstance {
     private int levelLimit = 0;
     private boolean listeningForPlayerMovement = false;
     private final Map<Integer, Obstacle> obstacles = new HashMap<>(10, 0.8f);
+    private final Map<Integer, Trigger> triggers = new HashMap<>(10, 0.8f);
     private final Map<MapleCharacter, Point> lastPointsHeard;
+    private final Set<Integer> disabledSkills = new HashSet<>(5, 0.8f);
+    private int currentObstacleId = 0;
+    private int currentTriggerId  = 0;
 
     PartyQuestMapInstance(PartyQuest partyQuest, MapleMap map) {
         this.partyQuest = partyQuest;
@@ -43,8 +45,8 @@ public class PartyQuestMapInstance {
             FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
             scriptFile.close();
-            scriptEngine.put("mi", this);
-            scriptEngine.put("pq", this.partyQuest);
+            scriptEngine.put("mi",  this);
+            scriptEngine.put("pq",  this.partyQuest);
             scriptEngine.put("map", this.map);
         } catch (FileNotFoundException fnfe) {
             System.out.println("PartyQuestMapInstance could not locate script at path: " + path);
@@ -57,15 +59,18 @@ public class PartyQuestMapInstance {
         } finally {
             invocable = (Invocable) scriptEngine;
         }
-        playerPropertyMap = new HashMap<>(partyQuest.getPlayers().size() + 1, 0.9f);
-        this.partyQuest.getPlayers().forEach(p -> playerPropertyMap.put(p, new HashMap<>(4, 0.75f)));
-        lastPointsHeard = new HashMap<>(partyQuest.getPlayers().size() + 1, 0.9f);
+        playerPropertyMap = new HashMap<>(getPlayers().size() + 1, 0.9f);
+        this.getPlayers().forEach(p -> playerPropertyMap.put(p, new HashMap<>(4)));
+        lastPointsHeard = new HashMap<>(getPlayers().size() + 1, 0.9f);
     }
 
     public void dispose() {
+        enableAllSkills();
         partyQuest.getMapInstances().remove(this);
         map.unregisterPartyQuestInstance();
         playerPropertyMap.clear();
+        lastPointsHeard.clear();
+        removeAllTriggers();
         removeAllObstacles();
         invokeMethod("dispose");
     }
@@ -76,6 +81,10 @@ public class PartyQuestMapInstance {
 
     public PartyQuest getPartyQuest() {
         return partyQuest;
+    }
+    
+    public List<MapleCharacter> getPlayers() {
+        return partyQuest.getPlayers();
     }
 
     public Object invokeMethod(String name) {
@@ -101,25 +110,25 @@ public class PartyQuestMapInstance {
     }
 
     public void setPlayerProperty(MapleCharacter player, String property, Object value) {
-        if (!partyQuest.getPlayers().contains(player)) return;
+        if (!getPlayers().contains(player)) return;
         if (!playerPropertyMap.containsKey(player)) {
-            playerPropertyMap.put(player, new HashMap<>(4, 0.75f));
+            playerPropertyMap.put(player, new HashMap<>(4));
         }
         playerPropertyMap.get(player).put(property, value);
     }
 
     public void setPlayerPropertyIfNotSet(MapleCharacter player, String property, Object value) {
-        if (!partyQuest.getPlayers().contains(player)) return;
+        if (!getPlayers().contains(player)) return;
         if (!playerPropertyMap.containsKey(player)) {
-            playerPropertyMap.put(player, new HashMap<>(4, 0.75f));
+            playerPropertyMap.put(player, new HashMap<>(4));
         }
         playerPropertyMap.get(player).putIfAbsent(property, value);
     }
 
     public void setPropertyForAll(final String property, final Object value) {
-        partyQuest.getPlayers().forEach(p -> {
+        getPlayers().forEach(p -> {
             if (!playerPropertyMap.containsKey(p)) {
-                playerPropertyMap.put(p, new HashMap<>(4, 0.75f));
+                playerPropertyMap.put(p, new HashMap<>(4));
             }
             playerPropertyMap.get(p).put(property, value);
         });
@@ -161,52 +170,76 @@ public class PartyQuestMapInstance {
         listeningForPlayerMovement = false;
     }
 
-    public void heardPlayerMovement(MapleCharacter player, Point position) {
-        for (Obstacle o : obstacles.values()) {
-            if (!o.isOpen() && o.getRect().contains(position)) {
-                Point lastPointHeard = lastPointsHeard.get(player);
-                if (lastPointHeard == null) {
-                    player.changeMap(map, map.findClosestSpawnpoint(position));
-                    invokeMethod("playerHitObstacle", player, o);
-                    break;
-                } else if (!o.getRect().contains(lastPointHeard)) {
-                    Set<Direction> dirs = o.collision(lastPointHeard, position);
-                    if (!dirs.isEmpty()) {
-                        MaplePortal to = map.findClosestSpawnpointInDirection(position, dirs);
-                        if (to != null) {
-                            player.changeMap(map, to);
-                        }
-                    }
-                    invokeMethod("playerHitObstacle", player, o);
-                    break;
-                }
-            }
-        }
+    public void heardPlayerMovement(final MapleCharacter player, final Point position) {
+        final Point lastPointHeard = lastPointsHeard.get(player);
+        obstacles.values()
+                 .stream()
+                 .filter(o ->
+                     o.isClosed() &&
+                     o.getRect().contains(position) &&
+                     (lastPointHeard == null || !o.getRect().contains(lastPointHeard)))
+                 .findAny()
+                 .ifPresent(o -> {
+                     if (lastPointHeard == null) {
+                         player.changeMap(map, map.findClosestSpawnpoint(position));
+                         invokeMethod("playerHitObstacle", player, o);
+                     } else {
+                         Set<Direction> dirs = o.collision(lastPointHeard, position);
+                         if (!dirs.isEmpty()) {
+                             MaplePortal to = map.findClosestSpawnpointInDirection(position, dirs);
+                             if (to != null) {
+                                 player.changeMap(map, to);
+                             }
+                         }
+                         invokeMethod("playerHitObstacle", player, o);
+                     }
+                 });
         lastPointsHeard.put(player, position);
     }
 
-    public void registerObstacle(int obsId, int reactorId, Point closed) {
-        obstacles.put(obsId, new Obstacle(reactorId, closed, null, true));
+    public int registerObstacle(int reactorId, Point closed) {
+        obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, null, true));
+        return currentObstacleId++;
     }
 
-    public void registerObstacle(int obsId, int reactorId, Point closed, Point open) {
-        obstacles.put(obsId, new Obstacle(reactorId, closed, open, true));
+    public int registerObstacle(int reactorId, Point closed, Point open) {
+        obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, open, true));
+        return currentObstacleId++;
     }
     
-    public void registerObstacle(int obsId, int reactorId, Point closed, boolean defaultClosed) {
-        obstacles.put(obsId, new Obstacle(reactorId, closed, null, defaultClosed));
+    public int registerObstacle(int reactorId, Point closed, boolean defaultClosed) {
+        obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, null, defaultClosed));
+        return currentObstacleId++;
     }
     
-    public void registerObstacle(int obsId, int reactorId, Point closed, Point open, boolean defaultClosed) {
-        obstacles.put(obsId, new Obstacle(reactorId, closed, open, defaultClosed));
+    public int registerObstacle(int reactorId, Point closed, Point open, boolean defaultClosed) {
+        obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, open, defaultClosed));
+        return currentObstacleId++;
     }
 
-    public void registerObstacle(int obsId, int reactorId, Point closed, Point open, boolean defaultClosed, Collection<Direction> directions) {
-        obstacles.put(obsId, new Obstacle(reactorId, closed, open, defaultClosed, directions));
+    public int registerObstacle(int reactorId, Point closed, Point open, boolean defaultClosed, Collection<Direction> directions) {
+        obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, open, defaultClosed, directions));
+        return currentObstacleId++;
     }
 
     public Obstacle getObstacle(int obsId) {
         return obstacles.get(obsId);
+    }
+    
+    public void toggleObstacle(int obsId) {
+        obstacles.get(obsId).toggle();
+    }
+    
+    public void closeObstacle(int obsId) {
+        obstacles.get(obsId).close();
+    }
+    
+    public void openObstacle(int obsId) {
+        obstacles.get(obsId).open();
+    }
+    
+    public void resetObstacle(int obsId) {
+        obstacles.get(obsId).reset();
     }
 
     public void openAllObstacles() {
@@ -225,6 +258,8 @@ public class PartyQuestMapInstance {
         obstacles.values().forEach(Obstacle::reset);
     }
 
+    /** Returns <code>true</code> if an <code>Obstacle</code> was removed, <code>false</code>
+     ** if no such <code>Obstacle</code> existed and thus no changes were made. */
     public boolean removeObstacle(int obsId) {
         if (!obstacles.containsKey(obsId)) return false;
         obstacles.get(obsId).dispose();
@@ -235,6 +270,66 @@ public class PartyQuestMapInstance {
     public void removeAllObstacles() {
         obstacles.values().forEach(Obstacle::dispose);
         obstacles.clear();
+    }
+
+    public int registerTrigger(int reactorId, Point position, int obsId) {
+        triggers.put(currentTriggerId, new Trigger(currentTriggerId, reactorId, position, obsId));
+        return currentTriggerId++;
+    }
+    
+    public int registerTrigger(int reactorId, Point position, Runnable action) {
+        triggers.put(currentTriggerId, new Trigger(currentTriggerId, reactorId, position, action));
+        return currentTriggerId++;
+    }
+    
+    public Trigger getTrigger(int triggerId) {
+        return triggers.get(triggerId);
+    }
+    
+    public void trigger(int triggerId) {
+        if (triggers.containsKey(triggerId)) {
+            triggers.get(triggerId).trigger();
+        }
+    }
+    
+    public void triggerByReactorId(final int reactorId) {
+        triggers.values().stream().filter(t -> t.getReactorId() == reactorId).forEach(Trigger::trigger);
+    }
+
+    /** Returns <code>true</code> if a <code>Trigger</code> was removed, <code>false</code>
+     ** if no such <code>Trigger</code> existed and thus no changes were made. */
+    public boolean removeTrigger(int triggerId) {
+        if (!triggers.containsKey(triggerId)) return false;
+        triggers.get(triggerId).dispose();
+        triggers.remove(triggerId);
+        return true;
+    }
+
+    public void removeAllTriggers() {
+        triggers.values().forEach(Trigger::dispose);
+        triggers.clear();
+    }
+    
+    public void disableSkill(final int skillId) {
+        getPlayers().forEach(p -> {
+            p.dispelSkill(skillId);
+            p.giveCoolDowns(skillId, System.currentTimeMillis(), 10000000, true);
+        });
+    }
+    
+    public void enableSkill(final int skillId) {
+        if (disabledSkills.remove(skillId)) {
+            getPlayers().forEach(p -> p.removeCooldown(skillId));
+        }
+    }
+    
+    public void enableAllSkills() {
+        disabledSkills.forEach(ds -> getPlayers().forEach(p -> p.removeCooldown(ds)));
+        disabledSkills.clear();
+    }
+    
+    public Set<Integer> getDisabledSkills() {
+        return Collections.unmodifiableSet(disabledSkills);
     }
 
     public class Obstacle {
@@ -366,10 +461,15 @@ public class PartyQuestMapInstance {
             return !reactor.isAlive() || reactor.getPosition().equals(open);
         }
 
+        public boolean isClosed() {
+            return !isOpen();
+        }
+
         public boolean isDefaultClosed() {
             return defaultClosed;
         }
 
+        /** Gets rectangular bounding box of the Obstacle reactor as an instance of Rectangle. */
         public Rectangle getRect() {
             return reactor.getArea();
         }
@@ -386,6 +486,94 @@ public class PartyQuestMapInstance {
             defaultClosed = dc;
         }
 
+        /** <pre><code>
+         * if (reactor.isAlive()) {
+         *     map.destroyReactor(reactor.getObjectId());
+         * }
+         *  </code></pre> */
+        public void dispose() {
+            if (reactor.isAlive()) {
+                map.destroyReactor(reactor.getObjectId());
+            }
+        }
+    }
+    
+    public class Trigger {
+        private final int id;
+        private final MapleReactor reactor;
+        private final int reactorId;
+        private final Point position;
+        private final MapleMap map;
+        private Runnable action;
+        
+        public Trigger(int id, int reactorId, Point position, Runnable action) {
+            this.id = id;
+            map = PartyQuestMapInstance.this.getMap();
+            this.reactorId = reactorId;
+            this.position = position;
+            this.action = action;
+
+            reactor = new MapleReactor(MapleReactorFactory.getReactor(reactorId), reactorId);
+            reactor.setTrigger(this.id);
+            reactor.setDelay(-1);
+            reactor.setPosition(this.position);
+            map.spawnReactor(reactor);
+        }
+        
+        /** Creates a new <code>Trigger</code> whose <code>action</code> (executed upon being triggered)
+         ** is toggling the <code>Obstacle</code> specified by ID as the last argument.
+         **
+         ** @throws IllegalStateException when there is no such <code>Obstacle</code> with the given ID
+         ** registered with this <code>Trigger</code>'s <code>PartyQuestMapInstance</code> */
+        public Trigger(int id, int reactorId, Point position, int obsId) {
+            final Obstacle obs = PartyQuestMapInstance.this.getObstacle(obsId);
+            if (obs == null) {
+                throw new IllegalStateException("No Obstacle with the ID of " + obsId + " registered with this Trigger's PartyQuestMapInstance.");
+            }
+
+            this.id = id;
+            map = PartyQuestMapInstance.this.getMap();
+            this.reactorId = reactorId;
+            this.position = position;
+            this.action = obs::toggle;
+
+            reactor = new MapleReactor(MapleReactorFactory.getReactor(reactorId), reactorId);
+            reactor.setTrigger(this.id);
+            reactor.setDelay(-1);
+            reactor.setPosition(this.position);
+            map.spawnReactor(reactor);
+        }
+        
+        public void trigger() {
+            action.run();
+        }
+        
+        public void setAction(Runnable action) {
+            this.action = action;
+        }
+
+        /** Gets rectangular bounding box of the Trigger reactor as an instance of Rectangle. */
+        public Rectangle getRect() {
+            return reactor.getArea();
+        }
+
+        public int getReactorId() {
+            return reactorId;
+        }
+
+        public MapleMap getMap() {
+            return map;
+        }
+        
+        public int getId() {
+            return id;
+        }
+
+        /** <pre><code>
+         * if (reactor.isAlive()) {
+         *     map.destroyReactor(reactor.getObjectId());
+         * }
+         *  </code></pre> */
         public void dispose() {
             if (reactor.isAlive()) {
                 map.destroyReactor(reactor.getObjectId());

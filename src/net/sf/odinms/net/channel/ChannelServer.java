@@ -85,14 +85,14 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private int PvPis;
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
-    private final Map<String, PartyQuest> partyQuests = new HashMap<>(1);
+    private final Map<String, PartyQuest> partyQuests = new HashMap<>(2);
     private static final Map<Integer, ChannelServer> instances = new HashMap<>();
     private static final Map<String, ChannelServer> pendingInstances = new HashMap<>();
     private final Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
     private Boolean worldReady = true;
     private final Map<MapleSquadType, MapleSquad> mapleSquads = new HashMap<>();
     private final ClanHolder clans = new ClanHolder();
-    private final Collection<FakeCharacter> clones = new LinkedList<>();
+    private final Collection<FakeCharacter> clones = new ArrayList<>();
     private int levelCap;
     private boolean multiLevel;
 
@@ -673,7 +673,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     public List<MapleCharacter> getPartyMembers(MapleParty party) {
-        List<MapleCharacter> partym = new LinkedList<>();
+        List<MapleCharacter> partym = new ArrayList<>();
         for (net.sf.odinms.net.world.MaplePartyCharacter partychar : party.getMembers()) {
             if (partychar.getChannel() == getChannel()) { // Make sure the thing doesn't get duplicate plays due to ccing bug.
                 MapleCharacter chr = getPlayerStorage().getCharacterByName(partychar.getName());

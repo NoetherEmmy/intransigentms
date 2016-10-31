@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +55,7 @@ public class ClanHolder {
     }
 
     public List<MapleCharacter> getAllOnlinePlayersFromClan(int clan) {
-        List<MapleCharacter> players = new LinkedList<>();
+        List<MapleCharacter> players = new ArrayList<>();
         for (MapleCharacter player : online.keySet()) {
             if (online.get(player) == clan) {
                 players.add(player);
@@ -65,7 +65,7 @@ public class ClanHolder {
     }
 
     public List<String> getAllOfflinePlayersFromClan(int clan) {
-        List<String> players = new LinkedList<>();
+        List<String> players = new ArrayList<>();
         for (String name : offline.keySet()) {
             if (offline.get(name) == clan) {
                 players.add(name);

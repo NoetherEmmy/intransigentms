@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +45,7 @@ public class MapleMonsterInformationProvider {
 
     public List<DropEntry> retrieveDropChances(int monsterId) {
         if (drops.containsKey(monsterId)) return drops.get(monsterId);
-        List<DropEntry> ret = new LinkedList<>();
+        List<DropEntry> ret = new ArrayList<>();
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT itemid, chance, monsterid FROM monsterdrops WHERE (monsterid = ? AND chance >= 0) OR (monsterid <= 0)");

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PartyQuest {
     private final List<MapleCharacter> players = new ArrayList<>(6);
@@ -44,22 +45,12 @@ public class PartyQuest {
         return mapInstances;
     }
 
-    public PartyQuestMapInstance getMapInstance(MapleMap map) {
-        for (PartyQuestMapInstance pqmi : mapInstances) {
-            if (map == pqmi.getMap()) {
-                return pqmi;
-            }
-        }
-        return null;
+    public PartyQuestMapInstance getMapInstance(final MapleMap map) {
+        return mapInstances.stream().filter(mi -> map == mi.getMap()).findAny().orElse(null);
     }
 
-    public PartyQuestMapInstance getMapInstance(int mapId) {
-        for (PartyQuestMapInstance pqmi : mapInstances) {
-            if (mapId == pqmi.getMap().getId()) {
-                return pqmi;
-            }
-        }
-        return null;
+    public PartyQuestMapInstance getMapInstance(final int mapId) {
+        return mapInstances.stream().filter(mi -> mapId == mi.getMap().getId()).findAny().orElse(null);
     }
 
     public void registerMap(int mapId) {
@@ -141,9 +132,9 @@ public class PartyQuest {
         player.changeMap(exitMapId);
     }
 
-    public void registerParty(MapleParty party, final MapleMap map) {
+    public void registerParty(MapleParty party) {
         party.getMembers().forEach(pc -> {
-            final MapleCharacter player = map.getCharacterById(pc.getId());
+            final MapleCharacter player = ChannelServer.getInstance(this.channel).getPlayerStorage().getCharacterById(pc.getId());
             registerPlayer(player);
         });
     }
@@ -206,11 +197,9 @@ public class PartyQuest {
         return player.getParty().getLeader().getId() == player.getId();
     }
 
+    /** Returns <code>null</code> if no party leader is registered with this <code>PartyQuest</code> */
     public MapleCharacter getLeader() {
-        for (MapleCharacter p : players) {
-            if (isLeader(p)) return p;
-        }
-        return null;
+        return players.stream().filter(this::isLeader).findAny().orElse(null);
     }
 
     public void playerReconnected(MapleCharacter player) {
@@ -240,14 +229,10 @@ public class PartyQuest {
     }
 
     public Map<PartyQuestMapInstance, Object> invokeInAllInstances(final String functionName) {
-        final Map<PartyQuestMapInstance, Object> ret = new HashMap<>((int) (mapInstances.size() / 0.9f) + 1, 0.9f);
-        mapInstances.forEach(pqmi -> ret.put(pqmi, pqmi.invokeMethod(functionName)));
-        return ret;
+        return mapInstances.stream().collect(Collectors.toMap(mi -> mi, mi -> mi.invokeMethod(functionName)));
     }
 
     public Map<PartyQuestMapInstance, Object> invokeInAllInstances(final String functionName, final Object... args) {
-        final Map<PartyQuestMapInstance, Object> ret = new HashMap<>((int) (mapInstances.size() / 0.9f) + 1, 0.9f);
-        mapInstances.forEach(pqmi -> ret.put(pqmi, pqmi.invokeMethod(functionName, args)));
-        return ret;
+        return mapInstances.stream().collect(Collectors.toMap(mi -> mi, mi -> mi.invokeMethod(functionName, args)));
     }
 }

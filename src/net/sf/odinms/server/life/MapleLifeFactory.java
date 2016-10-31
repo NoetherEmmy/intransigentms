@@ -97,7 +97,7 @@ public class MapleLifeFactory {
 
             MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
             if (reviveInfo != null) {
-                List<Integer> revives = new LinkedList<>();
+                List<Integer> revives = new ArrayList<>();
                 for (MapleData data_ : reviveInfo) {
                     revives.add(MapleDataTool.getInt(data_));
                 }

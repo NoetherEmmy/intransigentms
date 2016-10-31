@@ -17,7 +17,7 @@ import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -64,8 +64,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 double mrmultiplier = 1.0 + (double) player.getSkillLevel(SkillFactory.getSkill(2321002)) * 0.05;
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    List<Integer> additionaldmg = new LinkedList<>();
-                    List<Integer> newdmg = new LinkedList<>();
+                    List<Integer> additionaldmg = new ArrayList<>();
+                    List<Integer> newdmg = new ArrayList<>();
                     for (Integer dmgnumber : dmg.getRight()) {
                         additionaldmg.add((int) (dmgnumber * (mrmultiplier - 1.0)));
                         newdmg.add((int) (dmgnumber * mrmultiplier));
@@ -77,23 +77,24 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 }
             }
 
+            // Handing crits from Battle Priest's MP Eater passive
             boolean iscrit;
             int mpeaterlevel = player.getSkillLevel(SkillFactory.getSkill(2300000));
             if (mpeaterlevel > 0) {
-                double chance = (20.0 + 2.0 * (double) mpeaterlevel) / 100.0;
+                double chance = (20.0d + 2.0d * (double) mpeaterlevel) / 100.0d;
                 iscrit = Math.random() < chance;
             } else {
                 iscrit = false;
             }
 
             if (iscrit) {
-                double critmultiplier = 1.5 + 0.05 * (double) mpeaterlevel;
+                double critmultiplier = 1.5d + 0.08d * (double) mpeaterlevel;
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    List<Integer> additionaldmg = new LinkedList<>();
-                    List<Integer> newdmg = new LinkedList<>();
+                    List<Integer> additionaldmg = new ArrayList<>();
+                    List<Integer> newdmg = new ArrayList<>();
                     for (Integer dmgnumber : dmg.getRight()) {
-                        additionaldmg.add((int) (dmgnumber * (critmultiplier - 1.0)));
+                        additionaldmg.add((int) (dmgnumber * (critmultiplier - 1.0d)));
                         newdmg.add((int) (dmgnumber * critmultiplier));
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
@@ -118,8 +119,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         continue;
                     }
                     double multiplier;
-                    List<Integer> additionaldmg = new LinkedList<>();
-                    List<Integer> newdmg = new LinkedList<>();
+                    List<Integer> additionaldmg = new ArrayList<>();
+                    List<Integer> newdmg = new ArrayList<>();
                     switch (ee) {
                         case WEAK:
                             multiplier = 1.5d;
@@ -158,7 +159,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                                                                   // This value scales with skill level, and the % dealt is only this % if the monster is
                                                                                   // close to 0.0 distance from the originally struck monster. Otherwise it scales down
                                                                                   // with distance to this % - 30%.
-                    List<Pair<Integer, List<Integer>>> additionaldmgs = new LinkedList<>(); // Stores additional monster ID/dmg line(s) pairs from splash dmg.
+                    List<Pair<Integer, List<Integer>>> additionaldmgs = new ArrayList<>(); // Stores additional monster ID/dmg line(s) pairs from splash dmg.
                     for (int i = 0; i < attack.allDamage.size(); ++i) { // For each instance of damage lines dealt to a monster:
                         Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i); // This pair has the monster's identifier for the map, and a list of damage lines it takes.
                         if (dmg != null) { // Checking for null.
@@ -166,7 +167,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                             if (struckmonster == null) {
                                 continue;
                             }
-                            List<MapleMonster> splashedmonsters = new LinkedList<>(); // This will store all monsters that are affected by splash damage.
+                            List<MapleMonster> splashedmonsters = new ArrayList<>(); // This will store all monsters that are affected by splash damage.
                             // The following for loop gets all the map objects of type MONSTER within a squared distance of 100,000 from the initially struck monster (~316.23 linear distance).
                             for (MapleMapObject _mob : player.getMap().getMapObjectsInRange(struckmonster.getPosition(), magicarmorradius, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                                 MapleMonster mob = (MapleMonster) _mob; // Casting to MapleMonster since we know we are only getting objs of type MONSTER.
@@ -193,7 +194,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                             // Now we have our list of splashed monsters.
                             for (MapleMonster splashedmonster : splashedmonsters) { // For each monster that is splashed, create for it one of these pairs.
                                 Integer splashedoid = splashedmonster.getObjectId(); // Object ID, for the left side of the pair.
-                                List<Integer> splashdamage = new LinkedList<>(); // Stores dmg line(s) for splash dmg.
+                                List<Integer> splashdamage = new ArrayList<>(); // Stores dmg line(s) for splash dmg.
                                 double distancesq = struckmonster.getPosition().distanceSq(splashedmonster.getPosition()); // Getting the squared distance of this monster from the
                                                                                                                            // init strike for purposes of scaling the dmg % by distance.
                                 for (Integer dmgline : dmg.getRight()) { // For each dmg line done in the init strike, we scale the dmg line by the %, and add it to out new splash dmg.
@@ -225,8 +226,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {
-                        List<Integer> additionaldmg = new LinkedList<>();
-                        List<Integer> newdmg = new LinkedList<>();
+                        List<Integer> additionaldmg = new ArrayList<>();
+                        List<Integer> newdmg = new ArrayList<>();
                         for (Integer dmgnumber : dmg.getRight()) {
                             additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0)));
                             newdmg.add((int) (dmgnumber * dpmultiplier));

@@ -34,7 +34,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public class PlayerCommands implements Command {
@@ -306,7 +305,7 @@ public class PlayerCommands implements Command {
                     MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
                     data = dataProvider.getData("Mob.img");
                     mc.dropMessage("Item " + searchid + " is dropped by the following mobs:");
-                    List<Pair<Integer, String>> mobPairList = new LinkedList<>();
+                    List<Pair<Integer, String>> mobPairList = new ArrayList<>();
                     Connection con = DatabaseConnection.getConnection();
                     PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
                     ps.setInt(1, searchid);
@@ -370,11 +369,11 @@ public class PlayerCommands implements Command {
                                 return;
                             }
                             List<String> retMobs = new ArrayList<>();
-                            MapleData data = null;
+                            MapleData data;
                             MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
                             data = dataProvider.getData("Mob.img");
                             mc.dropMessage(candidate.getRight() + " is dropped by the following mobs:");
-                            List<Pair<Integer,String>> mobPairList = new LinkedList<>();
+                            List<Pair<Integer,String>> mobPairList = new ArrayList<>();
                             Connection con = DatabaseConnection.getConnection();
                             PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
                             ps.setInt(1, searchid);
@@ -513,7 +512,7 @@ public class PlayerCommands implements Command {
                         MapleData data;
                         MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
                         data = dataProvider.getData("Mob.img");
-                        List<Pair<Integer, String>> mobPairList = new LinkedList<>();
+                        List<Pair<Integer, String>> mobPairList = new ArrayList<>();
                         for (MapleData mobIdData : data.getChildren()) {
                             int mobIdFromData = Integer.parseInt(mobIdData.getName());
                             String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
@@ -709,7 +708,7 @@ public class PlayerCommands implements Command {
                 MapleData data;
                 MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
                 data = dataProvider.getData("Mob.img");
-                List<MapleMonster> mobList = new LinkedList<>();
+                List<MapleMonster> mobList = new ArrayList<>();
                 try {
                     for (MapleData mobIdData : data.getChildren()) {
                         int mobIdFromData = Integer.parseInt(mobIdData.getName());

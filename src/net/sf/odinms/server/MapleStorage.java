@@ -26,7 +26,7 @@ public class MapleStorage {
     private MapleStorage(int id, byte slots, int meso) {
         this.id = id;
         this.slots = slots;
-        this.items = new LinkedList<>();
+        this.items = new ArrayList<>();
         this.meso = meso;
     }
 
@@ -192,7 +192,7 @@ public class MapleStorage {
     }
 
     private List<IItem> filterItems(MapleInventoryType type) {
-        List<IItem> ret = new LinkedList<>();
+        List<IItem> ret = new ArrayList<>();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         for (IItem item : items) {
             if (ii.getInventoryType(item.getItemId()) == type) {
@@ -216,12 +216,11 @@ public class MapleStorage {
 
     public void sendStorage(MapleClient c, int npcId) {
         //
-        if (true) {
-            c.getPlayer().dropMessage(1, "Storage is not available in IntransigentMS.");
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
+        c.getPlayer().dropMessage(1, "Storage is not available in IntransigentMS.");
+        c.getSession().write(MaplePacketCreator.enableActions());
+            //return;
         //
+        /*
         if (c.isGuest()) {
             c.getPlayer().dropMessage(1, "Storage is not available to guests.");
             c.getSession().write(MaplePacketCreator.enableActions());
@@ -242,6 +241,7 @@ public class MapleStorage {
             typeItems.put(type, new ArrayList<>(items));
         }
         c.getSession().write(MaplePacketCreator.getStorage(npcId, slots, items, meso));
+        */
     }
 
     public void sendStored(MapleClient c, MapleInventoryType type) {

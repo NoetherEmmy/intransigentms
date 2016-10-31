@@ -34,9 +34,7 @@ public class MapleCustomQuestData implements MapleData, Serializable {
     }
 
     public List<MapleData> getChildren() {
-        MapleData[] ret = new MapleData[children.size()];
-        ret = children.toArray(ret);
-        return new ArrayList<>(Arrays.asList(ret));
+        return new ArrayList<>(children);
     }
 
     public MapleData getChildByPath(String name) {
@@ -51,8 +49,9 @@ public class MapleCustomQuestData implements MapleData, Serializable {
             nextName = name.substring(name.indexOf("/") + 1);
         }
         for (MapleData child : children) {
-            if (child.getName().equals(lookup))
+            if (child.getName().equals(lookup)) {
                 return child.getChildByPath(nextName);
+            }
         }
         return null;
     }

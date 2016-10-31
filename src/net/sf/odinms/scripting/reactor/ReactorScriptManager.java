@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +41,7 @@ public class ReactorScriptManager extends AbstractScriptManager {
     public List<DropEntry> getDrops(int rid) {
         List<DropEntry> ret = drops.get(rid);
         if (ret == null) {
-            ret = new LinkedList<>();
+            ret = new ArrayList<>();
             try {
                 Connection con = DatabaseConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement("SELECT itemid, chance FROM reactordrops WHERE reactorid = ? AND chance >= 0");

@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class DatabaseConnection {
@@ -39,7 +39,7 @@ public class DatabaseConnection {
 
     private static class ThreadLocalConnection extends ThreadLocal<Connection> {
 
-        public static final Collection<Connection> allConnections = new LinkedList<>();
+        public static final Collection<Connection> allConnections = new ArrayList<>();
 
         @Override
         protected Connection initialValue() {

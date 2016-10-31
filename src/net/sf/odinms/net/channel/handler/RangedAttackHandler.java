@@ -14,7 +14,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -36,14 +36,14 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                     if (dmg != null) {
                         monster = player.getMap().getMonsterByOid(dmg.getLeft());
                     }
-                    if (monster != null && dmg != null) {
+                    if (monster != null) {
                         ElementalEffectiveness ee = monster.getAddedEffectiveness(skillused.getElement());
                         if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) && monster.getEffectiveness(skillused.getElement()) == ElementalEffectiveness.WEAK) {
                             continue;
                         }
                         double multiplier;
-                        List<Integer> additionaldmg = new LinkedList<>();
-                        List<Integer> newdmg = new LinkedList<>();
+                        List<Integer> additionaldmg = new ArrayList<>();
+                        List<Integer> newdmg = new ArrayList<>();
                         switch (ee) {
                             case WEAK:
                                 multiplier = 1.5d;
@@ -79,8 +79,8 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {
-                        List<Integer> additionaldmg = new LinkedList<>();
-                        List<Integer> newdmg = new LinkedList<>();
+                        List<Integer> additionaldmg = new ArrayList<>();
+                        List<Integer> newdmg = new ArrayList<>();
                         for (Integer dmgnumber : dmg.getRight()) {
                             additionaldmg.add((int) (dmgnumber * (capsulemultiplier - 1.0)));
                             newdmg.add((int) (dmgnumber * capsulemultiplier));
@@ -103,8 +103,8 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {
-                        List<Integer> additionaldmg = new LinkedList<>();
-                        List<Integer> newdmg = new LinkedList<>();
+                        List<Integer> additionaldmg = new ArrayList<>();
+                        List<Integer> newdmg = new ArrayList<>();
                         for (Integer dmgnumber : dmg.getRight()) {
                             additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0)));
                             newdmg.add((int) (dmgnumber * dpmultiplier));

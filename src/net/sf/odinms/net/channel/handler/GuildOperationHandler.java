@@ -10,6 +10,8 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuildOperationHandler extends AbstractMaplePacketHandler {
 
@@ -52,7 +54,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private final java.util.List<Invited> invited = new java.util.LinkedList<>();
+    private final List<Invited> invited = new ArrayList<>();
     private long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
     @Override

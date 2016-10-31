@@ -128,7 +128,7 @@ public class GM implements Command {
                 invent = MapleInventoryType.CASH;
                 break;
         }
-        List<Integer> itemMap = new LinkedList<>();
+        List<Integer> itemMap = new ArrayList<>();
         for (IItem item : c.getPlayer().getInventory(invent).list()) {
             itemMap.add(item.getItemId());
         }
@@ -882,7 +882,7 @@ public class GM implements Command {
                         } else if (text.length() <= 10) {
                             lines[0] = text;
                         }
-                        LinkedList<String> list = new LinkedList<>();
+                        List<String> list = new ArrayList<>();
                         list.add(lines[0]);
                         list.add(lines[1]);
                         list.add(lines[2]);
@@ -1515,7 +1515,7 @@ public class GM implements Command {
                     if (type.equalsIgnoreCase("NPC") || type.equalsIgnoreCase("NPCS")) {
                         List<String> retNpcs = new ArrayList<>();
                         data = dataProvider.getData("Npc.img");
-                        List<Pair<Integer, String>> npcPairList = new LinkedList<>();
+                        List<Pair<Integer, String>> npcPairList = new ArrayList<>();
                         for (MapleData npcIdData : data.getChildren()) {
                             int npcIdFromData = Integer.parseInt(npcIdData.getName());
                             String npcNameFromData = MapleDataTool.getString(npcIdData.getChildByPath("name"), "NO-NAME");
@@ -1536,7 +1536,7 @@ public class GM implements Command {
                     } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
                         List<String> retMaps = new ArrayList<>();
                         data = dataProvider.getData("Map.img");
-                        List<Pair<Integer, String>> mapPairList = new LinkedList<>();
+                        List<Pair<Integer, String>> mapPairList = new ArrayList<>();
                         for (MapleData mapAreaData : data.getChildren()) {
                             for (MapleData mapIdData : mapAreaData.getChildren()) {
                                 int mapIdFromData = Integer.parseInt(mapIdData.getName());
@@ -1559,7 +1559,7 @@ public class GM implements Command {
                     } else if (type.equalsIgnoreCase("MOB") || type.equalsIgnoreCase("MOBS") || type.equalsIgnoreCase("MONSTER") || type.equalsIgnoreCase("MONSTERS")) {
                         List<String> retMobs = new ArrayList<>();
                         data = dataProvider.getData("Mob.img");
-                        List<Pair<Integer, String>> mobPairList = new LinkedList<>();
+                        List<Pair<Integer, String>> mobPairList = new ArrayList<>();
                         for (MapleData mobIdData : data.getChildren()) {
                             int mobIdFromData = Integer.parseInt(mobIdData.getName());
                             String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
@@ -1597,7 +1597,7 @@ public class GM implements Command {
                     } else if (type.equalsIgnoreCase("SKILL") || type.equalsIgnoreCase("SKILLS")) {
                         List<String> retSkills = new ArrayList<>();
                         data = dataProvider.getData("Skill.img");
-                        List<Pair<Integer, String>> skillPairList = new LinkedList<>();
+                        List<Pair<Integer, String>> skillPairList = new ArrayList<>();
                         for (MapleData skillIdData : data.getChildren()) {
                             int skillIdFromData = Integer.parseInt(skillIdData.getName());
                             String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");

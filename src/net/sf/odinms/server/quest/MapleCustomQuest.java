@@ -9,17 +9,17 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class MapleCustomQuest extends MapleQuest {
 
     public MapleCustomQuest(int id) {
         try {
             this.id = id;
-            startActs = new LinkedList<>();
-            completeActs = new LinkedList<>();
-            startReqs = new LinkedList<>();
-            completeReqs = new LinkedList<>();
+            startActs = new ArrayList<>();
+            completeActs = new ArrayList<>();
+            startReqs = new ArrayList<>();
+            completeReqs = new ArrayList<>();
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT * FROM questrequirements WHERE questid = ?");
             ps.setInt(1, id);
@@ -63,8 +63,8 @@ public class MapleCustomQuest extends MapleQuest {
             }
             rs.close();
             ps.close();
-        } catch (Exception ex) {
-            log.error("Error loading custom quest.", ex);
+        } catch (Exception e) {
+            log.error("Error loading custom quest.", e);
         }
     }
 }

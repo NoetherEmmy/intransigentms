@@ -169,8 +169,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private Date lastdailyprize;
     private int votepoints;
     
-    private List<List<Integer>> pastlives = new LinkedList<>();
-    private final List<List<Integer>> newpastlives = new LinkedList<>();
+    private List<List<Integer>> pastlives = new ArrayList<>();
+    private final List<List<Integer>> newpastlives = new ArrayList<>();
     private int deathcount;
     private MapleMapObject lastdamagesource;
     private int highestlevelachieved = 1;
@@ -536,12 +536,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps = con.prepareStatement("SELECT * FROM pastlives WHERE characterid = ? ORDER BY death DESC");
             ps.setInt(1, ret.id);
             rs = ps.executeQuery();
-            ret.pastlives = new LinkedList<>();
+            ret.pastlives = new ArrayList<>();
             int pastlifecount = -1;
             while (rs.next()) {
                 pastlifecount++;
                 if (pastlifecount < 5) {
-                    List<Integer> temppastlife = new LinkedList<>();
+                    List<Integer> temppastlife = new ArrayList<>();
                     temppastlife.add(rs.getInt("level"));
                     temppastlife.add(rs.getInt("job"));
                     temppastlife.add(rs.getInt("lastdamagesource"));
@@ -1024,7 +1024,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
     
     public void addNewPastLife(int level, int jobid, MapleMapObject lds) {
-        List<Integer> newpastlife = new LinkedList<>();
+        List<Integer> newpastlife = new ArrayList<>();
         newpastlife.add(level);
         newpastlife.add(jobid);
         if (lds == null) {
@@ -1434,12 +1434,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public void setBattleshipHp(int bhp) {
         this.battleshiphp = bhp;
-        MapleStatEffect battleshipeffect = this.getStatForBuff(MapleBuffStat.MONSTER_RIDING);
-        if (this.battleshiphp < 1 && battleshipeffect != null) {
+        MapleStatEffect battleShipEffect = this.getStatForBuff(MapleBuffStat.MONSTER_RIDING);
+        if (this.battleshiphp < 1 && battleShipEffect != null) {
             this.cancelBuffsBySourceId(5221006);
-            ISkill battleship = SkillFactory.getSkill(5221006);
-            long cooldowntime = (long) battleship.getEffect(getSkillLevel(battleship)).getCooldown() * (long) 1000;
-            this.giveCoolDowns(5221006, System.currentTimeMillis(), cooldowntime, true);
+            ISkill battleShip = SkillFactory.getSkill(5221006);
+            long cooldownTime = (long) battleShip.getEffect(getSkillLevel(battleShip)).getCooldown() * (long) 1000;
+            this.giveCoolDowns(5221006, System.currentTimeMillis(), cooldownTime, true);
         }
     }
     
@@ -1736,7 +1736,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
     
     public int getMorph() {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isMorph() && mbsvh.effect.getSourceId() != 5111005 && mbsvh.effect.getSourceId() != 5121003) {
                 return mbsvh.effect.getSourceId();
@@ -1834,7 +1834,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         return null;
     }
-
+    
     public Integer getBuffedValue(MapleBuffStat effect) {
         MapleBuffStatValueHolder mbsvh = effects.get(effect);
         if (mbsvh == null) {
@@ -2148,7 +2148,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void dispel() {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isSkill()) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
@@ -2159,14 +2159,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void cancelAllBuffs() {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             cancelEffect(mbsvh.effect, false, mbsvh.startTime);
         }
     }
     
     private void cancelBuffsBySourceId(int sourceid) {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (sourceid == mbsvh.effect.getSourceId()) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
@@ -2175,7 +2175,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void cancelMorphs() {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isMorph() && mbsvh.effect.getSourceId() != 5111005 && mbsvh.effect.getSourceId() != 5121003) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
@@ -2198,7 +2198,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void cancelMagicDoor() {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isMagicDoor()) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
@@ -3431,7 +3431,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public final List<MapleQuestStatus> getStartedQuests() {
-        List<MapleQuestStatus> ret = new LinkedList<>();
+        List<MapleQuestStatus> ret = new ArrayList<>();
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus().equals(MapleQuestStatus.Status.STARTED) && !(q.getQuest() instanceof MapleCustomQuest)) {
                 ret.add(q);
@@ -3441,7 +3441,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public final List<MapleQuestStatus> getCompletedQuests() {
-        List<MapleQuestStatus> ret = new LinkedList<>();
+        List<MapleQuestStatus> ret = new ArrayList<>();
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus().equals(MapleQuestStatus.Status.COMPLETED) && !(q.getQuest() instanceof MapleCustomQuest)) {
                 ret.add(q);
@@ -3462,10 +3462,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return Collections.unmodifiableMap(skills);
     }
 
-    public void dispelSkill(int skillid) {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+    public void dispelSkill(int skillId) {
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            if (skillid == 0) {
+            if (skillId == 0) {
                 if (mbsvh.effect.isSkill()) {
                     switch (mbsvh.effect.getSourceId()) {
                         case 1004:
@@ -3483,17 +3483,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     }
                 }
             } else {
-                if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillid) {
+                if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillId) {
                     cancelEffect(mbsvh.effect, false, mbsvh.startTime);
                 }
             }
         }
     }
 
-    public boolean isActiveBuffedValue(int skillid) {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
+    public boolean isActiveBuffedValue(int skillId) {
+        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillid) {
+            if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillId) {
                 return true;
             }
         }
@@ -3516,8 +3516,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return ret.masterlevel;
     }
     
-    public int getMasterLevelById(int skillid) {
-        ISkill s = SkillFactory.getSkill(skillid);
+    public int getMasterLevelById(int skillId) {
+        ISkill s = SkillFactory.getSkill(skillId);
         SkillEntry ret = skills.get(s);
         if (ret == null) {
             return 0;
@@ -5967,7 +5967,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public List<Integer> getVIPRockMaps(int type) {
-        List<Integer> rockmaps = new LinkedList<>();
+        List<Integer> rockmaps = new ArrayList<>();
         try {
             PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT mapid FROM viprockmaps WHERE cid = ? AND type = ?");
             ps.setInt(1, id);

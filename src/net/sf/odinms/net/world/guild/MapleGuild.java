@@ -113,7 +113,7 @@ public class MapleGuild implements java.io.Serializable {
         if (notifications.keySet().size() != chs.size()) {
             notifications.clear();
             for (Integer ch : chs) {
-                notifications.put(ch, new java.util.LinkedList<>());
+                notifications.put(ch, new java.util.ArrayList<>());
             }
         } else {
             for (List<Integer> l : notifications.values()) {

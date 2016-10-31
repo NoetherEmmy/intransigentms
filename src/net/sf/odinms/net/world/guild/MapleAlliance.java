@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapleAlliance implements java.io.Serializable {
@@ -280,7 +280,7 @@ public class MapleAlliance implements java.io.Serializable {
     }
 
     public List<Integer> getGuilds() {
-        List<Integer> guilds_ = new LinkedList<>();
+        List<Integer> guilds_ = new ArrayList<>();
         for (int guild : guilds) {
             if (guild != -1) {
                 guilds_.add(guild);

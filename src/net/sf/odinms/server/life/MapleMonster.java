@@ -17,7 +17,6 @@ import net.sf.odinms.tools.ArrayMap;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 
-import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.List;
@@ -33,9 +32,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private int mp;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
     private boolean controllerHasAggro,  controllerKnowsAboutAggro;
-    private final Collection<AttackerEntry> attackers = new LinkedList<>();
+    private final Collection<AttackerEntry> attackers = new ArrayList<>();
     private EventInstanceManager eventInstance = null;
-    private final Collection<MonsterListener> listeners = new LinkedList<>();
+    private final Collection<MonsterListener> listeners = new ArrayList<>();
     private MapleCharacter highestDamageChar;
     private final Map<MonsterStatus, MonsterStatusEffect> stati = new LinkedHashMap<>();
     private final List<MonsterStatusEffect> activeEffects = new ArrayList<>();

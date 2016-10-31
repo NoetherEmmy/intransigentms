@@ -41,7 +41,7 @@ public class MapleShop {
     private MapleShop(int id, int npcId) {
         this.id = id;
         this.npcId = npcId;
-        items = new LinkedList<>();
+        items = new ArrayList<>();
     }
 
     public void addItem(MapleShopItem item) {

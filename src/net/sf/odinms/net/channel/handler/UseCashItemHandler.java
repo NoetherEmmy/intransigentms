@@ -17,7 +17,6 @@ import java.awt.*;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,7 +42,6 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
             switch (itemType) {
                 case 505: // AP/SP reset
                     if (itemId > 5050000) {
-
                         int SPTo = slea.readInt();
                         int SPFrom = slea.readInt();
 
@@ -152,8 +150,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                     }
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                     break;
-
-                case 506: // Hmmm npe when double clicking...
+                case 506: // Hmmmm... NPE when double clicking...
                     int tagType = itemId % 10;
                     IItem eq = null;
                     if (tagType == 0) { // Item tag.
@@ -165,20 +162,19 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         eq.setOwner(player.getName());
                     } else if (tagType == 1) { // Sealing lock
                         byte type = (byte) slea.readInt();
-                        if (type == 2) { // we can't do setLocked() for stars =/
+                        if (type == 2) { // We can't do setLocked() for stars
                             break;
                         }
                         byte slot_ = (byte) slea.readInt();
                         eq = player.getInventory(MapleInventoryType.getByType(type)).getItem(slot_);
                         Equip equip = (Equip) eq;
                         equip.setLocked((byte) 1);
-                    } else if (tagType == 2) { // Incubator
-                    }
+                    }/* else if (tagType == 2) { // Incubator
+                    }*/
                     slea.readInt();
                     c.getSession().write(MaplePacketCreator.updateEquipSlot(eq));
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                     break;
-
                 case 507:
                     if (player.getCanSmega() && player.getSmegaEnabled() && !player.getCheatTracker().Spam(3000, 3)) {
                         switch (itemId / 1000 % 10) {
@@ -227,7 +223,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                         }
                                     }
                                 }
-                                List<String> messages = new LinkedList<>();
+                                List<String> messages = new ArrayList<>();
                                 StringBuilder builder = new StringBuilder();
                                 for (int i = 0; i < 5; ++i) {
                                     String message = slea.readMapleAsciiString();
@@ -254,7 +250,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                     break;
                 case 539:
                     if (player.getCanSmega() && player.getSmegaEnabled() && !player.getCheatTracker().Spam(3000, 3)) {
-                        List<String> lines = new LinkedList<>();
+                        List<String> lines = new ArrayList<>();
                         for (int i = 0; i < 4; ++i) {
                             lines.add(slea.readMapleAsciiString());
                         }
@@ -265,7 +261,6 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         cm.dropMessage("You have lost your megaphone privileges.");
                     }
                     break;
-
                 case 520:
                     if (ii.getMeso(itemId) + player.getMeso() < Integer.MAX_VALUE) {
                         player.gainMeso(ii.getMeso(itemId), true, false, true);
@@ -275,16 +270,13 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         player.dropMessage(1, "Cannot hold anymore mesos.");
                     }
                     break;
-
                 case 510:
                     player.getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.musicChange("Jukebox/Congratulation"), true);
                     break;
-
                 case 512:
                     player.getMap().startMapEffect(ii.getMsg(itemId).replaceFirst("%s", player.getName()).replaceFirst("%s", slea.readMapleAsciiString()), itemId);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                     break;
-
                 case 524:
                     for (int i = 0; i < 3; ++i) {
                         if (player.getPet(i) == null) break;
@@ -333,18 +325,15 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         }
                     }
                     break;
-
                 case 528:
-                    if (itemId == 5281000) { // Credits to purplemadness
+                    if (itemId == 5281000) {
                         Rectangle bounds = new Rectangle((int) player.getPosition().getX(), (int) player.getPosition().getY(), 1, 1);
                         MapleStatEffect mse = new MapleStatEffect();
                         mse.setSourceId(2111003);
                         MapleMist mist = new MapleMist(bounds, c.getPlayer(), mse);
                         player.getMap().spawnMist(mist, 10000, false, true);
-                        //player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), "Oh no, I farted!", false, 1));
                     }
                     break;
-
                 case 509:
                     String sendTo = slea.readMapleAsciiString();
                     String msg = slea.readMapleAsciiString();
@@ -377,18 +366,15 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         c.getSession().write(MaplePacketCreator.enableActions());
                     }
                     break;
-
                 case 537:
                     String text = slea.readMapleAsciiString();
                     slea.readInt();
                     player.setChalkboard(text);
                     break;
-
                 case 530:
                     ii.getItemEffect(itemId).applyTo(player);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                     break;
-
                 case 504:
                     byte rocktype = slea.readByte();
                     boolean vip = itemId == 5041000;
@@ -419,7 +405,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
                             //System.out.print("Changed channel, Victim: " + victim.getName());
                         }
-                        if (victim == null) { // player dcs / ccs while you cc o____o
+                        if (victim == null) { // Player dcs / ccs while you cc
                             player.dropMessage("System error!");
                             break;
                         } else {
@@ -432,14 +418,14 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                                 break;
                             }
-                            if (!victim.isGM() || player.isGM()) { // I should really handle this before the switch
-                                if (true) { // if ((player.getMap().getMapName().equals(victim.getMap().getMapName()) && !vip) || vip)
+                            if (!victim.isGM() || player.isGM()) { // Should really handle this before the switch
+                                //if ((player.getMap().getMapName().equals(victim.getMap().getMapName()) && !vip) || vip) {
                                     player.changeMap(map, map.findClosestSpawnpoint(victim.getPosition()));
-                                    //System.out.print("Good player TP, map: " + map.getId() + " spawn: " + map.findClosestSpawnpoint(victim.getPosition()).getName());
+                                    /*System.out.print("Good player TP, map: " + map.getId() + " spawn: " + map.findClosestSpawnpoint(victim.getPosition()).getName());
                                 } else {
                                     player.dropMessage(1, "You cannot warp to this player because they are not on the same continent.");
                                     break;
-                                }
+                                }*/
                             } else {
                                 player.dropMessage(1, "You cannot use VIP teleport rocks on a GM.");
                                 break;

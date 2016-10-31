@@ -701,7 +701,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public boolean enterBossMap(int bossid) {
         int mapid = 3000;
         MapleMap map;
-        List<MapleCharacter> partymembers = new LinkedList<>();
+        List<MapleCharacter> partymembers = new ArrayList<>();
         for (MaplePartyCharacter pm : getPlayer().getParty().getMembers()) {
             partymembers.add(c.getChannelServer().getPlayerStorage().getCharacterById(pm.getId()));
         }
@@ -1313,7 +1313,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (getPlayer().getParty() == null) {
             return null;
         }
-        List<MapleCharacter> chars = new LinkedList<>();
+        List<MapleCharacter> chars = new ArrayList<>();
         for (ChannelServer channel : ChannelServer.getAllInstances()) {
             for (MapleCharacter chr : channel.getPartyMembers(getPlayer().getParty())) {
                 if (chr != null) {
@@ -1374,7 +1374,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String equipList(MapleClient c, int lb1, int lb2, int lb3, int lb4) {
         StringBuilder str = new StringBuilder();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<String> stra = new LinkedList<>();
+        List<String> stra = new ArrayList<>();
         List<Integer> leavebehind = new ArrayList<>();
         leavebehind.add(lb1);
         leavebehind.add(lb2);
@@ -1425,7 +1425,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String plainEquipList(int itemsPerLine) {
         StringBuilder str = new StringBuilder();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<String> stra = new LinkedList<>();
+        List<String> stra = new ArrayList<>();
         ArrayList<IItem> equiplist = new ArrayList<>();
         equiplist.addAll(equip.list());
         
@@ -1484,7 +1484,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String cashEquipList() {
         StringBuilder str = new StringBuilder();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<String> stra = new LinkedList<>();
+        List<String> stra = new ArrayList<>();
         Equip tempitem;
         ArrayList<IItem> equiplist = new ArrayList<>();
         for (IItem equipitem : equip.list()) {
@@ -1721,7 +1721,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             MapleData data;
             MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
             data = dataProvider.getData("Mob.img");
-            List<Pair<Integer, String>> mobPairList = new LinkedList<>();
+            List<Pair<Integer, String>> mobPairList = new ArrayList<>();
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
             ps.setInt(1, searchid);

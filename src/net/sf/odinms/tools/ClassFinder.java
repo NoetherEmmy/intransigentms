@@ -3,7 +3,7 @@ package net.sf.odinms.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -11,8 +11,8 @@ import java.util.jar.JarFile;
 public class ClassFinder {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClassFinder.class);
 
-    final List<JarFile> jars = new LinkedList<>();
-    final List<File> dirs = new LinkedList<>();
+    final List<JarFile> jars = new ArrayList<>();
+    final List<File> dirs = new ArrayList<>();
 
     public ClassFinder() {
         String classpath = System.getProperty("java.class.path");
@@ -44,7 +44,7 @@ public class ClassFinder {
     }
 
     public String[] listClasses(String packageName, boolean recurse) {
-        List<String> ret = new LinkedList<>();
+        List<String> ret = new ArrayList<>();
 
         // scan dirs
         final String fileSystemPackagePath = packageName.replace('.', File.separatorChar);

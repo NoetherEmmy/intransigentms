@@ -3,14 +3,14 @@ package net.sf.odinms.net.world;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapleParty implements Serializable {
 
     private static final long serialVersionUID = 9179541993413738569L;
     private MaplePartyCharacter leader;
-    private final List<MaplePartyCharacter> members = new LinkedList<>();
+    private final List<MaplePartyCharacter> members = new ArrayList<>();
     private int id;
     private int CP;
     private int team;

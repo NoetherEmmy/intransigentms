@@ -10,7 +10,7 @@ import net.sf.odinms.tools.data.input.StreamUtil;
 
 import java.awt.*;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class
@@ -34,7 +34,7 @@ MoveSummonHandler extends AbstractMovementPacketHandler {
             // player = ((MapleCharacter) c.getPlayer().getMap().getMapObject(30000));
             player.getMap().broadcastMessage(player, MaplePacketCreator.moveSummon(player.getId(), oid, startPos, res), summon.getPosition());
         } else {
-            List<Integer> summonKeys = new LinkedList<>();
+            List<Integer> summonKeys = new ArrayList<>();
             for (Integer key : player.getSummons().keySet()) {
                 if (player.getSummons().get(key) == null) {
                     summonKeys.add(key);

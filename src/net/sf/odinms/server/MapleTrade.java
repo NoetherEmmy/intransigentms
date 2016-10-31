@@ -6,7 +6,7 @@ import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +14,7 @@ public class MapleTrade {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleTrade.class);
     private MapleTrade partner = null;
-    private final List<IItem> items = new LinkedList<>();
+    private final List<IItem> items = new ArrayList<>();
     private List<IItem> exchangeItems;
     private int meso = 0;
     private int exchangeMeso;
@@ -153,7 +153,7 @@ public class MapleTrade {
     }
 
     public List<IItem> getItems() {
-        return new LinkedList<>(items);
+        return new ArrayList<>(items);
     }
 
     public boolean fitsInInventory() {

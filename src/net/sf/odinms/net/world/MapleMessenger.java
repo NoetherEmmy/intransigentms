@@ -3,12 +3,12 @@ package net.sf.odinms.net.world;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapleMessenger implements Serializable {
     private static final long serialVersionUID = 9179541993413738569L;
-    private final List<MapleMessengerCharacter> members = new LinkedList<>();
+    private final List<MapleMessengerCharacter> members = new ArrayList<>();
     private int id;
     private boolean pos0 = false;
     private boolean pos1 = false;
