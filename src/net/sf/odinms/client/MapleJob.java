@@ -87,7 +87,7 @@ public enum MapleJob {
     
     public static String getJobName(int id) {
         switch (id) {
-            case 0: return "Beginner";
+            case 0:   return "Beginner";
             case 100: return "Warrior";
             case 110: return "Fighter";
             case 111: return "Crusader";

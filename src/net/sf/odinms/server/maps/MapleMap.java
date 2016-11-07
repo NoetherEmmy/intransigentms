@@ -12,6 +12,7 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.TimerManager;
+import net.sf.odinms.server.life.MapleLifeFactory;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.life.MapleNPC;
 import net.sf.odinms.server.life.SpawnPoint;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class MapleMap {
 
@@ -65,7 +67,8 @@ public class MapleMap {
     private int protectItem = 0;
     private boolean town;
     private boolean showGate = false;
-    private final List<Pair<PeriodicMonsterDrop, ScheduledFuture<?>>> periodicMonsterDrops = new ArrayList<>(2);
+    private final List<Pair<PeriodicMonsterDrop, ScheduledFuture<?>>> periodicMonsterDrops = new ArrayList<>(3);
+    private final List<DynamicSpawnWorker> dynamicSpawnWorkers = new ArrayList<>(2);
     private static final Map<Integer, Integer> lastLatanicaTimes = new ConcurrentHashMap<>(4, 0.75f, 1);
     private PartyQuestMapInstance partyQuestInstance = null;
 
@@ -235,7 +238,7 @@ public class MapleMap {
         int maxDrops;
         final boolean explosive = monster.isExplosive();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        ChannelServer cserv = dropOwner.getClient().getChannelServer();
+        ChannelServer cserv = ChannelServer.getInstance(this.channel);
         if (explosive) {
             maxDrops = 10 * cserv.getBossDropRate();
         } else {
@@ -246,7 +249,7 @@ public class MapleMap {
             toDrop.add(monster.getDrop());
         }
         //
-        if (dropOwner.getEventInstance() == null && dropOwner.getPartyQuest() == null) {
+        if (dropOwner != null && dropOwner.getEventInstance() == null && dropOwner.getPartyQuest() == null) {
             int chance = (int) (Math.random() * 150); // 1/150 droprate
             if (chance < 1) {
                 toDrop.add(4001126); // Maple leaf
@@ -414,7 +417,7 @@ public class MapleMap {
                 final int drop = toDrop.get(i);
                 if (drop == -1) {
                     if (monster.isBoss()) {
-                        final int cc = ChannelServer.getInstance(dropOwner.getClient().getChannel()).getMesoRate() + 25;
+                        final int cc = cserv.getMesoRate() + 25;
                         final MapleMonster dropMonster = monster;
                         Random r = new Random();
                         double mesoDecrease = Math.pow(0.93, monster.getExp() / 300.0);
@@ -424,42 +427,52 @@ public class MapleMap {
                             mesoDecrease = 0.005;
                         }
                         int tempmeso = Math.min(30000, (int) (mesoDecrease * (monster.getExp()) * (1.0 + r.nextInt(20)) / 10.0));
-                        if(dropOwner.getBuffedValue(MapleBuffStat.MESOUP) != null) {
+                        if (dropOwner != null && dropOwner.getBuffedValue(MapleBuffStat.MESOUP) != null) {
                             tempmeso = (int) (tempmeso * dropOwner.getBuffedValue(MapleBuffStat.MESOUP).doubleValue() / 100.0);
                         }
                         final int dmesos = tempmeso;
                         if (dmesos > 0) {
                             final MapleCharacter dropChar = dropOwner;
                             final boolean publicLoot = this.isPQMap();
-                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(dmesos * cc, dmesos, dropPos, dropMonster, dropChar, explosive || publicLoot), monster.getAnimationTime("die1"));
+                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(dmesos * cc, dmesos, dropPos, dropMonster, dropChar, explosive || publicLoot || dropChar == null), monster.getAnimationTime("die1"));
                         }
                     } else {
-                        final int mesoRate = ChannelServer.getInstance(dropOwner.getClient().getChannel()).getMesoRate();
+                        final int mesoRate = cserv.getMesoRate();
                         Random r = new Random();
-                        double mesoDecrease = Math.pow(0.93, monster.getExp() / 300.0);
-                        if (mesoDecrease > 1.0) {
-                            mesoDecrease = 1.0;
+                        double mesoDecrease = Math.pow(0.93d, monster.getExp() / 300.0d);
+                        if (mesoDecrease > 1.0d) {
+                            mesoDecrease = 1.0d;
                         }
-                        int tempmeso = Math.min(30000, (int) (mesoDecrease * (monster.getExp()) * (1.0 + r.nextInt(20)) / 10.0));
-                        if (dropOwner.getBuffedValue(MapleBuffStat.MESOUP) != null) {
-                            tempmeso = (int) (tempmeso * dropOwner.getBuffedValue(MapleBuffStat.MESOUP).doubleValue() / 100.0);
+                        int tempmeso = Math.min(30000, (int) (mesoDecrease * (monster.getExp()) * (1.0d + r.nextInt(20)) / 10.0d));
+                        if (dropOwner != null && dropOwner.getBuffedValue(MapleBuffStat.MESOUP) != null) {
+                            tempmeso = (int) (tempmeso * dropOwner.getBuffedValue(MapleBuffStat.MESOUP).doubleValue() / 100.0d);
                         }
                         final int meso = tempmeso;
                         if (meso > 0) {
                             final MapleMonster dropMonster = monster;
                             final MapleCharacter dropChar = dropOwner;
                             final boolean publicLoot = this.isPQMap();
-                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(meso * mesoRate, meso, dropPos, dropMonster, dropChar, explosive || publicLoot), monster.getAnimationTime("die1"));
+                            TimerManager.getInstance().schedule(() -> spawnMesoDrop(meso * mesoRate, meso, dropPos, dropMonster, dropChar, explosive || publicLoot || dropChar == null), monster.getAnimationTime("die1"));
                         }
                     }
                 } else {
                     IItem idrop;
                     MapleInventoryType type = ii.getInventoryType(drop);
                     if (type.equals(MapleInventoryType.EQUIP)) {
-                        idrop = ii.randomizeStats(dropOwner.getClient(), (Equip) ii.getEquipById(drop));
+                        MapleClient c = null;
+                        if (dropOwner == null && playerCount() > 0) {
+                            c = ((MapleCharacter) getAllPlayers().get(0)).getClient();
+                        } else if (dropOwner != null) {
+                            c = dropOwner.getClient();
+                        }
+                        if (c != null) {
+                            idrop = ii.randomizeStats(c, (Equip) ii.getEquipById(drop));
+                        } else {
+                            idrop = ii.getEquipById(drop);
+                        }
                     } else {
                         idrop = new Item(drop, (byte) 0, (short) 1);
-                        if (ii.isArrowForBow(drop) || ii.isArrowForCrossBow(drop)) {
+                        if ((ii.isArrowForBow(drop) || ii.isArrowForCrossBow(drop)) && dropOwner != null) {
                             if (dropOwner.getJob().getId() / 100 == 3) {
                                 idrop.setQuantity((short) (1 + 100 * Math.random()));
                             }
@@ -472,11 +485,19 @@ public class MapleMap {
                     final MapleCharacter dropChar = dropOwner;
                     final TimerManager tMan = TimerManager.getInstance();
                     tMan.schedule(() -> {
-                        spawnAndAddRangedMapObject(mdrop, c -> c.getSession().write(MaplePacketCreator.dropItemFromMapObject(drop, mdrop.getObjectId(), dropMonster.getObjectId(), explosive ? 0 : dropChar.getId(), dropMonster.getPosition(), dropPos, (byte) 1)), null);
+                        spawnAndAddRangedMapObject(mdrop, c -> c.getSession().write(MaplePacketCreator.dropItemFromMapObject(drop, mdrop.getObjectId(), dropMonster.getObjectId(), explosive || dropOwner == null ? 0 : dropChar.getId(), dropMonster.getPosition(), dropPos, (byte) 1)), null);
                         tMan.schedule(new ExpireMapItemJob(mdrop), dropLife);
                     }, monster.getAnimationTime("die1"));
                 }
             }
+        }
+    }
+    
+    public void startPeriodicMonsterDrop(MapleMonster monster, long period, long duration) {
+        if (playerCount() > 0) {
+            startPeriodicMonsterDrop((MapleCharacter) getAllPlayers().get(0), monster, period, duration);
+        } else {
+            startPeriodicMonsterDrop(null, monster, period, duration);
         }
     }
     
@@ -493,6 +514,56 @@ public class MapleMap {
     
     private void addPeriodicMonsterDrop(PeriodicMonsterDrop pmd, ScheduledFuture<?> cancelTask) {
         periodicMonsterDrops.add(new Pair<>(pmd, cancelTask));
+    }
+
+    public DynamicSpawnWorker registerDynamicSpawnWorker(int monsterId, Point spawnPoint, int period) {
+        final DynamicSpawnWorker dsw = new DynamicSpawnWorker(monsterId, spawnPoint, period);
+        dynamicSpawnWorkers.add(dsw);
+        return dsw;
+    }
+
+    public DynamicSpawnWorker registerDynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period) {
+        final DynamicSpawnWorker dsw = new DynamicSpawnWorker(monsterId, spawnArea, period);
+        dynamicSpawnWorkers.add(dsw);
+        return dsw;
+    }
+
+    public DynamicSpawnWorker registerDynamicSpawnWorker(int monsterId, Point spawnPoint, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod) {
+        final DynamicSpawnWorker dsw = new DynamicSpawnWorker(monsterId, spawnPoint, period, duration, putPeriodicMonsterDrops, monsterDropPeriod);
+        dynamicSpawnWorkers.add(dsw);
+        return dsw;
+    }
+    
+    public DynamicSpawnWorker registerDynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod) {
+        final DynamicSpawnWorker dsw = new DynamicSpawnWorker(monsterId, spawnArea, period, duration, putPeriodicMonsterDrops, monsterDropPeriod);
+        dynamicSpawnWorkers.add(dsw);
+        return dsw;
+    }
+    
+    public DynamicSpawnWorker getDynamicSpawnWorker(int index) {
+        return dynamicSpawnWorkers.get(index);
+    }
+
+    public Set<DynamicSpawnWorker> getDynamicSpawnWorkersByMobId(int mobId) {
+        return dynamicSpawnWorkers.stream().filter(dsw -> dsw.getMonsterId() == mobId).collect(Collectors.toSet());
+    }
+    
+    public void disposeDynamicSpawnWorker(int index) {
+        final DynamicSpawnWorker dsw = dynamicSpawnWorkers.get(index);
+        if (dsw != null) {
+            dsw.dispose();
+            dynamicSpawnWorkers.remove(index);
+        }
+    }
+
+    public void disposeDynamicSpawnWorker(DynamicSpawnWorker dsw) {
+        dsw.dispose();
+        dynamicSpawnWorkers.remove(dsw);
+    }
+    
+    public void disposeAllDynamicSpawnWorkers() {
+        dynamicSpawnWorkers.forEach(DynamicSpawnWorker::dispose);
+        dynamicSpawnWorkers.clear();
     }
 
     public boolean damageMonster(MapleCharacter chr, final MapleMonster monster, int damage) {
@@ -1022,40 +1093,48 @@ public class MapleMap {
     }
 
     private void cancelCancelPeriodicMonsterDrop(final int monsterOid) {
-        periodicMonsterDrops.forEach((pmdh) -> {
-            if (pmdh.getLeft().getMonsterOid() == monsterOid) {
-                pmdh.getRight().cancel(false);
-            }
-        });
+        synchronized (periodicMonsterDrops) {
+            periodicMonsterDrops.forEach((pmdh) -> {
+                if (pmdh.getLeft().getMonsterOid() == monsterOid) {
+                    pmdh.getRight().cancel(false);
+                }
+            });
+        }
     }
 
     public void cancelPeriodicMonsterDrops(final int monsterOid) {
-        for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
-            if (periodicMonsterDrops.get(i).getLeft().getMonsterOid() == monsterOid) {
-                periodicMonsterDrops.get(i--).getLeft().selfCancel();
+        synchronized (periodicMonsterDrops) {
+            for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
+                if (periodicMonsterDrops.get(i).getLeft().getMonsterOid() == monsterOid) {
+                    periodicMonsterDrops.get(i--).getLeft().selfCancel();
+                }
             }
         }
     }
 
     public void cancelAllPeriodicMonsterDrops() {
-        for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
-            periodicMonsterDrops.get(i--).getLeft().selfCancel();
+        synchronized (periodicMonsterDrops) {
+            for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
+                periodicMonsterDrops.get(i--).getLeft().selfCancel();
+            }
+            periodicMonsterDrops.clear();
         }
-        periodicMonsterDrops.clear();
     }
 
     private void cancelPeriodicMonsterDrop(final PeriodicMonsterDrop pmd) {
-        Pair<PeriodicMonsterDrop, ScheduledFuture<?>> pmdh = null;
-        for (Pair<PeriodicMonsterDrop, ScheduledFuture<?>> _pmdh : periodicMonsterDrops) {
-            if (_pmdh.getLeft().equals(pmd)) {
-                pmdh = _pmdh;
-                break;
+        synchronized (periodicMonsterDrops) {
+            Pair<PeriodicMonsterDrop, ScheduledFuture<?>> pmdh = null;
+            for (Pair<PeriodicMonsterDrop, ScheduledFuture<?>> _pmdh : periodicMonsterDrops) {
+                if (_pmdh.getLeft().equals(pmd)) {
+                    pmdh = _pmdh;
+                    break;
+                }
             }
+            if (pmdh != null) {
+                pmdh.getRight().cancel(false);
+            }
+            periodicMonsterDrops.remove(pmdh);
         }
-        if (pmdh != null) {
-            pmdh.getRight().cancel(false);
-        }
-        periodicMonsterDrops.remove(pmdh);
     }
 
     public PartyQuestMapInstance getPartyQuestInstance() {
@@ -1903,6 +1982,133 @@ public class MapleMap {
                 MapleMap.this.cancelPeriodicMonsterDrop(this);
                 task.cancel(false);
             }
+        }
+    }
+    
+    public class DynamicSpawnWorker {
+        private final Rectangle spawnArea;
+        private final Point spawnPoint;
+        private final int period;
+        private final int duration;
+        private final int monsterId;
+        private boolean putPeriodicMonsterDrops;
+        private int monsterDropPeriod;
+        private ScheduledFuture<?> spawnTask = null;
+        private ScheduledFuture<?> cancelTask = null;
+        
+        public DynamicSpawnWorker(int monsterId, Point spawnPoint, int period) {
+            this(monsterId, spawnPoint, period, 0, false, 0);
+        }
+        
+        public DynamicSpawnWorker(int monsterId, Point spawnPoint, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod) {
+            if (MapleLifeFactory.getMonster(monsterId) == null) {
+                throw new IllegalArgumentException("Monster ID for DynamicSpawnWorker must be a valid monster ID!");
+            }
+            spawnArea = null;
+            this.spawnPoint = spawnPoint;
+            this.period = period;
+            this.duration = duration;
+            this.monsterId = monsterId;
+            this.putPeriodicMonsterDrops = putPeriodicMonsterDrops;
+            this.monsterDropPeriod = monsterDropPeriod;
+        }
+
+        public DynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period) {
+            this(monsterId, spawnArea, period, 0, false, 0);
+        }
+
+        public DynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod) {
+            if (MapleLifeFactory.getMonster(monsterId) == null) {
+                throw new IllegalArgumentException("Monster ID for DynamicSpawnWorker must be a valid monster ID!");
+            }
+            this.spawnArea = spawnArea;
+            spawnPoint = null;
+            this.period = period;
+            this.duration = duration;
+            this.monsterId = monsterId;
+            this.putPeriodicMonsterDrops = putPeriodicMonsterDrops;
+            this.monsterDropPeriod = monsterDropPeriod;
+        }
+        
+        public void start() {
+            if (spawnTask == null) {
+                TimerManager tMan = TimerManager.getInstance();
+                if (spawnArea != null) {
+                    spawnTask = tMan.register(() -> {
+                        for (int i = 0; i < 20; ++i) {
+                            try {
+                                final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
+                                int x = (int) (Math.random() * (spawnArea.getWidth() + 1)) + spawnArea.x;
+                                int y = (int) (-Math.random() * (spawnArea.getHeight() + 1)) + spawnArea.y;
+                                toSpawn.setPosition(new Point(x, y));
+                                MapleMap.this.spawnMonster(toSpawn);
+                                
+                                if (putPeriodicMonsterDrops) {
+                                    MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
+                                }
+                                break;
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }, period);
+                } else {
+                    spawnTask = tMan.register(() -> {
+                        final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
+                        toSpawn.setPosition(spawnPoint);
+                        MapleMap.this.spawnMonster(toSpawn);
+
+                        if (putPeriodicMonsterDrops) {
+                            MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
+                        }
+                    }, period);
+                }
+
+                if (duration > 0) {
+                    cancelTask = tMan.schedule(this::dispose, duration);
+                }
+            }
+        }
+        
+        public Point getSpawnPoint() {
+            if (spawnPoint == null) {
+                return null;
+            }
+            return new Point(spawnPoint);
+        }
+        
+        public Rectangle getSpawnArea() {
+            if (spawnArea == null) {
+                return null;
+            }
+            return new Rectangle(spawnArea);
+        }
+
+        public int getMonsterId() {
+            return monsterId;
+        }
+        
+        public int getPeriod() {
+            return period;
+        }
+
+        public void turnOffPeriodicMonsterDrops() {
+            setPeriodicMonsterDrops(false, 0);
+        }
+        
+        public void setPeriodicMonsterDrops(boolean on, int monsterDropPeriod) {
+            if (on) {
+                this.monsterDropPeriod = monsterDropPeriod;
+                putPeriodicMonsterDrops = true;
+            } else {
+                putPeriodicMonsterDrops = false;
+            }
+        }
+        
+        public void dispose() {
+            if (cancelTask != null) cancelTask.cancel(false);
+            if (spawnTask != null) spawnTask.cancel(false);
+            cancelTask = null;
+            spawnTask = null;
         }
     }
 

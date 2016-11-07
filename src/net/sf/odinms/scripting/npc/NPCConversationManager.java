@@ -671,7 +671,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                         player.changeMap(returnmapid, 0);
                     }
                 };
-                getPlayer().getClient().getSession().write(MaplePacketCreator.getClock(1200)); // 20 minutes
+                getPlayer().getClient().getSession().write(MaplePacketCreator.getClock(30 * 60)); // 30 minutes
                 int monsterchoices[] = monsters[calculateLevelGroup(getPlayer().getLevel()) - 1];
                 int monsterchoice = monsterchoices[(int) Math.floor(Math.random() * monsterchoices.length)];
                 int monsterid = (int) Math.floor((double) monsterchoice / 10.0);
@@ -681,7 +681,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     try {
                         map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(monsterid), monsterspawnpoint);
                     } catch (NullPointerException npe) {
-                        System.out.print("Player " + player.getName() + " booted from Monster Trials; monsterchoice, monsterid: " + monsterchoice + ", " + monsterid + "\n");
+                        System.out.println("Player " + player.getName() + " booted from Monster Trials; monsterchoice, monsterid: " + monsterchoice + ", " + monsterid);
                         npe.printStackTrace();
                         tMan.schedule(() -> {
                             player.changeMap(returnmapid, 0);
@@ -690,7 +690,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                         return true;
                     }
                 }
-                tMan.schedule(endTrialTask, 20 * 60 * 1000); // 20 minutes
+                tMan.schedule(endTrialTask, 30 * 60 * 1000); // 30 minutes
                 getPlayer().setLastTrialTime(System.currentTimeMillis());
                 return true;
             }
