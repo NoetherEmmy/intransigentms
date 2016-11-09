@@ -41,8 +41,12 @@ public class PartyQuest {
         return players;
     }
 
-    public List<PartyQuestMapInstance> getMapInstances() {
+    List<PartyQuestMapInstance> getMapInstances() {
         return mapInstances;
+    }
+    
+    public List<PartyQuestMapInstance> readMapInstances() {
+        return new ArrayList<>(mapInstances);
     }
 
     public PartyQuestMapInstance getMapInstance(final MapleMap map) {
@@ -54,15 +58,16 @@ public class PartyQuest {
     }
 
     public void registerMap(int mapId) {
-        MapleMap newMap = ChannelServer.getInstance(channel).getMapFactory().getMap(mapId);
+        final MapleMap newMap = ChannelServer.getInstance(channel).getMapFactory().getMap(mapId);
         if (newMap.playerCount() > 0 || newMap.getPartyQuestInstance() != null) {
             throw new IllegalStateException("Attempting to register map that is currently in use.");
         }
         newMap.resetReactors();
-        PartyQuestMapInstance newInstance = new PartyQuestMapInstance(this, newMap);
+        final PartyQuestMapInstance newInstance = new PartyQuestMapInstance(this, newMap);
         newMap.registerPartyQuestInstance(newInstance);
-        mapInstances.remove(newInstance);
         newInstance.invokeMethod("init");
+        mapInstances.add(newInstance);
+        mapInstances.stream().filter(mi -> mi != newInstance).forEach(mi -> mi.invokeMethod("mapRegistered", newInstance));
     }
 
     public void unregisterMap(int mapId) {

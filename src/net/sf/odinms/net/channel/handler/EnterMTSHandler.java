@@ -39,6 +39,9 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
                 c.getPlayer().dropMessage("You can't enter the FM from The Back Room. If you've fallen off the map, use @mapfix.");
             } else if (c.getPlayer().getMapId() == 3000) {
                 c.getPlayer().dropMessage("You can't enter the FM while in a Boss Map.");
+            } else if (c.getPlayer().getMap().isPQMap()) {
+                c.getPlayer().dropMessage("You can't enter the FM while in a party quest.");
+            } else if (c.getPlayer().getMapId() == 105) {
             } else {
                 if (c.getPlayer().getMapId() != 910000000) {
                     c.getPlayer().saveLocation(SavedLocationType.FREE_MARKET);

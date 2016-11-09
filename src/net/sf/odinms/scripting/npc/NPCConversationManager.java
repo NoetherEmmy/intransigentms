@@ -1387,18 +1387,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, (o1, o2) -> {
-            int comparison = o1.getPosition() - o2.getPosition();
-            if (comparison < 0) {
-                return -1;
-            } else {
-                if (comparison > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
+        Collections.sort(equiplist, (o1, o2) -> (int) Math.signum(o1.getPosition() - o2.getPosition()));
         
         for (IItem equipitem : equiplist) {
             tempitem = (Equip) equipitem;
@@ -1426,22 +1415,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         StringBuilder str = new StringBuilder();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
         List<String> stra = new ArrayList<>();
-        ArrayList<IItem> equiplist = new ArrayList<>();
-        equiplist.addAll(equip.list());
-        
+        ArrayList<IItem> equiplist = new ArrayList<>(equip.list());
+
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, (o1, o2) -> {
-            int comparison = o1.getPosition() - o2.getPosition();
-            if (comparison < 0) {
-                return -1;
-            } else {
-                if (comparison > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
+        Collections.sort(equiplist, (o1, o2) -> (int) Math.signum(o1.getPosition() - o2.getPosition()));
 
         int itemsInLine = 0;
         for (IItem equipitem : equiplist) {
@@ -1492,18 +1469,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, (o1, o2) -> {
-            int comparison = o1.getPosition() - o2.getPosition();
-            if (comparison < 0) {
-                return -1;
-            } else {
-                if (comparison > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
+        Collections.sort(equiplist, (o1, o2) -> (int) Math.signum(o1.getPosition() - o2.getPosition()));
         
         for (IItem equipitem : equiplist) {
             tempitem = (Equip) equipitem;
