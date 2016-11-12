@@ -179,8 +179,9 @@ public class PartyQuest {
             p.setPartyQuest(null);
         });
         players.clear();
-        mapInstances.forEach(PartyQuestMapInstance::dispose);
-        mapInstances.clear();
+        while (!mapInstances.isEmpty()) {
+            mapInstances.get(0).dispose();
+        }
         pqItems.clear();
         ChannelServer.getInstance(channel).unregisterPartyQuest(name);
         if (disposeTask != null) disposeTask.cancel(false);

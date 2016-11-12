@@ -129,7 +129,7 @@ public class MapleGenericPortal implements MaplePortal {
                     return;
                 }
             }
-            c.getPlayer().changeMap(to, pto);
+            player.changeMap(to, pto);
             changed = true;
         }
         if (!changed) {

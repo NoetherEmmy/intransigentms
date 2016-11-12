@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Properties;
 
 public interface WorldChannelInterface extends Remote, WorldChannelCommonOperations {
-
     Properties getDatabaseProperties() throws RemoteException;
 
     Properties getGameProperties() throws RemoteException;

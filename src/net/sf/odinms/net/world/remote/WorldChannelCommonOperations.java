@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface WorldChannelCommonOperations {
-
     boolean isConnected(String charName) throws RemoteException;
 
     void broadcastMessage(String sender, byte[] message) throws RemoteException;

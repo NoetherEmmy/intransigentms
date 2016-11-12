@@ -1665,7 +1665,7 @@ public class GM implements Command {
                     return;
                 }
                 MapleNPC npc = MapleLifeFactory.getNPC(npcId);
-                if (npc != null && !npc.getName().equalsIgnoreCase("MISSINGNO")) {
+                if (!npc.getName().equalsIgnoreCase("MISSINGNO")) {
                     npc.setPosition(player.getPosition());
                     npc.setCy(player.getPosition().y);
                     npc.setRx0(player.getPosition().x + 50);
@@ -2068,7 +2068,7 @@ public class GM implements Command {
 
     @Override
     public CommandDefinition[] getDefinition() {
-        return new CommandDefinition[]{
+        return new CommandDefinition[] {
             new CommandDefinition("lowhp", 3),
             new CommandDefinition("sp", 3),
             new CommandDefinition("ap", 3),

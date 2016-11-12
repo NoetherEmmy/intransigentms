@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PlayerStorage implements IPlayerStorage {
-
     final Map<String, MapleCharacter> nameToChar = new LinkedHashMap<>();
     final Map<Integer, MapleCharacter> idToChar = new LinkedHashMap<>();
 

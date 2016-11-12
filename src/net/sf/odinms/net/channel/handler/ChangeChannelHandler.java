@@ -35,6 +35,7 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
         if (player.getPartyQuest() != null) {
             if (!player.getMap().isPQMap()) {
                 player.getPartyQuest().playerDisconnected(player);
+                player.setPartyQuest(null);
             } else {
                 player.dropMessage(5, "You may not change channels while in " + player.getPartyQuest().getName() + ".");
             }
