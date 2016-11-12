@@ -161,7 +161,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 player.getCheatTracker().setAttacksWithoutHit(0);
                 player.getCheatTracker().resetHPRegen();
                 player.resetAfkTime();
-                if (player.getPartyQuest() != null) {
+                if (player.getPartyQuest() != null && player.getPartyQuest().getMapInstance(player.getMap()) != null) {
                     player.getPartyQuest().getMapInstance(player.getMap()).invokeMethod("playerHit", player, damage, attacker);
                 }
                 if (!player.isHidden() && player.isAlive()) {
