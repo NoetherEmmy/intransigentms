@@ -121,6 +121,14 @@ public class MapleGenericPortal implements MaplePortal {
             if (pto == null) {
                 pto = to.getPortal(0);
             }
+            if (to.getId() == 5003 && to.getPartyQuestInstance() == null) {
+                if (player.getPartyQuest() != null) {
+                    player.getPartyQuest().registerMap(5003);
+                } else {
+                    player.changeMap(200000000); // Orbis
+                    return;
+                }
+            }
             c.getPlayer().changeMap(to, pto);
             changed = true;
         }
