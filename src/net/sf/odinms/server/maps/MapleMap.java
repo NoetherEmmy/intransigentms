@@ -967,7 +967,9 @@ public class MapleMap {
                             map.damageMonster(damager, monster, 1);
                         }
                     }, 800, 750);
-                    startPeriodicMonsterDrop(monster.getController() != null ? monster.getController() : (MapleCharacter) getAllPlayers().get(0), monster, 2500, 125000);
+                    startPeriodicMonsterDrop(monster.getController() != null ? monster.getController()
+                                           : monster.getMap().playerCount() > 0 ? (MapleCharacter) getAllPlayers().get(0)
+                                           : null, monster, 2500, 125000);
                 }
             }, null);
             updateMonsterController(monster);

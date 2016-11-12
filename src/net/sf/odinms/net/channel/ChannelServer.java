@@ -86,6 +86,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
     private final Map<String, PartyQuest> partyQuests = new HashMap<>(2);
+    private final Map<String, Set<Integer>> partyQuestItems = new HashMap<>(2);
     private static final Map<Integer, ChannelServer> instances = new HashMap<>();
     private static final Map<String, ChannelServer> pendingInstances = new HashMap<>();
     private final Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
@@ -462,6 +463,41 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
 
     public void unregisterPartyQuest(String name) {
         partyQuests.remove(name);
+    }
+    
+    public void disposePartyQuests() {
+        while (!partyQuests.isEmpty()) {
+            partyQuests.values().stream().findAny().ifPresent(PartyQuest::dispose);
+        }
+    }
+    
+    public void addPqItem(PartyQuest pq, int id) {
+        addPqItem(pq.getName(), id);
+    }
+    
+    public void addPqItem(String pqName, int id) {
+        if (partyQuestItems.containsKey(pqName)) {
+            partyQuestItems.get(pqName).add(id);
+        } else {
+            Set<Integer> items = new HashSet<>(4, 0.8f);
+            items.add(id);
+            partyQuestItems.put(pqName, items);
+        }
+    }
+    
+    public Set<Integer> readPqItems(String pqName) {
+        if (partyQuestItems.containsKey(pqName)) {
+            return new HashSet<>(partyQuestItems.get(pqName));
+        } else {
+            return Collections.emptySet();
+        }
+    }
+    
+    public Set<Integer> readAllPqItems() {
+        return partyQuestItems.values().stream().reduce((union, s) -> {
+            union.addAll(s);
+            return union;
+        }).orElseGet(Collections::emptySet);
     }
 
     @Override

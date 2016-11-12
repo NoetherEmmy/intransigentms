@@ -8,6 +8,7 @@ import net.sf.odinms.net.world.*;
 import net.sf.odinms.net.world.guild.MapleAlliance;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
+import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
@@ -27,7 +28,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
         int cid = slea.readInt();
         MapleCharacter player;
         try {
@@ -197,8 +198,10 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
                     } else {
                         player.changeMap(100000000, 0);
                     }
+                    channelServer.readAllPqItems().forEach(id -> MapleInventoryManipulator.removeAllById(c, id, false));
                 } else if (player.getMap().isPQMap()) {
                     player.changeMap(100000000, 0);
+                    channelServer.readAllPqItems().forEach(id -> MapleInventoryManipulator.removeAllById(c, id, false));
                 }
             }
         }
@@ -216,6 +219,5 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9010000, "Maple Administrator"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(2051001, "Kay"));
         //
-        //MapleItemInformationProvider.getInstance().cacheCashEquips();
     }
 }

@@ -1493,7 +1493,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 break;
             }
         }
-        pastLifeExp = Math.max(pastLifeLevel / 20 + pastLifeLevel % 2, 1);
+        pastLifeExp = Math.max((pastLifeLevel / 2 + pastLifeLevel % 2 + 9) / 10, 1);
     }
 
     public void toggleGenderFilter() {
@@ -2576,6 +2576,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (getCheatTracker().Spam(2000, 5) || to.getId() == 40000) { // || to.getId() == 50000
             client.getSession().write(MaplePacketCreator.enableActions());
         } else {
+            if (getPartyQuest() != null && !to.isPQMap()) {
+                getPartyQuest().playerDisconnected(this);
+            }
             warpPacket.setOnSend(() -> {
                 IPlayerInteractionManager interaction1 = MapleCharacter.this.getInteraction();
                 if (interaction1 != null) {
@@ -2754,7 +2757,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             MaplePacket packet = MaplePacketCreator.serverNotice(6, "Congratulations to " + getName() + " on becoming a " + jobachieved + "!");
             try {
                 getClient().getChannelServer().getWorldInterface().broadcastMessage(getName(), packet.getBytes());
-            } catch (RemoteException e) {
+            } catch (RemoteException re) {
                 getClient().getChannelServer().reconnectWorld();
             }
         }

@@ -4,12 +4,11 @@ import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.net.world.MapleParty;
 import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.server.MapleInventoryManipulator;
+import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.maps.MapleMap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 public class PartyQuest {
@@ -22,7 +21,8 @@ public class PartyQuest {
     private final int exitMapId;
     private final int channel;
     private int points;
-    private final List<Integer> pqItems = new ArrayList<>(4);
+    private final Set<Integer> pqItems = new HashSet<>(4, 0.8f);
+    private ScheduledFuture<?> disposeTask = null;
 
     public PartyQuest(int channel, String name, int minPlayers, int exitMapId) {
         this.channel = channel;
@@ -39,6 +39,10 @@ public class PartyQuest {
 
     public List<MapleCharacter> getPlayers() {
         return players;
+    }
+    
+    public int playerCount() {
+        return players.size();
     }
 
     List<PartyQuestMapInstance> getMapInstances() {
@@ -115,10 +119,11 @@ public class PartyQuest {
 
     public void addPqItem(int id) {
         pqItems.add(id);
+        ChannelServer.getInstance(this.channel).addPqItem(this, id);
     }
 
-    public List<Integer> getPqItems() {
-        return pqItems;
+    public Set<Integer> readPqItems() {
+        return new HashSet<>(pqItems);
     }
 
     public void registerPlayer(MapleCharacter player) {
@@ -154,7 +159,7 @@ public class PartyQuest {
     }
 
     public void playerDisconnected(MapleCharacter player) {
-        removePlayer(player);
+        players.remove(player);
         if (isLeader(player) || players.size() < minPlayers) {
             dispose();
         }
@@ -178,11 +183,15 @@ public class PartyQuest {
         mapInstances.clear();
         pqItems.clear();
         ChannelServer.getInstance(channel).unregisterPartyQuest(name);
+        if (disposeTask != null) disposeTask.cancel(false);
+        disposeTask = null;
     }
 
     public void startTimer(long time) {
         timeStarted = System.currentTimeMillis();
         eventTime = time;
+        if (disposeTask != null) disposeTask.cancel(false);
+        disposeTask = TimerManager.getInstance().schedule(this::dispose, eventTime + 500);
     }
 
     public boolean isTimerStarted() {
@@ -196,6 +205,8 @@ public class PartyQuest {
     public void cancelTimer() {
         timeStarted = 0;
         eventTime = 0;
+        if (disposeTask != null) disposeTask.cancel(false);
+        disposeTask = null;
     }
 
     public boolean isLeader(MapleCharacter player) {

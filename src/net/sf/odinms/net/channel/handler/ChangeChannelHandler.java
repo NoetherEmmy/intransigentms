@@ -33,7 +33,11 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
             return;
         }
         if (player.getPartyQuest() != null) {
-            player.dropMessage(5, "You may not change channels while in " + player.getPartyQuest().getName() + ".");
+            if (!player.getMap().isPQMap()) {
+                player.getPartyQuest().playerDisconnected(player);
+            } else {
+                player.dropMessage(5, "You may not change channels while in " + player.getPartyQuest().getName() + ".");
+            }
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }

@@ -27,8 +27,10 @@ public class EnterCashShopHandler extends AbstractMaplePacketHandler {
                 }
             }
             c.getSession().write(MaplePacketCreator.enableActions());
-        } else if (c.getPlayer().getMapId() >= 1000 && c.getPlayer().getMapId() <= 1006) {
-            c.getPlayer().dropMessage("You can't enter the cash shop while in a Monster Trial.");
+        } else if (c.getPlayer().getMapId() >= 1000 && c.getPlayer().getMapId() <= 1006
+                || c.getPlayer().getMap().isPQMap()
+                || c.getPlayer().getMapId() == 105) {
+            c.getPlayer().dropMessage("You can't enter the cash shop from here.");
             c.getSession().write(MaplePacketCreator.enableActions());
         } else {
             if (player.getNoPets() > 0) {

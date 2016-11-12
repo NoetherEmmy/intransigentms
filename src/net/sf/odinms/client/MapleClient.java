@@ -560,7 +560,7 @@ public class MapleClient {
     }
 
     public void disconnect() {
-        MapleCharacter chr = this.getPlayer();
+        final MapleCharacter chr = getPlayer();
         if (chr != null && isLoggedIn()) {
             if (chr.getTrade() != null) {
                 MapleTrade.cancelTrade(chr);

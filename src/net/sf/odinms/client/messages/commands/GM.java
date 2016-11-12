@@ -2041,6 +2041,28 @@ public class GM implements Command {
                     e.printStackTrace();
                 }
                 break;
+            case "!invokemethod":
+                if (player.getMap().getPartyQuestInstance() != null) {
+                    if (splitted.length > 2) {
+                        String[] stringArgs = Arrays.copyOfRange(splitted, 2, splitted.length);
+                        List<Object> args = new ArrayList<>(2);
+                        for (String stringArg : stringArgs) {
+                            try {
+                                int intArg = Integer.parseInt(stringArg);
+                                args.add(intArg);
+                            } catch (NumberFormatException nfe) {
+                                args.add(stringArg);
+                            }
+                        }
+                        player.getMap().getPartyQuestInstance().invokeMethod(splitted[1], args.toArray());
+                    } else {
+                        player.getMap().getPartyQuestInstance().invokeMethod(splitted[1]);
+                    }
+                }
+                break;
+            case "!clearpqs":
+                player.getClient().getChannelServer().disposePartyQuests();
+                break;
         }
     }
 
@@ -2182,7 +2204,9 @@ public class GM implements Command {
             new CommandDefinition("levelpersongrad", 3),
             new CommandDefinition("cachecashequips", 3),
             new CommandDefinition("cleardropcache", 3),
-            new CommandDefinition("moveup", 3)
+            new CommandDefinition("moveup", 3),
+            new CommandDefinition("invokemethod", 3),
+            new CommandDefinition("clearpqs", 3)
         };
     }
 }
