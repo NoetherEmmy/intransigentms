@@ -35,7 +35,7 @@ public class MapleReactorFactory {
                     boolean areaSet = false;
                     int i = 0;
                     while (reactorInfoData != null) {
-                        Pair<Integer,Integer> reactItem = null;
+                        Pair<Integer, Integer> reactItem = null;
                         int type = MapleDataTool.getIntConvert("type", reactorInfoData);
                         if (type == 100) { // Reactor waits for item.
                             reactItem = new Pair<>(MapleDataTool.getIntConvert("0", reactorInfoData), MapleDataTool.getIntConvert("1", reactorInfoData));

@@ -688,7 +688,8 @@ public class MapleClient {
     }
 
     public void dropDebugMessage(MessageCallback mc) {
-        String builder = "Connected: " +
+        String builder =
+                "Connected: " +
                 getSession().isConnected() +
                 " Closing: " +
                 getSession().isClosing() +
@@ -784,14 +785,13 @@ public class MapleClient {
             try {
                 if (lastPong - then < 0) {
                     if (getSession().isConnected()) {
-                        System.out.println("Auto DC : " + session.getRemoteAddress().toString() + " : Ping Timeout.");
+                        System.out.println("Auto DC : " + session.getRemoteAddress() + " : Ping Timeout.");
                         getSession().close();
                     }
                 }
             } catch (NullPointerException ignored) {
             }
         }, 15000);
-
     }
 
     public static String getLogMessage(MapleClient cfor, String message) {

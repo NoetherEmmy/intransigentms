@@ -768,7 +768,7 @@ public class MapleStatEffect implements Serializable {
             Set<Integer> disabledSkills = null;
             if (applyTo.getPartyQuest() != null) {
                 if (applyTo.getPartyQuest().getMapInstance(applyTo.getMap()) != null) {
-                    disabledSkills = applyTo.getPartyQuest().getMapInstance(applyTo.getMap()).getDisabledSkills();
+                    disabledSkills = applyTo.getPartyQuest().getMapInstance(applyTo.getMap()).readDisabledSkills();
                 }
             }
             for (PlayerCoolDownValueHolder i : applyTo.getAllCooldowns()) {
@@ -815,7 +815,7 @@ public class MapleStatEffect implements Serializable {
                         Set<Integer> disabledSkills = null;
                         if (affected.getPartyQuest() != null) {
                             if (affected.getPartyQuest().getMapInstance(affected.getMap()) != null) {
-                                disabledSkills = affected.getPartyQuest().getMapInstance(affected.getMap()).getDisabledSkills();
+                                disabledSkills = affected.getPartyQuest().getMapInstance(affected.getMap()).readDisabledSkills();
                             }
                         }
                         for (PlayerCoolDownValueHolder i : affected.getAllCooldowns()) {
@@ -906,7 +906,7 @@ public class MapleStatEffect implements Serializable {
                     // We remove the inferior buff (for now, possibly).
                     localStatups.remove(i--);
                     buffPrioritized = true;
-                } else if (getDuration() < chr.getBuffedRemainingTime(localStatup.getLeft())) {
+                } else if (getDuration() < (chr.getBuffedRemainingTime(localStatup.getLeft()) == null ? (long) -1 : chr.getBuffedRemainingTime(localStatup.getLeft()))) {
                     // This buff is as good or better, but doesn't last as long so we will reinstate
                     // the inferior one once this one wears off.
                     final MapleStatEffect currentInferiorBuff = new MapleStatEffect(chr.getStatForBuff(localStatup.getLeft()));
@@ -1195,7 +1195,7 @@ public class MapleStatEffect implements Serializable {
             Set<Integer> disabledSkills = null;
             if (applyTo.getPartyQuest() != null) {
                 if (applyTo.getPartyQuest().getMapInstance(applyTo.getMap()) != null) {
-                    disabledSkills = applyTo.getPartyQuest().getMapInstance(applyTo.getMap()).getDisabledSkills();
+                    disabledSkills = applyTo.getPartyQuest().getMapInstance(applyTo.getMap()).readDisabledSkills();
                 }
             }
             for (PlayerCoolDownValueHolder i : applyTo.getAllCooldowns()) {
