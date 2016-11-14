@@ -1,144 +1,130 @@
-// object for custom quests
 package net.sf.odinms.client;
 
+import net.sf.odinms.tools.Pair;
+
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Map;
 import java.util.Properties;
 
-public class MapleCQuests { 
-     
+public class MapleCQuests {
     private int id;
-    private int target1, target2;
-    private int item1, item2;
-    private int reward1, reward2, reward3, reward4;
-    private int amount1, amount2, amount3, amount4;
+    private final Map<Integer, Pair<Integer, String>> monsterTargets = new HashMap<>(4, 0.8f);
+    private final Map<Integer, Pair<Integer, String>> itemsToCollect = new HashMap<>(4, 0.8f);
+    private int expReward, mesoReward;
+    private final Map<Integer, Integer> itemRewards = new HashMap<>(3);
     private String npc;
     private String title;
-    private String target1n, target2n;
-    private String item1n, item2n;
     private String info;
-     
-    public void loadQuest(int id) { 
-        Properties p = new Properties(); 
-        try { 
+
+    public void loadQuest(int id) {
+        final Properties p = new Properties();
+        try {
             p.load(new FileInputStream("quests/" + id + ".ini"));
-            this.id = id; 
-            this.target1 = Integer.parseInt(p.getProperty("MonsterID1")); 
-            this.target2 = Integer.parseInt(p.getProperty("MonsterID2")); 
-            this.item1 = Integer.parseInt(p.getProperty("CollectItemID1")); 
-            this.item2 = Integer.parseInt(p.getProperty("CollectItemID2")); 
-            this.amount1 = Integer.parseInt(p.getProperty("ToKill1")); 
-            this.amount2 = Integer.parseInt(p.getProperty("ToKill2")); 
-            this.amount3 = Integer.parseInt(p.getProperty("ToCollect1")); 
-            this.amount4 = Integer.parseInt(p.getProperty("ToCollect2")); 
-            this.reward1 = Integer.parseInt(p.getProperty("EXP")); 
-            this.reward2 = Integer.parseInt(p.getProperty("MESO")); 
-            this.reward3 = Integer.parseInt(p.getProperty("ITEM")); 
-            this.reward4 = Integer.parseInt(p.getProperty("ITEM_amount")); 
-            this.npc = "" + p.getProperty("NPC"); 
-            this.title = "" + p.getProperty("Title"); 
-            this.target1n = "" + p.getProperty("MonsterName1"); 
-            this.target2n = "" + p.getProperty("MonsterName2"); 
-            this.item1n = "" + p.getProperty("ItemName1"); 
-            this.item2n = "" + p.getProperty("ItemName2"); 
-            this.info = "" + p.getProperty("Info"); 
-        } catch (Exception e) { 
-            System.out.println(e + " - Failed to load Quest "  + id); 
-            this.id = 0; 
-        } 
-    } 
-     
-    public int getId() { 
+            this.id = id;
+            
+            monsterTargets.clear();
+            int i = 1;
+            String monsterTarget = p.getProperty("MonsterID" + i);
+            while (monsterTarget != null) {
+                String toKill = p.getProperty("ToKill" + i);
+                String mobName = p.getProperty("MonsterName" + i);
+                if (toKill == null || mobName == null) {
+                    throw new InvalidPropertiesFormatException(
+                        "Number of MonsterID properties must match/correspond with number of ToKill & MonsterName properties"
+                    );
+                }
+                monsterTargets.put(Integer.parseInt(monsterTarget), new Pair<>(Integer.parseInt(toKill), mobName));
+                i++;
+                monsterTarget = p.getProperty("MonsterID" + i);
+            }
+
+            itemsToCollect.clear();
+            i = 1;
+            String itemToCollect = p.getProperty("CollectItemID" + i);
+            while (itemToCollect != null) {
+                String toCollect = p.getProperty("ToCollect" + i);
+                String itemName = p.getProperty("ItemName" + i);
+                if (toCollect == null || itemName == null) {
+                    throw new InvalidPropertiesFormatException(
+                        "Number of CollectItemID properties must match/correspond with number of ToCollect & ItemName properties"
+                    );
+                }
+                itemsToCollect.put(Integer.parseInt(itemToCollect), new Pair<>(Integer.parseInt(toCollect), itemName));
+                i++;
+                itemToCollect = p.getProperty("CollectItemID" + i);
+            }
+            
+            expReward = Integer.parseInt(p.getProperty("EXP"));
+            mesoReward = Integer.parseInt(p.getProperty("MESO"));
+
+            itemRewards.clear();
+            i = 1;
+            if (p.getProperty("ITEM") != null) {
+                itemRewards.put(Integer.parseInt(p.getProperty("ITEM")), Integer.parseInt(p.getProperty("ITEM_amount")));
+            } else {
+                itemRewards.put(Integer.parseInt(p.getProperty("ITEM" + i)), Integer.parseInt(p.getProperty("ITEM_amount" + i)));
+            }
+            i++;
+            String itemReward = p.getProperty("ITEM" + i);
+            while (itemReward != null) {
+                String itemAmount = p.getProperty("ITEM_amount" + i);
+                if (itemAmount == null) {
+                    throw new InvalidPropertiesFormatException(
+                        "Number of ITEM properties must match/correspond with number of ITEM_amount properties"
+                    );
+                }
+                itemRewards.put(Integer.parseInt(itemReward), Integer.parseInt(itemAmount));
+                i++;
+                itemReward = p.getProperty("ITEM" + i);
+            }
+            
+            npc = "" + p.getProperty("NPC");
+            title = "" + p.getProperty("Title");
+            info = "" + p.getProperty("Info");
+        } catch (Exception e) {
+            System.out.println(e + " -- Failed to load MapleCQuest "  + id);
+            this.id = 0;
+        }
+    }
+
+    public int getId() {
         return id;
-    } 
-         
-    public int getTargetId(int type) { 
-        switch (type) { 
-            case 1: 
-                return target1; 
-            case 2: 
-                return target2; 
-        } 
-        return 0; 
-    } 
-     
-    public String getTargetName(int type) { 
-        switch (type) { 
-            case 1: 
-                return target1n; 
-            case 2: 
-                return target2n; 
-        } 
-        return ""; 
-    } 
-     
-    public int getItemId(int type) { 
-        switch (type) { 
-            case 1: 
-                return item1; 
-            case 2: 
-                return item2; 
-        } 
-        return 0; 
-    } 
-         
-    public String getItemName(int type) { 
-        switch (type) { 
-            case 1: 
-                return item1n; 
-            case 2: 
-                return item2n; 
-        } 
-        return ""; 
-    } 
-     
-    public int getReward(int type) { 
-        switch (type) { 
-            case 1: 
-                return reward1; 
-            case 2: 
-                return reward2; 
-            case 3: 
-                return reward3; 
-        } 
-        return 0; 
-    } 
-     
-    public int getItemRewardAmount() { 
-        return reward4; 
-    } 
-     
-    public String getNPC() { 
-        return npc; 
-    } 
-     
-    public String loadTitle(int questid) { 
-        String title = ""; 
-        Properties p = new Properties(); 
-        try { 
-            p.load(new FileInputStream("quests/" + questid + ".ini")); 
-            title += p.getProperty("Title"); 
-        } catch (Exception e) { 
+    }
+
+    public String getNPC() {
+        return npc;
+    }
+
+    public String loadTitle(int questid) {
+        String title = "";
+        Properties p = new Properties();
+        try {
+            p.load(new FileInputStream("quests/" + questid + ".ini"));
+            title += p.getProperty("Title");
+        } catch (Exception e) {
             System.out.println(e + " - Failed to load Title of Quest: " + questid);
-            title += "[Failed to load Title of Quest: ]"; 
-        } 
-        return title; 
-    } 
-     
-    public String getTitle() { 
-        return title; 
-    } 
-     
-    public String loadInfo(int questid) { 
-        String info = ""; 
-        Properties p = new Properties(); 
-        try { 
-            p.load(new FileInputStream("quests/" + questid + ".ini")); 
+            title += "[Failed to load Title of Quest: " + questid + "]";
+        }
+        return title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String loadInfo(int questid) {
+        String info = "";
+        Properties p = new Properties();
+        try {
+            p.load(new FileInputStream("quests/" + questid + ".ini"));
             info += p.getProperty("Info");
-        } catch (Exception e) { 
-            System.out.println(e + " - Failed to load Info of Quest: " + questid); 
-            title += "[Failed to load info of quest]";
-        } 
-        return info; 
+        } catch (Exception e) {
+            System.out.println(e + " - Failed to load Info of Quest: " + questid);
+            title += "[Failed to load info of quest " + questid + "]";
+        }
+        return info;
     }
 
     public boolean questExists(int questid) {
@@ -149,32 +135,68 @@ public class MapleCQuests {
         }
         return true;
     }
-     
-    public String getInfo() { 
-        return info; 
-    }     
-     
-    public int getToKill(int type) { 
-        switch (type) { 
-            case 1: 
-                return amount1; 
-            case 2: 
-                return amount2; 
-        } 
-        return 0; 
-    } 
-     
-    public int getToCollect(int type) { 
-        switch (type) { 
-            case 1: 
-                return amount3; 
-            case 2: 
-                return amount4; 
-        } 
-        return 0; 
-    } 
-     
-    public void closeQuest() { 
-        loadQuest(0); 
-    } 
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void closeQuest() {
+        loadQuest(0);
+    }
+    
+    public Integer getNumberToKill(int monsterId) {
+        if (!monsterTargets.containsKey(monsterId)) return null;
+        return monsterTargets.get(monsterId).getLeft();
+    }
+    
+    public Integer getNumberToCollect(int itemId) {
+        if (!itemsToCollect.containsKey(itemId)) return null;
+        return itemsToCollect.get(itemId).getLeft();
+    }
+    
+    public int getExpReward() {
+        return expReward;
+    }
+    
+    public int getMesoReward() {
+        return mesoReward;
+    }
+    
+    public Map<Integer, Pair<Integer, String>> readMonsterTargets() {
+        return new HashMap<>(monsterTargets);
+    }
+    
+    public Map<Integer, Pair<Integer, String>> readItemsToCollect() {
+        return new HashMap<>(itemsToCollect);
+    }
+    
+    public Map<Integer, Integer> readItemRewards() {
+        return new HashMap<>(itemRewards);
+    }
+    
+    public String getTargetName(int monsterId) {
+        if (!monsterTargets.containsKey(monsterId)) return null;
+        return monsterTargets.get(monsterId).getRight();
+    }
+    
+    public String getItemName(int itemId) {
+        if (!itemsToCollect.containsKey(itemId)) return null;
+        return itemsToCollect.get(itemId).getRight();
+    }
+    
+    public boolean requiresTarget(int monsterId) {
+        return monsterTargets.containsKey(monsterId);
+    }
+    
+    public boolean requiresItem(int itemId) {
+        return itemsToCollect.containsKey(itemId);
+    }
+    
+    public boolean requiresMonsterTargets() {
+        return !monsterTargets.isEmpty();
+    }
+    
+    public boolean requiresItemCollection() {
+        return !itemsToCollect.isEmpty();
+    }
 }

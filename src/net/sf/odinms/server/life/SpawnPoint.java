@@ -13,8 +13,8 @@ public class SpawnPoint {
     private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
 
     /**
-     * Whether the spawned monster is immobile or not
-     */
+     ** Whether the spawned monster is immobile or not
+     **/
     private final boolean immobile;
 
     public SpawnPoint(MapleMonster monster, Point pos, int mobTime) {
@@ -44,11 +44,8 @@ public class SpawnPoint {
     }
 
     /**
-     * Spawns the monster for this spawnpoint. Creates a new MapleMonster instance for that and returns it.
-     *
-     * @param mapleMap
-     * @return
-     */
+     ** Spawns the monster for this spawnpoint. Creates a new MapleMonster instance for that and returns it.
+     **/
     public MapleMonster spawnMonster(MapleMap mapleMap) {
         MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(new Point(pos));
@@ -68,10 +65,11 @@ public class SpawnPoint {
         }
 
         // The conditional below is for events with monsters that spawn on all maps.
+        /*
         if (Math.random() < 0.02d) {
             mapleMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9500196), pos);
         }
-
+        */
         return mob;
     }
 }

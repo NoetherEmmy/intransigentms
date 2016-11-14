@@ -2058,10 +2058,37 @@ public class GM implements Command {
                     } else {
                         player.getMap().getPartyQuestInstance().invokeMethod(splitted[1]);
                     }
+                } else {
+                    MapleMap map = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
+                    if (splitted.length > 3) {
+                        String[] stringArgs = Arrays.copyOfRange(splitted, 3, splitted.length);
+                        List<Object> args = new ArrayList<>(2);
+                        for (String stringArg : stringArgs) {
+                            try {
+                                int intArg = Integer.parseInt(stringArg);
+                                args.add(intArg);
+                            } catch (NumberFormatException nfe) {
+                                args.add(stringArg);
+                            }
+                        }
+                        map.getPartyQuestInstance().invokeMethod(splitted[2], args.toArray());
+                    } else {
+                        map.getPartyQuestInstance().invokeMethod(splitted[2]);
+                    }
                 }
                 break;
             case "!clearpqs":
                 player.getClient().getChannelServer().disposePartyQuests();
+                break;
+            case "!reloadpqmiscript":
+                if (splitted.length > 1) {
+                    MapleMap map = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
+                    if (map.getPartyQuestInstance() != null) {
+                        map.getPartyQuestInstance().reloadScript();
+                    }
+                } else if (player.getMap().getPartyQuestInstance() != null) {
+                    player.getMap().getPartyQuestInstance().reloadScript();
+                }
                 break;
         }
     }

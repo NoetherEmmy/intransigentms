@@ -14,7 +14,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.util.List;
 
 public class MovePlayerHandler extends AbstractMovementPacketHandler {
-
     //private static Logger log = LoggerFactory.getLogger(MovePlayerHandler.class);
 
     @Override
@@ -93,14 +92,14 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
                     }
                 }
             // if (wasALM && (oldPosition.y == newPosition.y)) {
-            // int distance = Math.abs(oldPosition.x - newPosition.x);
-            // if (alm.getDuration() > 60) { // short durations are strange and show too fast movement
-            // double distancePerSec = (distance / (double) ((LifeMovement) move).getDuration()) * 1000.0;
-            // double speedMod = distancePerSec / 125.0;
-            // double normalSpeed = distancePerSec / playerSpeedMod;
-            // System.out.println(speedMod + " " + normalSpeed + " " + distancePerSec + " " + distance + " "
-            // + alm.getWobble());
-            // }
+            //     int distance = Math.abs(oldPosition.x - newPosition.x);
+            //     if (alm.getDuration() > 60) { // short durations are strange and show too fast movement
+            //         double distancePerSec = (distance / (double) ((LifeMovement) move).getDuration()) * 1000.0;
+            //         double speedMod = distancePerSec / 125.0;
+            //         double normalSpeed = distancePerSec / playerSpeedMod;
+            //         System.out.println(speedMod + " " + normalSpeed + " " + distancePerSec + " " + distance + " "
+            //                          + alm.getWobble());
+            //     }
             // }
             // oldPosition = newPosition;
             // wasALM = true;

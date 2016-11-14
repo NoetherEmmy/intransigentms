@@ -39,7 +39,7 @@ import java.util.List;
 public class PlayerCommands implements Command {
 
     @Override
-    public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
+    public void execute(MapleClient c, final MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
         MapleCharacter player = c.getPlayer();
         if (splitted[0].equals("@command") || splitted[0].equals("@commands") || splitted[0].equals("@help")) {
@@ -128,8 +128,7 @@ public class PlayerCommands implements Command {
                 e.printStackTrace();
             }
         } else if (splitted[0].equals("@questinfo")) {
-            MapleCQuests q;
-            q = player.getCQuest();
+            MapleCQuests q = player.getCQuest();
             String complete;
             if (q.getId() > 0) {
                 if (player.canComplete()) {
@@ -139,18 +138,24 @@ public class PlayerCommands implements Command {
                 }
                 mc.dropMessage("Quest: " + q.getTitle());
                 mc.dropMessage("-----------------------------");
-                if (q.getToKill(1) > 0) {
-                    mc.dropMessage(q.getTargetName(1) + "s killed: " + player.getQuestKills(1) + "/" + q.getToKill(1));
-                }
-                if (q.getToKill(2) > 0) {
-                    mc.dropMessage(q.getTargetName(2) + "s killed: " + player.getQuestKills(2) + "/" + q.getToKill(2));
-                }
-                if (q.getToCollect(1) > 0) {
-                    mc.dropMessage(q.getItemName(1) + "s collected: " + player.getQuestCollected(1) + "/" + q.getToCollect(1));
-                }
-                if (q.getToCollect(2) > 0) {
-                    mc.dropMessage(q.getItemName(2) + "s collected: " + player.getQuestCollected(2) + "/" + q.getToCollect(2));
-                }
+                q.readMonsterTargets().entrySet().forEach(e -> 
+                    mc.dropMessage(
+                          e.getValue().getRight()
+                        + "s killed: "
+                        + player.getQuestKills(e.getKey())
+                        + "/"
+                        + e.getValue().getLeft()
+                    )
+                );
+                q.readItemsToCollect().entrySet().forEach(e ->
+                    mc.dropMessage(
+                          e.getValue().getRight()
+                        + "s collected: "
+                        + player.getQuestCollected(e.getKey())
+                        + "/"
+                        + e.getValue().getLeft()
+                    )
+                );
                 mc.dropMessage(complete);
             } else {
                 mc.dropMessage("You don't have a quest currently underway.");
@@ -898,8 +903,7 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@cancelquest")) {
             player.getCQuest().loadQuest(0);
             player.setQuestId(0);
-            player.setQuestKills(1, 0);
-            player.setQuestKills(2, 0);
+            player.resetQuestKills();
             player.sendHint("#eQuest canceled.");
         } else if (splitted[0].equals("@vote")) {
             player.dropVoteTime();

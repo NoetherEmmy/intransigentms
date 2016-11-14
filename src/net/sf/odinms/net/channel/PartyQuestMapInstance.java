@@ -25,7 +25,7 @@ public class PartyQuestMapInstance {
     private final PartyQuest partyQuest;
     private final MapleMap map;
     private final String path;
-    private final Invocable invocable;
+    private Invocable invocable;
     private final Map<MapleCharacter, Map<String, Object>> playerPropertyMap;
     private int levelLimit = 0;
     private boolean listeningForPlayerMovement = false;
@@ -343,6 +343,28 @@ public class PartyQuestMapInstance {
     
     public Set<Integer> readDisabledSkills() {
         return Collections.unmodifiableSet(disabledSkills);
+    }
+    
+    public void reloadScript() {
+        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+        try {
+            FileReader scriptFile = new FileReader(path);
+            scriptEngine.eval(scriptFile);
+            scriptFile.close();
+            scriptEngine.put("mi",  this);
+            scriptEngine.put("pq",  this.partyQuest);
+            scriptEngine.put("map", this.map);
+        } catch (FileNotFoundException fnfe) {
+            System.out.println("PartyQuestMapInstance could not locate script at path: " + path);
+        } catch (ScriptException se) {
+            System.out.println("Error evaluating script in PartyQuestMapInstance at path " + path);
+            se.printStackTrace();
+        } catch (IOException ioe) {
+            System.out.println("Error reading script in PartyQuestMapInstance at path " + path);
+            ioe.printStackTrace();
+        } finally {
+            invocable = (Invocable) scriptEngine;
+        }
     }
 
     public class Obstacle {

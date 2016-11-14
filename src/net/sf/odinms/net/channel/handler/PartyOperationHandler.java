@@ -12,7 +12,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class PartyOperationHandler extends AbstractMaplePacketHandler {
-
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         int operation = slea.readByte();
@@ -41,8 +40,11 @@ public class PartyOperationHandler extends AbstractMaplePacketHandler {
                     try {
                         if (partyplayer.equals(party.getLeader())) {
                             wci.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
-                            if (player.getEventInstance() != null || player.getPartyQuest() != null) {
+                            if (player.getEventInstance() != null) {
                                 player.getEventInstance().disbandParty();
+                            }
+                            if (player.getPartyQuest() != null) {
+                                player.getPartyQuest().disbandParty();
                             }
                         } else {
                             wci.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);

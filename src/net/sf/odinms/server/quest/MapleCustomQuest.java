@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class MapleCustomQuest extends MapleQuest {
-
     public MapleCustomQuest(int id) {
         try {
             this.id = id;
@@ -33,8 +32,7 @@ public class MapleCustomQuest extends MapleQuest {
                 data = (MapleCustomQuestData) ois.readObject();
                 req = new MapleQuestRequirement(this,
                     MapleQuestRequirementType.getByWZName(data.getName()), data);
-                MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(
-                    rs.getInt("status"));
+                MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(rs.getInt("status"));
                 if (status.equals(MapleQuestStatus.Status.NOT_STARTED)) {
                     startReqs.add(req);
                 } else if (status.equals(MapleQuestStatus.Status.STARTED)) {

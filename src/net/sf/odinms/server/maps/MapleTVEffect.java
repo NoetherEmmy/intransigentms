@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public class MapleTVEffect {
-
     public static MaplePacket packet;
     public static boolean active;
     private final ChannelServer cserv;

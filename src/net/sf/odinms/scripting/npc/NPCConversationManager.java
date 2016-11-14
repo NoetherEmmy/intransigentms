@@ -35,7 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
-
     private final MapleClient c;
     private final int npc;
     private String fileName = null;
@@ -284,8 +283,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void startCQuest(int id) {
         getPlayer().getCQuest().loadQuest(id);
         getPlayer().setQuestId(id);
-        getPlayer().setQuestKills(1, 0);
-        getPlayer().setQuestKills(2, 0);
+        getPlayer().resetQuestKills();
         if (id == 0) {
             getPlayer().sendHint("#eQuest canceled.");
         } else {
@@ -312,58 +310,48 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String showReward(String msg) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(msg);
         sb.append("\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n\r\n");
-        sb.append("#fUI/UIWindow.img/QuestIcon/8/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getReward(1))).append("\r\n");
-        sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getReward(2))).append("\r\n");
-        if (getPlayer().getCQuest().getReward(3) > 0) {
-            sb.append("\r\n#i").append(getPlayer().getCQuest().getReward(3)).append("#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getItemRewardAmount()));
-        }
+        sb.append("#fUI/UIWindow.img/QuestIcon/8/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getExpReward())).append("\r\n");
+        sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getMesoReward())).append("\r\n");
+        getPlayer().getCQuest().readItemRewards().entrySet().forEach(reward ->
+            sb.append("\r\n#i").append(reward.getKey()).append("#  ").append(MapleCharacter.makeNumberReadable(reward.getValue()))
+        );
         return sb.toString();
     }
 
     public void rewardPlayer(int story, int storypoints) {
         MapleCQuests q = getPlayer().getCQuest();
-        int questid = q.getId();
+        int questId = q.getId();
         getPlayer().addStory(story);
         getPlayer().addStoryPoints(storypoints);
-        gainExp(q.getReward(1));
-        gainMeso(q.getReward(2));
-        if (q.getReward(3) > 0) {
-            gainItem(q.getReward(3), (short) (q.getItemRewardAmount() > 0 ? q.getItemRewardAmount() : 1));
-        }
-        if (q.getItemId(1) > 0) {
-            gainItem(q.getItemId(1), (short) (-1 * q.getToCollect(1)));
-        }
-        if (q.getItemId(2) > 0) {
-            gainItem(q.getItemId(2), (short) (-1 * q.getToCollect(2)));
-        }
+        gainExp(q.getExpReward());
+        gainMeso(q.getMesoReward());
+        q.readItemRewards().entrySet().forEach(reward -> gainItem(reward.getKey(), reward.getValue().shortValue()));
+        q.readItemsToCollect().entrySet().forEach(collected -> gainItem(collected.getKey(), collected.getValue().getLeft().shortValue()));
         c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
         c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
         startCQuest(0);
-        if (completedAllQuests() && (questid / 1000 == 1 || questid / 1000 == 2) && !c.getPlayer().completedAllQuests()) {
+        if (completedAllQuests() && (questId / 1000 == 1 || questId / 1000 == 2) && !c.getPlayer().completedAllQuests()) {
             MapleInventoryManipulator.addById(c, 3992027, (short) 1);
-            getPlayer().dropMessage(6, "Congratulations on finishing all of the IntransigentQuests! For completing them all, you have been awarded with a single Red Candle. At level 110+ you may use this candle to revive yourself once, and avoid permanent death.");
+            getPlayer().dropMessage(6,
+                  "Congratulations on finishing all of the IntransigentQuests! "
+                + "For completing them all, you have been awarded with a single Red Candle. "
+                + "At level 110+ you may use this candle to revive yourself once, and avoid permanent death."
+            );
             c.getPlayer().setCompletedAllQuests(true);
         }
     }
 
     public void fourthRewardPlayer(int offensestory, int buffstory) {
-        MapleCQuests q = getPlayer().getCQuest(); 
+        final MapleCQuests q = getPlayer().getCQuest(); 
         getPlayer().addOffenseStory(offensestory);
         getPlayer().addBuffStory(buffstory);
-        gainExp(q.getReward(1));
-        gainMeso(q.getReward(2));
-        if (q.getReward(3) > 0) {
-            gainItem(q.getReward(3), (short) (q.getItemRewardAmount() > 0 ? q.getItemRewardAmount() : 1)); 
-        }
-        if (q.getItemId(1) > 0) {
-            gainItem(q.getItemId(1), (short) (-1 * q.getToCollect(1))); 
-        }
-        if (q.getItemId(2) > 0) {
-            gainItem(q.getItemId(2), (short) (-1 * q.getToCollect(2))); 
-        }
+        gainExp(q.getExpReward());
+        gainMeso(q.getMesoReward());
+        q.readItemRewards().entrySet().forEach(reward -> gainItem(reward.getKey(), reward.getValue().shortValue()));
+        q.readItemsToCollect().entrySet().forEach(collected -> gainItem(collected.getKey(), collected.getValue().getLeft().shortValue()));
         c.getSession().write(MaplePacketCreator.playSound("Dojan/clear")); 
         c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear")); 
         startCQuest(0);
@@ -374,49 +362,37 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String showQuestProgress() {
-        MapleCQuests q = getPlayer().getCQuest();
-        boolean mob1 = q.getTargetId(1) > 0;
-        boolean mob2 = q.getTargetId(2) > 0;
-        boolean item1 = q.getItemId(1) > 0;
-        boolean item2 = q.getItemId(2) > 0;
-        boolean killed1 = getPlayer().getQuestKills(1) >= q.getToKill(1);
-        boolean killed2 = getPlayer().getQuestKills(2) >= q.getToKill(2);
-        boolean collected1 = false;
-        boolean collected2 = false;
-        if (item1) {
-            if (itemQuantity(q.getItemId(1)) >= q.getToCollect(1)) {
-                collected1 = true;
-            }
-        }
-        if (item2) {
-            if (itemQuantity(q.getItemId(2)) >= q.getToCollect(2)) {
-                collected2 = true;
-            }
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append("Your quest info for:\r\n#e#r").append(q.getTitle()).append("#n#k\r\n\r\n");
-        if (mob1 || mob2) {
-            sb.append("#eMonster targets: #n\r\n");
-            if (mob1) {
-                sb.append(q.getTargetName(1)).append(": ").append(killed1 ? "#g" : "#r").append(getPlayer().getQuestKills(1)).append(" #k/ ").append(q.getToKill(1)).append("\r\n");
-            }
-            if (mob2) {
-                sb.append(q.getTargetName(2)).append(": ").append(killed2 ? "#g" : "#r").append(getPlayer().getQuestKills(2)).append(" #k/ ").append(q.getToKill(2)).append("\r\n");
-            }
-            sb.append("\r\n");
-        }
-        if (item1 || item2) {
-            sb.append("#eItems to collect: #n\r\n");
-            if (item1) {
-                sb.append(q.getItemName(1)).append(": ").append(collected1 ? "#g" : "#r").append(itemQuantity(q.getItemId(1))).append(" #k/ ").append(q.getToCollect(1)).append("\r\n");
-            }
-            if (item2) {
-                sb.append(q.getItemName(2)).append(": ").append(collected2 ? "#g" : "#r").append(itemQuantity(q.getItemId(2))).append(" #k/ ").append(q.getToCollect(2)).append("\r\n");
-            }
-            sb.append("\r\n");
-        }
+        final MapleCQuests q = getPlayer().getCQuest();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Your quest info for:\r\n#e#r").append(q.getTitle()).append("#n#k\r\n");
+        
+        if (q.requiresMonsterTargets()) sb.append("\r\n#eMonster targets:#n \r\n");
+        q.readMonsterTargets().entrySet().forEach(target ->
+            sb.append(target.getValue().getRight())
+              .append(": ")
+              .append(getPlayer().getQuestKills(target.getKey()) >= target.getValue().getLeft() ? "#g" : "#r")
+              .append(getPlayer().getQuestKills(target.getKey()))
+              .append(" #k/ ")
+              .append(target.getValue().getLeft())
+              .append("\r\n")
+        );
+        sb.append("\r\n");
+
+        if (q.requiresItemCollection()) sb.append("\r\n#eItems to collect:#n \r\n");
+        q.readMonsterTargets().entrySet().forEach(toCollect ->
+            sb.append(toCollect.getValue().getRight())
+              .append(": ")
+              .append(getPlayer().getQuestKills(toCollect.getKey()) >= toCollect.getValue().getLeft() ? "#g" : "#r")
+              .append(getPlayer().getQuestKills(toCollect.getKey()))
+              .append(" #k/ ")
+              .append(toCollect.getValue().getLeft())
+              .append("\r\n")
+        );
+        sb.append("\r\n");
+        
         sb.append("#eQuest NPC: #n\r\n#d").append(q.getNPC()).append("#k\r\n");
         sb.append("#eQuest info: #n\r\n").append(q.getInfo());
+        
         return sb.toString();
     }
 
@@ -904,13 +880,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
 
-    public void warpRandom(int mapid) {
-        MapleMap target = c.getChannelServer().getMapFactory().getMap(mapid);
-        Random rand = new Random();
-        MaplePortal portal = target.getPortal(rand.nextInt(target.getPortals().size())); //generate random portal
-        getPlayer().changeMap(target, portal);
-    }
-
     public int itemQuantity(int itemid) {
         return getPlayer().getItemQuantity(itemid, false);
     }
@@ -994,27 +963,24 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
 
-    public void removeSquadMember(MapleSquadType type, MapleCharacter chr, boolean ban) {
+    public void removeSquadMember(MapleSquadType type, MapleCharacter member, boolean ban) {
         MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         if (squad != null) {
-            squad.banMember(chr, ban);
+            squad.banMember(member, ban);
         }
     }
 
     public void removeSquadMember(MapleSquadType type, int index, boolean ban) {
         MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         if (squad != null) {
-            MapleCharacter chr = squad.getMembers().get(index);
-            squad.banMember(chr, ban);
+            MapleCharacter player = squad.getMembers().get(index);
+            squad.banMember(player, ban);
         }
     }
 
     public boolean canAddSquadMember(MapleSquadType type) {
         MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        if (squad != null) {
-            return !squad.isBanned(getPlayer());
-        }
-        return false;
+        return squad != null && !squad.isBanned(getPlayer());
     }
 
     public void warpSquadMembers(MapleSquadType type, int mapId) {
@@ -1022,8 +988,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleMap map = c.getChannelServer().getMapFactory().getMap(mapId);
         if (squad != null) {
             if (checkSquadLeader(type)) {
-                for (MapleCharacter chr : squad.getMembers()) {
-                    chr.changeMap(map, map.getPortal(0));
+                for (MapleCharacter member : squad.getMembers()) {
+                    member.changeMap(map, map.getPortal(0));
                 }
             }
         }
@@ -1352,7 +1318,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             case 123:
                 disease = MapleDisease.STUN;
                 break;
-            case 124: // Curse !TODO!
+            case 124: // Curse
                 disease = MapleDisease.CURSE;
                 break;
             case 125:

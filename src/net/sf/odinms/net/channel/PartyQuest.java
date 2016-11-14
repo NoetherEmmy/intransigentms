@@ -2,7 +2,6 @@ package net.sf.odinms.net.channel;
 
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.net.world.MapleParty;
-import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.maps.MapleMap;
@@ -175,8 +174,8 @@ public class PartyQuest {
     public void dispose() {
         players.forEach(p -> {
             pqItems.forEach(itemId -> MapleInventoryManipulator.removeAllById(p.getClient(), itemId, true));
-            p.changeMap(exitMapId);
             p.setPartyQuest(null);
+            p.changeMap(exitMapId);
         });
         players.clear();
         while (!mapInstances.isEmpty()) {

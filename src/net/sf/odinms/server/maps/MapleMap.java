@@ -71,6 +71,7 @@ public class MapleMap {
     private final List<DynamicSpawnWorker> dynamicSpawnWorkers = new ArrayList<>(2);
     private static final Map<Integer, Integer> lastLatanicaTimes = new ConcurrentHashMap<>(4, 0.75f, 1);
     private PartyQuestMapInstance partyQuestInstance = null;
+    private ScheduledFuture<?> respawnWorker = null;
 
     public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
         this.mapid = mapid;
@@ -86,7 +87,7 @@ public class MapleMap {
             } else {
                 this.monsterRate = 1.0f - this.monsterRate;
             }
-            TimerManager.getInstance().register(new RespawnWorker(), 5000);
+            respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5000);
         }
     }
 
@@ -100,6 +101,11 @@ public class MapleMap {
         synchronized (lastLatanicaTimes) {
             lastLatanicaTimes.put(channel, (int) (System.currentTimeMillis() / 1000));
         }
+    }
+    
+    public void restartRespawnWorker() {
+        if (respawnWorker != null) respawnWorker.cancel(false);
+        respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5000);
     }
 
     public void toggleDrops() {
@@ -818,10 +824,8 @@ public class MapleMap {
             synchronized (characters) {
                 for (MapleCharacter chr : characters) {
                     if (!chr.isHidden() && (chr.getControlledMonsters().size() < mincontrolled || mincontrolled == -1)) {
-                        if (!chr.getName().equals("FaekChar")) { // TODO remove me for production release
-                            mincontrolled = chr.getControlledMonsters().size();
-                            newController = chr;
-                        }
+                        mincontrolled = chr.getControlledMonsters().size();
+                        newController = chr;
                     }
                 }
             }
@@ -1614,6 +1618,11 @@ public class MapleMap {
     public MaplePortal getPortal(int portalid) {
         return portals.get(portalid);
     }
+    
+    public MaplePortal getRandomPortal() {
+        List<MaplePortal> portalList = new ArrayList<>(portals.values());
+        return portalList.get((int) (Math.random() * portalList.size()));
+    }
 
     public void addMapleArea(Rectangle rec) {
         areas.add(rec);
@@ -1644,7 +1653,7 @@ public class MapleMap {
                 newpos = calcPointBelow(adjustedpos);
             }
             if (newpos == null) {
-                System.out.print("Could not generate mob spawn position. MapleMap.java, void addMonsterSpawn()\n");
+                System.out.println("Could not generate mob spawn position. MapleMap.java: void addMonsterSpawn()");
                 return;
             }
             newpos.y -= 1;
@@ -1922,9 +1931,8 @@ public class MapleMap {
         @Override
         public void run() {
             int playersOnMap = characters.size();
-            if (playersOnMap == 0) {
-                return;
-            }
+            if (playersOnMap == 0) return;
+            
             int ispawnedMonstersOnMap = spawnedMonstersOnMap.get();
             int getMaxSpawn = (int) (getMaxRegularSpawn() * 1.6);
             int numShouldSpawn = (int) Math.ceil(Math.random() * (playersOnMap / 1.5 + (getMaxSpawn - ispawnedMonstersOnMap)));
@@ -1932,9 +1940,8 @@ public class MapleMap {
             if (numShouldSpawn + ispawnedMonstersOnMap > getMaxSpawn) {
                 numShouldSpawn = getMaxSpawn - ispawnedMonstersOnMap;
             }
-            if (numShouldSpawn <= 0) {
-                return;
-            }
+            if (numShouldSpawn <= 0) return;
+            
             List<SpawnPoint> randomSpawn = new ArrayList<>(monsterSpawn);
             Collections.shuffle(randomSpawn);
             int spawned = 0;
@@ -1943,9 +1950,7 @@ public class MapleMap {
                     spawnPoint.spawnMonster(MapleMap.this);
                     spawned++;
                 }
-                if (spawned >= numShouldSpawn) {
-                    break;
-                }
+                if (spawned >= numShouldSpawn) break;
             }
         }
     }
@@ -2072,16 +2077,12 @@ public class MapleMap {
         }
         
         public Point getSpawnPoint() {
-            if (spawnPoint == null) {
-                return null;
-            }
+            if (spawnPoint == null) return null;
             return new Point(spawnPoint);
         }
         
         public Rectangle getSpawnArea() {
-            if (spawnArea == null) {
-                return null;
-            }
+            if (spawnArea == null) return null;
             return new Rectangle(spawnArea);
         }
 
@@ -2171,12 +2172,22 @@ public class MapleMap {
     }
 
     public int playerCount() {
-        List<MapleMapObject> players = getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.PLAYER));
+        List<MapleMapObject> players =
+                getMapObjectsInRange(
+                        new Point(0, 0),
+                        Double.POSITIVE_INFINITY,
+                        Collections.singletonList(MapleMapObjectType.PLAYER)
+                );
         return players.size();
     }
 
     public int mobCount() {
-        List<MapleMapObject> mobsCount = getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER));
+        List<MapleMapObject> mobsCount =
+                getMapObjectsInRange(
+                        new Point(0, 0),
+                        Double.POSITIVE_INFINITY,
+                        Collections.singletonList(MapleMapObjectType.MONSTER)
+                );
         return mobsCount.size();
     }
 
@@ -2202,11 +2213,14 @@ public class MapleMap {
     }
 
     public boolean hasMapleTV() {
-        int tvIds[] = {9250042, 9250043, 9250025, 9250045, 9250044, 9270001, 9270002, 9250023, 9250024, 9270003, 9270004, 9250026, 9270006, 9270007, 9250046, 9270000, 9201066, 9270005, 9270008, 9270009, 9270010, 9270011, 9270012, 9270013, 9270014, 9270015, 9270016, 9270040};
+        int tvIds[] = 
+            {
+                9250042, 9250043, 9250025, 9250045, 9250044, 9270001, 9270002, 9250023, 9250024, 9270003,
+                9270004, 9250026, 9270006, 9270007, 9250046, 9270000, 9201066, 9270005, 9270008, 9270009,
+                9270010, 9270011, 9270012, 9270013, 9270014, 9270015, 9270016, 9270040
+            };
         for (int id : tvIds) {
-            if (containsNPC(id)) {
-                return true;
-            }
+            if (containsNPC(id)) return true;
         }
         return false;
     }

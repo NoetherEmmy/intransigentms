@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AbstractPlayerInteraction {
-
     private final MapleClient c;
 
     public AbstractPlayerInteraction(MapleClient c) {
@@ -61,6 +60,11 @@ public class AbstractPlayerInteraction {
             c.getSession().write(MaplePacketCreator.enableActions());
             return false;
         }
+    }
+
+    public void warpRandom(int mapId) {
+        MapleMap target = c.getChannelServer().getMapFactory().getMap(mapId);
+        getPlayer().changeMap(target, target.getRandomPortal());
     }
 
     private MapleMap getWarpMap(int map) {

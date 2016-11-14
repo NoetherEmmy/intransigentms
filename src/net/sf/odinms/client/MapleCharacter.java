@@ -158,8 +158,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private boolean hasMerchant;
     //
     private final MapleCQuests quest = new MapleCQuests();
-    private int story, storypoints, offensestory, buffstory; 
-    private int questkills, questkills2; 
+    private int story, storypoints, offensestory, buffstory;
+    private Map<Integer, Integer> questkills = new HashMap<>(4, 0.8f);
     private int questidd, queststatus;
     private int returnmap;
     private int trialreturnmap;
@@ -306,8 +306,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.storypoints = rs.getInt("storypoints");
         ret.offensestory = rs.getInt("offensestory");
         ret.buffstory = rs.getInt("buffstory");
-        ret.questkills = rs.getInt("questkills");
-        ret.questkills2 = rs.getInt("questkills2");
         ret.questidd = rs.getInt("questidd");
         if (ret.questidd > 0) { 
             ret.getCQuest().loadQuest(ret.questidd); 
@@ -447,6 +445,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 item.setOwner(rs.getString("owner"));
                 ret.getInventory(type).addFromDB(item);
             }
+        }
+        rs.close();
+        ps.close();
+        ps = con.prepareStatement("SELECT * FROM questkills WHERE characterid = ?");
+        ps.setInt(1, charid);
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            ret.setQuestKills(rs.getInt("monsterid"), rs.getInt("killcount"));
         }
         rs.close();
         ps.close();
@@ -723,8 +729,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(39, marriageQuestLevel);
             ps.setInt(40, story);
             ps.setInt(41, storypoints);
-            ps.setInt(42, questkills);
-            ps.setInt(43, questkills2);
+            ps.setInt(42, 0);
+            ps.setInt(43, 0);
             ps.setInt(44, questidd);
             ps.setInt(45, returnmap);
             ps.setInt(46, trialreturnmap);
@@ -941,6 +947,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     ps.setInt(3, pastlife.get(0));
                     ps.setInt(4, pastlife.get(1));
                     ps.setInt(5, pastlife.get(2));
+                    ps.executeUpdate();
+                }
+                ps.close();
+                deleteWhereCharacterId(con, "DELETE FROM questkills WHERE characterid = ?");
+                ps = con.prepareStatement("INSERT INTO questkills (`characterid`, `monsterid`, `killcount`) VALUES (?, ?, ?)");
+                ps.setInt(1, id);
+                for (Map.Entry<Integer, Integer> e : questkills.entrySet()) {
+                    ps.setInt(2, e.getKey());
+                    ps.setInt(3, e.getValue());
                     ps.executeUpdate();
                 }
                 ps.close();
@@ -1556,40 +1571,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         buffstory += amt;
     }
 
-    public int getQuestKills(int type) {
-        switch (type) {
-            case 1:
-                return questkills;
-            case 2:
-                return questkills2;
+    public int getQuestKills(int monsterId) {
+        if (!questkills.containsKey(monsterId)) {
+            return -1;
         }
-        return 0;
+        return questkills.get(monsterId);
     }
 
-    public int getQuestCollected(int type) {
-        return getItemQuantity(getCQuest().getItemId(type), false);
+    public int getQuestCollected(int itemId) {
+        return getItemQuantity(itemId, false);
     }
 
-    public void setQuestKills(int type, int kills) {
-        switch (type) {
-            case 1:
-                this.questkills = kills;
-                break;
-            case 2:
-                this.questkills2 = kills;
-                break;
-        }
+    public void setQuestKills(int monsterId, int kills) {
+        questkills.put(monsterId, kills);
     }
 
-    public void doQuestKill(int type) {
-        switch (type) {
-            case 1:
-                questkills++;
-                break;
-            case 2:
-                questkills2++;
-                break;
-        }
+    public void doQuestKill(int monsterId) {
+        questkills.computeIfPresent(monsterId, (mid, n) -> n + 1);
     }
 
     public int getQuestId() {
@@ -1601,65 +1599,52 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public boolean canComplete() {
-        int done = 0;
-        int toDo = 0;
-        if (getCQuest().getTargetId(1) > 0) {
-            toDo++;
-            if (questkills >= getCQuest().getToKill(1)) {
-                done++; 
+        return getCQuest().readMonsterTargets().entrySet().stream().allMatch(e -> getQuestKills(e.getKey())     >= e.getValue().getLeft())
+            && getCQuest().readItemsToCollect().entrySet().stream().allMatch(e -> getQuestCollected(e.getKey()) >= e.getValue().getLeft());
+    }
+
+    public void makeQuestProgress(int mobId, int itemId) {
+        if (mobId > 0) {
+            doQuestKill(mobId);
+            if (getQuestKills(mobId) <= getCQuest().getNumberToKill(mobId)) {
+                sendHint(
+                      "#e"
+                    + getCQuest().getTargetName(mobId)
+                    + ": "
+                    + (getQuestKills(mobId) == getCQuest().getNumberToKill(mobId) ? "#g" : "#r")
+                    + getQuestKills(mobId)
+                    + " #k/ "
+                    + getCQuest().getNumberToKill(mobId)
+                );
+            }
+        } else if (itemId > 0) {
+            if (getItemQuantity(itemId, false) < getCQuest().getNumberToCollect(itemId)) {
+                sendHint(
+                      "#e"
+                    + getCQuest().getItemName(itemId)
+                    + ": "
+                    + (getItemQuantity(itemId, false) >= getCQuest().getNumberToCollect(itemId) ? "#g" : "#r")
+                    + getItemQuantity(itemId, false)
+                    + " #k/ "
+                    + getCQuest().getNumberToCollect(itemId)
+                ); 
             }
         }
-        if (getCQuest().getTargetId(2) > 0) {
-            toDo++;
-            if (questkills2 >= getCQuest().getToKill(2)) {
-                done++;
-            }
-        }
-        if (getCQuest().getItemId(1) > 0) {
-            toDo++; 
-            if (getItemQuantity(getCQuest().getItemId(1), false) >= getCQuest().getToCollect(1)) { 
-                done++; 
-            } 
-        }
-        if (getCQuest().getItemId(2) > 0) { 
-            toDo++; 
-            if (getItemQuantity(getCQuest().getItemId(2), false) >= getCQuest().getToCollect(2)) { 
-                done++; 
-            } 
-        } 
-        return done == toDo; 
-    } 
-     
-    public void makeQuestProgress(int mobid, int itemid) { 
-        int a = 0; 
-        if (mobid > 0) { 
-            a += (mobid == getCQuest().getTargetId(1) ? 1 : 2);
-            doQuestKill(a); 
-            if (getQuestKills(a) <= getCQuest().getToKill(a)) { 
-                sendHint("#e" + getCQuest().getTargetName(a) + ": " + (getQuestKills(a) == getCQuest().getToKill(a) ? "#g" : "#r") + getQuestKills(a) + " #k/ " + getCQuest().getToKill(a)); 
-            } 
-        } else if (itemid > 0) { 
-            a += (itemid == getCQuest().getItemId(1) ? 1 : 2); 
-            boolean needItem = getItemQuantity(getCQuest().getItemId(a), false) < getCQuest().getToCollect(a); 
-            if (needItem) { 
-                sendHint("#e" + getCQuest().getItemName(a) + ": " + (getItemQuantity(getCQuest().getItemId(a), false) >= getCQuest().getToCollect(a) ? "#g" : "#r") + getItemQuantity(getCQuest().getItemId(a), false) + " #k/ " + getCQuest().getToCollect(a)); 
-            } 
-        } 
-        if (canComplete() && queststatus == 0) { 
+        if (canComplete() && queststatus == 0) {
             sendHint("#eReturn to the NPC: " + getCQuest().getNPC());
             dropMessage("Return to the NPC: " + getCQuest().getNPC());
-            queststatus++; 
-        } 
+            queststatus++;
+        }
     }
     
     public void sendHint(String ms) {
-        sendHint(ms, 275, 10); 
-    } 
+        sendHint(ms, 275, 10);
+    }
      
-    public void sendHint(String msg, int x, int y) { 
-        getClient().getSession().write(MaplePacketCreator.sendHint(msg, x, y)); 
-        getClient().getSession().write(MaplePacketCreator.enableActions()); 
-    }       
+    public void sendHint(String msg, int x, int y) {
+        getClient().getSession().write(MaplePacketCreator.sendHint(msg, x, y));
+        getClient().getSession().write(MaplePacketCreator.enableActions());
+    }
      
     public static String makeNumberReadable(int nr) {
         StringBuilder sb = new StringBuilder();
@@ -2863,20 +2848,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setMaxMp(5);
         setExp(0);
         updateSingleStat(MapleStat.EXP, 0);
-        setQuestKills(1, 0);
-        setQuestKills(2, 0);
         setStory(0);
         setStoryPoints(0);
         setOffenseStory(0);
         setBuffStory(0);
+        getCQuest().loadQuest(0);
         setQuestId(0);
+        resetQuestKills();
         setCompletedAllQuests(false);
         setScpqFlag(false);
         setMonsterTrialPoints(0);
         setMonsterTrialTier(0);
         setLastTrialTime((long) 0);
         resetAllQuestProgress();
-        int[] skillids = {1000, 1001, 1002, 1000000, 1000001, 1000002, 1001003, 1001004, 1001005, 2000000, 2000001,
+        int[] skillids = {1000, 1001, 1002,     1000000, 1000001, 1000002, 1001003, 1001004, 1001005, 2000000, 2000001,
             2001002, 2001003, 2001004, 2001005, 3000000, 3000001, 3000002, 3001003, 3001004, 3001005, 4000000, 4000001, 4001002, 4001003,
             4001334, 4001344, 1100000, 1100001, 1100002, 1100003, 1101004, 1101005, 1101006, 1101007, 1200000, 1200001, 1200002, 1200003,
             1201004, 1201005, 1201006, 1201007, 1300000, 1300001, 1300002, 1300003, 1301004, 1301005, 1301006, 1301007, 2100000, 2101001,
@@ -3024,148 +3009,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             permadeath(); // Permadeath anyways if you are < 110
         }
     }
-    
-    /*
-    private void playerDead(boolean absolute) {
-        MapleCharacter player = getClient().getPlayer();
-        boolean islowlevel = player.getLevel() < 110 || absolute;
-        NPCScriptManager npcsm = NPCScriptManager.getInstance();
-        
-        if (npcsm != null) {
-            if (npcsm.getCM(client) != null) {
-                npcsm.getCM(client).dispose();
-            }
-            npcsm.dispose(client);
-        }
-        
-        if (islowlevel) {
-            player.changeMap(100);
-            setMap(100);
-        }
-        cancelAllBuffs();
-        cancelAllDebuffs();
-        if (islowlevel) {
-            unequipEverything();
-        }
-        setLevelAchieved(getLevel());
-        setJobAchieved(getJob());
-        if (islowlevel) {
-            setLevel(1);
-            setHp(1);
-            setMp(1);
-            setMaxHp(50);
-            setMaxMp(5);
-        }
-        setExp(0);
-        updateSingleStat(MapleStat.EXP, 0);
-        if (islowlevel) {
-            setQuestKills(1, 0);
-            setQuestKills(2, 0);
-            setStory(0);
-            setStoryPoints(0);
-            setOffenseStory(0);
-            setBuffStory(0);
-            setQuestId(0);
-            setMonsterTrialPoints(0);
-            setMonsterTrialTier(0);
-            setLastTrialTime((long) 0);
-            resetAllQuestProgress();
-            int[] skillids = {1000, 1001, 1002, 1000000, 1000001, 1000002, 1001003, 1001004, 1001005, 2000000, 2000001,
-                2001002, 2001003, 2001004, 2001005, 3000000, 3000001, 3000002, 3001003, 3001004, 3001005, 4000000, 4000001, 4001002, 4001003,
-                4001334, 4001344, 1100000, 1100001, 1100002, 1100003, 1101004, 1101005, 1101006, 1101007, 1200000, 1200001, 1200002, 1200003,
-                1201004, 1201005, 1201006, 1201007, 1300000, 1300001, 1300002, 1300003, 1301004, 1301005, 1301006, 1301007, 2100000, 2101001,
-                2101002, 2101003, 2101004, 2101005, 2200000, 2201001, 2201002, 2201003, 2201004, 2201005, 2300000, 2301001, 2301002, 2301003,
-                2301004, 2301005, 3100000, 3100001, 3101002, 3101003, 3101004, 3101005, 3200000, 3200001, 3201002, 3201003, 3201004, 3201005,
-                4100000, 4100001, 4100002, 4101003, 4101004, 4101005, 4200000, 4200001, 4201002, 4201003, 4201004, 4201005, 1110000, 1110001,
-                1111002, 1111003, 1111004, 1111005, 1111006, 1111007, 1111008, 1210000, 1210001, 1211002, 1211003, 1211004, 1211005, 1211006,
-                1211007, 1211008, 1211009, 1310000, 1311001, 1311002, 1311003, 1311004, 1311005, 1311006, 1311007, 1311008, 2110000, 2110001,
-                2111002, 2111003, 2111004, 2111005, 2111006, 2210000, 2210001, 2211002, 2211003, 2211004, 2211005, 2211006, 2310000, 2311001,
-                2311002, 2311003, 2311004, 2311005, 2311006, 3110000, 3110001, 3111002, 3111003, 3111004, 3111005, 3111006, 3210000, 3210001,
-                3211002, 3211003, 3211004, 3211005, 3211006, 4110000, 4111001, 4111002, 4111003, 4111004, 4111005, 4111006, 4210000, 4211001,
-                4211002, 4211003, 4211004, 4211005, 4211006, 1120003, 1120004, 1120005, 1121000, 1121001, 1121002, 1121006, 1121008, 1121010,
-                1121011, 1220005, 1220006, 1220010, 1221000, 1221001, 1221002, 1221003, 1221004, 1221007, 1221009, 1221011, 1221012, 1320005,
-                1320006, 1320008, 1320009, 1321000, 1321001, 1321002, 1321003, 1321007, 1321010, 2121000, 2121001, 2121002, 2121003, 2121004,
-                2121005, 2121006, 2121007, 2121008, 2221000, 2221001, 2221002, 2221003, 2221004, 2221005, 2221006, 2221007, 2221008, 2321000,
-                2321001, 2321002, 2321003, 2321004, 2321005, 2321006, 2321007, 2321008, 2321009, 3120005, 3121000, 3121002, 3121003, 3121004,
-                3121006, 3121007, 3121008, 3121009, 3220004, 3221000, 3221001, 3221002, 3221003, 3221005, 3221006, 3221007, 3221008, 4120002,
-                4120005, 4121000, 4121003, 4121004, 4121006, 4121007, 4121008, 4121009, 4220002, 4220005, 4221000, 4221001, 4221003, 4221004,
-                4221006, 4221007, 4221008, 5000000, 5001001, 5001002, 5001003, 5001005, 5100000, 5100001, 5101002, 5101003, 5101004, 5101005,
-                5101006, 5101007, 5200000, 5201001, 5201002, 5201003, 5201004, 5201005, 5201006, 5110000, 5110001, 5111002, 5111004, 5111005,
-                5111006, 5220011, 5221010, 5221009, 5221008, 5221007, 5221006, 5221004, 5221003, 5220002, 5220001, 5221000, 5121010, 5121009,
-                5121008, 5121007, 5121005, 5121004, 5121003, 5121002, 5121001, 5121000, 5211006, 5211005, 5211004, 5211002, 5211001, 5210000,
-                9001000, 9001001, 9001002, 9101000, 9101001, 9101002, 9101003, 9101004, 9101005, 9101006, 9101007, 9101008};
-            for (int s : skillids) {
-                changeSkillLevel(SkillFactory.getSkill(s), 0, 0);
-            }
-            setRemainingSp(0);
-            setRemainingAp(9);
-            setJob(MapleJob.BEGINNER);
-            player.setStr(4);
-            player.setDex(4);
-            player.setInt(4);
-            player.setLuk(4);
-            player.updateSingleStat(MapleStat.STR, player.getStr());
-            player.updateSingleStat(MapleStat.DEX, player.getDex());
-            player.updateSingleStat(MapleStat.INT, player.getInt());
-            player.updateSingleStat(MapleStat.LUK, player.getLuk());
-            updateSingleStat(MapleStat.LEVEL, 1);
-            updateSingleStat(MapleStat.HP, 1);
-            updateSingleStat(MapleStat.MP, 1);
-            updateSingleStat(MapleStat.MAXHP, 50);
-            updateSingleStat(MapleStat.MAXMP, 5);
-            updateSingleStat(MapleStat.EXP, 0);
-            updateSingleStat(MapleStat.AVAILABLESP, 0);
-            updateSingleStat(MapleStat.AVAILABLEAP, 9);
-            updateSingleStat(MapleStat.JOB, 0);
-            setHp(1);
-            setMp(1);
-            updateSingleStat(MapleStat.HP, 1);
-            updateSingleStat(MapleStat.MP, 1);
-            setMaxHp(50);
-            setMaxMp(5);
-            updateSingleStat(MapleStat.MAXHP, 50);
-            updateSingleStat(MapleStat.MAXMP, 5);
-            MaplePacket packet = MaplePacketCreator.serverNotice(6, "[Graveyard] " + getName() + " has just perished. May the gods let their soul rest until eternity.");
-            try {
-                getClient().getChannelServer().getWorldInterface().broadcastMessage(getName(), packet.getBytes());
-            } catch (RemoteException e) {
-                getClient().getChannelServer().reconnectWorld();
-            }
-            recalcLocalStats();
-        }
-        recalcLocalStats();
-        NPCScriptManager npc = NPCScriptManager.getInstance();
-        if (islowlevel) {
-            npc.start(getClient(), 1061000);
-        } else {
-            npc.start(getClient(), 2041024);
-            final MapleCharacter p = this;
-            TimerManager tMan = TimerManager.getInstance();
-            tMan.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (p.isDead()) {
-                        ISkill resurrection = SkillFactory.getSkill(2321006);
-                        int resurrectionlevel = p.getSkillLevel(resurrection);
-                        if (resurrectionlevel > 0 && !p.skillIsCooling(2321006)) {
-                            p.setHp(p.getMaxHp(), false);
-                            p.setMp(p.getMaxMp());
-                            p.updateSingleStat(MapleStat.HP, p.getMaxHp());
-                            p.updateSingleStat(MapleStat.MP, p.getMaxMp());
-                            long cooldowntime = (long) 3600000 - (180000 * resurrectionlevel);
-                            p.giveCoolDowns(2321006, System.currentTimeMillis(), cooldowntime);
-                            
-                        } else {
-                            p.playerDead(true);
-                        }
-                    }
-                }
-            }, 90 * 1000); // 90 seconds
-            getClient().getSession().write(MaplePacketCreator.getClock(90));
-        }
-        getClient().getSession().write(MaplePacketCreator.enableActions());
-    }
-    */
     
     public int getTierPoints(int tier) {
         if (tier < 1) {
@@ -3428,7 +3271,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
             }
         }
-        if ((mobId == getCQuest().getTargetId(1)) || (mobId == getCQuest().getTargetId(2))) {
+        if (getCQuest().requiresTarget(mobId)) {
             makeQuestProgress(mobId, 0);
         }
     }
@@ -4967,6 +4810,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public boolean hasMagicArmor() {
         return this.hasmagicarmor;
+    }
+
+    public void resetQuestKills() {
+        questkills.clear();
+        getCQuest().readMonsterTargets().keySet().forEach(monsterId -> questkills.put(monsterId, 0));
     }
 
     private static class MapleBuffStatValueHolder {
