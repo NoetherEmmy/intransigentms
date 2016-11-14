@@ -19,7 +19,6 @@ import net.sf.odinms.tools.Pair;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;

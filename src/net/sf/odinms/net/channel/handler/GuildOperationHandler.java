@@ -9,8 +9,8 @@ import net.sf.odinms.net.world.guild.MapleGuildResponse;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class GuildOperationHandler extends AbstractMaplePacketHandler {

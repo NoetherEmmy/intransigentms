@@ -3,7 +3,6 @@ package net.sf.odinms.net.channel.handler;
 import net.sf.odinms.client.MapleCharacterUtil;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.MaplePacket;
-import net.sf.odinms.net.channel.PartyQuestMapInstance;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.life.MobSkill;
 import net.sf.odinms.server.life.MobSkillFactory;

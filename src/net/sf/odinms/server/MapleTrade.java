@@ -5,8 +5,8 @@ import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.tools.MaplePacketCreator;
 
-import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

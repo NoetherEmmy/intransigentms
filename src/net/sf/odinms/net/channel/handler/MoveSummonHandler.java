@@ -9,8 +9,8 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import net.sf.odinms.tools.data.input.StreamUtil;
 
 import java.awt.*;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class

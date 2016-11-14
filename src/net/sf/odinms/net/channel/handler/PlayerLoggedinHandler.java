@@ -9,7 +9,6 @@ import net.sf.odinms.net.world.guild.MapleAlliance;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleInventoryManipulator;
-import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 

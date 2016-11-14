@@ -1,9 +1,9 @@
 package net.sf.odinms.net.world;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MapleParty implements Serializable {

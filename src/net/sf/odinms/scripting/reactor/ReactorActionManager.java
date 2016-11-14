@@ -13,8 +13,8 @@ import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleReactor;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ReactorActionManager extends AbstractPlayerInteraction {

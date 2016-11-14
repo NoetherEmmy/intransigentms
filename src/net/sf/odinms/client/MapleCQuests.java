@@ -61,9 +61,9 @@ public class MapleCQuests {
 
             itemRewards.clear();
             i = 1;
-            if (p.getProperty("ITEM") != null) {
+            if (p.getProperty("ITEM") != null && Integer.parseInt(p.getProperty("ITEM")) != 0) {
                 itemRewards.put(Integer.parseInt(p.getProperty("ITEM")), Integer.parseInt(p.getProperty("ITEM_amount")));
-            } else {
+            } else if (p.getProperty("ITEM" + i) != null && Integer.parseInt(p.getProperty("ITEM" + i)) != 0) {
                 itemRewards.put(Integer.parseInt(p.getProperty("ITEM" + i)), Integer.parseInt(p.getProperty("ITEM_amount" + i)));
             }
             i++;

@@ -1,6 +1,6 @@
 package net.sf.odinms.server.maps;
 
-import java.awt.Point;
+import java.awt.*;
 
 public abstract class AbstractMapleMapObject implements MapleMapObject {
     private final Point position = new Point();
