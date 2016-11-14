@@ -27,7 +27,7 @@ public class MapleCQuests {
             monsterTargets.clear();
             int i = 1;
             String monsterTarget = p.getProperty("MonsterID" + i);
-            while (monsterTarget != null) {
+            while (monsterTarget != null && !monsterTarget.equals("") && Integer.parseInt(monsterTarget) != 0) {
                 String toKill = p.getProperty("ToKill" + i);
                 String mobName = p.getProperty("MonsterName" + i);
                 if (toKill == null || mobName == null) {
@@ -43,7 +43,7 @@ public class MapleCQuests {
             itemsToCollect.clear();
             i = 1;
             String itemToCollect = p.getProperty("CollectItemID" + i);
-            while (itemToCollect != null) {
+            while (itemToCollect != null && !itemToCollect.equals("") && Integer.parseInt(itemToCollect) != 0) {
                 String toCollect = p.getProperty("ToCollect" + i);
                 String itemName = p.getProperty("ItemName" + i);
                 if (toCollect == null || itemName == null) {
@@ -68,7 +68,7 @@ public class MapleCQuests {
             }
             i++;
             String itemReward = p.getProperty("ITEM" + i);
-            while (itemReward != null) {
+            while (itemReward != null && !itemReward.equals("") && Integer.parseInt(itemReward) != 0) {
                 String itemAmount = p.getProperty("ITEM_amount" + i);
                 if (itemAmount == null) {
                     throw new InvalidPropertiesFormatException(
