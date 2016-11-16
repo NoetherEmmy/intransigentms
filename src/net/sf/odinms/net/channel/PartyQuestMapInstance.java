@@ -183,9 +183,9 @@ public class PartyQuestMapInstance {
                      if (lastPointHeard == null) {
                          player.changeMap(map, map.findClosestSpawnpoint(position));
                      } else {
-                         Set<Direction> dirs = o.collision(lastPointHeard, position);
-                         if (!dirs.isEmpty()) {
-                             MaplePortal to = map.findClosestSpawnpointInDirection(position, dirs);
+                         Direction dir = o.simpleCollision(lastPointHeard, position);
+                         if (dir != null) {
+                             MaplePortal to = map.findClosestSpawnpointInDirection(position, dir);
                              if (to != null) {
                                  player.changeMap(map, to);
                              }
@@ -470,19 +470,19 @@ public class PartyQuestMapInstance {
 
         public Set<Direction> collision(Point prevLocation, Point location) {
             if (!getRect().contains(location) || getRect().contains(prevLocation)) {
-                // Not inside the obstacle at all, or already was inside obstacle
                 return Collections.emptySet();
             }
-            /* 
+            /*
              * Downward line is from top-left corner to bottom-right corner,
              *   upward line is from bottom-left corner to top-right corner.
              *  > 0 = true, < 0 = false, 0 = falls on the line.
              */
             int aboveDownwardLine = location.y - (-getRect().height / getRect().width * (location.x - getRect().x) + getRect().y);
             int aboveUpwardLine   = location.y -  (getRect().height / getRect().width * (location.x - getRect().x) + getRect().y - getRect().height);
+
             final Vect direction;
             if (aboveUpwardLine == 0 || aboveDownwardLine == 0) {
-                direction = new Vect(aboveDownwardLine != 0 ? aboveDownwardLine : -aboveUpwardLine, 
+                direction = new Vect(aboveDownwardLine != 0 ? aboveDownwardLine : -aboveUpwardLine,
                                      aboveUpwardLine   != 0 ? aboveUpwardLine   :  aboveDownwardLine);
             } else if (Integer.signum(aboveDownwardLine) == Integer.signum(aboveUpwardLine)) {
                 direction = new Vect(0, aboveUpwardLine);
@@ -490,6 +490,14 @@ public class PartyQuestMapInstance {
                 direction = new Vect(aboveDownwardLine, 0);
             }
             return directions.stream().filter(d -> !direction.directionalProj(d.unitVect()).isZero()).collect(Collectors.toSet());
+        }
+
+        /** Nullable */
+        public Direction simpleCollision(Point prevLocation, Point location) {
+            if (!getRect().contains(location) || getRect().contains(prevLocation)) {
+                return null;
+            }
+            return location.x > prevLocation.x ? Direction.LEFT : Direction.RIGHT;
         }
 
         public boolean isOpen() {

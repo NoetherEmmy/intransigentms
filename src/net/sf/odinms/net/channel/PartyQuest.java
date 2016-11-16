@@ -53,11 +53,17 @@ public class PartyQuest {
     }
 
     public PartyQuestMapInstance getMapInstance(final MapleMap map) {
-        return mapInstances.stream().filter(mi -> map == mi.getMap()).findAny().orElse(null);
+        return mapInstances.stream()
+                           .filter(mi -> map == mi.getMap())
+                           .findAny()
+                           .orElse(null);
     }
 
     public PartyQuestMapInstance getMapInstance(final int mapId) {
-        return mapInstances.stream().filter(mi -> mapId == mi.getMap().getId()).findAny().orElse(null);
+        return mapInstances.stream()
+                           .filter(mi -> mapId == mi.getMap().getId())
+                           .findAny()
+                           .orElse(null);
     }
 
     public void registerMap(int mapId) {
@@ -70,7 +76,9 @@ public class PartyQuest {
         newMap.registerPartyQuestInstance(newInstance);
         newInstance.invokeMethod("init");
         mapInstances.add(newInstance);
-        mapInstances.stream().filter(mi -> mi != newInstance).forEach(mi -> mi.invokeMethod("mapRegistered", newInstance));
+        mapInstances.stream()
+                    .filter(mi -> mi != newInstance)
+                    .forEach(mi -> mi.invokeMethod("mapRegistered", newInstance));
     }
 
     public void unregisterMap(int mapId) {
@@ -100,7 +108,9 @@ public class PartyQuest {
         } else {
             color = "(";
         }
-        players.stream().filter(MapleCharacter::showPqPoints).forEach(p -> p.sendHint("PQ points: #e" + this.points + "#n " + color + pointChange + ")#k"));
+        players.stream()
+               .filter(MapleCharacter::showPqPoints)
+               .forEach(p -> p.sendHint("PQ points: #e" + this.points + "#n " + color + pointChange + ")#k"));
     }
 
     public void addPoints(final int increment) {
@@ -113,7 +123,9 @@ public class PartyQuest {
         } else {
             color = "(";
         }
-        players.stream().filter(MapleCharacter::showPqPoints).forEach(p -> p.sendHint("PQ points: #e" + this.points + "#n " + color + increment + ")#k"));
+        players.stream()
+               .filter(MapleCharacter::showPqPoints)
+               .forEach(p -> p.sendHint("PQ points: #e" + this.points + "#n " + color + increment + ")#k"));
     }
 
     public void addPqItem(int id) {

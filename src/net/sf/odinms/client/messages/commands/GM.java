@@ -8,6 +8,7 @@ import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.channel.PartyQuest;
 import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
 import net.sf.odinms.net.world.remote.CheaterData;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
@@ -2090,6 +2091,26 @@ public class GM implements Command {
                     player.getMap().getPartyQuestInstance().reloadScript();
                 }
                 break;
+            case "!registerpqmi":
+                if (player.getMap().getPartyQuestInstance() != null) {
+                    player.dropMessage(5, "Map instance is already registered for this map.");
+                    break;
+                }
+                final MapleMap map = player.getMap();
+                if (player.getPartyQuest() != null) {
+                    map.removePlayer(player);
+                    player.getPartyQuest().registerMap(player.getMapId());
+                    map.addPlayer(player);
+                } else if (player.getParty() != null && player.getParty().getMembers().size() > 0) {
+                    PartyQuest pq = new PartyQuest(c.getChannel(), splitted[1], 1, 100000000);
+                    pq.registerParty(player.getParty());
+                    map.removePlayer(player);
+                    pq.registerMap(player.getMapId());
+                    map.addPlayer(player);
+                } else {
+                    player.dropMessage(5, "You're not in a party.");
+                }
+                break;
         }
     }
 
@@ -2233,7 +2254,8 @@ public class GM implements Command {
             new CommandDefinition("cleardropcache", 3),
             new CommandDefinition("moveup", 3),
             new CommandDefinition("invokemethod", 3),
-            new CommandDefinition("clearpqs", 3)
+            new CommandDefinition("clearpqs", 3),
+            new CommandDefinition("registerpqmi", 3)
         };
     }
 }

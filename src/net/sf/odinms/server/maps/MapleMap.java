@@ -1768,8 +1768,13 @@ public class MapleMap {
         }
         return portals.values()
                       .stream()
-                      .filter(p -> p.getType() >= 0 && p.getType() <= 2 && p.getTargetMapId() == 999999999 &&
-                              Direction.directionsOf(Vect.point(p.getPosition()).subtract(Vect.point(from))).stream().anyMatch(dirs::contains))
+                      .filter(p -> p.getType() >= 0
+                                && p.getType() <= 2
+                                && p.getTargetMapId() == 999999999
+                                && Direction.directionsOf(Vect.point(p.getPosition()).subtract(Vect.point(from)))
+                                            .stream()
+                                            .anyMatch(dirs::contains)
+                      )
                       .reduce(null, (b, p) -> {
                           if (b == null || p.getPosition().distanceSq(from) < b.getPosition().distanceSq(from)) {
                               return p;

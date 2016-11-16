@@ -6,7 +6,6 @@ import java.awt.*;
 import java.io.Serializable;
 
 public class MaplePartyCharacter implements Serializable {
-
     private static final long serialVersionUID = 6215463252132450750L;
     private final String name;
     private int id;
@@ -21,6 +20,7 @@ public class MaplePartyCharacter implements Serializable {
     private Point doorPosition = new Point(0, 0);
     private boolean online;
     private boolean scpqFlag = false;
+    private boolean isGM = false;
 
     public MaplePartyCharacter(MapleCharacter maplechar) {
         this.name = maplechar.getName();
@@ -38,6 +38,7 @@ public class MaplePartyCharacter implements Serializable {
         this.gender = maplechar.getGender();
         this.married = maplechar.isMarried();
         this.scpqFlag = maplechar.isScpqFlagged();
+        this.isGM = maplechar.isGM();
     }
 
     public MaplePartyCharacter() {
@@ -54,6 +55,7 @@ public class MaplePartyCharacter implements Serializable {
         this.doorPosition = new Point(0, 0);
         this.online = false;
         this.scpqFlag = false;
+        this.isGM = false;
     }
 
     public int getLevel() {
@@ -65,7 +67,11 @@ public class MaplePartyCharacter implements Serializable {
     }
 
     public boolean isScpqFlagged() {
-        return this.scpqFlag;
+        return scpqFlag;
+    }
+
+    public boolean isGM() {
+        return isGM;
     }
 
     public boolean isOnline() {

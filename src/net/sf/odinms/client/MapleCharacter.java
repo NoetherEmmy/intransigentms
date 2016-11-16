@@ -4569,7 +4569,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                             if (MapleInventoryManipulator.checkSpace(getClient(), rewardId, 1, "")) {
                                 MapleInventoryManipulator.addById(getClient(), rewardId, (short) 1);
                                 getClient().getSession().write(MaplePacketCreator.getShowItemGain(rewardId, (short) 1, true));
-                                sendHint("Nice reading!\nYou've just gained a\n#bknowledge essence#k!");
+                                sendHint("Nice reading!\r\nYou've just gained a\r\n#bknowledge essence#k!");
                             } else {
                                 dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
                                 setUnclaimedItem(rewardId, (short) 1);

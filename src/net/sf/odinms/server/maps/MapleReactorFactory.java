@@ -37,7 +37,7 @@ public class MapleReactorFactory {
                     while (reactorInfoData != null) {
                         Pair<Integer, Integer> reactItem = null;
                         int type = MapleDataTool.getIntConvert("type", reactorInfoData);
-                        if (type == 100) { // Reactor waits for item.
+                        if (type == 100 || type == 99) { // Reactor waits for item or is an obstacle.
                             reactItem = new Pair<>(MapleDataTool.getIntConvert("0", reactorInfoData), MapleDataTool.getIntConvert("1", reactorInfoData));
                             if (!areaSet) { // only set area of effect for item-triggered reactors once.
                                 stats.setTL(MapleDataTool.getPoint("lt", reactorInfoData));

@@ -329,7 +329,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         gainExp(q.getExpReward());
         gainMeso(q.getMesoReward());
         q.readItemRewards().entrySet().forEach(reward -> gainItem(reward.getKey(), reward.getValue().shortValue()));
-        q.readItemsToCollect().entrySet().forEach(collected -> gainItem(collected.getKey(), collected.getValue().getLeft().shortValue()));
+        q.readItemsToCollect()
+         .entrySet()
+         .forEach(collected -> gainItem(collected.getKey(), (short) -collected.getValue().getLeft()));
         c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
         c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
         startCQuest(0);

@@ -116,14 +116,9 @@ public class AbstractPlayerInteraction {
         return gainItem(id, quantity, false, show);
     }
 
-    /**
-     * Gives item with the specified id or takes it if the quantity is negative. Note that this does NOT take items from the equipped inventory. randomStats for generating random stats on the generated equip.
-     * @param id
-     * @param quantity
-     * @param randomStats
-     * @param show
-     * @return 
-     */
+    /** Gives item with the specified id or takes it if the quantity is negative.
+     ** Note that this does NOT take items from the equipped inventory.
+     ** randomStats for generating random stats on the generated equip. */
     public boolean gainItem(int id, short quantity, boolean randomStats, boolean show) {
         if (quantity >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
