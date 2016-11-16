@@ -489,7 +489,9 @@ public class PartyQuestMapInstance {
             } else {
                 direction = new Vect(aboveDownwardLine, 0);
             }
-            return directions.stream().filter(d -> !direction.directionalProj(d.unitVect()).isZero()).collect(Collectors.toSet());
+            return directions.stream()
+                             .filter(d -> !direction.directionalProj(d.unitVect()).isZero())
+                             .collect(Collectors.toSet());
         }
 
         /** Nullable */
