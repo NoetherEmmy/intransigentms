@@ -1102,6 +1102,7 @@ public class MapleStatEffect implements Serializable {
             } else if (isInfusion()) {
                 applyTo.getClient().getSession().write(MaplePacketCreator.giveInfusion(seconds, x));
             } else {
+                /*
                 localStatups = new ArrayList<>(localStatups);
                 for (int i = 0; i < localStatups.size(); ++i) {
                     final Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
@@ -1140,7 +1141,7 @@ public class MapleStatEffect implements Serializable {
                             }, getDuration());
                         }
                     }
-                }
+                }*/
                 applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff((skill ? localSourceId : -localSourceId), localDuration, localStatups));
             }
             /*if (sourceid == 5221006) { // Battleship

@@ -50,7 +50,6 @@ import java.util.*;
 import java.util.List;
 
 public class ChannelServer implements Runnable, ChannelServerMBean {
-
     private static int uniqueID = 1;
     private static Properties initialProp;
     private static WorldRegistry worldRegistry;

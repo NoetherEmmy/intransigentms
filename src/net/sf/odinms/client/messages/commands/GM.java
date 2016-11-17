@@ -858,7 +858,7 @@ public class GM implements Command {
                     if (victim != null) {
                         String type = splitted[2];
                         String text = StringUtil.joinStringFrom(splitted, 3);
-                        int itemID = 5390002; // default.
+                        int itemID = 5390001; // Default is cloud
                         if (type.equalsIgnoreCase("love")) {
                             itemID = 5390002;
                         } else if (type.equalsIgnoreCase("cloud")) {
