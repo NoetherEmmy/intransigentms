@@ -1003,10 +1003,13 @@ public class MapleStatEffect implements Serializable {
                 }
             }
         } else if (getSourceId() == 2301004 && isSkill() && applyFrom.getLevel() > 100) { // Making Bless defense scale with level
+            System.out.print("Making Bless defense scale with level\n");
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                 if (localStatup.getLeft() == MapleBuffStat.WDEF || localStatup.getLeft() == MapleBuffStat.MDEF) {
+                    System.out.print("localStatup.getLeft() == MapleBuffStat.WDEF || localStatup.getLeft() == MapleBuffStat.MDEF\n");
                     int newDef = (int) (localStatup.getRight() * (1.0d + (applyFrom.getLevel() - 100.0d) / 80.0d));
+                    System.out.print("newDef: " + newDef + "\n");
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
@@ -1106,8 +1109,9 @@ public class MapleStatEffect implements Serializable {
                 for (int i = 0; i < localStatups.size(); ++i) {
                     final Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                     if (applyTo.getBuffedValue(localStatup.getLeft()) != null) {
+                        System.out.print("applyTo.getBuffedValue(localStatup.getLeft()) != null\n");
                         if (applyTo.getBuffedValue(localStatup.getLeft()) > localStatup.getRight()) {
-                            // Player already has buff of this type that is better.
+                            System.out.print("Player already has buff of this type that is better.\n");
                             if (localDuration > applyTo.getBuffedRemainingTime(localStatup.getLeft())) {
                                 // The better buff isn't going to last as long as this buff would,
                                 // so we will give it when the better one wears off.
@@ -1127,6 +1131,7 @@ public class MapleStatEffect implements Serializable {
                             localStatups.remove(i--);
                             buffPrioritized = true;
                         } else if (getDuration() < applyTo.getBuffedRemainingTime(localStatup.getLeft())) {
+                            System.out.print("getDuration() < applyTo.getBuffedRemainingTime(localStatup.getLeft())\n");
                             // This buff is as good or better, but doesn't last as long so we will reinstate
                             // the inferior one once this one wears off.
                             final MapleStatEffect currentInferiorBuff = new MapleStatEffect(applyTo.getStatForBuff(localStatup.getLeft()));
@@ -1141,6 +1146,11 @@ public class MapleStatEffect implements Serializable {
                         }
                     }
                 }
+                //
+                for (Pair<MapleBuffStat, Integer> localStatup : localStatups) {
+                    System.out.print("localStatup.getLeft(): " + localStatup.getLeft().name() + ", localStatup.getRight(): " + localStatup.getRight());
+                }
+                //
                 applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff((skill ? localSourceId : -localSourceId), localDuration, localStatups));
             }
             /*if (sourceid == 5221006) { // Battleship
@@ -1206,6 +1216,7 @@ public class MapleStatEffect implements Serializable {
         }
         if (!localStatups.isEmpty()) {
             if (buffPrioritized) {
+                System.out.print("buffPrioritized\n");
                 final MapleStatEffect prioritizedStatEffect = new MapleStatEffect(this);
                 prioritizedStatEffect.statups = localStatups;
                 final long startTime = System.currentTimeMillis();
