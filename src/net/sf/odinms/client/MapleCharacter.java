@@ -5396,22 +5396,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
     
     public float getDamageScale() {
-        if (getLevel() < 20) {
-            return (float) 2.0;
-        } else if (getLevel() < 40) {
-            return (float) 1.8;
+        if (getLevel() < 40) {
+            return 2.0f;
+        } else if (getLevel() < 50) {
+            return 1.8f;
         } else if (getLevel() < 60) {
-            return (float) 1.6;
+            return 1.6f;
         } else if (getLevel() < 70) {
-            return (float) 1.4;
+            return 1.4f;
         } else if (getLevel() < 80) {
-            return (float) 1.3;
+            return 1.3f;
         } else if (getLevel() < 90) {
-            return (float) 1.2;
+            return 1.2f;
         } else if (getLevel() < 100) {
-            return (float) 1.1;
+            return 1.1f;
         } else {
-            return (float) 1.0;
+            return 1.0f;
         }
     }
 

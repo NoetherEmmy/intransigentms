@@ -6,6 +6,7 @@ import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
@@ -51,7 +52,8 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@expfix - | - Fixes your negative experience.");
             mc.dropMessage("@dispose - | - Unsticks you from any hanging NPC interactions.");
             mc.dropMessage("@mapfix - | - Fixes you if you've fallen off the map.");
-            mc.dropMessage("@questinfo - | - Gets the info for your current quest.");
+            mc.dropMessage("@questinfo - | - Gets the info for your current IntransigentQuest.");
+            mc.dropMessage("@ria - | - Opens chat with Ria to get info about IntransigentQuests.");
             mc.dropMessage("@cancelquest - | - Cancels your current quest.");
             mc.dropMessage("@togglesmega - | - Turn smegas OFF/ON.");
             mc.dropMessage("@str/@dex/@int/@luk <number> - | - Automatically adds AP to your stats.");
@@ -294,9 +296,9 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@absolutexprate")) {
             int absxp = (int) Math.floor(0.1d * (double) player.getLevel());
             if (absxp > 1) {
-                mc.dropMessage("Your total absolute XP multiplier: " + absxp * 4);
+                mc.dropMessage("Your total absolute XP multiplier: " + absxp * c.getChannelServer().getExpRate());
             } else {
-                mc.dropMessage("Your total absolute XP multiplier: 4");
+                mc.dropMessage("Your total absolute XP multiplier: " + c.getChannelServer().getExpRate());
             }
         } else if (splitted[0].equalsIgnoreCase("@whodrops")) {
             if (splitted.length < 2) {
@@ -928,6 +930,8 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@defense") || splitted[0].equals("@defence")) {
             player.dropMessage("Weapon defense: " + player.getTotalWdef() + ", magic defense: " + player.getTotalMdef());
+        } else if (splitted[0].equals("@ria")) {
+            NPCScriptManager.getInstance().start(c, 9010003);
         }
     }
 
@@ -1017,7 +1021,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("pqpoints", 0),
             new CommandDefinition("readingtime", 0),
             new CommandDefinition("defense", 0),
-            new CommandDefinition("defence", 0)
+            new CommandDefinition("defence", 0),
+            new CommandDefinition("ria", 0)
         };
     }
 }
