@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 public class MapleStatEffect implements Serializable {
-
     static final long serialVersionUID = 9179541993413738569L;
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleStatEffect.class);
     private short watk, matk, wdef, mdef, acc, avoid, hands, speed, jump;
@@ -583,9 +582,7 @@ public class MapleStatEffect implements Serializable {
             }
         }
         if (!cureDebuffs.isEmpty()) {
-            for (MapleDisease debuff : cureDebuffs) {
-                applyFrom.dispelDebuff(debuff);
-            }
+            cureDebuffs.forEach(applyFrom::dispelDebuff);
         }
         List<Pair<MapleStat, Integer>> hpMpUpdate = new ArrayList<>(2);
         if (!primary && isResurrection()) {
@@ -961,7 +958,7 @@ public class MapleStatEffect implements Serializable {
                 wasShip = true;
             }
         }
-        List<Pair<MapleBuffStat, Integer>> localStatups = statups;
+        List<Pair<MapleBuffStat, Integer>> localStatups = new ArrayList<>(getStatups());
         int localDuration = duration;
         int localSourceId = sourceid;
         int localX = x;
@@ -997,19 +994,26 @@ public class MapleStatEffect implements Serializable {
         } else if (getSourceId() == 2001003 && isSkill() && applyFrom.getLevel() > 100) { // Making Magic Armor scale with level
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                if (localStatup.getLeft() == MapleBuffStat.WDEF || localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int newDef = (int) (localStatup.getRight() * (1.0d + (applyFrom.getLevel() - 100.0d) / 60.0d));
+                if (localStatup.getLeft() == MapleBuffStat.WDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 60.0d));
+                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
+                } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 60.0d));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
         } else if (getSourceId() == 2301004 && isSkill() && applyFrom.getLevel() > 100) { // Making Bless defense scale with level
-            System.out.print("Making Bless defense scale with level\n");
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                if (localStatup.getLeft() == MapleBuffStat.WDEF || localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    System.out.print("localStatup.getLeft() == MapleBuffStat.WDEF || localStatup.getLeft() == MapleBuffStat.MDEF\n");
-                    int newDef = (int) (localStatup.getRight() * (1.0d + (applyFrom.getLevel() - 100.0d) / 80.0d));
-                    System.out.print("newDef: " + newDef + "\n");
+                if (localStatup.getLeft() == MapleBuffStat.WDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 80.0d));
+                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
+                } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 80.0d));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
@@ -1017,16 +1021,26 @@ public class MapleStatEffect implements Serializable {
             // Making Transformation, Super Transformation, and Iron Will defense scale with level
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                if (localStatup.getLeft() == MapleBuffStat.WDEF || localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int newDef = (int) (localStatup.getRight() * (1.0d + (applyFrom.getLevel() - 100.0d) / 200.0d));
+                if (localStatup.getLeft() == MapleBuffStat.WDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 200.0d));
+                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
+                } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 200.0d));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
         } else if (getSourceId() == 1320009 && isSkill()) { // Making Beholder hex defense scale with level
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                if (localStatup.getLeft() == MapleBuffStat.WDEF || localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int newDef = (int) (localStatup.getRight() * (1.0d + (applyFrom.getLevel() - 100.0d) / 250.0d));
+                if (localStatup.getLeft() == MapleBuffStat.WDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 250.0d));
+                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
+                } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 250.0d));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
@@ -1105,13 +1119,10 @@ public class MapleStatEffect implements Serializable {
             } else if (isInfusion()) {
                 applyTo.getClient().getSession().write(MaplePacketCreator.giveInfusion(seconds, x));
             } else {
-                localStatups = new ArrayList<>(localStatups);
                 for (int i = 0; i < localStatups.size(); ++i) {
                     final Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                     if (applyTo.getBuffedValue(localStatup.getLeft()) != null) {
-                        System.out.print("applyTo.getBuffedValue(localStatup.getLeft()) != null\n");
                         if (applyTo.getBuffedValue(localStatup.getLeft()) > localStatup.getRight()) {
-                            System.out.print("Player already has buff of this type that is better.\n");
                             if (localDuration > applyTo.getBuffedRemainingTime(localStatup.getLeft())) {
                                 // The better buff isn't going to last as long as this buff would,
                                 // so we will give it when the better one wears off.
@@ -1131,7 +1142,6 @@ public class MapleStatEffect implements Serializable {
                             localStatups.remove(i--);
                             buffPrioritized = true;
                         } else if (getDuration() < applyTo.getBuffedRemainingTime(localStatup.getLeft())) {
-                            System.out.print("getDuration() < applyTo.getBuffedRemainingTime(localStatup.getLeft())\n");
                             // This buff is as good or better, but doesn't last as long so we will reinstate
                             // the inferior one once this one wears off.
                             final MapleStatEffect currentInferiorBuff = new MapleStatEffect(applyTo.getStatForBuff(localStatup.getLeft()));
@@ -1146,11 +1156,6 @@ public class MapleStatEffect implements Serializable {
                         }
                     }
                 }
-                //
-                for (Pair<MapleBuffStat, Integer> localStatup : localStatups) {
-                    System.out.print("localStatup.getLeft(): " + localStatup.getLeft().name() + ", localStatup.getRight(): " + localStatup.getRight());
-                }
-                //
                 applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff((skill ? localSourceId : -localSourceId), localDuration, localStatups));
             }
             /*if (sourceid == 5221006) { // Battleship
@@ -1216,7 +1221,6 @@ public class MapleStatEffect implements Serializable {
         }
         if (!localStatups.isEmpty()) {
             if (buffPrioritized) {
-                System.out.print("buffPrioritized\n");
                 final MapleStatEffect prioritizedStatEffect = new MapleStatEffect(this);
                 prioritizedStatEffect.statups = localStatups;
                 final long startTime = System.currentTimeMillis();
