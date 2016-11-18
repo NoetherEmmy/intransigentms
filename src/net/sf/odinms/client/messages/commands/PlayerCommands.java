@@ -83,7 +83,8 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@whodrops <searchstring> - | - Lists monsters who drop the item with the name that is the closest fit for <searchstring>.");
             mc.dropMessage("@monsterdrops <monsterid> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
             mc.dropMessage("@monsterdrops <searchstring> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
-            mc.dropMessage("@pqpoints - | - Toggles the display of current PQ point total.");
+            mc.dropMessage("@pqpoints - | - Displays your current PQ point total.");
+            mc.dropMessage("@showpqpoints - | - Toggles whether or not your current PQ point total is displayed every time the total is changed.");
             mc.dropMessage("@readingtime - | - Displays how long you've been reading.");
             mc.dropMessage("@donated - | - Allows access to donator benefits.");
             mc.dropMessage("@vote - | - Displays the amount of time left until you may vote again.");
@@ -912,7 +913,7 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@sell")) {
             NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9201081);
-        } else if (splitted[0].equals("@pqpoints")) {
+        } else if (splitted[0].equals("@showpqpoints")) {
             player.toggleShowPqPoints();
             String s = player.showPqPoints() ? "on" : "off";
             mc.dropMessage("PQ point display is now turned " + s + ".");
@@ -932,6 +933,12 @@ public class PlayerCommands implements Command {
             player.dropMessage("Weapon defense: " + player.getTotalWdef() + ", magic defense: " + player.getTotalMdef());
         } else if (splitted[0].equals("@ria")) {
             NPCScriptManager.getInstance().start(c, 9010003);
+        } else if (splitted[0].equals("@pqpoints")) {
+            if (player.getPartyQuest() == null) {
+                mc.dropMessage("You are not currently in a PQ that has points.");
+                return;
+            }
+            mc.dropMessage("Current PQ point total: " + player.getPartyQuest().getPoints());
         }
     }
 
@@ -1018,11 +1025,12 @@ public class PlayerCommands implements Command {
             new CommandDefinition("cancelquest", 0),
             new CommandDefinition("vote", 0),
             new CommandDefinition("sell", 0),
-            new CommandDefinition("pqpoints", 0),
+            new CommandDefinition("showpqpoints", 0),
             new CommandDefinition("readingtime", 0),
             new CommandDefinition("defense", 0),
             new CommandDefinition("defence", 0),
-            new CommandDefinition("ria", 0)
+            new CommandDefinition("ria", 0),
+            new CommandDefinition("pqpoints", 0)
         };
     }
 }

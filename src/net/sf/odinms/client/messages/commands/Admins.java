@@ -34,7 +34,6 @@ import java.util.List;
 import static net.sf.odinms.client.messages.CommandProcessor.getOptionalIntArg;
 
 public class Admins implements Command {
-
     @Override
     public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
@@ -290,7 +289,7 @@ public class Admins implements Command {
                 int xpos = player.getPosition().x;
                 int ypos = player.getPosition().y;
                 int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
-                if (npc != null && !npc.getName().equals("MISSINGNO")) {
+                if (!npc.getName().equals("MISSINGNO")) {
                     npc.setPosition(player.getPosition());
                     npc.setCy(ypos);
                     npc.setRx0(xpos + 50);
@@ -442,7 +441,7 @@ public class Admins implements Command {
                     player.getMap().broadcastMessage(packet);
                 } else if (range == 1) {
                     ChannelServer.getInstance(c.getChannel()).broadcastPacket(packet);
-                } else if (range == 2) {
+                } else {
                     try {
                         ChannelServer.getInstance(c.getChannel()).getWorldInterface().broadcastMessage(player.getName(), packet.getBytes());
                     } catch (RemoteException e) {
@@ -455,7 +454,7 @@ public class Admins implements Command {
                 MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.unequipEverything();
-                    victim.dropMessage("You've been stripped by " + player.getName() + " biatch :D");
+                    victim.dropMessage("You've been stripped by " + player.getName() + ".");
                 } else {
                     player.dropMessage(6, "Player is not on.");
                 }

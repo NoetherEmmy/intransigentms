@@ -2046,11 +2046,11 @@ public class MapleMap {
                 TimerManager tMan = TimerManager.getInstance();
                 if (spawnArea != null) {
                     spawnTask = tMan.register(() -> {
-                        for (int i = 0; i < 20; ++i) {
+                        final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
+                        for (int i = 0; i < 10; ++i) {
                             try {
-                                final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
-                                int x = (int) (Math.random() * (spawnArea.getWidth() + 1)) + spawnArea.x;
-                                int y = (int) (-Math.random() * (spawnArea.getHeight() + 1)) + spawnArea.y;
+                                int x = (int) (spawnArea.x + Math.random() * (spawnArea.getWidth() + 1));
+                                int y = (int) (spawnArea.y + Math.random() * (spawnArea.getHeight() + 1));
                                 toSpawn.setPosition(new Point(x, y));
                                 MapleMap.this.spawnMonster(toSpawn);
                                 

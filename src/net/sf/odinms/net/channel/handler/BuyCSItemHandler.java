@@ -16,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class BuyCSItemHandler extends AbstractMaplePacketHandler {
-
     private void updateInformation(MapleClient c, int item) {
         CashItemInfo Item = CashItemFactory.getItem(item);
         c.getSession().write(MaplePacketCreator.showBoughtCSItem(Item.getId()));
@@ -34,7 +33,6 @@ public class BuyCSItemHandler extends AbstractMaplePacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        //System.out.println(slea.toString());
         int action = slea.readByte();
         if (action == 3) {
             slea.skip(1);
@@ -42,7 +40,7 @@ public class BuyCSItemHandler extends AbstractMaplePacketHandler {
             int snCS = slea.readInt();
             CashItemInfo item = CashItemFactory.getItem(snCS);
             int itemID = item.getId();
-            if((itemID >= 5390000 && itemID <= 5430000) || itemID == 1812006 || itemID == 1812002 || itemID == 1812003 || (itemID >= 5030000 && itemID <= 5076000 && itemID != 5060000) || (itemID >= 5130000 && itemID <= 5154000) || (itemID >= 5210000 && itemID <= 5230000)){
+            if((itemID >= 5390000 && itemID <= 5430000) || itemID == 1812002 || itemID == 1812003 || (itemID >= 5030000 && itemID <= 5076000 && itemID != 5060000) || (itemID >= 5130000 && itemID <= 5154000) || (itemID >= 5210000 && itemID <= 5230000)){
                 c.getPlayer().dropMessage(1, "You may not purchase this item.");
                 c.getSession().write(MaplePacketCreator.enableActions());
                 return;
