@@ -1059,7 +1059,7 @@ public class MapleStatEffect implements Serializable {
                     }
                 }
             }
-        } else if (getSourceId() == 2321002 && isSkill() && applyFrom.getStr() >= 200) { // Adding magic defense for Battle Priest's Mana Reflection
+        } else if (getSourceId() == 2321002 && isSkill() && applyFrom.getTotalStr() >= 200) { // Adding magic defense for Battle Priest's Mana Reflection
             if (!localStatups.stream().anyMatch(p -> p.getLeft() == MapleBuffStat.MDEF)) {
                 localStatups.add(new Pair<>(MapleBuffStat.MDEF, applyFrom.getTotalStr()));
             }
