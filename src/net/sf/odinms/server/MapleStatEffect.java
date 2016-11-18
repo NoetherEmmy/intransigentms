@@ -880,59 +880,12 @@ public class MapleStatEffect implements Serializable {
 
     public void silentApplyBuff(final MapleCharacter chr, final long startTime) {
         final List<Pair<MapleBuffStat, Integer>> localStatups = new ArrayList<>(getStatups());
-        boolean buffPrioritized = false;
-        for (int i = 0; i < localStatups.size(); ++i) {
-            final Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-            if (chr.getBuffedValue(localStatup.getLeft()) != null) {
-                if (chr.getBuffedValue(localStatup.getLeft()) > localStatup.getRight()) {
-                    // Player already has buff of this type that is better.
-                    if (getDuration() > chr.getBuffedRemainingTime(localStatup.getLeft())) {
-                        // The better buff isn't going to last as long as this buff would,
-                        // so we will give it when the better one wears off.
-                        final MapleStatEffect lingeringInferiorBuff = new MapleStatEffect(this);
-                        lingeringInferiorBuff.statups = Collections.singletonList(localStatup);
-                        final int finalSourceId = getSourceId();
-                        final int finalDuration = getDuration();
-                        TimerManager.getInstance().schedule(() -> {
-                            chr.getClient().getSession().write(MaplePacketCreator.giveBuff((lingeringInferiorBuff.isSkill() ? finalSourceId : -finalSourceId), finalDuration, lingeringInferiorBuff.getStatups()));
-                            final CancelEffectAction cancelAction = new CancelEffectAction(chr, lingeringInferiorBuff, startTime);
-                            final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, finalDuration);
-                            chr.registerEffect(lingeringInferiorBuff, startTime, schedule);
-                        }, chr.getBuffedRemainingTime(localStatup.getLeft()) + 10);
-                    }
-                    // We remove the inferior buff (for now, possibly).
-                    localStatups.remove(i--);
-                    buffPrioritized = true;
-                } else if (getDuration() < (chr.getBuffedRemainingTime(localStatup.getLeft()) == null ? (long) -1 : chr.getBuffedRemainingTime(localStatup.getLeft()))) {
-                    // This buff is as good or better, but doesn't last as long so we will reinstate
-                    // the inferior one once this one wears off.
-                    final MapleStatEffect currentInferiorBuff = new MapleStatEffect(chr.getStatForBuff(localStatup.getLeft()));
-                    currentInferiorBuff.statups = Collections.singletonList(localStatup);
-                    final long inferiorDuration = chr.getBuffedRemainingTime(localStatup.getLeft()) - getDuration();
-                    TimerManager.getInstance().schedule(() -> {
-                        chr.getClient().getSession().write(MaplePacketCreator.giveBuff((currentInferiorBuff.isSkill() ? currentInferiorBuff.getSourceId() : -currentInferiorBuff.getSourceId()), currentInferiorBuff.getDuration(), currentInferiorBuff.getStatups()));
-                        final CancelEffectAction cancelAction = new CancelEffectAction(chr, currentInferiorBuff, System.currentTimeMillis());
-                        final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, inferiorDuration);
-                        chr.registerEffect(currentInferiorBuff, System.currentTimeMillis(), schedule);
-                    }, getDuration());
-                }
-            }
-        }
-        if (buffPrioritized && !localStatups.isEmpty()) {
-            final MapleStatEffect prioritizedStatEffect = new MapleStatEffect(this);
-            prioritizedStatEffect.statups = localStatups;
-            int localDuration = prioritizedStatEffect.getDuration();
-            localDuration = alchemistModifyVal(chr, localDuration, false);
-            final CancelEffectAction cancelAction = new CancelEffectAction(chr, prioritizedStatEffect, startTime);
-            ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((startTime + localDuration) - System.currentTimeMillis()));
-            chr.registerEffect(prioritizedStatEffect, startTime, schedule);
-        } else {
-            int localDuration = duration;
-            localDuration = alchemistModifyVal(chr, localDuration, false);
-            final CancelEffectAction cancelAction = new CancelEffectAction(chr, this, startTime);
-            ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((startTime + localDuration) - System.currentTimeMillis()));
-            chr.registerEffect(this, startTime, schedule);
-        }
+
+        int localDuration = duration;
+        localDuration = alchemistModifyVal(chr, localDuration, false);
+        final CancelEffectAction cancelAction = new CancelEffectAction(chr, this, startTime);
+        ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((startTime + localDuration) - System.currentTimeMillis()));
+        chr.registerEffect(this, startTime, schedule);
 
         SummonMovementType summonMovementType = getSummonMovementType();
         if (summonMovementType != null) {
@@ -965,6 +918,9 @@ public class MapleStatEffect implements Serializable {
         int localY = y;
         int seconds = localDuration / 1000;
         MapleMount givemount = null;
+        int defScaleFactor = getDefScaleFactor();
+        List<Pair<MapleBuffStat, Integer>> manaReflectionDef = null;
+
         if (isHolySymbol()) {
             if (applyFrom.getId() != applyTo.getId()) { // Making sure that other players don't get the watk buff.
                 for (int i = 0; i < localStatups.size(); ++i) {
@@ -991,56 +947,16 @@ public class MapleStatEffect implements Serializable {
                     localStatups.add(0, new Pair<>(MapleBuffStat.WATK, watt));
                 }
             }
-        } else if (getSourceId() == 2001003 && isSkill() && applyFrom.getLevel() > 100) { // Making Magic Armor scale with level
+        } else if (defScaleFactor != -1 && applyFrom.getLevel() > 100) { // Making certain defense skills scale with level
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                 if (localStatup.getLeft() == MapleBuffStat.WDEF) {
                     int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 60.0d));
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / defScaleFactor));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
                     int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 60.0d));
-                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
-                }
-            }
-        } else if (getSourceId() == 2301004 && isSkill() && applyFrom.getLevel() > 100) { // Making Bless defense scale with level
-            for (int i = 0; i < localStatups.size(); ++i) {
-                Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                if (localStatup.getLeft() == MapleBuffStat.WDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 80.0d));
-                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
-                } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 80.0d));
-                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
-                }
-            }
-        } else if ((getSourceId() == 5111005 || getSourceId() == 5121003 || getSourceId() == 1301006) && isSkill() && applyFrom.getLevel() > 100) {
-            // Making Transformation, Super Transformation, and Iron Will defense scale with level
-            for (int i = 0; i < localStatups.size(); ++i) {
-                Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                if (localStatup.getLeft() == MapleBuffStat.WDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 200.0d));
-                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
-                } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 200.0d));
-                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
-                }
-            }
-        } else if (getSourceId() == 1320009 && isSkill()) { // Making Beholder hex defense scale with level
-            for (int i = 0; i < localStatups.size(); ++i) {
-                Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                if (localStatup.getLeft() == MapleBuffStat.WDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 250.0d));
-                    localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
-                } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
-                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / 250.0d));
+                    int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / defScaleFactor));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
@@ -1060,10 +976,9 @@ public class MapleStatEffect implements Serializable {
                 }
             }
         } else if (getSourceId() == 2321002 && isSkill() && applyFrom.getTotalStr() >= 200) { // Adding magic defense for Battle Priest's Mana Reflection
-            if (!localStatups.stream().anyMatch(p -> p.getLeft() == MapleBuffStat.MDEF)) {
-                localStatups.add(new Pair<>(MapleBuffStat.MDEF, applyFrom.getTotalStr()));
-            }
+            manaReflectionDef = Collections.singletonList(new Pair<>(MapleBuffStat.MDEF, applyFrom.getTotalStr()));
         }
+
         if (isMonsterRiding()) {
             int ridingLevel = 0; // Mount ID.
             IItem mount = applyFrom.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
@@ -1107,7 +1022,10 @@ public class MapleStatEffect implements Serializable {
         if (primary) {
             localDuration = alchemistModifyVal(applyFrom, localDuration, false);
         }
-        boolean buffPrioritized = false;
+        if (manaReflectionDef != null) {
+            applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff(localSourceId, localDuration, manaReflectionDef));
+        }
+
         if (!localStatups.isEmpty()) {
             if (isDash()) {
                 if (!applyTo.getJob().isA(MapleJob.PIRATE)) {
@@ -1119,43 +1037,6 @@ public class MapleStatEffect implements Serializable {
             } else if (isInfusion()) {
                 applyTo.getClient().getSession().write(MaplePacketCreator.giveInfusion(seconds, x));
             } else {
-                for (int i = 0; i < localStatups.size(); ++i) {
-                    final Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
-                    if (applyTo.getBuffedValue(localStatup.getLeft()) != null) {
-                        if (applyTo.getBuffedValue(localStatup.getLeft()) > localStatup.getRight()) {
-                            if (localDuration > applyTo.getBuffedRemainingTime(localStatup.getLeft())) {
-                                // The better buff isn't going to last as long as this buff would,
-                                // so we will give it when the better one wears off.
-                                final MapleStatEffect lingeringInferiorBuff = new MapleStatEffect(this);
-                                lingeringInferiorBuff.statups = Collections.singletonList(localStatup);
-                                final int finalSourceId = localSourceId;
-                                final int finalDuration = localDuration;
-                                TimerManager.getInstance().schedule(() -> {
-                                    applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff((lingeringInferiorBuff.isSkill() ? finalSourceId : -finalSourceId), finalDuration, lingeringInferiorBuff.getStatups()));
-                                    final long startTime = System.currentTimeMillis();
-                                    final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, lingeringInferiorBuff, startTime);
-                                    final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, finalDuration);
-                                    applyTo.registerEffect(lingeringInferiorBuff, startTime, schedule);
-                                }, applyTo.getBuffedRemainingTime(localStatup.getLeft()) + 10);
-                            }
-                            // We remove the inferior buff (for now, possibly).
-                            localStatups.remove(i--);
-                            buffPrioritized = true;
-                        } else if (getDuration() < applyTo.getBuffedRemainingTime(localStatup.getLeft())) {
-                            // This buff is as good or better, but doesn't last as long so we will reinstate
-                            // the inferior one once this one wears off.
-                            final MapleStatEffect currentInferiorBuff = new MapleStatEffect(applyTo.getStatForBuff(localStatup.getLeft()));
-                            currentInferiorBuff.statups = Collections.singletonList(localStatup);
-                            final long inferiorDuration = applyTo.getBuffedRemainingTime(localStatup.getLeft()) - getDuration();
-                            TimerManager.getInstance().schedule(() -> {
-                                applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff((currentInferiorBuff.isSkill() ? currentInferiorBuff.getSourceId() : -currentInferiorBuff.getSourceId()), currentInferiorBuff.getDuration(), currentInferiorBuff.getStatups()));
-                                final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, currentInferiorBuff, System.currentTimeMillis());
-                                final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, inferiorDuration);
-                                applyTo.registerEffect(currentInferiorBuff, System.currentTimeMillis(), schedule);
-                            }, getDuration());
-                        }
-                    }
-                }
                 applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff((skill ? localSourceId : -localSourceId), localDuration, localStatups));
             }
             /*if (sourceid == 5221006) { // Battleship
@@ -1173,6 +1054,7 @@ public class MapleStatEffect implements Serializable {
             // Apply empty buff icon.
             applyTo.getClient().getSession().write(MaplePacketCreator.giveBuffTest((skill ? localSourceId : -localSourceId), localDuration, 0));
         }
+
         if (isMonsterRiding()) {
             if (givemount != null && givemount.getItemId() != 0) {
                 applyTo.getMap().broadcastMessage(applyTo, MaplePacketCreator.showMonsterRiding(applyTo.getId(), Collections.singletonList(new Pair<>(MapleBuffStat.MONSTER_RIDING, 1)), givemount), false);
@@ -1219,21 +1101,14 @@ public class MapleStatEffect implements Serializable {
                 }
             }
         }
+
         if (!localStatups.isEmpty()) {
-            if (buffPrioritized) {
-                final MapleStatEffect prioritizedStatEffect = new MapleStatEffect(this);
-                prioritizedStatEffect.statups = localStatups;
-                final long startTime = System.currentTimeMillis();
-                final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, prioritizedStatEffect, startTime);
-                final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
-                applyTo.registerEffect(prioritizedStatEffect, startTime, schedule);
-            } else {
-                final long startTime = System.currentTimeMillis();
-                final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, this, startTime);
-                final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
-                applyTo.registerEffect(this, startTime, schedule);
-            }
+            final long startTime = System.currentTimeMillis();
+            final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, this, startTime);
+            final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
+            applyTo.registerEffect(this, startTime, schedule);
         }
+
         if (primary) {
             if (isDash()) {
                 applyTo.getMap().broadcastMessage(applyTo, MaplePacketCreator.showDashEffectToOthers(applyTo.getId(), localX, localY, seconds), false);
@@ -1739,5 +1614,17 @@ public class MapleStatEffect implements Serializable {
     
     public void doubleDuration() {
         this.duration *= 2;
+    }
+
+    private int getDefScaleFactor() {
+        if (!isSkill()) return -1;
+        int skillIds[] =     {2001003, 2301004, 5111005, 5121003, 1301006, 1320009, 5221006};
+        int scaleFactors[] = {60,      80,      200,     200,     200,     250,     60};
+        for (int i = 0; i < skillIds.length; ++i) {
+            if (skillIds[i] == getSourceId()) {
+                return scaleFactors[i];
+            }
+        }
+        return -1;
     }
 }
