@@ -624,7 +624,7 @@ public class MapleStatEffect implements Serializable {
                     remove = MonsterStatus.STUN;
                     break;
             }
-            for (MapleMapObject _mob : applyFrom.getMap().getMapObjectsInRange(applyFrom.getPosition(), 30000 + applyFrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 3000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+            for (MapleMapObject _mob : applyFrom.getMap().getMapObjectsInRange(applyFrom.getPosition(), 200000 + applyFrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 10000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster mob = (MapleMonster) _mob;
                 if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
                     if (mob.getMonsterBuffs().contains(remove)) {
