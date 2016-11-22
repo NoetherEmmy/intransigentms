@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class ScrollHandler extends AbstractMaplePacketHandler {
-
     private static final Logger log = LoggerFactory.getLogger(ScrollHandler.class);
 
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -72,7 +71,8 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
 
         if (scrolled == null) {
             scrollSuccess = IEquip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || (ii.isCleanSlate(scroll.getItemId()) && scrolled.getLevel() == oldLevel + 1) || (scroll.getItemId() == 2049004 && scrolled.getUpgradeSlots() == ((Equip) ii.getEquipById(scrolled.getItemId())).getUpgradeSlots())) {
+        } else if (scrolled.getLevel() > oldLevel || (ii.isCleanSlate(scroll.getItemId()) && scrolled.getLevel() == oldLevel + 1) ||
+                (scroll.getItemId() == 2049004 && scrolled.getUpgradeSlots() == ((Equip) ii.getEquipById(scrolled.getItemId())).getUpgradeSlots())) {
             scrollSuccess = IEquip.ScrollResult.SUCCESS;
         }
         useInventory.removeItem(scroll.getPosition(), (short) 1, false);

@@ -53,9 +53,8 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
             runningPartyId.set(rs.getInt(1));
             rs.close();
             ps.close();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
         runningMessengerId.set(1);
     }
@@ -265,13 +264,11 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
             }
 
             MapleGuild g = new MapleGuild(id, mgc);
-
             if (g.getId() == -1) { // Failed to load.
                 return null;
             }
 
             guilds.put(id, g);
-
             return g;
         }
     }

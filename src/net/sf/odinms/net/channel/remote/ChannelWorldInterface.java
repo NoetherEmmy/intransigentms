@@ -16,7 +16,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface ChannelWorldInterface extends Remote, WorldChannelCommonOperations {
-
     void setChannelId(int id) throws RemoteException;
 
     int getChannelId() throws RemoteException;

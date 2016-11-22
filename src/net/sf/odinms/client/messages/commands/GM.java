@@ -214,7 +214,7 @@ public class GM implements Command {
                     return;
                 }
                 MapleNPC npc = MapleLifeFactory.getNPC(npcid);
-                if (npc != null && !npc.getName().equalsIgnoreCase("MISSINGNO")) {
+                if (!npc.getName().equalsIgnoreCase("MISSINGNO")) {
                     NPCScriptManager.getInstance().start(c, npcid);
                 } else {
                     mc.dropMessage("UNKNOWN NPC");
@@ -425,12 +425,10 @@ public class GM implements Command {
                 player.setMeso(meso);
                 break;
             case "!setname": {
-                if (splitted.length != 3) {
-                    return;
-                }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                String newname = splitted[2];
                 if (splitted.length == 3) {
+                    MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                    String newname = splitted[2];
+                
                     if (MapleCharacter.getIdByName(newname, 0) == -1) {
                         if (victim != null) {
                             victim.getClient().disconnect();
@@ -438,13 +436,13 @@ public class GM implements Command {
                             victim.setName(newname, true);
                             mc.dropMessage(splitted[1] + " is now named " + newname + "");
                         } else {
-                            mc.dropMessage("The player " + splitted[1] + " is either offline or not in this channel");
+                            mc.dropMessage("The player " + splitted[1] + " is either offline or not in this channel.");
                         }
                     } else {
-                        mc.dropMessage("Character name in use.");
+                        mc.dropMessage("Character name is in use.");
                     }
                 } else {
-                    mc.dropMessage("Incorrect syntax !");
+                    mc.dropMessage("Incorrect syntax!");
                 }
                 break;
             }

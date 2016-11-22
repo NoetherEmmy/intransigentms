@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Properties;
 
 public class DatabaseConnection {
-
     private static final ThreadLocal<Connection> con = new ThreadLocalConnection();
     private static final Logger log = LoggerFactory.getLogger(DatabaseConnection.class);
     private static Properties props = null;
@@ -38,7 +37,6 @@ public class DatabaseConnection {
     }
 
     private static class ThreadLocalConnection extends ThreadLocal<Connection> {
-
         public static final Collection<Connection> allConnections = new ArrayList<>();
 
         @Override

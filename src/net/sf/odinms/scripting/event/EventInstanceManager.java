@@ -163,7 +163,7 @@ public class EventInstanceManager {
         mobs.clear();
         killCount.clear();
         mapFactory = null;
-        em.disposeInstance(name);
+        if (em != null) em.disposeInstance(name);
         em = null;
     }
 

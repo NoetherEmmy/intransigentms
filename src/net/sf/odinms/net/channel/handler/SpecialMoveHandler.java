@@ -17,7 +17,6 @@ import java.awt.*;
 import java.util.concurrent.ScheduledFuture;
 
 public class SpecialMoveHandler extends AbstractMaplePacketHandler {
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SpecialMoveHandler.class);
 
     @Override
@@ -47,7 +46,7 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                 c.getPlayer().addCooldown(skillid, System.currentTimeMillis(), effect.getCooldown() * 1000, timer);
             }
         }
-        //monster magnet
+        // Monster Magnet
         try {
             switch (skillid) {
                 case 1121001:

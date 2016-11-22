@@ -294,7 +294,7 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
     public void setGuildAndRank(int cid, int guildid, int rank) throws RemoteException {
         MapleCharacter mc = server.getPlayerStorage().getCharacterById(cid);
         if (mc == null) {
-            // System.out.println("ERROR: cannot find player in given channel");
+            //System.out.println("ERROR: cannot find player in given channel");
             return;
         }
 
@@ -307,7 +307,6 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
             mc.setGuildRank(rank);
             mc.saveGuildStatus();
         }
-
 
         if (bDifferentGuild) {
             mc.getMap().broadcastMessage(mc, MaplePacketCreator.removePlayerFromMap(cid), false);

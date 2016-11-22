@@ -27,7 +27,6 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
     //private static Logger log = LoggerFactory.getLogger(AbstractDealDamageHandler.class);
 
     public class AttackInfo {
-
         public int numAttacked,  numDamage,  numAttackedAndDamage;
         public int skill,  stance,  direction,  charge;
         public List<Pair<Integer, List<Integer>>> allDamage;
@@ -83,7 +82,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             player.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             return;
         }
-        // Meso explosion has a variable bullet count.
+        // Meso explosion has a variable bullet count
         if (attackCount != attack.numDamage && attack.skill != 4211006) {
             player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT, attack.numDamage + "/" + attackCount);
             return;
@@ -91,7 +90,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         int totDamage = 0;
         final MapleMap map = player.getMap();
 
-        if (attack.skill == 4211006 && attack.allDamage != null) { // Meso explosion.
+        if (attack.skill == 4211006 && attack.allDamage != null) { // Meso explosion
             int delay = 0;
             for (Pair<Integer, List<Integer>> oned : attack.allDamage) {
                 if (oned != null && oned.getLeft() != null) {
@@ -142,7 +141,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
 
                 player.checkMonsterAggro(monster);
 
-                // anti-hack
+                // Antihack
                 if (totDamageToOneMonster > attack.numDamage + 1) {
                     int dmgCheck = player.getCheatTracker().checkDamage(totDamageToOneMonster);
                     if (dmgCheck > 5 && totDamageToOneMonster < 999999 && monster.getId() < 9500317 && monster.getId() > 9500319) {
@@ -164,7 +163,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     return;
                 }
 
-                // pickpocket
+                // Pickpocket
                 if (player.getBuffedValue(MapleBuffStat.PICKPOCKET) != null) {
                     switch (attack.skill) {
                         case 0:
@@ -180,9 +179,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     }
                 }
 
-                // effects
+                // Effects
                 switch (attack.skill) {
-                    case 1221011: // sanctuary
+                    case 1221011: // Sanctuary
                         if (attack.isHH) {
                             // TODO min damage still needs calculated. Using -20% as minimum damage in the meantime... seems to work.
                             int HHDmg = player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100);
@@ -190,14 +189,14 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             map.damageMonster(player, monster, HHDmg);
                         }
                         break;
-                    case 3221007: // snipe
+                    case 3221007: // Snipe
                         //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
                         int upperRange = player.calculateMaxBaseDamage(player.getTotalWatk());
                         int lowerRange = player.calculateMinBaseDamage(player);
                         totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0)) * 45.0);
                         break;
-                    case 4101005: // drain
-                    case 5111004: // energy drain.
+                    case 4101005: // Drain
+                    case 5111004: // Energy drain
                         int gainhp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0);
                         gainhp = Math.min(monster.getMaxHp(), Math.min(gainhp, player.getMaxHp() / 2));
                         player.addHP(gainhp);
@@ -225,7 +224,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                         break;
                     default:
-                        // passives attack bonuses
+                        // Passives' attack bonuses
                         if (totDamageToOneMonster > 0 && monster.isAlive()) {
                             if (player.getBuffedValue(MapleBuffStat.BLIND) != null) {
                                 if (SkillFactory.getSkill(3221006).getEffect(player.getSkillLevel(SkillFactory.getSkill(3221006))).makeChanceResult()) {
@@ -256,7 +255,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         break;
                 }
                 
-                // venom
+                // Venom
                 if (player.getSkillLevel(SkillFactory.getSkill(4120005)) > 0) {
                     MapleStatEffect venomEffect = SkillFactory.getSkill(4120005).getEffect(player.getSkillLevel(SkillFactory.getSkill(4120005)));
                     for (int i = 0; i < attackCount; ++i) {
@@ -312,7 +311,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     }
                 }
 
-                // apply attack
+                // Apply attack
                 if (!attack.isHH) {
                     map.damageMonster(player, monster, totDamageToOneMonster);
                 }
@@ -341,18 +340,25 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET);
         int reqdamage = 20000;
         Point monsterPosition = monster.getPosition();
+        ISkill pickpocket = SkillFactory.getSkill(4211003);
 
         for (Integer eachd : oned.getRight()) {
-            if (SkillFactory.getSkill(4211003).getEffect(player.getSkillLevel(SkillFactory.getSkill(4211003))).makeChanceResult()) {
+            if (pickpocket.getEffect(player.getSkillLevel(pickpocket)).makeChanceResult()) {
                 double perc = (double) eachd / (double) reqdamage;
 
                 final int todrop = Math.min((int) Math.max(perc * (double) maxmeso, (double) 1), maxmeso);
                 final MapleMap tdmap = player.getMap();
-                final Point tdpos = new Point((int) (monsterPosition.getX() + (Math.random() * 100) - 50), (int) (monsterPosition.getY()));
+                final Point tdpos = new Point(
+                    (int) (monsterPosition.getX() + (Math.random() * 100) - 50),
+                    (int) (monsterPosition.getY())
+                );
                 final MapleMonster tdmob = monster;
                 final MapleCharacter tdchar = player;
 
-                TimerManager.getInstance().schedule(() -> tdmap.spawnMesoDrop(todrop, todrop, tdpos, tdmob, tdchar, false), delay);
+                TimerManager.getInstance().schedule(() ->
+                    tdmap.spawnMesoDrop(todrop, todrop, tdpos, tdmob, tdchar, false),
+                    delay
+                );
 
                 delay += 100;
             }
@@ -391,9 +397,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             lea.readByte();
             ret.speed = lea.readByte();
             lea.readByte();
-            ret.direction = lea.readByte(); // Contains direction on some 4th job skills.
+            ret.direction = lea.readByte(); // Contains direction on some 4th job skills
             lea.skip(7);
-            // Hurricane and pierce have extra 4 bytes.
+            // Hurricane and pierce have extra 4 bytes
             switch (ret.skill) {
                 case 3121004:
                 case 3221001:
@@ -441,7 +447,6 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 ret.allDamage.add(new Pair<>(mesoid, null));
             }
             return ret;
-
         } else {
             lea.skip(6);
         }

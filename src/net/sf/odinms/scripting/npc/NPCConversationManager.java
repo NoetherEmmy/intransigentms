@@ -31,8 +31,11 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ScheduledFuture;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
     private final MapleClient c;
@@ -677,34 +680,52 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public boolean enterBossMap(int bossid) {
-        int mapid = 3000;
+        int mapId = 3000;
         MapleMap map;
-        List<MapleCharacter> partymembers = new ArrayList<>();
+        List<MapleCharacter> partyMembers = new ArrayList<>(6);
         for (MaplePartyCharacter pm : getPlayer().getParty().getMembers()) {
-            partymembers.add(c.getChannelServer().getPlayerStorage().getCharacterById(pm.getId()));
+            if (pm.isOnline()) partyMembers.add(
+                c.getChannelServer()
+                 .getPlayerStorage()
+                 .getCharacterById(pm.getId())
+            );
         }
-        map = c.getChannelServer().getMapFactory().getMap(mapid);
+        partyMembers = partyMembers.stream()
+                                   .filter(p -> p != null)
+                                   .collect(Collectors.toList());
+        map = c.getChannelServer().getMapFactory().getMap(mapId);
         if (map.playerCount() == 0) {
             map.killAllMonsters(false);
-            for (MapleCharacter partymember : partymembers) {
-                partymember.setBossReturnMap(partymember.getMapId());
+            map.clearDrops();
+            for (MapleCharacter partyMember : partyMembers) {
+                partyMember.setBossReturnMap(partyMember.getMapId());
             }
-            warpParty(mapid);
-            final List<MapleCharacter> players = partymembers;
-            TimerManager tMan = TimerManager.getInstance();
-            tMan.schedule(() -> {
-                for (MapleCharacter player : players) {
-                    if (player.getMapId() == 3000) {
-                        player.changeMap(player.getBossReturnMap(), 0);
+            warpParty(mapId);
+            
+            partyMembers.forEach(pm ->
+                pm.setForcedWarp(
+                    pm.getBossReturnMap(),
+                    40 * 60 * 1000,
+                    new Predicate<MapleCharacter>() {
+                        @Override
+                        public boolean test(MapleCharacter mc) {
+                            return mc.getMapId() == 3000;
+                        }
                     }
-                }
-            }, 40 * 60 * 1000); // 40 minutes
-            for (MapleCharacter p : partymembers) {
-                p.getClient().getSession().write(MaplePacketCreator.getClock(40 * 60)); // 40 minutes
+                )
+            );
+            
+            for (MapleCharacter p : partyMembers) {
+                p.getClient()
+                 .getSession()
+                 .write(MaplePacketCreator.getClock(40 * 60)); // 40 minutes
             }
             Point monsterspawnpos = new Point(-474, -304); // (-474, -204)
             try {
-                map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(bossid), monsterspawnpos);
+                map.spawnMonsterOnGroundBelow(
+                    MapleLifeFactory.getMonster(bossid),
+                    monsterspawnpos
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -867,7 +888,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void warpParty(int mapId, int exp, int meso) {
         for (MaplePartyCharacter chr_ : getPlayer().getParty().getMembers()) {
+            if (chr_ == null || !chr_.isOnline()) continue;
             MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr_.getName());
+            if (curChar == null || curChar.isDead() || curChar.getMapId() == 100) continue;
             if ((curChar.getEventInstance() == null && c.getPlayer().getEventInstance() == null) || curChar.getEventInstance() == getPlayer().getEventInstance()) {
                 if ((curChar.getPartyQuest() == null && c.getPlayer().getPartyQuest() == null) || curChar.getPartyQuest() == getPlayer().getPartyQuest()) {
                     curChar.changeMap(mapId);
@@ -923,11 +946,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public boolean checkSquadLeader(MapleSquadType type) {
         MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        if (squad != null) {
-            return squad.getLeader().getId() == getPlayer().getId();
-        } else {
-            return false;
-        }
+        return squad != null && squad.getLeader().getId() == getPlayer().getId();
     }
 
     public void removeMapleSquad(MapleSquadType type) {

@@ -143,7 +143,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 }
                 boolean hasShadowPartner = player.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null;
                 int damageBulletCount = bulletCount;
-                if (hasShadowPartner) {
+                if (hasShadowPartner && attack.skill != 4121003) {
                     bulletCount *= 2;
                 }
                 for (int i = 0; i < 255; ++i) {
@@ -165,7 +165,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 if (!soulArrow && !shadowClaw && projectile != 0) {
                     int bulletConsume = bulletCount;
                     if (effect != null && effect.getBulletConsume() != 0) {
-                        bulletConsume = effect.getBulletConsume() * (hasShadowPartner ? 2 : 1);
+                        bulletConsume = effect.getBulletConsume() * (hasShadowPartner && attack.skill != 4121003 ? 2 : 1);
                     }
                     try {
                         MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, projectile, bulletConsume, false, true);

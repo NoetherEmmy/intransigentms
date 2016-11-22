@@ -1222,6 +1222,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             this.cserv = cserv;
             attackers = new HashMap<>(6);
         }
+        
         @Override
         public List<AttackingMapleCharacter> getAttackers() {
             List<AttackingMapleCharacter> ret = new ArrayList<>(attackers.size());
@@ -1243,14 +1244,17 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
             return ret;
         }
+        
         @Override
         public boolean contains(MapleCharacter chr) {
             return attackers.containsKey(chr.getId());
         }
+        
         @Override
         public int getDamage() {
             return totDamage;
         }
+        
         @Override
         public void addDamage(MapleCharacter from, int damage, boolean updateAttackTime) {
             OnePartyAttacker oldPartyAttacker = attackers.get(from.getId());
@@ -1338,6 +1342,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
             }
         }
+        
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -1346,6 +1351,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return result;
         }
         @Override
+        
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;

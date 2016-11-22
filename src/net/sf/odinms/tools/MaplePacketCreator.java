@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 public class MaplePacketCreator {
-
     private static final Logger log = LoggerFactory.getLogger(MaplePacketCreator.class);
     private static final byte[] CHAR_INFO_MAGIC = new byte[]{(byte) 0xff, (byte) 0xc9, (byte) 0x9a, 0x3b};
     private static final byte[] ITEM_MAGIC = new byte[]{(byte) 0x80, 5};
@@ -4356,34 +4355,32 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket showGuildInfo(MapleCharacter c) {
-        //whatever functions calling this better make sure
-        //that the character actually HAS a guild
+        // Whatever functions calling this better make sure
+        // that the character actually HAS a guild
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.GUILD_OPERATION.getValue());
-        mplew.write(0x1A); //signature for showing guild info
+        mplew.write(0x1A); // Signature for showing guild info
 
-        if (c == null) { //show empty guild (used for leaving, expelled)
-
+        if (c == null) { // Show empty guild (used for leaving, expelled)
             mplew.write(0);
             return mplew.getPacket();
         }
         MapleGuildCharacter initiator = c.getMGC();
         MapleGuild g = c.getClient().getChannelServer().getGuild(initiator);
-        if (g == null) { //failed to read from DB - don't show a guild
-
+        if (g == null) { // Failed to read from DB - don't show a guild
             mplew.write(0);
             log.warn(MapleClient.getLogMessage(c, "Couldn't load a guild"));
             return mplew.getPacket();
         } else {
-            //MapleGuild holds the absolute correct value of guild rank
-            //after it is initiated
+            // MapleGuild holds the absolute correct value of guild rank
+            // after it is initiated
             MapleGuildCharacter mgc = g.getMGC(c.getId());
             c.setGuildRank(mgc.getGuildRank());
         }
-        mplew.write(1); //bInGuild
+        mplew.write(1); // bInGuild
         getGuildInfo(mplew, g);
-        // System.out.println("DEBUG: showGuildInfo packet:\n" + mplew.toString());
+        //System.out.println("DEBUG: showGuildInfo packet:\n" + mplew.toString());
         return mplew.getPacket();
     }
 

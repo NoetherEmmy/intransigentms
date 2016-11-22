@@ -72,6 +72,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@sell - | - Opens up an NPC to mass-sell equipment items.");
             mc.dropMessage("@morgue <playername> - | - Displays the past 5 lives of the player.");
             mc.dropMessage("@deathinfo <playername> - | - Displays death count, highest level achieved, paragon level, and suicide count of player.");
+            mc.dropMessage("@overflowexp <playername> - | - Displays overflow EXP (EXP gained past level 250) for the player.");
             mc.dropMessage("@expboostinfo - | - Displays how much time you have left on your EXP bonus.");
             mc.dropMessage("@deathpenalty - | - Displays your current death penalty level and its effects, as well as how long until you can next rest.");
             mc.dropMessage("@defense/@defence - | - Displays your true current weapon and magic defense.");
@@ -828,7 +829,7 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("Paragon level | " + (victim.getTotalParagonLevel()));
                 mc.dropMessage("Suicide count | " + victim.getSuicides());
             } else {
-                mc.dropMessage("There exists no such player.");
+                mc.dropMessage("There exists no such player on your channel.");
             }
         } else if (splitted[0].equals("@expboostinfo")) {
             if (player.getExpBonus()) {
@@ -939,6 +940,29 @@ public class PlayerCommands implements Command {
                 return;
             }
             mc.dropMessage("Current PQ point total: " + player.getPartyQuest().getPoints());
+        } else if (splitted[0].equals("@overflowexp")) {
+            if (splitted.length != 2) {
+                mc.dropMessage("Incorrect syntax. Use: @overflowexp <playername>");
+            }
+            String name = splitted[1];
+            MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+            if (victim != null) {
+                String rawOverflow = "" + victim.getOverflowExp();
+                List<String> digitGroupings = new ArrayList<>(5);
+                digitGroupings.add(rawOverflow.substring(0, rawOverflow.length() % 3));
+                for (int i = rawOverflow.length() % 3; i < rawOverflow.length(); i += 3) {
+                    digitGroupings.add(rawOverflow.substring(i, i + 3));
+                }
+                mc.dropMessage(
+                    victim.getName() +
+                    "'s total overflow EXP: " +
+                    digitGroupings.stream()
+                                  .reduce((accu, grouping) -> accu + "," + grouping)
+                                  .orElse("0")
+                );
+            } else {
+                mc.dropMessage("There exists no such player on your channel.");
+            }
         }
     }
 
@@ -1030,7 +1054,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("defense", 0),
             new CommandDefinition("defence", 0),
             new CommandDefinition("ria", 0),
-            new CommandDefinition("pqpoints", 0)
+            new CommandDefinition("pqpoints", 0),
+            new CommandDefinition("overflowexp", 0)
         };
     }
 }

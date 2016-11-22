@@ -19,7 +19,6 @@ import java.net.InetAddress;
 import java.rmi.RemoteException;
 
 public class ChangeChannelHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int channel = slea.readByte() + 1;

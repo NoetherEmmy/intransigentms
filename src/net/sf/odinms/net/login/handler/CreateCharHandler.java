@@ -51,8 +51,8 @@ public class CreateCharHandler extends AbstractMaplePacketHandler {
         IItem eq_weapon = MapleItemInformationProvider.getInstance().getEquipById(weapon);
         eq_weapon.setPosition((byte) -11);
         equip.addFromDB(eq_weapon);
-        IItem pWeap = MapleItemInformationProvider.getInstance().getEquipById(1702132);
-        pWeap.setPosition((byte) -111);
+        IItem pWeap = MapleItemInformationProvider.getInstance().getEquipById(1092161);
+        pWeap.setPosition((byte) -110);
         equip.addFromDB(pWeap);
 
         boolean charok = true;

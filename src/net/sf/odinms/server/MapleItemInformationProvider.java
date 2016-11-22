@@ -1259,7 +1259,7 @@ public class MapleItemInformationProvider {
                             nEquip.setWatk(newStat);
                         }
                         if (nEquip.getWdef() > 0) {
-                            short newStat = (short) (nEquip.getWdef() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getWdef() + Math.ceil(Math.random() * 50.0) * increase);
                             nEquip.setWdef(newStat);
                         }
                         if (nEquip.getMatk() > 0) {
@@ -1267,7 +1267,7 @@ public class MapleItemInformationProvider {
                             nEquip.setMatk(newStat);
                         }
                         if (nEquip.getMdef() > 0) {
-                            short newStat = (short) (nEquip.getMdef() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getMdef() + Math.ceil(Math.random() * 50.0) * increase);
                             nEquip.setMdef(newStat);
                         }
                         if (nEquip.getAcc() > 0) {
@@ -1275,7 +1275,7 @@ public class MapleItemInformationProvider {
                             nEquip.setAcc(newStat);
                         }
                         if (nEquip.getAvoid() > 0) {
-                            short newStat = (short) (nEquip.getAvoid() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getAvoid() + Math.ceil(Math.random() * 50.0) * increase);
                             nEquip.setAvoid(newStat);
                         }
                         if (nEquip.getSpeed() > 0) {
@@ -1287,11 +1287,11 @@ public class MapleItemInformationProvider {
                             nEquip.setJump(newStat);
                         }
                         if (nEquip.getHp() > 0) {
-                            short newStat = (short) (nEquip.getHp() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getHp() + Math.ceil(Math.random() * 50.0) * increase);
                             nEquip.setHp(newStat);
                         }
                         if (nEquip.getMp() > 0) {
-                            short newStat = (short) (nEquip.getMp() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getMp() + Math.ceil(Math.random() * 50.0) * increase);
                             nEquip.setMp(newStat);
                         }
                         break;

@@ -13,7 +13,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class PetLootHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -30,7 +29,7 @@ public class PetLootHandler extends AbstractMaplePacketHandler {
             return;
         }
         if (ob instanceof MapleMapItem) {
-            MapleMapItem mapitem = (MapleMapItem) ob;
+            final MapleMapItem mapitem = (MapleMapItem) ob;
             synchronized (mapitem) {
                 if (mapitem.isPickedUp()) {
                     c.getSession().write(MaplePacketCreator.getInventoryFull());
@@ -38,13 +37,13 @@ public class PetLootHandler extends AbstractMaplePacketHandler {
                 }
                 double distance = pet.getPos().distanceSq(mapitem.getPosition());
                 c.getPlayer().getCheatTracker().checkPickupAgain();
-                if (distance > 90000.0) { // 300^2, 550 is approximatly the range of ultis
+                if (distance > 90000.0) { // 300^2, 550 is approximately the range of ultimates
                     c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.ITEMVAC);
                 } else if (distance > 22500.0) {
                     c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.SHORT_ITEMVAC);
                 }
                 if (mapitem.getMeso() > 0) {
-                    if (c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).findById(1812000) != null) { //Evil hax until I find the right packet - Ramon
+                    if (c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).findById(1812000) != null) { // Hack fix in the absence of the actual packet
                         c.getPlayer().gainMeso(mapitem.getMeso(), true, true);
                         c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, c.getPlayer().getId(), true, c.getPlayer().getPetIndex(pet)), mapitem.getPosition());
                         c.getPlayer().getCheatTracker().pickupComplete();

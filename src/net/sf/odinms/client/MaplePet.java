@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MaplePet extends Item {
-
     private String name;
     private int uniqueid;
     private int closeness = 0;

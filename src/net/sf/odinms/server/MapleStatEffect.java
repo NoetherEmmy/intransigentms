@@ -579,6 +579,24 @@ public class MapleStatEffect implements Serializable {
                     return false;
                 }
                 mpChange = (int) ((double) applyFrom.getMaxMp() * (y / 100.0));
+            } else if (isNinjaAmbush()) {
+                final Rectangle aoe = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
+                final MapleMap map = applyFrom.getMap();
+                final MapleCharacter attacker = applyFrom;
+                final Random rand = new Random();
+                final double multiplier = (double) getDamage() / 100.0d;
+                
+                TimerManager tMan = TimerManager.getInstance();
+                final ScheduledFuture<?> ninjaTask = tMan.register(() -> {
+                    final int min = attacker.calculateMinBaseDamage(attacker);
+                    final int max = attacker.getCurrentMaxBaseDamage();
+                    map.getMapObjectsInRect(aoe, Collections.singletonList(MapleMapObjectType.MONSTER))
+                       .stream()
+                       .map(mmo -> (MapleMonster) mmo)
+                       .forEach(mob -> map.damageMonster(attacker, mob, (int) (multiplier * (rand.nextInt(max - min) + min))));
+                }, 800);
+                
+                tMan.schedule(() -> ninjaTask.cancel(false), getDuration());
             }
         }
         if (!cureDebuffs.isEmpty()) {
@@ -781,6 +799,10 @@ public class MapleStatEffect implements Serializable {
         return true;
     }
 
+    private boolean isNinjaAmbush() {
+        return isSkill() && (sourceid == 4121004 || sourceid == 4221004);
+    }
+
     private void applyBuff(final MapleCharacter applyFrom) {
         if (isPartyBuff() && (applyFrom.getParty() != null || isGmBuff())) {
             Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
@@ -866,8 +888,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
-        Point mylt;
-        Point myrb;
+        Point mylt, myrb;
         if (facingLeft) {
             mylt = new Point(lt.x + posFrom.x, lt.y + posFrom.y);
             myrb = new Point(rb.x + posFrom.x, rb.y + posFrom.y);

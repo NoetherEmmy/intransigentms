@@ -27,6 +27,7 @@ import net.sf.odinms.tools.Pair;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
+import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -39,9 +40,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements InventoryContainer {
-
     public static final double MAX_VIEW_RANGE_SQ = 850d * 850d;
     private static final double READING_PRIZE_PROP = 0.017d;
     private int world;
@@ -211,6 +212,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int pastLifeExp = 1;
 
     private boolean genderFilter = true;
+    
+    private ScheduledFuture<?> forcedWarp = null;
+    private long overflowExp = (long) 0;
     //
 
     public MapleCharacter() {
@@ -335,6 +339,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.truedamage = rs.getInt("truedamage") != 0;
         ret.completedallquests = rs.getInt("completedallquests") != 0;
         ret.scpqflag = rs.getInt("scpqflag") != 0;
+        ret.overflowExp = rs.getLong("overflowexp");
         ret.battleshiphp = 0;
         //
         if (ret.guildid > 0) {
@@ -640,6 +645,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.maplemount = null;
         ret.completedallquests = false;
         ret.scpqflag = false;
+        ret.overflowExp = (long) 0;
         ret.setDefaultKeyMap();
         ret.recalcLocalStats();
         return ret;
@@ -652,9 +658,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             con.setAutoCommit(false);
             PreparedStatement ps;
             if (update) {
-                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ? WHERE id = ?");
+                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ? WHERE id = ?");
             } else {
-                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -755,12 +761,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(65, expbonusmulti);
             ps.setInt(66, completedallquests ? 1 : 0);
             ps.setInt(67, scpqflag ? 1 : 0);
+            ps.setLong(68, overflowExp);
             if (update) {
-                ps.setInt(68, id);
+                ps.setInt(69, id);
             } else {
-                ps.setInt(68, accountid);
-                ps.setString(69, name);
-                ps.setInt(70, world);
+                ps.setInt(69, accountid);
+                ps.setString(70, name);
+                ps.setInt(71, world);
             }
             if (!full) {
                 ps.executeUpdate();
@@ -2135,6 +2142,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void dispel() {
         ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
+            if (mbsvh.effect.getSourceId() == 2001002) continue;
             if (mbsvh.effect.isSkill()) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
             }
@@ -2857,6 +2865,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         resetQuestKills();
         setCompletedAllQuests(false);
         setScpqFlag(false);
+        overflowExp = (long) 0;
         setMonsterTrialPoints(0);
         setMonsterTrialTier(0);
         setLastTrialTime((long) 0);
@@ -3098,7 +3107,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (!etcLose && gain < 0) {
             gain += Integer.MAX_VALUE;
             if (getLevel() < levelCap) levelUp();
+            boolean overflowed = false;
             while (gain > 0) {
+                if (getLevel() >= levelCap && !overflowed) {
+                    addOverflowExp((long) gain);
+                    overflowed = true;
+                }
                 gain -= (ExpTable.getExpNeededForLevel(level) - this.exp.get());
                 if (getLevel() < levelCap) levelUp();
             }
@@ -3115,25 +3129,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
             updateSingleStat(MapleStat.EXP, this.exp.addAndGet(gain));
         } else {
+            addOverflowExp((long) gain);
             return;
         }
         if (show && gain != 0) {
             client.getSession().write(MaplePacketCreator.getShowExpGain(gain, inChat, white));
         }
-        if (exp.get() >= ExpTable.getExpNeededForLevel(level) && level < levelCap) {
+        if (exp.get() >= ExpTable.getExpNeededForLevel(getLevel()) && getLevel() < levelCap) {
             if (getClient().getChannelServer().getMultiLevel()) {
-                while (level < levelCap && exp.get() >= ExpTable.getExpNeededForLevel(level)) {
+                while (getLevel() < levelCap && exp.get() >= ExpTable.getExpNeededForLevel(getLevel())) {
                     levelUp();
                 }
             } else {
                 levelUp();
-                int need = ExpTable.getExpNeededForLevel(level);
+                int need = ExpTable.getExpNeededForLevel(getLevel());
                 if (exp.get() >= need) {
                     setExp(need - 1);
                     updateSingleStat(MapleStat.EXP, exp.get());
                 }
             }
         }
+    }
+
+    public void addOverflowExp(long gain) {
+        overflowExp += gain;
+    }
+    
+    public long getOverflowExp() {
+        return overflowExp;
     }
 
     public void silentPartyUpdate() {
@@ -4810,6 +4833,31 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public boolean hasMagicArmor() {
         return this.hasmagicarmor;
+    }
+
+    public void setForcedWarp(final int mapId, long delay) {
+        forcedWarp = TimerManager.getInstance().schedule(() -> {
+            this.changeMap(mapId);
+        }, delay);
+    }
+    
+    public void setForcedWarp(final int mapId, long delay, final Predicate<MapleCharacter> predicate) {
+        forcedWarp = TimerManager.getInstance().schedule(() -> {
+            if (predicate.test(this)) {
+                this.changeMap(mapId);
+            }
+        }, delay);
+    }
+    
+    public boolean hasForcedWarp() {
+        return forcedWarp != null;
+    }
+    
+    public void cancelForcedWarp() {
+        if (forcedWarp != null) {
+            forcedWarp.cancel(false);
+            forcedWarp = null;
+        }
     }
 
     public void resetQuestKills() {

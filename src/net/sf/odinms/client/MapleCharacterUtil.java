@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public class MapleCharacterUtil {
-
     private MapleCharacterUtil() {
     }
 
