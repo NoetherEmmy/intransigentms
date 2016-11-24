@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class GuildOperationHandler extends AbstractMaplePacketHandler {
-
     private boolean isGuildNameAcceptable(String name) {
         if (name.length() < 3 || name.length() > 12)
             return false;

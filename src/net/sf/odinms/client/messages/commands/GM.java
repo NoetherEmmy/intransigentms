@@ -52,7 +52,6 @@ import java.util.List;
 import static net.sf.odinms.client.messages.CommandProcessor.*;
 
 public class GM implements Command {
-
     private static String getBannedReason(String name) {
         Connection con = DatabaseConnection.getConnection();
         try {
@@ -1444,7 +1443,7 @@ public class GM implements Command {
                     }
                 } else {
                     if (MapleCharacter.ban(splitted[1], reason, false)) {
-                        String readableTargetName = MapleCharacterUtil.makeMapleReadable(target.getName());
+                        String readableTargetName = MapleCharacterUtil.makeMapleReadable(splitted[1]);
                         String ip = target.getClient().getSession().getRemoteAddress().toString().split(":")[0];
                         reason += " (IP: " + ip + ")";
                         try {
@@ -1492,9 +1491,8 @@ public class GM implements Command {
                 if (victim == null) {
                     int accId = MapleClient.findAccIdForCharacterName(splitted[1]);
                     if (accId >= 0 && MapleCharacter.tempban(reason, tempB, gReason, accId)) {
-                        String readableTargetName = MapleCharacterUtil.makeMapleReadable(victim.getName());
+                        String readableTargetName = MapleCharacterUtil.makeMapleReadable(splitted[1]);
                         cserv.broadcastPacket(MaplePacketCreator.serverNotice(6, readableTargetName + " has been banned for " + originalReason));
-
                     } else {
                         mc.dropMessage("There was a problem offline banning character " + splitted[1] + ".");
                     }
@@ -1525,7 +1523,7 @@ public class GM implements Command {
                                 retNpcs.add(npcPair.getLeft() + " - " + npcPair.getRight());
                             }
                         }
-                        if (retNpcs != null && !retNpcs.isEmpty()) {
+                        if (!retNpcs.isEmpty()) {
                             for (String singleRetNpc : retNpcs) {
                                 mc.dropMessage(singleRetNpc);
                             }
@@ -1578,7 +1576,6 @@ public class GM implements Command {
                         }
                     } else if (type.equalsIgnoreCase("REACTOR") || type.equalsIgnoreCase("REACTORS")) {
                         mc.dropMessage("NOT ADDED YET");
-
                     } else if (type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
                         List<String> retItems = new ArrayList<>();
                         for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
@@ -2099,7 +2096,7 @@ public class GM implements Command {
                     map.removePlayer(player);
                     player.getPartyQuest().registerMap(player.getMapId());
                     map.addPlayer(player);
-                } else if (player.getParty() != null && player.getParty().getMembers().size() > 0) {
+                } else if (player.getParty() != null && !player.getParty().getMembers().isEmpty()) {
                     PartyQuest pq = new PartyQuest(c.getChannel(), splitted[1], 1, 100000000);
                     pq.registerParty(player.getParty());
                     map.removePlayer(player);

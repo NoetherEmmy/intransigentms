@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapleAlliance implements java.io.Serializable {
-
     public static final long serialVersionUID = 24081985245L;
     private final int[] guilds = new int[5];
     private int allianceId = -1;
@@ -44,9 +43,7 @@ public class MapleAlliance implements java.io.Serializable {
     }
 
     public static MapleAlliance loadAlliance(int id) {
-        if (id <= 0) {
-            return null;
-        }
+        if (id <= 0) return null;
         Connection con = DatabaseConnection.getConnection();
         MapleAlliance alliance = new MapleAlliance();
         try {
@@ -116,7 +113,7 @@ public class MapleAlliance implements java.io.Serializable {
 
     public static MapleAlliance createAlliance(MapleCharacter chr1, MapleCharacter chr2, String name) {
         Connection con = DatabaseConnection.getConnection();
-        int id = 0;
+        int id;
         int guild1 = chr1.getGuildId();
         int guild2 = chr2.getGuildId();
         try {

@@ -151,11 +151,11 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
         if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
             if (player.hasMagicArmor()) { // If player has Magic Armor on them currently.
-                final double magicarmorradius = 70000.0; // Squared distance
+                final double magicarmorradius = 70000.0d; // Squared distance
                 int magicarmorlevel = player.getSkillLevel(SkillFactory.getSkill(2001003));
                 if (magicarmorlevel > 0) { // Their Magic Armor level should be greater than 0 if they have the buff on, but this is to make absolutely sure.
                     int splashedmonstercount = (magicarmorlevel / 10) + 1; // Magic Armor strikes 1 additional mob at lvls 1 - 9, 2 at lvls 10 - 19, and 3 at lvl 20.
-                    double maxdmgmulti = ((double) magicarmorlevel * 0.01) + 0.8; // The maximum damage (% of original strike) that splash damage can do.
+                    double maxdmgmulti = ((double) magicarmorlevel * 0.01d) + 0.8d; // The maximum damage (% of original strike) that splash damage can do.
                                                                                   // This value scales with skill level, and the % dealt is only this % if the monster is
                                                                                   // close to 0.0 distance from the originally struck monster. Otherwise it scales down
                                                                                   // with distance to this % - 30%.
@@ -175,7 +175,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                     if (splashedmonsters.size() < splashedmonstercount) { // If we haven't yet gathered as many monsters as can be splashed, just add it in to the list.
                                         splashedmonsters.add(mob);
                                     } else { // Looks like there are more monsters in range than can be splashed.
-                                        double furthestdistance = -1.0; // Arbitrary negative value so that any squared distance is further than this.
+                                        double furthestdistance = -1.0d; // Arbitrary negative value so that any squared distance is further than this.
                                         MapleMonster furthestmonster = null; // This stores the monster that, so far, is in the splashed monster list, but is furthest from the init strike.
                                         for (MapleMonster splashed : splashedmonsters) { // This for loop gets the monster in splashedmonsters furthest from the init strike.
                                             if (struckmonster.getPosition().distanceSq(splashed.getPosition()) > furthestdistance) {
@@ -198,9 +198,9 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                 double distancesq = struckmonster.getPosition().distanceSq(splashedmonster.getPosition()); // Getting the squared distance of this monster from the
                                                                                                                            // init strike for purposes of scaling the dmg % by distance.
                                 for (Integer dmgline : dmg.getRight()) { // For each dmg line done in the init strike, we scale the dmg line by the %, and add it to out new splash dmg.
-                                    double chancetohit = (double) player.getAccuracy() / ((1.84 + 0.07 * Math.max((double) splashedmonster.getLevel() - (double) player.getLevel(), 0.0)) * (double) splashedmonster.getAvoid()) - 1.0;
+                                    double chancetohit = (double) player.getAccuracy() / ((1.84d + 0.07d * Math.max((double) splashedmonster.getLevel() - (double) player.getLevel(), 0.0d)) * (double) splashedmonster.getAvoid()) - 1.0d;
                                     if (Math.random() < chancetohit) {
-                                        splashdamage.add((int) (dmgline * (maxdmgmulti - 0.3 * (distancesq / magicarmorradius)))); // distancesq / radius is small when the monster is close to
+                                        splashdamage.add((int) (dmgline * (maxdmgmulti - 0.3d * (distancesq / magicarmorradius)))); // distancesq / radius is small when the monster is close to
                                     } else {                                                                                       // the init struck monster, so 0.3 is multiplied by a small
                                         splashdamage.add(0);                                                                       // number and the dmg multiplier (%) is closer to the max %.
                                     }
@@ -222,7 +222,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         }
             
             if (player.getDeathPenalty() > 0) {
-                double dpmultiplier = Math.max(1.0 - (double) player.getDeathPenalty() * 0.03, 0.0);
+                double dpmultiplier = Math.max(1.0 - (double) player.getDeathPenalty() * 0.03d, 0.0d);
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {

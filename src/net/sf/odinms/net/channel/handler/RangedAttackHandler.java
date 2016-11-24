@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 public class RangedAttackHandler extends AbstractDealDamageHandler {
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RangedAttackHandler.class);
 
     @Override

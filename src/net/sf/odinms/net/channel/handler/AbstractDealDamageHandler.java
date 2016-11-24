@@ -191,9 +191,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         break;
                     case 3221007: // Snipe
                         //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
-                        int upperRange = player.calculateMaxBaseDamage(player.getTotalWatk());
+                        int upperRange = player.getCurrentMaxBaseDamage();
                         int lowerRange = player.calculateMinBaseDamage(player);
-                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0)) * 45.0);
+                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 45.0d);
                         break;
                     case 4101005: // Drain
                     case 5111004: // Energy drain

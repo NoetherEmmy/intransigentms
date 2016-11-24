@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class MapleGuild implements java.io.Serializable {
-
     public static final int CREATE_GUILD_COST = 5000000;
     public static final int CHANGE_EMBLEM_COST = 15000000;
     public static final int INCREASE_CAPACITY_COST = 5000000;

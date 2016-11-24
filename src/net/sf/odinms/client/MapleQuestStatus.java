@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MapleQuestStatus {
-
     public enum Status {
 
         UNDEFINED(-1),

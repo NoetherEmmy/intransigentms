@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public class Item implements IItem {
-
     private final int id;
     private byte position;
     private short quantity;

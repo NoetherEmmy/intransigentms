@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MapleTrade {
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleTrade.class);
     private MapleTrade partner = null;
     private final List<IItem> items = new ArrayList<>();

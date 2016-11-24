@@ -310,7 +310,7 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
                     AutobanManager.getInstance().autoban(c, "XSource| PE while in trade.");
                 }
                 if ((quantity <= item.getQuantity() && quantity >= 0) || ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId())) {
-                    if (!c.getChannelServer().allowUndroppablesDrop() && ii.isDropRestricted(item.getItemId())) {
+                    if ((!c.getChannelServer().allowUndroppablesDrop() && ii.isDropRestricted(item.getItemId())) || ii.isCash(item.getItemId())) {
                         c.getSession().write(MaplePacketCreator.enableActions());
                         return;
                     }
@@ -324,7 +324,6 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
                     }
                     tradeItem.setPosition(targetSlot);
                     c.getPlayer().getTrade().addItem(tradeItem);
-                    return;
                 }
             }
         } else if (mode == Action.CONFIRM.getCode()) {

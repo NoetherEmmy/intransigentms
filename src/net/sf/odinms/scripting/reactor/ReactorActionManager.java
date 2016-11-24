@@ -86,7 +86,6 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
                 reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, true);
             }
             dropPos.x += 25;
-
         }
     }
 

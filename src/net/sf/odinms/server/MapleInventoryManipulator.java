@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MapleInventoryManipulator {
-
     private MapleInventoryManipulator() {
     }
 
@@ -290,15 +289,11 @@ public class MapleInventoryManipulator {
     }
 
     public static void move(MapleClient c, MapleInventoryType type, byte src, byte dst) {
-        if (src < 0 || dst < 0) {
-            return;
-        }
+        if (src < 0 || dst < 0) return;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         IItem source = c.getPlayer().getInventory(type).getItem(src);
         IItem initialTarget = c.getPlayer().getInventory(type).getItem(dst);
-        if (source == null) {
-            return;
-        }
+        if (source == null) return;
         short olddstQ = -1;
         if (initialTarget != null) {
             olddstQ = initialTarget.getQuantity();

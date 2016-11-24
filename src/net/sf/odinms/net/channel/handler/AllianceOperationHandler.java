@@ -9,7 +9,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.rmi.RemoteException;
 
 public class AllianceOperationHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         //System.out.println(slea.toString());
@@ -32,7 +31,6 @@ public class AllianceOperationHandler extends AbstractMaplePacketHandler {
         }
 
         try {
-
             switch (slea.readByte()) {
                 case 0x0A:
                     String notice = slea.readMapleAsciiString();

@@ -3,7 +3,6 @@ package net.sf.odinms.client;
 import net.sf.odinms.net.IntValueHolder;
 
 public enum MapleStat implements IntValueHolder {
-
     SKIN(0x1),
     FACE(0x2),
     HAIR(0x4),

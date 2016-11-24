@@ -593,7 +593,15 @@ public class MapleStatEffect implements Serializable {
                     map.getMapObjectsInRect(aoe, Collections.singletonList(MapleMapObjectType.MONSTER))
                        .stream()
                        .map(mmo -> (MapleMonster) mmo)
-                       .forEach(mob -> map.damageMonster(attacker, mob, (int) (multiplier * (rand.nextInt(max - min) + min))));
+                       .forEach(mob -> {
+                           double chanceToHit = attacker.getAccuracy() /
+                                                ((1.84d + 0.07d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) * (double) mob.getAvoid()) - 1.0d;
+                           if (Math.random() < chanceToHit) {
+                               int dmg = (int) (multiplier * (rand.nextInt(max - min) + min));
+                               map.damageMonster(attacker, mob, dmg);
+                               map.broadcastMessage(attacker, MaplePacketCreator.damageMonster(mob.getObjectId(), dmg), true);
+                           }
+                       });
                 }, 800);
                 
                 tMan.schedule(() -> ninjaTask.cancel(false), getDuration());

@@ -446,11 +446,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     public boolean addGuildtoAlliance(int aId, int guildId) {
         MapleAlliance alliance = alliances.get(aId);
-        if (alliance != null) {
-            alliance.addGuild(guildId);
-            return true;
-        }
-        return false;
+        return alliance != null && alliance.addGuild(guildId);
     }
 
     public boolean removeGuildFromAlliance(int aId, int guildId) {

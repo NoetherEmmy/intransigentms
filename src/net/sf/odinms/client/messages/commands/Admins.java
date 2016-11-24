@@ -637,7 +637,7 @@ public class Admins implements Command {
                             ps.setInt(7, player.getMapId());
                             ps.setInt(8, scriptId);
                             ps.setInt(9, player.getMap().getFootholds().findBelow(player.getPosition()).getId());
-                            ps.setInt(10, player.getPosition().x + 50); // I should really remove rx1 rx0. Useless piece of douche
+                            ps.setInt(10, player.getPosition().x + 50); // I should really remove rx1 rx0. Useless.
                             ps.setInt(11, player.getPosition().x - 50);
                             ps.setInt(12, victim.getGender());
                             ps.setInt(13, player.isFacingLeft() ? 0 : 1);
