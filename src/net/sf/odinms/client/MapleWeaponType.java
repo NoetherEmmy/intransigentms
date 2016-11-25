@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public enum MapleWeaponType {
-
     NOT_A_WEAPON(0),
     BOW(3.4),
     CLAW(3.6),

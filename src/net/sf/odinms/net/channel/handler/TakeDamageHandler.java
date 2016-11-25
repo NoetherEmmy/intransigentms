@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Iterator;
 
 public class TakeDamageHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         try {
@@ -156,6 +155,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             if (belowlevellimit && damage > 1) {
                 removeddamage += damage - 1;
                 damage = 1;
+            }
+            if (player.isInvincible()) {
+                removeddamage += damage;
+                damage = 0;
             }
             if (damage > 0 && !deadlyattack) {
                 player.getCheatTracker().setAttacksWithoutHit(0);

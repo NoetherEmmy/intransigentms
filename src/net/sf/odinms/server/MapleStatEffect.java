@@ -548,7 +548,7 @@ public class MapleStatEffect implements Serializable {
         return applyTo(chr, chr, true, pos);
     }
 
-    private boolean applyTo(MapleCharacter applyFrom, MapleCharacter applyTo, boolean primary, Point pos) {
+    private boolean applyTo(MapleCharacter applyFrom, final MapleCharacter applyTo, boolean primary, Point pos) {
         int hpChange = calcHPChange(applyFrom, primary);
         int mpChange = calcMPChange(applyFrom, primary);
 
@@ -571,14 +571,14 @@ public class MapleStatEffect implements Serializable {
                 }
             }
             if (sourceid == 5101005) {
-                hpChange = (int) ((double) applyFrom.getMaxHp() * (-x / 100.0));
+                hpChange = (int) ((double) applyFrom.getMaxHp() * (-x / 100.0d));
                 if (-hpChange >= applyTo.getHp()) {
                     applyFrom.dropMessage(5, "You do not have enough HP to use the MP Recovery skill.");
                     applyFrom.removeCooldown(sourceid);
                     applyFrom.getClient().getSession().write(MaplePacketCreator.enableActions());
                     return false;
                 }
-                mpChange = (int) ((double) applyFrom.getMaxMp() * (y / 100.0));
+                mpChange = (int) ((double) applyFrom.getMaxMp() * (y / 100.0d));
             } else if (isNinjaAmbush()) {
                 final Rectangle aoe = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
                 final MapleMap map = applyFrom.getMap();
@@ -650,12 +650,22 @@ public class MapleStatEffect implements Serializable {
                     remove = MonsterStatus.STUN;
                     break;
             }
-            for (MapleMapObject _mob : applyFrom.getMap().getMapObjectsInRange(applyFrom.getPosition(), 200000 + applyFrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 10000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+            List<MapleMapObject> mobsInRange;
+            mobsInRange = applyFrom.getMap()
+                                   .getMapObjectsInRange(
+                                       applyFrom.getPosition(),
+                                       200000 + applyFrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 10000,
+                                       Collections.singletonList(MapleMapObjectType.MONSTER)
+                                   );
+            for (MapleMapObject _mob : mobsInRange) {
                 MapleMonster mob = (MapleMonster) _mob;
                 if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
                     if (mob.getMonsterBuffs().contains(remove)) {
                         mob.getMonsterBuffs().remove(remove);
-                        MaplePacket packet = MaplePacketCreator.cancelMonsterStatus(mob.getObjectId(), Collections.singletonMap(remove, 1));
+                        MaplePacket packet = MaplePacketCreator.cancelMonsterStatus(
+                            mob.getObjectId(),
+                            Collections.singletonMap(remove, 1)
+                        );
                         mob.getMap().broadcastMessage(packet, mob.getPosition());
                         if (mob.getController() != null && !mob.getController().isMapObjectVisible(mob)) {
                             mob.getController().getClient().getSession().write(packet);
@@ -694,6 +704,8 @@ public class MapleStatEffect implements Serializable {
         }
         applyTo.getClient().getSession().write(MaplePacketCreator.updatePlayerStats(hpMpUpdate, true));
         if (isResurrection() && !primary) {
+            applyTo.setInvincible(true); // 10 second invincibility
+            TimerManager.getInstance().schedule(() -> applyTo.setInvincible(false), 10 * 1000);
             applyTo.incrementDeathPenaltyAndRecalc(5);
             applyTo.setExp(0);
             applyTo.updateSingleStat(MapleStat.EXP, 0);
@@ -709,7 +721,10 @@ public class MapleStatEffect implements Serializable {
                     if (target.getId() / 10000000 != 60 && applyTo.getMapId() / 10000000 != 61) {
                         if (target.getId() / 10000000 != 21 && applyTo.getMapId() / 10000000 != 20) {
                             if (target.getId() / 10000000 != applyTo.getMapId() / 10000000) {
-                                log.info("Player {} is trying to use a return scroll to an illegal location ({}->{})", new Object[]{applyTo.getName(), applyTo.getMapId(), target.getId()});
+                                log.info(
+                                    "Player {} is trying to use a return scroll to an illegal location ({}->{})",
+                                    new Object[]{applyTo.getName(), applyTo.getMapId(), target.getId()}
+                                );
                                 //applyTo.getClient().disconnect();
                                 //return false;
                             }
@@ -738,13 +753,20 @@ public class MapleStatEffect implements Serializable {
             if (projectile == 0) {
                 return false;
             } else {
-                MapleInventoryManipulator.removeById(applyTo.getClient(), MapleInventoryType.USE, projectile, 200, false, true);
+                MapleInventoryManipulator.removeById(
+                    applyTo.getClient(),
+                    MapleInventoryType.USE,
+                    projectile,
+                    200,
+                    false,
+                    true
+                );
             }
         }
         if (overTime) {
             applyBuffEffect(applyFrom, applyTo, primary);
         }
-        if (primary && (overTime || isHeal())) {
+        if (primary && (overTime || isHeal() || isHeroWill())) {
             applyBuff(applyFrom);
         }
         if (primary && isMonsterBuff()) {
@@ -821,7 +843,34 @@ public class MapleStatEffect implements Serializable {
             for (MapleMapObject affectedmo : affecteds) {
                 MapleCharacter affected = (MapleCharacter) affectedmo;
                 if (affected != null && isHeal() && affected != applyFrom && affected.getParty() != null && affected.getParty() == applyFrom.getParty() && affected.isAlive()) {
-                    int expadd = (int) ((((double) calcHPChange(applyFrom, true) / 10.0) * ((double) applyFrom.getAbsoluteXp() * (double) applyFrom.getClient().getChannelServer().getExpRate() + ((Math.random() * 10.0) + 30.0)) * ((Math.random() * (double) applyFrom.getSkillLevel(SkillFactory.getSkill(2301002)) / 100.0) * ((double) applyFrom.getLevel() / 30.0))) / 4.0);
+                    int expadd = (int)
+                    (
+                        (
+                            (
+                                calcHPChange(applyFrom, true) / 10.0d
+                            ) *
+                            (
+                                (double) applyFrom.getAbsoluteXp() *
+                                         applyFrom.getClient().getChannelServer().getExpRate() +
+                                (
+                                    (
+                                        Math.random() * 10.0d
+                                    ) + 30.0d
+                                )
+                            ) *
+                            (
+                                (
+                                    Math.random() * applyFrom.getSkillLevel
+                                    (
+                                        SkillFactory.getSkill(2301002)
+                                    ) / 100.0d
+                                ) *
+                                (
+                                    applyFrom.getLevel() / 30.0d
+                                )
+                            )
+                        ) / 4.0d
+                    );
                     if (affected.getHp() < affected.getMaxHp() - affected.getMaxHp() / 20) {
                         applyFrom.gainExp(expadd, true, false, false);
                     }
@@ -842,7 +891,9 @@ public class MapleStatEffect implements Serializable {
                         Set<Integer> disabledSkills = null;
                         if (affected.getPartyQuest() != null) {
                             if (affected.getPartyQuest().getMapInstance(affected.getMap()) != null) {
-                                disabledSkills = affected.getPartyQuest().getMapInstance(affected.getMap()).readDisabledSkills();
+                                disabledSkills = affected.getPartyQuest()
+                                                         .getMapInstance(affected.getMap())
+                                                         .readDisabledSkills();
                             }
                         }
                         for (PlayerCoolDownValueHolder i : affected.getAllCooldowns()) {
@@ -862,8 +913,31 @@ public class MapleStatEffect implements Serializable {
                 // of affected players.
                 applyTo(applyFrom, affected, false, null);
                 affected.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(sourceid, 2));
-                affected.getMap().broadcastMessage(affected, MaplePacketCreator.showBuffeffect(affected.getId(), sourceid, 2, (byte) 3), false);
+                affected.getMap().broadcastMessage(
+                    affected,
+                    MaplePacketCreator.showBuffeffect(
+                        affected.getId(),
+                        sourceid,
+                        2,
+                        (byte) 3
+                    ),
+                    false
+                );
             }
+        } else if (isHeroWill() && applyFrom.getParty() != null) {
+            applyFrom.getMap()
+                     .getMapObjectsInRange(
+                         applyFrom.getPosition(),
+                         300000.0d,
+                         Collections.singletonList(MapleMapObjectType.PLAYER)
+                     )
+                     .stream()
+                     .map(mmo -> (MapleCharacter) mmo)
+                     .filter(mc ->
+                         mc != applyFrom &&
+                         mc.getParty() == applyFrom.getParty()
+                     )
+                     .forEach(MapleCharacter::dispelDebuffs);
         }
     }
 

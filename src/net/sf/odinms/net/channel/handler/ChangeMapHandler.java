@@ -14,24 +14,25 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.net.InetAddress;
 
 public class ChangeMapHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        c.getPlayer().setLastKillOnMap((long) 0);
-        c.getPlayer().setLastDamageSource(null);
-        c.getPlayer().resetAfkTime();
+        final MapleCharacter player = c.getPlayer();
+        player.setLastKillOnMap((long) 0);
+        player.setLastDamageSource(null);
+        player.resetAfkTime();
+        player.setInvincible(false);
         if (slea.available() == 0) {
             int channel = c.getChannel();
             String ip = ChannelServer.getInstance(c.getChannel()).getIP(channel);
             String[] socket = ip.split(":");
-            if (c.getPlayer().inCS() || c.getPlayer().inMTS()) {
-                c.getPlayer().saveToDB(true, true);
-                c.getPlayer().setInCS(false);
-                c.getPlayer().setInMTS(false);
+            if (player.inCS() || player.inMTS()) {
+                player.saveToDB(true, true);
+                player.setInCS(false);
+                player.setInMTS(false);
             } else {
-                c.getPlayer().saveToDB(true, false);
+                player.saveToDB(true, false);
             }
-            ChannelServer.getInstance(c.getChannel()).removePlayer(c.getPlayer());
+            ChannelServer.getInstance(c.getChannel()).removePlayer(player);
             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
             try {
                 MaplePacket packet = MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]));
@@ -44,8 +45,7 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
             slea.readByte();
             int targetid = slea.readInt();
             String startwp = slea.readMapleAsciiString();
-            MaplePortal portal = c.getPlayer().getMap().getPortal(startwp);
-            MapleCharacter player = c.getPlayer();
+            MaplePortal portal = player.getMap().getPortal(startwp);
             if (player.getBuffedValue(MapleBuffStat.MORPH) != null && player.getBuffedValue(MapleBuffStat.COMBO) != null) {
                 player.cancelEffectFromBuffStat(MapleBuffStat.MORPH);
                 player.cancelEffectFromBuffStat(MapleBuffStat.COMBO);
@@ -53,7 +53,7 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
             if (player.getBuffedValue(MapleBuffStat.PUPPET) != null) {
                 player.cancelBuffStats(MapleBuffStat.PUPPET);
             }
-            if (targetid != -1 && !c.getPlayer().isAlive()) {
+            if (targetid != -1 && !player.isAlive()) {
                 boolean executeStandardPath = true;
                 if (player.getEventInstance() != null) {
                     executeStandardPath = player.getEventInstance().revivePlayer(player);

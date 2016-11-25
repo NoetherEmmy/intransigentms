@@ -1789,7 +1789,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public void revive() {
-        MapleCharacter player = getPlayer();
+        final MapleCharacter player = getPlayer();
+        player.setInvincible(true); // 10 second invincibility
+        TimerManager.getInstance().schedule(() -> player.setInvincible(false), 10 * 1000);
         player.setHp(player.getMaxHp(), false);
         player.setMp(player.getMaxMp());
         player.updateSingleStat(MapleStat.HP, player.getMaxHp());

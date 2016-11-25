@@ -53,6 +53,8 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
                             MapleCharacter dPlayer = cserv.getPlayerStorage().getCharacterByName(charName);
                             dPlayer.getMap().removePlayer(dPlayer);
                             cserv.removePlayer(dPlayer);
+                            dPlayer.getClient().disconnect();
+                            dPlayer.getClient().getSession().close();
                             System.out.println(player.getName() + ": Attempting to double login with: " + charName);
                             break;
                         }
@@ -211,6 +213,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.updatePastLifeExp();
         player.reactivateExpBonus();
         player.dropVoteTime();
+        player.setInvincible(false);
         //
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9000014, "Geanie"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9010010, "Cassandra"));

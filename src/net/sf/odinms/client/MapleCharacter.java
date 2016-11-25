@@ -27,7 +27,6 @@ import net.sf.odinms.tools.Pair;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
-import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -216,6 +215,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private ScheduledFuture<?> forcedWarp = null;
     private long overflowExp = 0L;
     private int questCompletion = 0;
+    private boolean invincible = false;
     //
 
     public MapleCharacter() {
@@ -767,11 +767,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setLong(68, overflowExp);
             ps.setInt(69, questCompletion);
             if (update) {
-                ps.setInt(69, id);
+                ps.setInt(70, id);
             } else {
-                ps.setInt(69, accountid);
-                ps.setString(70, name);
-                ps.setInt(71, world);
+                ps.setInt(70, accountid);
+                ps.setString(71, name);
+                ps.setInt(72, world);
             }
             if (!full) {
                 ps.executeUpdate();
@@ -1456,6 +1456,36 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setScpqFlag(boolean sf) {
         this.scpqflag = sf;
         this.silentPartyUpdate();
+    }
+
+    public int getQuestCompletion() {
+        return questCompletion;
+    }
+
+    public boolean getQuestCompletion(int quest) {
+        int mask = (int) Math.pow(2, quest);
+        return (questCompletion & mask) > 0;
+    }
+
+    public void setQuestCompletion(int questCompletion) {
+        this.questCompletion = questCompletion;
+    }
+
+    public void setQuestCompletion(int quest, boolean isComplete) {
+        int mask = (int) Math.pow(2, quest);
+        if (isComplete) {
+            questCompletion |= mask;
+        } else {
+            questCompletion &= ~mask;
+        }
+    }
+
+    public boolean isInvincible() {
+        return invincible;
+    }
+
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
     }
     
     public void setBattleshipHp(int bhp) {
@@ -3496,7 +3526,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     mainstat = localstr;
                     secondarystat = localdex;
                 }
-                maxbasedamage = (int) (((weapon.getMaxDamageMultiplier() * mainstat + secondarystat) / 100.0) * watk);
+                maxbasedamage = (int) (((weapon.getMaxDamageMultiplier() * (double) mainstat + (double) secondarystat) / 100.0d) * (double) watk);
                 maxbasedamage += 10;
             } else {
                 maxbasedamage = 0;
@@ -3542,23 +3572,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 skil = SkillFactory.getSkill(1200001);
                 skill = player.getSkillLevel(skil);
-                ISkill bpskil = SkillFactory.getSkill(2300000); // Battle Priest skill (MP Eater)
-                int bpskill = player.getSkillLevel(bpskil);
                 double blunt;
-                if (bpskill > skill) {
-                    skil = bpskil;
-                    skill = bpskill;
-                    if (skill > 0) {
-                        blunt = 0.15 + (((double) skill) * 0.03); // 15 + MPEaterLevel * 3% BW mastery
-                    } else {
-                        blunt = 0.1;
-                    }
+                if (skill > 0) {
+                    blunt = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
                 } else {
-                    if (skill > 0) {
-                        blunt = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
-                    } else {
-                        blunt = 0.1;
-                    }
+                    blunt = 0.1;
                 }
                 skil = SkillFactory.getSkill(1300000);
                 skill = player.getSkillLevel(skil);
@@ -3578,17 +3596,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 skil = SkillFactory.getSkill(3200000);
                 skill = player.getSkillLevel(skil);
+                ISkill skil2 = SkillFactory.getSkill(3220004);
+                int skill2 = player.getSkillLevel(skil2);
                 double crossbow;
-                if (skill > 0) {
-                    crossbow = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                if (skill > 0 || skill2 > 0) {
+                    if (skill2 <= 0) {
+                        crossbow = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    } else {
+                        crossbow = ((skil2.getEffect(player.getSkillLevel(skil2)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    }
                 } else {
                     crossbow = 0.1;
                 }
                 skil = SkillFactory.getSkill(3100000);
                 skill = player.getSkillLevel(skil);
+                skil2 = SkillFactory.getSkill(3120005);
+                skill2 = player.getSkillLevel(skil2);
                 double bow;
-                if (skill > 0) {
-                    bow = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                if (skill > 0 || skill2 > 0) {
+                    if (skill2 <= 0) {
+                        bow = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    } else {
+                        bow = ((skil2.getEffect(player.getSkillLevel(skil2)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    }
                 } else {
                     bow = 0.1;
                 }
