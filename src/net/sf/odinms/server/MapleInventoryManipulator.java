@@ -294,6 +294,7 @@ public class MapleInventoryManipulator {
         IItem source = c.getPlayer().getInventory(type).getItem(src);
         IItem initialTarget = c.getPlayer().getInventory(type).getItem(dst);
         if (source == null) return;
+
         short olddstQ = -1;
         if (initialTarget != null) {
             olddstQ = initialTarget.getQuantity();
@@ -316,9 +317,7 @@ public class MapleInventoryManipulator {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         Equip source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(src);
         Equip target = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
-        if (source == null) {
-            return;
-        }
+        if (source == null) return;
         if (!c.getPlayer().isGM() && !c.getChannelServer().CanGMItem()) {
             switch (source.getItemId()) {
                 case 1002140: // Wizet Invincible Hat

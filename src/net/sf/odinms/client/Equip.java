@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public class Equip extends Item implements IEquip {
-
     private byte upgradeSlots;
     private byte level;
     private byte locked;

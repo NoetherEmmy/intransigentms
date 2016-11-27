@@ -9,17 +9,16 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ItemSortHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         slea.readInt();
         byte mode = slea.readByte();
-        boolean sorted = false;
+
         MapleInventoryType pInvType = MapleInventoryType.getByType(mode);
         MapleInventory pInv = c.getPlayer().getInventory(pInvType);
 
-        while (!sorted) {
+        while (true) {
             byte freeSlot = pInv.getNextFreeSlot();
             if (freeSlot != -1) {
                 byte itemSlot = -1;
@@ -32,8 +31,10 @@ public class ItemSortHandler extends AbstractMaplePacketHandler {
                 if (itemSlot <= 100 && itemSlot > 0) {
                     MapleInventoryManipulator.move(c, pInvType, itemSlot, freeSlot);
                 } else {
-                    sorted = true;
+                    break;
                 }
+            } else {
+                break;
             }
         }
         c.getSession().write(MaplePacketCreator.finishedSort(mode));

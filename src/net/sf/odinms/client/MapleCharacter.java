@@ -3465,7 +3465,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public static int rand(int lbound, int ubound) {
-        return (int) ((Math.random() * (ubound - lbound + 1)) + lbound);
+        return (int) ((Math.random() * (ubound - lbound + 1.0d)) + lbound);
     }
 
     public int getMaxDis(MapleCharacter player) {
@@ -4019,7 +4019,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         wdef = 0;
         mdef = 0;
         accuracy = 0;
-        double shieldMastery = 1.0;
+        Integer mapleWarrior = getBuffedValue(MapleBuffStat.MAPLE_WARRIOR);
+        double mapleWarriorMultiplier;
+        if (mapleWarrior != null && mapleWarrior > 0) {
+            mapleWarriorMultiplier = 1.0d + (double) getBuffedValue(MapleBuffStat.MAPLE_WARRIOR) / 100.0d;
+        } else {
+            mapleWarriorMultiplier = 1.0d;
+        }
+        double shieldMastery = 1.0d;
         if (job.getId() == 421 || job.getId() == 422) { // Chief Bandit / Shadower
             ISkill shieldMasterySkill = SkillFactory.getSkill(4210000);
             if (getSkillLevel(shieldMasterySkill) > 0) {
@@ -4048,7 +4055,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             watk += equip.getWatk();
             speed += equip.getSpeed();
             jump += equip.getJump();
-            if (equip.getItemId() / 10000 == 109) { // Shield
+            if (equip.getItemId() / 10000 == 109 && shieldMastery > 1.0d) { // Shield
                 wdef += (int) (equip.getWdef() * shieldMastery);
             } else {
                 wdef += equip.getWdef();
@@ -4056,7 +4063,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             mdef += equip.getMdef();
             accuracy += equip.getAcc();
         }
-        magic = Math.min(magic, 2000);
+        if (mapleWarriorMultiplier > 1.0d) {
+            magic += localint * (mapleWarriorMultiplier - 1.0d);
+            localdex *= mapleWarriorMultiplier;
+            localint *= mapleWarriorMultiplier;
+            localstr *= mapleWarriorMultiplier;
+            localluk *= mapleWarriorMultiplier;
+        }
         Integer hbhp = getBuffedValue(MapleBuffStat.HYPERBODYHP);
         if (hbhp != null) {
             localmaxhp += (hbhp.doubleValue() / 100) * localmaxhp;
@@ -4129,11 +4142,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         //
         if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BEGINNER)) {
-            accuracy += (int) (localdex * 0.8 + localluk * 0.5);
+            accuracy += (int) (localdex * 0.8d + localluk * 0.5d);
         } else if (job.equals(MapleJob.BRAWLER) || job.equals(MapleJob.MARAUDER) || job.equals(MapleJob.BUCCANEER)) {
-            accuracy += (int) (localdex * 0.9 + localluk * 0.3);
+            accuracy += (int) (localdex * 0.9d + localluk * 0.3d);
         } else {
-            accuracy += (int) (localdex * 0.6 + localluk * 0.3);
+            accuracy += (int) (localdex * 0.6d + localluk * 0.3d);
         }
         
         Integer accbuff = getBuffedValue(MapleBuffStat.ACC);
@@ -4610,12 +4623,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void setChair(int chair) {
         this.chair = chair;
-        if (this.chair == 3010117 && getMapId() / 100 == 9100000) { // Reading Chair
+        if (this.chair > 0 && getMapId() / 100 == 9100000) { // Reading Chair
             setReadingTime((int) (System.currentTimeMillis() / 1000));
 
             TimerManager tMan = TimerManager.getInstance();
             readingTask = tMan.register(() -> {
-                if (this.chair == 3010117 && getMapId() / 100 == 9100000) {
+                if (this.chair > 0 && getMapId() / 100 == 9100000) {
                     if (Math.random() < MapleCharacter.READING_PRIZE_PROP) {
                         int rewardId = getReadingReward();
                         if (rewardId == 0) {
@@ -4624,10 +4637,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                             MapleInventoryType type = MapleInventoryType.ETC;
                             if (MapleInventoryManipulator.checkSpace(getClient(), rewardId, 1, "")) {
                                 MapleInventoryManipulator.addById(getClient(), rewardId, (short) 1);
-                                getClient().getSession().write(MaplePacketCreator.getShowItemGain(rewardId, (short) 1, true));
+                                getClient().getSession().write(
+                                    MaplePacketCreator.getShowItemGain(
+                                        rewardId,
+                                        (short) 1,
+                                        true
+                                    )
+                                );
                                 sendHint("Nice reading!\r\nYou've just gained a\r\n#bknowledge essence#k!");
                             } else {
-                                dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
+                                dropMessage(
+                                    1,
+                                    "Your inventory is full. Please remove an item from your " +
+                                        type.name().toLowerCase() +
+                                        " inventory, and then type @mapleadmin into chat to claim the item."
+                                );
                                 setUnclaimedItem(rewardId, (short) 1);
                             }
                         }

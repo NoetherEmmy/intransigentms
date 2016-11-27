@@ -733,7 +733,7 @@ public class PlayerCommands implements Command {
                 }
                 if (!mobList.isEmpty()) {
                     if (sortbylevel) {
-                        Collections.sort(mobList, (o1, o2) -> {
+                        mobList.sort((o1, o2) -> {
                             int comparison = Integer.valueOf(o1.getLevel()).compareTo(o2.getLevel());
                             if (comparison < 0) {
                                 return -1;
@@ -747,7 +747,7 @@ public class PlayerCommands implements Command {
                         });
                     } else {
                         final MapleCharacter p = player;
-                        Collections.sort(mobList, (o1, o2) -> {
+                        mobList.sort((o1, o2) -> {
                             double xphpratio1 = ((double) o1.getExp() * p.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
                             double xphpratio2 = ((double) o2.getExp() * p.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
                             int comparison = Double.valueOf(xphpratio1).compareTo(xphpratio2);
@@ -808,7 +808,8 @@ public class PlayerCommands implements Command {
                         if (morgue.get(i).get(2) == 0) {
                             causeofdeath = "Suicide";
                         } else {
-                            causeofdeath = MapleLifeFactory.getMonster(morgue.get(i).get(2)).getName();
+                            MapleMonster mobcause = MapleLifeFactory.getMonster(morgue.get(i).get(2));
+                            causeofdeath = mobcause != null ? mobcause.getName() : "Suicide";
                         }
                         mc.dropMessage("Level: " + morgue.get(i).get(0) + ", Job: " + MapleJob.getJobName(morgue.get(i).get(1)) + ", Cause of death: " + causeofdeath + ".");
                     }

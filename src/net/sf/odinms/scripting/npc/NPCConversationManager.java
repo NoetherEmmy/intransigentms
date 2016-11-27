@@ -693,7 +693,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             );
         }
         partyMembers = partyMembers.stream()
-                                   .filter(p -> p != null)
+                                   .filter(Objects::nonNull)
                                    .collect(Collectors.toList());
         map = c.getChannelServer().getMapFactory().getMap(mapId);
         if (map.playerCount() == 0) {
@@ -708,12 +708,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 pm.setForcedWarp(
                     pm.getBossReturnMap(),
                     40 * 60 * 1000,
-                    new Predicate<MapleCharacter>() {
-                        @Override
-                        public boolean test(MapleCharacter mc) {
-                            return mc.getMapId() == 3000;
-                        }
-                    }
+                    mc -> mc.getMapId() == 3000
                 )
             );
             
@@ -1448,32 +1443,27 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public String cashEquipList() {
-        StringBuilder str = new StringBuilder();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final StringBuilder str = new StringBuilder();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<String> stra = new ArrayList<>();
-        Equip tempitem;
-        ArrayList<IItem> equiplist = new ArrayList<>();
-        for (IItem equipitem : equip.list()) {
-            equiplist.add(equipitem);
-        }
-        
-        // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, (o1, o2) -> (int) Math.signum(o1.getPosition() - o2.getPosition()));
-        
-        for (IItem equipitem : equiplist) {
-            tempitem = (Equip) equipitem;
-            if (!(tempitem.getStr() != 0 || tempitem.getDex() != 0 || tempitem.getInt() != 0 || tempitem.getLuk() != 0 || tempitem.getHp() != 0 || tempitem.getMp() != 0 || tempitem.getWatk() != 0 || tempitem.getMatk() != 0 || tempitem.getWdef() != 0 || tempitem.getMdef() != 0 || tempitem.getAcc() != 0 || tempitem.getAvoid() != 0 || tempitem.getSpeed() != 0 || tempitem.getJump() != 0 || tempitem.getUpgradeSlots() != 0)) {
-                stra.add("#L" + equipitem.getItemId() + "##v" + equipitem.getItemId() + "##l ");
-            }
-        }
-        if (!stra.isEmpty()) {
-            for (String strb : stra) {
-                str.append(strb);
-            }
-            return str.toString();
-        } else {
-            return "";
-        }
+        MapleInventory cash = c.getPlayer().getInventory(MapleInventoryType.CASH);
+
+        equip.list()
+             .stream()
+             .sorted()
+             .map(IItem::getItemId)
+             .filter(ii::isCash)
+             .forEachOrdered(i -> str.append("#L").append(i).append("##v").append(i).append("##l "));
+
+        if (str.length() > 0) str.append("\r\n\r\n");
+
+        cash.list()
+            .stream()
+            .sorted()
+            .map(IItem::getItemId)
+            .forEachOrdered(i -> str.append("#L").append(i).append("##v").append(i).append("##l "));
+
+        return str.toString();
     }
     
     public void clearItems(MapleClient c) {

@@ -12,7 +12,6 @@ import java.util.List;
 //import org.slf4j.LoggerFactory;
 
 public class DistributeAPHandler extends AbstractMaplePacketHandler {
-
     //private static final Logger log = LoggerFactory.getLogger(DistributeAPHandler.class);
 
     @Override
@@ -60,7 +59,7 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
                     ISkill improvingMaxHP;
                     int improvingMaxHPLevel;
                     if (c.getPlayer().getJob().isA(MapleJob.BEGINNER)) {
-                        MaxHP += rand(49, 55);
+                        MaxHP += rand(45, 49);
                     } else if (c.getPlayer().getJob().isA(MapleJob.WARRIOR)) {
                         improvingMaxHP = SkillFactory.getSkill(1000001);
                         improvingMaxHPLevel = c.getPlayer().getSkillLevel(improvingMaxHP);
@@ -72,7 +71,7 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
                     } else if (c.getPlayer().getJob().isA(MapleJob.MAGICIAN)) {
                         MaxHP += rand(27, 29);
                     } else if (c.getPlayer().getJob().isA(MapleJob.BOWMAN)) {
-                        MaxHP += rand(41, 47);
+                        MaxHP += rand(45, 47);
                     } else if (c.getPlayer().getJob().isA(MapleJob.THIEF)) {
                         if (c.getPlayer().getJob().equals(MapleJob.ASSASSIN) || c.getPlayer().getJob().equals(MapleJob.HERMIT) || c.getPlayer().getJob().equals(MapleJob.NIGHTLORD)) {
                             MaxHP += rand(37, 41);
@@ -86,7 +85,7 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
                             MaxHP += rand(35, 41) + improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
                         } else {
                             if (c.getPlayer().getJob().equals(MapleJob.GUNSLINGER) || c.getPlayer().getJob().equals(MapleJob.OUTLAW) || c.getPlayer().getJob().equals(MapleJob.CORSAIR)) {
-                                MaxHP += rand(41, 43);
+                                MaxHP += rand(35, 37);
                             } else {
                                 MaxHP += rand(35, 41);
                             }
@@ -133,11 +132,11 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
             c.getPlayer().setRemainingAp(c.getPlayer().getRemainingAp() - 1);
             statupdate.add(new Pair<>(MapleStat.AVAILABLEAP, c.getPlayer().getRemainingAp()));
             c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true));
-        } else {
+        }/* else {
             //AutobanManager.getInstance().addPoints(c, 334, 120000, "Trying to distribute AP to " + update + " without having any");
             // I've commented out the following log print because it only (?) shows up because the client I use has Tubi
             //log.info("[h4x] Player {} is distributing AP to {} without having any", c.getPlayer().getName(), Integer.valueOf(update));
-        }
+        }*/
     }
 
     private static int rand(int lbound, int ubound) {

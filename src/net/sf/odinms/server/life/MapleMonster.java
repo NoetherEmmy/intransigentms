@@ -24,7 +24,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
-
     private MapleMonsterStats stats;
     private MapleMonsterStats overrideStats;
     private int hp;
@@ -648,21 +647,21 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             int poisonLevel = from.getSkillLevel(status.getSkill());
             if (status.getSkill().getId() == 2111006) {
                 int poisonBasicAtk = status.getSkill().getEffect(poisonLevel).getMatk();
-                double poisonMastery = ((double) status.getSkill().getEffect(poisonLevel).getMastery() * 5.0 + 10.0) / 100.0;
+                double poisonMastery = ((double) status.getSkill().getEffect(poisonLevel).getMastery() * 5.0d + 10.0d) / 100.0d;
                 int matk = from.getTotalMagic();
-                int _int = from.getInt();
+                int _int = from.getTotalInt();
                 ISkill eleAmp = SkillFactory.getSkill(2110001);
-                double eleAmpMulti = (double) eleAmp.getEffect(from.getSkillLevel(eleAmp)).getY() / 100.0;
+                double eleAmpMulti = (double) eleAmp.getEffect(from.getSkillLevel(eleAmp)).getY() / 100.0d;
                 
-                minPoisonDamage = (int) ((((matk * matk) / 1000 + matk * poisonMastery * 0.9) / 30 + _int / 200) * poisonBasicAtk * eleAmpMulti);
-                maxPoisonDamage = (int) ((((matk * matk) / 1000 + matk) / 30 + _int / 200) * poisonBasicAtk * eleAmpMulti);
+                minPoisonDamage = (int) ((((matk * matk) / 1000.0d + matk * poisonMastery * 0.9d) / 30.0d + _int / 200.0d) * poisonBasicAtk * eleAmpMulti);
+                maxPoisonDamage = (int) ((((matk * matk) / 1000.0d + matk) / 30.0d + _int / 200.0d) * poisonBasicAtk * eleAmpMulti);
             } else {
-                minPoisonDamage = (int) (getMaxHp() / (70.0 - poisonLevel) + 0.999);
+                minPoisonDamage = (int) (getMaxHp() / (70.0d - poisonLevel) + 0.999d);
                 maxPoisonDamage = minPoisonDamage;
             }
             if (stats.getEffectiveness(Element.POISON) == ElementalEffectiveness.STRONG) { // 1/2 damage to those that are strong vs. poison
-                minPoisonDamage = minPoisonDamage / 2;
-                maxPoisonDamage = maxPoisonDamage / 2;
+                minPoisonDamage /= 2;
+                maxPoisonDamage /= 2;
             }
             if (status.getSkill().getId() == 2111006) {
                 status.setValue(MonsterStatus.POISON, 0);
@@ -690,9 +689,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     return false;
                 }
                 Random r = new Random();
-                int luk = from.getLuk();
-                int maxDmg = (int) Math.ceil(Math.min(Short.MAX_VALUE, 0.2 * luk * matk));
-                int minDmg = (int) Math.ceil(Math.min(Short.MAX_VALUE, 0.1 * luk * matk));
+                int luk = from.getTotalLuk();
+                int maxDmg = (int) Math.ceil(0.2d * luk * matk);
+                int minDmg = (int) Math.ceil(0.1d * luk * matk);
                 int gap = maxDmg - minDmg;
                 if (gap == 0) {
                     gap = 1;
@@ -704,14 +703,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (stats.getEffectiveness(Element.POISON) == ElementalEffectiveness.STRONG) { // 1/2 damage to those that are strong vs. poison
                     poisonDamage /= 2;
                 }
-                poisonDamage = Math.min(Short.MAX_VALUE, poisonDamage);
                 status.setValue(MonsterStatus.POISON, poisonDamage);
                 status.setPoisonSchedule(timerManager.register(new PoisonTask(poisonDamage, poisonDamage, from, status, cancelTask, false), 1000, 1000));
             } else {
                 return false;
             }
         } else if (status.getSkill().getId() == 4111003) {
-            int webDamage = (int) (getMaxHp() / 50.0 + 0.999);
+            int webDamage = (int) (getMaxHp() / 50.0d + 0.999d);
             if (stats.getEffectiveness(Element.POISON) == ElementalEffectiveness.STRONG) { // 1/2 damage to those that are strong vs. poison
                 webDamage /= 2;
             }
@@ -767,25 +765,23 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         int minFlameDamage, maxFlameDamage;
         int flameLevel = from.getSkillLevel(skill);
         switch (skill.getId()) {
-            case 5211004:
-                {
-                    int flameBasicAtk = (int) (((double) skill.getEffect(flameLevel).getDamage() + (charge ? 40.0 : 0.0)) / 100.0);
-                    double afterBurnMultiplier = 0.4 + (double) flameLevel * 0.02;
-                    double flameMastery = (10.0 + 5.0 * SkillFactory.getSkill(5200000).getEffect(from.getSkillLevel(SkillFactory.getSkill(5200000))).getMastery()) / 100.0;
-                    int watk = from.getTotalWatk();
-                    int primary = (int) (from.getDex() * 3.6);
-                    int secondary = from.getStr();
-                    minFlameDamage = (int) (((primary * 0.9 * flameMastery + (double) secondary) * (double) watk / 100.0) * flameBasicAtk * afterBurnMultiplier);
-                    maxFlameDamage = (int) (((double) (primary + secondary) * (double) watk / 100.0) * flameBasicAtk * afterBurnMultiplier);
-                    break;
-                }
-            case 2121003:
-                {
-                    double flameMastery = (10.0 + 5.0 * skill.getEffect(from.getSkillLevel(skill)).getMastery()) / 100.0;
-                    maxFlameDamage = (int) (((from.getTotalMagic() * from.getTotalMagic() / 1000.0 + from.getTotalMagic()) / 30.0 + from.getInt() / 200.0) * skill.getEffect(flameLevel).getMatk());
-                    minFlameDamage = (int) (((from.getTotalMagic() * from.getTotalMagic() / 1000.0 + from.getTotalMagic() * flameMastery * 0.9) / 30.0 + from.getInt() / 200.0) * skill.getEffect(flameLevel).getMatk());
-                    break;
-                }
+            case 5211004: {
+                int flameBasicAtk = (int) (((double) skill.getEffect(flameLevel).getDamage() + (charge ? 40.0d : 0.0d)) / 100.0d);
+                double afterBurnMultiplier = 0.4d + (double) flameLevel * 0.02d;
+                double flameMastery = (10.0d + 5.0d * SkillFactory.getSkill(5200000).getEffect(from.getSkillLevel(SkillFactory.getSkill(5200000))).getMastery()) / 100.0d;
+                int watk = from.getTotalWatk();
+                int primary = (int) (from.getTotalDex() * 3.6d);
+                int secondary = from.getTotalStr();
+                minFlameDamage = (int) (((primary * 0.9d * flameMastery + (double) secondary) * (double) watk / 100.0d) * flameBasicAtk * afterBurnMultiplier);
+                maxFlameDamage = (int) (((double) (primary + secondary) * (double) watk / 100.0d) * flameBasicAtk * afterBurnMultiplier);
+                break;
+            }
+            case 2121003: {
+                double flameMastery = (10.0d + 5.0d * skill.getEffect(from.getSkillLevel(skill)).getMastery()) / 100.0d;
+                maxFlameDamage = (int) (((from.getTotalMagic() * from.getTotalMagic() / 1000.0d + from.getTotalMagic()) / 30.0d + from.getTotalInt() / 200.0d) * skill.getEffect(flameLevel).getMatk());
+                minFlameDamage = (int) (((from.getTotalMagic() * from.getTotalMagic() / 1000.0d + from.getTotalMagic() * flameMastery * 0.9d) / 30.0d + from.getTotalInt() / 200.0d) * skill.getEffect(flameLevel).getMatk());
+                break;
+            }
             default:
                 // more flamey-esque skills?
                 return false;

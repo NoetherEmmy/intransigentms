@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
-
     private boolean isFinisher(int skillId) {
         return skillId >= 1111003 && skillId <= 1111006;
     }
@@ -61,18 +60,23 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         }
         if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
             if (player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null && player.getSkillLevel(SkillFactory.getSkill(2321002)) > 0) {
-                double mrmultiplier = 1.0 + (double) player.getSkillLevel(SkillFactory.getSkill(2321002)) * 0.05;
+                double mrmultiplier = 1.0d + (double) player.getSkillLevel(SkillFactory.getSkill(2321002)) * 0.05d;
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     List<Integer> additionaldmg = new ArrayList<>();
                     List<Integer> newdmg = new ArrayList<>();
                     for (Integer dmgnumber : dmg.getRight()) {
-                        additionaldmg.add((int) (dmgnumber * (mrmultiplier - 1.0)));
+                        additionaldmg.add((int) (dmgnumber * (mrmultiplier - 1.0d)));
                         newdmg.add((int) (dmgnumber * mrmultiplier));
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
                     for (Integer additionald : additionaldmg) {
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
+                        player.getMap()
+                              .broadcastMessage(
+                                  player,
+                                  MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
+                                  true
+                              );
                     }
                 }
             }

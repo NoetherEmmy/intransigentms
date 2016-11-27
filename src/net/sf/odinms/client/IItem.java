@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public interface IItem extends Comparable<IItem> {
-
     int ITEM = 2;
     int EQUIP = 1;
 

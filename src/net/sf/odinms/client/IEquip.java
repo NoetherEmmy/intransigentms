@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public interface IEquip extends IItem {
-
     enum ScrollResult {
         SUCCESS, FAIL, CURSE
     }
