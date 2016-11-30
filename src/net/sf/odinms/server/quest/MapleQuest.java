@@ -15,7 +15,7 @@ import java.util.*;
 
 public class MapleQuest {
 
-    private static final Map<Integer,MapleQuest> quests = new HashMap<>();
+    private static final Map<Integer, MapleQuest> quests = new HashMap<>();
     protected int id;
     protected List<MapleQuestRequirement> startReqs;
     protected List<MapleQuestRequirement> completeReqs;

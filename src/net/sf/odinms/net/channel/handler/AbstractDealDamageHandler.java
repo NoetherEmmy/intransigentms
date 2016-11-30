@@ -27,8 +27,8 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
     //private static Logger log = LoggerFactory.getLogger(AbstractDealDamageHandler.class);
 
     public class AttackInfo {
-        public int numAttacked,  numDamage,  numAttackedAndDamage;
-        public int skill,  stance,  direction,  charge;
+        public int numAttacked, numDamage, numAttackedAndDamage;
+        public int skill, stance, direction, charge;
         public List<Pair<Integer, List<Integer>>> allDamage;
         public boolean isHH = false;
         public int speed = 4;
@@ -183,7 +183,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 switch (attack.skill) {
                     case 1221011: // Sanctuary
                         if (attack.isHH) {
-                            // TODO min damage still needs calculated. Using -20% as minimum damage in the meantime... seems to work.
+                            // TODO: Min damage still needs calculated. Using -20% as minimum damage in the meantime... seems to work.
                             int HHDmg = player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100);
                             HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * .80) + HHDmg * .80));
                             map.damageMonster(player, monster, HHDmg);
@@ -371,7 +371,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         ret.numAttackedAndDamage = lea.readByte();
         ret.numAttacked = (ret.numAttackedAndDamage >>> 4) & 0xF;
         ret.numDamage = ret.numAttackedAndDamage & 0xF;
-        ret.allDamage = new ArrayList<>();
+        ret.allDamage = new ArrayList<>(6);
         ret.skill = lea.readInt();
         switch (ret.skill) {
             case 2121001:

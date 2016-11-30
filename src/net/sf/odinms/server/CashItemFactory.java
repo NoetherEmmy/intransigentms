@@ -24,9 +24,9 @@ public class CashItemFactory {
         }
         CashItemInfo stats = itemStats.get(sn);
         int cid = getCommodityFromSN(sn);
-        int itemId = MapleDataTool.getIntConvert(cid + "/ItemId",commodities);
-        int count = MapleDataTool.getIntConvert(cid + "/Count",commodities,1);
-        int price = MapleDataTool.getIntConvert(cid + "/Price",commodities,0);
+        int itemId = MapleDataTool.getIntConvert(cid + "/ItemId", commodities);
+        int count = MapleDataTool.getIntConvert(cid + "/Count", commodities, 1);
+        int price = MapleDataTool.getIntConvert(cid + "/Price", commodities, 0);
         stats = new CashItemInfo(itemId, count, price);
         itemStats.put(sn, stats);
         return stats;
@@ -39,12 +39,12 @@ public class CashItemFactory {
         int currSN = 0;
         if (curr == -1) {
             curr = 0;
-            currSN = MapleDataTool.getIntConvert("0/SN",commodities);
+            currSN = MapleDataTool.getIntConvert("0/SN", commodities);
             snLookup.put(currSN, curr);
         }
         for (int i = snLookup.size() - 1; currSN != sn; ++i) {
             curr = i;
-            currSN = MapleDataTool.getIntConvert(curr + "/SN",commodities);
+            currSN = MapleDataTool.getIntConvert(curr + "/SN", commodities);
             snLookup.put(currSN, curr);
         }
         return curr;

@@ -306,7 +306,7 @@ public class AbstractPlayerInteraction {
      */
     public void spawnNpc(int npcId, Point pos) {
         MapleNPC npc = MapleLifeFactory.getNPC(npcId);
-        if (npc != null && !npc.getName().equals("MISSINGNO")) {
+        if (!npc.getName().equals("MISSINGNO")) {
             npc.setPosition(pos);
             npc.setCy(pos.y);
             npc.setRx0(pos.x + 50);

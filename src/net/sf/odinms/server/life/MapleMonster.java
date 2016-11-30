@@ -764,8 +764,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         
         int minFlameDamage, maxFlameDamage;
         int flameLevel = from.getSkillLevel(skill);
+        int tickTime;
         switch (skill.getId()) {
             case 5211004: {
+                tickTime = 1000;
                 int flameBasicAtk = (int) (((double) skill.getEffect(flameLevel).getDamage() + (charge ? 40.0d : 0.0d)) / 100.0d);
                 double afterBurnMultiplier = 0.4d + (double) flameLevel * 0.02d;
                 double flameMastery = (10.0d + 5.0d * SkillFactory.getSkill(5200000).getEffect(from.getSkillLevel(SkillFactory.getSkill(5200000))).getMastery()) / 100.0d;
@@ -777,6 +779,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 break;
             }
             case 2121003: {
+                tickTime = 500;
                 double flameMastery = (10.0d + 5.0d * skill.getEffect(from.getSkillLevel(skill)).getMastery()) / 100.0d;
                 maxFlameDamage = (int) (((from.getTotalMagic() * from.getTotalMagic() / 1000.0d + from.getTotalMagic()) / 30.0d + from.getTotalInt() / 200.0d) * skill.getEffect(flameLevel).getMatk());
                 minFlameDamage = (int) (((from.getTotalMagic() * from.getTotalMagic() / 1000.0d + from.getTotalMagic() * flameMastery * 0.9d) / 30.0d + from.getTotalInt() / 200.0d) * skill.getEffect(flameLevel).getMatk());
@@ -789,7 +792,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         minFlameDamage = (int) ((double) minFlameDamage * damagemultiplier);
         maxFlameDamage = (int) ((double) maxFlameDamage * damagemultiplier);
         setIsAflame(true);
-        setFlameSchedule(timerManager.register(new FlameTask(minFlameDamage, maxFlameDamage, from, cancelTask), 1000, 1000));
+        setFlameSchedule(timerManager.register(new FlameTask(minFlameDamage, maxFlameDamage, from, cancelTask), tickTime, tickTime));
         ScheduledFuture<?> schedule = timerManager.schedule(cancelTask, duration);
         setCancelFlameTask(schedule);
         return true;

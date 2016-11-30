@@ -5,9 +5,7 @@ import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class DistributeSPHandler extends AbstractMaplePacketHandler {
-
     private class SP {
-
         private final ISkill skill;
         private final MapleClient c;
 
@@ -44,7 +42,6 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
                 int recoveryLevel = player.getSkillLevel(SkillFactory.getSkill(1001));
                 int nimbleFeetLevel = player.getSkillLevel(SkillFactory.getSkill(1002));
                 remainingSp = Math.min((player.getLevel() - 1), 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
-
         }
         int maxlevel = skill.isFourthJob() ? player.getMasterLevel(skill) : skill.getMaxLevel();
         int curLevel = player.getSkillLevel(skill);
@@ -56,9 +53,6 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
             player.changeSkillLevel(skill, curLevel + 1, player.getMasterLevel(skill));
         } else if (!skill.canBeLearnedBy(player.getJob())) {
             player.getClient().disconnect();
-            return;
-        } else if (!(remainingSp > 0 && curLevel + 1 <= maxlevel)) {
-            return;
         }
     }
 

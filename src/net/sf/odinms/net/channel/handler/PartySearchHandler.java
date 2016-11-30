@@ -37,7 +37,7 @@ public class PartySearchHandler extends AbstractMaplePacketHandler {
         for (int z = 0; z < reverse.length(); ++z) {
             letters = reverse.charAt(z);
             System.out.println("1 By 1 for jobs Current one is : " + letters);
-            isJob(letters,z,c);
+            isJob(letters, z, c);
         }
     }
 

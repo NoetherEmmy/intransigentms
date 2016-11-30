@@ -117,7 +117,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             if (target != null) {
                 if (damage >= 100000000) {
                     AutobanManager.getInstance().autoban
-                    (player.getClient(),"XSource| " + player.getName() + "'s summon dealt " + damage + " to monster " + target.getId() + ".");
+                    (player.getClient(), "XSource| " + player.getName() + "'s summon dealt " + damage + " to monster " + target.getId() + ".");
                 }
                 if (damage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
                     if (summonEffect.makeChanceResult()) {

@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class VIPAddMapHandler extends AbstractMaplePacketHandler {
-
     private static final Logger log = LoggerFactory.getLogger(VIPAddMapHandler.class);
 
     @Override

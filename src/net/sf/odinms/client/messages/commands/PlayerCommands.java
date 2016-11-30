@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class PlayerCommands implements Command {
-
     @Override
     public void execute(MapleClient c, final MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
@@ -70,6 +69,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@damagescale - | - Displays the current multiplier by which all incoming damage is multiplied.");
             mc.dropMessage("@votepoints - | - Displays your current vote point count.");
             mc.dropMessage("@sell - | - Opens up an NPC to mass-sell equipment items.");
+            mc.dropMessage("@vskills - | - Allows viewing and taking points in/out of virtual skills.");
             mc.dropMessage("@morgue <playername> - | - Displays the past 5 lives of the player.");
             mc.dropMessage("@deathinfo <playername> - | - Displays death count, highest level achieved, paragon level, and suicide count of player.");
             mc.dropMessage("@overflowexp <playername> - | - Displays overflow EXP (EXP gained past level 250) for the player.");
@@ -382,7 +382,7 @@ public class PlayerCommands implements Command {
                             MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
                             data = dataProvider.getData("Mob.img");
                             mc.dropMessage(candidate.getRight() + " is dropped by the following mobs:");
-                            List<Pair<Integer,String>> mobPairList = new ArrayList<>();
+                            List<Pair<Integer, String>> mobPairList = new ArrayList<>();
                             Connection con = DatabaseConnection.getConnection();
                             PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
                             ps.setInt(1, searchid);
@@ -607,7 +607,6 @@ public class PlayerCommands implements Command {
                         }
                     }
                 } catch (NumberFormatException ignored) {
-                    
                 }
             }
         } else if (splitted[0].equals("@online")) {
@@ -964,6 +963,8 @@ public class PlayerCommands implements Command {
             } else {
                 mc.dropMessage("There exists no such player on your channel.");
             }
+        } else if (splitted[0].equals("@vskills")) {
+            NPCScriptManager.getInstance().start(c, 9201095);
         }
     }
 
@@ -1056,7 +1057,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("defence", 0),
             new CommandDefinition("ria", 0),
             new CommandDefinition("pqpoints", 0),
-            new CommandDefinition("overflowexp", 0)
+            new CommandDefinition("overflowexp", 0),
+            new CommandDefinition("vskills", 0)
         };
     }
 }

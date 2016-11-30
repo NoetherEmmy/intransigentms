@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class QuestScriptManager extends AbstractScriptManager {
 
-    private final Map<MapleClient,QuestActionManager> qms = new HashMap<>();
-    private final Map<MapleClient,QuestScript> scripts = new HashMap<>();
+    private final Map<MapleClient, QuestActionManager> qms = new HashMap<>();
+    private final Map<MapleClient, QuestScript> scripts = new HashMap<>();
     private static final QuestScriptManager instance = new QuestScriptManager();
 
     public static synchronized QuestScriptManager getInstance() {

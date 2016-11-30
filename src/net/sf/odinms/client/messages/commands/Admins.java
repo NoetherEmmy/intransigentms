@@ -386,7 +386,7 @@ public class Admins implements Command {
                         chr.saveToDB(true, false);
                     }
                 }
-                mc.dropMessage("save complete");
+                mc.dropMessage("Save complete.");
                 break;
             case "!getpw":
                 MapleClient victimC = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]).getClient();

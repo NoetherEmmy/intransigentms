@@ -53,41 +53,37 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
                     break;
                 case 2048: // HP
                     int MaxHP = c.getPlayer().getMaxHp();
-                    if (c.getPlayer().getHpApUsed() == 10000 || MaxHP == 30000) {
+                    if (c.getPlayer().getHpApUsed() >= 10000 || MaxHP == 30000) {
                         return;
                     }
                     ISkill improvingMaxHP;
                     int improvingMaxHPLevel;
                     if (c.getPlayer().getJob().isA(MapleJob.BEGINNER)) {
-                        MaxHP += rand(45, 49);
+                        MaxHP += rand(48, 52);
                     } else if (c.getPlayer().getJob().isA(MapleJob.WARRIOR)) {
                         improvingMaxHP = SkillFactory.getSkill(1000001);
                         improvingMaxHPLevel = c.getPlayer().getSkillLevel(improvingMaxHP);
                         if (improvingMaxHPLevel >= 1) {
-                            MaxHP += rand(25, 29) + improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
+                            MaxHP += rand(28, 32) + improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
                         } else {
-                            MaxHP += rand(25, 29);
+                            MaxHP += rand(28, 32);
                         }
                     } else if (c.getPlayer().getJob().isA(MapleJob.MAGICIAN)) {
-                        MaxHP += rand(27, 29);
+                        MaxHP += rand(48, 52);
                     } else if (c.getPlayer().getJob().isA(MapleJob.BOWMAN)) {
-                        MaxHP += rand(45, 47);
+                        MaxHP += rand(48, 52);
                     } else if (c.getPlayer().getJob().isA(MapleJob.THIEF)) {
-                        if (c.getPlayer().getJob().equals(MapleJob.ASSASSIN) || c.getPlayer().getJob().equals(MapleJob.HERMIT) || c.getPlayer().getJob().equals(MapleJob.NIGHTLORD)) {
-                            MaxHP += rand(37, 41);
-                        } else {
-                            MaxHP += rand(31, 33);
-                        }
+                        MaxHP += rand(48, 52);
                     } else if (c.getPlayer().getJob().isA(MapleJob.PIRATE)) {
                         improvingMaxHP = SkillFactory.getSkill(5100000);
                         improvingMaxHPLevel = c.getPlayer().getSkillLevel(improvingMaxHP);
                         if (improvingMaxHPLevel >= 1) {
-                            MaxHP += rand(35, 41) + improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
+                            MaxHP += rand(46, 50) + improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
                         } else {
                             if (c.getPlayer().getJob().equals(MapleJob.GUNSLINGER) || c.getPlayer().getJob().equals(MapleJob.OUTLAW) || c.getPlayer().getJob().equals(MapleJob.CORSAIR)) {
-                                MaxHP += rand(35, 37);
+                                MaxHP += rand(48, 52);
                             } else {
-                                MaxHP += rand(35, 41);
+                                MaxHP += rand(46, 50);
                             }
                         }
                     }
@@ -98,7 +94,7 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
                     break;
                 case 8192: // MP
                     int MaxMP = c.getPlayer().getMaxMp();
-                    if (c.getPlayer().getMpApUsed() == 10000 || c.getPlayer().getMaxMp() == 30000) {
+                    if (c.getPlayer().getMpApUsed() >= 10000 || c.getPlayer().getMaxMp() == 30000) {
                         return;
                     }
                     if (c.getPlayer().getJob().isA(MapleJob.BEGINNER)) {

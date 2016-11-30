@@ -28,7 +28,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
         MapleCharacter player = c.getPlayer();
         try {
             ISkill skillused = SkillFactory.getSkill(attack.skill);
-            if (skillused != null && skillused.getElement() != Element.NEUTRAL) {
+            if (skillused != null && skillused.getElement() != Element.NEUTRAL && skillused.getId() != 3221007) {
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     MapleMonster monster = null;
@@ -74,7 +74,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             if (skillused != null && skillused.getId() == 5211004 && player.getItemQuantity(2331000, false) > 0) {
                 MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, 2331000, 1, false, true);
                 attack.charge = 1;
-                double capsulemultiplier = (skillused.getEffect(player.getSkillLevel(skillused)).getDamage() + 40.0) / (double) skillused.getEffect(player.getSkillLevel(skillused)).getDamage();
+                double capsulemultiplier = (skillused.getEffect(player.getSkillLevel(skillused)).getDamage() + 40.0d) / (double) skillused.getEffect(player.getSkillLevel(skillused)).getDamage();
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     if (dmg != null) {

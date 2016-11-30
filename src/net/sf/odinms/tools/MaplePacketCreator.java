@@ -2090,7 +2090,6 @@ public class MaplePacketCreator {
         lew.write(numAttackedAndDamage);
         if (skill > 0) {
             lew.write(0xFF); // too low and some skills don't work (?)
-
             lew.writeInt(skill);
         } else {
             lew.write(0);

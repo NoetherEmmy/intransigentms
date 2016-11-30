@@ -379,18 +379,18 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                     boolean vip = itemId == 5041000;
                     if (rocktype == 0x00) {
                         int mapId = slea.readInt();
+                        final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapId);
                         /*
                         if (c.getChannelServer().getMapFactory().getMap(mapId).getReturnMapId() == 999999999) {
                             player.changeMap(mapId);
                             System.out.print("Changed map, Map ID: " + mapId);
                         }
                         */
-                        if (mapId < 2000000) {
+                        if (mapId < 2000000 || map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) || map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT)) {
                             player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                             break;
                         }
                         player.changeMap(mapId);
-                        //System.out.print("Did not change map, Map ID: " + mapId);
                     } else {
                         String name = slea.readMapleAsciiString();
                         MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
@@ -402,18 +402,17 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             }
                             ChangeChannelHandler.changeChannel(channel, player.getClient());
                             victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
-                            //System.out.print("Changed channel, Victim: " + victim.getName());
                         }
                         if (victim == null) { // Player dcs / ccs while you cc
                             player.dropMessage("System error!");
                             break;
                         } else {
-                            MapleMap map = victim.getMap();
+                            final MapleMap map = victim.getMap();
                             if (map.getId() == 180000000) {
                                 player.dropMessage(1, "You cannot use VIP teleport rocks to teleport to GM maps.");
                                 break;
                             }
-                            if (map.getId() < 2000000) {
+                            if (map.getId() < 2000000 || map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) || map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT)) {
                                 player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                                 break;
                             }

@@ -3394,7 +3394,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public boolean isActiveBuffedValue(int skillId) {
-        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillId) {
                 return true;
@@ -3405,6 +3405,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public int getSkillLevel(ISkill skill) {
         SkillEntry ret = skills.get(skill);
+        if (ret == null) {
+            return 0;
+        }
+        return ret.skillevel;
+    }
+
+    public int getSkillLevel(int skillId) {
+        SkillEntry ret = skills.get(SkillFactory.getSkill(skillId));
         if (ret == null) {
             return 0;
         }
@@ -3699,26 +3707,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         int improvingMaxMPLevel = getSkillLevel(improvingMaxMP);
         remainingAp += 5;
         if (job == MapleJob.BEGINNER) {
-            maxhp += rand(18, 22);
+            maxhp += rand(28, 32);
             maxmp += rand(10, 12);
         } else if (job.isA(MapleJob.WARRIOR)) {
             improvingMaxHP = SkillFactory.getSkill(1000001);
             improvingMaxHPLevel = getSkillLevel(improvingMaxHP);
-            maxhp += rand(20, 24);
+            maxhp += rand(24, 28);
             maxmp += rand(4, 6);
         } else if (job.isA(MapleJob.MAGICIAN)) {
-            maxhp += rand(12, 14);
+            maxhp += rand(26, 30);
             maxmp += rand(22, 24);
         } else if (job.isA(MapleJob.BOWMAN) || job.isA(MapleJob.GM)) {
-            maxhp += rand(29, 33);
+            maxhp += rand(42, 46);
             maxmp += rand(14, 16);
         } else if (job.isA(MapleJob.THIEF)) {
-            maxhp += rand(24, 27);
+            if (job.isA(MapleJob.ASSASSIN)) {
+                maxhp += rand(32, 36);
+            } else {
+                maxhp += rand(26, 30);
+            }
             maxmp += rand(14, 16);
         } else if (job.isA(MapleJob.PIRATE)) {
             improvingMaxHP = SkillFactory.getSkill(5100000);
             improvingMaxHPLevel = getSkillLevel(improvingMaxHP);
-            maxhp += rand(26, 28);
+            if (job.isA(MapleJob.BRAWLER)) {
+                maxhp += rand(36, 40);
+            } else {
+                maxhp += rand(26, 30);
+            }
             maxmp += rand(18, 23);
         }
         if (improvingMaxHPLevel > 0 && improvingMaxHP != null) {

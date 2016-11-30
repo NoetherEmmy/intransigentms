@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MapleMapFactory {
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
     private final MapleDataProvider source;
     private final MapleData nameData;
@@ -43,7 +42,7 @@ public class MapleMapFactory {
         return getMap(mapid, true, true, true);
     }
 
-    //backwards-compatible
+    // Backwards-compatible
     public MapleMap getMap(int mapid, boolean respawns, boolean npcs) {
         return getMap(mapid, respawns, npcs, true);
     }
@@ -216,6 +215,7 @@ public class MapleMapFactory {
                 map.setHPDec(MapleDataTool.getIntConvert("decHP", mapData, 0));
                 map.setHPDecProtect(MapleDataTool.getIntConvert("protectItem", mapData, 0));
                 map.setForcedReturnMap(MapleDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), 999999999));
+                map.setFieldLimit(MapleDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0));
                 if (mapData.getChildByPath("shipObj") != null) {
                     map.setBoat(true);
                 } else {
