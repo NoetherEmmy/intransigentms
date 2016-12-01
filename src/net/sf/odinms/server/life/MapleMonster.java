@@ -973,8 +973,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
         final MapleMonster mons = this;
         TimerManager tMan = TimerManager.getInstance();
-        tMan.schedule(
-                () -> mons.clearSkill(skillId, level), cooltime);
+        tMan.schedule(() -> mons.clearSkill(skillId, level), cooltime);
     }
 
     public void clearSkill(int skillId, int level) {
