@@ -216,6 +216,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private long overflowExp = 0L;
     private int questCompletion = 0;
     private boolean invincible = false;
+
+    private ScheduledFuture<?> bossHpTask = null;
+    private ScheduledFuture<?> bossHpCancelTask = null;
+    private int initialVotePoints, initialNx;
+    private boolean zakDc = false;
     //
 
     public MapleCharacter() {
@@ -342,6 +347,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.scpqflag = rs.getInt("scpqflag") != 0;
         ret.overflowExp = rs.getLong("overflowexp");
         ret.questCompletion = rs.getInt("questcompletion");
+        ret.zakDc = rs.getInt("zakdc") == 1;
         ret.battleshiphp = 0;
         //
         if (ret.guildid > 0) {
@@ -407,10 +413,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ret.donatePoints = rs.getInt("donorPoints");
             ret.lastLogin = rs.getLong("LastLoginInMilliseconds");
             ret.paypalnx = rs.getInt("paypalNX");
+            ret.initialNx = ret.paypalnx;
             ret.maplepoints = rs.getInt("mPoints");
             ret.cardnx = rs.getInt("cardNX");
             ret.lastdailyprize = new Date(rs.getLong("lastdailyprize"));
             ret.votepoints = rs.getInt("votepoints");
+            ret.initialVotePoints = ret.votepoints;
         }
         rs.close();
         ps.close();
@@ -661,9 +669,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             con.setAutoCommit(false);
             PreparedStatement ps;
             if (update) {
-                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ?, questcompletion = ? WHERE id = ?");
+                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ?, questcompletion = ?, zakdc = ? WHERE id = ?");
             } else {
-                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, questcompletion, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, questcompletion, zakdc, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -671,7 +679,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(4, dex);
             ps.setInt(5, luk);
             ps.setInt(6, int_);
-            ps.setInt(7, exp.get());
+            ps.setInt(7, level < 250 ? exp.get() : 0);
             ps.setInt(8, hp);
             ps.setInt(9, mp);
             ps.setInt(10, maxhp);
@@ -766,12 +774,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(67, scpqflag ? 1 : 0);
             ps.setLong(68, overflowExp);
             ps.setInt(69, questCompletion);
-            if (update) {
-                ps.setInt(70, id);
+            if (map != null && map.getId() == 280030000) { // Zakum's Altar
+                ps.setInt(70, 1);
             } else {
-                ps.setInt(70, accountid);
-                ps.setString(71, name);
-                ps.setInt(72, world);
+                ps.setInt(70, 0);
+            }
+            if (update) {
+                ps.setInt(71, id);
+            } else {
+                ps.setInt(71, accountid);
+                ps.setString(72, name);
+                ps.setInt(73, world);
             }
             if (!full) {
                 ps.executeUpdate();
@@ -927,13 +940,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     }
                 }
                 ps.close();
+                // Checking DB for if votepoints/NX has been changed since the player logged in.
+                // If so, the new votepoints/NX are factored into the new total.
+                // This is to allow players to vote while online.
+                ps = con.prepareStatement("SELECT paypalNX,votepoints FROM accounts WHERE id = ?");
+                ps.setInt(1, client.getAccID());
+                ResultSet rs = ps.executeQuery();
+                if (!rs.next()) {
+                    rs.close();
+                    ps.close();
+                    throw new RuntimeException("Reading votepoints failed.");
+                }
+                int dbNx = rs.getInt("paypalNX");
+                int dbVotepoints = rs.getInt("votepoints");
+                rs.close();
+                ps.close();
+
                 ps = con.prepareStatement("UPDATE accounts SET `paypalNX` = ?, `mPoints` = ?, `cardNX` = ?, `donorPoints` = ?, `lastdailyprize` = ?, `votepoints` = ? WHERE id = ?");
-                ps.setInt(1, paypalnx);
+                ps.setInt(1, paypalnx + (dbNx - initialNx));
                 ps.setInt(2, maplepoints);
                 ps.setInt(3, cardnx);
                 ps.setInt(4, donatePoints);
                 ps.setLong(5, lastdailyprize.getTime());
-                ps.setInt(6, votepoints);
+                ps.setInt(6, votepoints + (dbVotepoints - initialVotePoints));
                 ps.setInt(7, client.getAccID());
                 ps.executeUpdate();
                 ps.close();
@@ -943,7 +972,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
                 ps = con.prepareStatement("SELECT * FROM pastlives WHERE characterid = ? ORDER BY death DESC");
                 ps.setInt(1, id);
-                ResultSet rs = ps.executeQuery();
+                rs = ps.executeQuery();
                 int lastlifenotupdated = -1;
                 if (rs.next()) {
                     lastlifenotupdated = rs.getInt("death");
@@ -1480,6 +1509,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
+    public boolean getZakDc() {
+        return zakDc;
+    }
+
+    public void setZakDc(boolean zdc) {
+        zakDc = zdc;
+    }
+
     public boolean isInvincible() {
         return invincible;
     }
@@ -1727,6 +1764,59 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setVotePoints(int vp) {
         votepoints = vp;
     }
+
+    public void voteUpdate() {
+        Connection con = DatabaseConnection.getConnection();
+        ResultSet rs = null;
+        try (PreparedStatement ps = con.prepareStatement("SELECT paypalNX,votepoints FROM accounts WHERE id = ?")) {
+            ps.setInt(1, getClient().getAccID());
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                rs.close();
+                ps.close();
+                dropMessage("Could not locate your NX/vote point totals!");
+                return;
+            }
+            int dbNx = rs.getInt("paypalNX");
+            int dbVotePoints = rs.getInt("votepoints");
+            rs.close();
+            modifyCSPoints(1, dbNx - initialNx);
+            setVotePoints(getVotePoints() + (dbVotePoints - initialVotePoints));
+            setInitialNx(dbNx);
+            setInitialVotePoints(dbVotePoints);
+            dropMessage(
+                "Your vote points and NX have been updated. New vote point total: " +
+                getVotePoints() +
+                ", NX: " +
+                getCSPoints(1)
+            );
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            dropMessage("There was an error retrieving your NX/vote point totals!");
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
+            }
+        }
+    }
+
+    public int getInitialVotePoints() {
+        return initialVotePoints;
+    }
+
+    public void setInitialVotePoints(int ivp) {
+        initialVotePoints = ivp;
+    }
+
+    public int getInitialNx() {
+        return initialNx;
+    }
+
+    public void setInitialNx(int inx) {
+        initialNx = inx;
+    }
     
     public void dropVoteTime() {
         try {
@@ -1737,7 +1827,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             if (!rs.next()) {
                 rs.close();
                 ps.close();
-                dropMessage("Could not locate your voting record. Remember to vote, and log out when voting to get your rewards!");
+                dropMessage("Could not locate your voting record. Remember to vote!");
                 return;
             }
             long date = rs.getLong("date");
@@ -1746,7 +1836,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.close();
             long timeleft = (24 * 60 * 60 * 1000) - (System.currentTimeMillis() - date);
             if (timeleft < 1) {
-                dropMessage("You may vote right now! Remember to log out when voting to get your rewards!");
+                dropMessage("You may vote right now! Remember to use @updatevp if you want to spend your new vote point without logging out!");
             } else {
                 int hours = (int) ((timeleft - (timeleft % (1000 * 60 * 60))) / (1000 * 60 * 60));
                 int remainder = (int) (timeleft - (hours * (1000 * 60 * 60)));
@@ -4621,8 +4711,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void disableDoor() {
         canDoor = false;
-        TimerManager tMan = TimerManager.getInstance();
-        tMan.schedule(() -> canDoor = true, 5000);
+        TimerManager.getInstance().schedule(() -> canDoor = true, 5000);
     }
 
     public Map<Integer, MapleSummon> getSummons() {
@@ -4692,7 +4781,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public int getReadingReward() {
         int ret = 0;
         int rewardSet[] = {4031762, 4031755, 4031750, 4031764, 4031753, 4031756};
-        int tomeSet[] =   {4031056, 4161002, 4031157, 4031158, 4031159, 4031900};
+        int tomeSet[]   = {4031056, 4161002, 4031157, 4031158, 4031159, 4031900};
         for (int i = 0; i < tomeSet.length; ++i) {
             int tomeId = tomeSet[i];
             if (this.getItemQuantity(tomeId, false) > 0) {
@@ -4908,16 +4997,33 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return this.hasmagicarmor;
     }
 
+    public void setForcedWarp(final MapleCharacter to, long delay) {
+        cancelForcedWarp();
+        forcedWarp = TimerManager.getInstance().schedule(() ->
+            changeMap(to.getMap(), to.getMap().findClosestSpawnpoint(to.getPosition())),
+            delay);
+    }
+
+    public void setForcedWarp(final MapleMap map, long delay) {
+        cancelForcedWarp();
+        forcedWarp = TimerManager.getInstance().schedule(() -> changeMap(map, map.getPortal(0)), delay);
+    }
+
+    public void setForcedWarp(final MapleMap map, final MaplePortal portal, long delay) {
+        cancelForcedWarp();
+        forcedWarp = TimerManager.getInstance().schedule(() -> changeMap(map, portal), delay);
+    }
+
     public void setForcedWarp(final int mapId, long delay) {
-        forcedWarp = TimerManager.getInstance().schedule(() -> {
-            this.changeMap(mapId);
-        }, delay);
+        cancelForcedWarp();
+        forcedWarp = TimerManager.getInstance().schedule(() -> changeMap(mapId), delay);
     }
     
     public void setForcedWarp(final int mapId, long delay, final Predicate<MapleCharacter> predicate) {
+        cancelForcedWarp();
         forcedWarp = TimerManager.getInstance().schedule(() -> {
             if (predicate.test(this)) {
-                this.changeMap(mapId);
+                changeMap(mapId);
             }
         }, delay);
     }
@@ -4931,6 +5037,45 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             forcedWarp.cancel(false);
             forcedWarp = null;
         }
+    }
+
+    public void setBossHpTask(long repeatTime, long duration) {
+        cancelBossHpTask();
+        TimerManager tMan = TimerManager.getInstance();
+        final DecimalFormat df = new DecimalFormat("#.00");
+        bossHpTask = tMan.register(() ->
+            getMap().getMapObjectsInRange(
+                new Point(0, 0),
+                Double.POSITIVE_INFINITY,
+                Collections.singletonList(MapleMapObjectType.MONSTER)
+            )
+            .stream()
+            .map(mmo -> (MapleMonster) mmo)
+            .filter(MapleMonster::isBoss)
+            .forEach(mob -> {
+                double hpPercentage = (double) mob.getHp() / ((double) mob.getMaxHp()) * 100.0d;
+                dropMessage("Monster: " + mob.getName() + ", HP: " + df.format(hpPercentage) + "%");
+            }), repeatTime);
+
+        bossHpCancelTask = tMan.schedule(() -> bossHpTask.cancel(false), duration);
+    }
+
+    public boolean hasBossHpTask() {
+        return bossHpTask != null;
+    }
+
+    public boolean cancelBossHpTask() {
+        boolean didCancel = false;
+        if (bossHpTask != null) {
+            bossHpTask.cancel(false);
+            didCancel = true;
+        }
+        if (bossHpCancelTask != null) {
+            bossHpCancelTask.cancel(false);
+        }
+        bossHpTask = null;
+        bossHpCancelTask = null;
+        return didCancel;
     }
 
     public void resetQuestKills() {

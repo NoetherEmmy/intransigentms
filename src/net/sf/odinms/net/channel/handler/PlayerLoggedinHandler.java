@@ -180,8 +180,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName()));
         }
         if (player.getMapId() == 100) {
-            NPCScriptManager npc = NPCScriptManager.getInstance();
-            npc.start(c, 1061000);
+            NPCScriptManager.getInstance().start(c, 1061000);
         } else if (player.getMapId() >= 1000 && player.getMapId() <= 1006) {
             player.changeMap(player.getTrialReturnMap(), 0);
         } else if (player.getMapId() == 240060200) {
@@ -214,6 +213,9 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.reactivateExpBonus();
         player.dropVoteTime();
         player.setInvincible(false);
+        if (player.getZakDc()) {
+            NPCScriptManager.getInstance().start(c, 2030013);
+        }
         //
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9000014, "Geanie"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9010010, "Cassandra"));

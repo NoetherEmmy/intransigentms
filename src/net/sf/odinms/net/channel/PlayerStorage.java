@@ -31,4 +31,8 @@ public class PlayerStorage implements IPlayerStorage {
     public Collection<MapleCharacter> getAllCharacters() {
         return nameToChar.values();
     }
+
+    public Collection<MapleCharacter> getAllCharactersById() {
+        return idToChar.values();
+    }
 }

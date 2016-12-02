@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Donator implements Command {
-
     @Override
     public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
@@ -69,11 +68,7 @@ public class Donator implements Command {
                     StringBuilder builder = new StringBuilder();
                     int i = 0;
                     for (String mapss : maps.keySet()) {
-                        if (1 % 10 == 0) {
-                            mc.dropMessage(builder.toString());
-                        } else {
-                            builder.append(mapss).append(", ");
-                        }
+                        builder.append(mapss).append(", ");
                     }
                     mc.dropMessage(builder.toString());
                 } else {

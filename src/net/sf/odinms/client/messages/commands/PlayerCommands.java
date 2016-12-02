@@ -6,7 +6,6 @@ import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.channel.ChannelServer;
-import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
@@ -33,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ public class PlayerCommands implements Command {
     @Override
     public void execute(MapleClient c, final MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
         if (splitted[0].equals("@command") || splitted[0].equals("@commands") || splitted[0].equals("@help")) {
             mc.dropMessage("================================================================");
             mc.dropMessage("               " + c.getChannelServer().getServerName() + " Commands");
@@ -77,7 +77,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@deathpenalty - | - Displays your current death penalty level and its effects, as well as how long until you can next rest.");
             mc.dropMessage("@defense/@defence - | - Displays your true current weapon and magic defense.");
             mc.dropMessage("@monsterhp - | - Displays the current HP % of all mobs on the map.");
-            mc.dropMessage("@bosshp - | - Displays the current HP % of all bosses on the map.");
+            mc.dropMessage("@bosshp <repeat_time_in_milliseconds> - | - Displays the current HP % of all bosses on the map once, or optionally repeating (if specified). Cancels previous @bosshp displays.");
             mc.dropMessage("@truedamage - | - Toggles the display of true damage received.");
             mc.dropMessage("@whodrops - | - Allows selection of an item and lists monsters who drop the selected item.");
             mc.dropMessage("@whodrops <itemid> - | - Lists monsters who drop the item with that ID.");
@@ -88,6 +88,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@showpqpoints - | - Toggles whether or not your current PQ point total is displayed every time the total is changed.");
             mc.dropMessage("@readingtime - | - Displays how long you've been reading.");
             mc.dropMessage("@donated - | - Allows access to donator benefits.");
+            mc.dropMessage("@voteupdate - | - Updates your total vote point and NX count, for when you vote while still in-game.");
             mc.dropMessage("@vote - | - Displays the amount of time left until you may vote again.");
             if (player.getClient().getChannelServer().extraCommands()) {
                 mc.dropMessage("@cody/@storage/@news/@kin/@nimakin/@reward/@reward1/@fredrick/@spinel/@clan");
@@ -616,7 +617,7 @@ public class PlayerCommands implements Command {
                     mc.dropMessage("Channel " + cs.getChannel());
                     for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
                         if (!chr.isGM()) {
-                            if (sb.length() > 150) { // Chars per line. Could be more or less
+                            if (sb.length() > 95) { // Chars per line. Could be more or less
                                 mc.dropMessage(sb.toString());
                                 sb = new StringBuilder();
                             }
@@ -745,10 +746,9 @@ public class PlayerCommands implements Command {
                             }
                         });
                     } else {
-                        final MapleCharacter p = player;
                         mobList.sort((o1, o2) -> {
-                            double xphpratio1 = ((double) o1.getExp() * p.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
-                            double xphpratio2 = ((double) o2.getExp() * p.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
+                            double xphpratio1 = ((double) o1.getExp() * player.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
+                            double xphpratio2 = ((double) o2.getExp() * player.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
                             int comparison = Double.valueOf(xphpratio1).compareTo(xphpratio2);
                             if (comparison < 0) {
                                 return -1;
@@ -884,22 +884,63 @@ public class PlayerCommands implements Command {
                 mc.dropMessage(player.getStrengtheningTimeString());
             }
         } else if (splitted[0].equals("@monsterhp")) {
-            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
-                MapleMonster monster = (MapleMonster) mmo;
-                double hppercentage = ((double) monster.getHp()) / ((double) monster.getMaxHp()) * 100.0;
-                mc.dropMessage("Monster: " + monster.getName() + ", HP: " + hppercentage + "%");
-            }
+            final DecimalFormat df = new DecimalFormat("#.00");
+            player.getMap().getMapObjectsInRange(
+                new Point(0, 0),
+                Double.POSITIVE_INFINITY,
+                Collections.singletonList(MapleMapObjectType.MONSTER)
+            )
+            .stream()
+            .map(mmo -> (MapleMonster) mmo)
+            .forEach(mob -> {
+                double hpPercentage = (double) mob.getHp() / ((double) mob.getMaxHp()) * 100.0d;
+                player.dropMessage("Monster: " + mob.getName() + ", HP: " + df.format(hpPercentage) + "%");
+            });
         } else if (splitted[0].equals("@truedamage")) {
             player.toggleTrueDamage();
             String s = player.getTrueDamage() ? "on" : "off";
             mc.dropMessage("True damage is now turned " + s + ".");
         } else if (splitted[0].equals("@bosshp")) {
-            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
-                MapleMonster monster = (MapleMonster) mmo;
-                if (monster.isBoss()) {
-                    double hppercentage = ((double) monster.getHp()) / ((double) monster.getMaxHp()) * 100.0;
-                    mc.dropMessage("Monster: " + monster.getName() + ", HP: " + hppercentage + "%");
+            int repeatTime;
+            switch (splitted.length) {
+                case 1:
+                    repeatTime = 0;
+                    break;
+                case 2:
+                    try {
+                        repeatTime = Integer.parseInt(splitted[1]);
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage("Could not parse repeat time for @bosshp. Make sure you are entering a valid integer.");
+                        return;
+                    }
+                    if (repeatTime < 1000 || repeatTime > 300000) {
+                        mc.dropMessage("Make sure the repeat time is between 1000 and 300000 milliseconds.");
+                        return;
+                    }
+                    break;
+                default:
+                    mc.dropMessage("Wrong syntax. Try: @bosshp <repeat_time_in_milliseconds>");
+                    return;
+            }
+            if (repeatTime > 0) {
+                player.setBossHpTask(repeatTime, 1000 * 60 * 60);
+            } else {
+                if (player.cancelBossHpTask()) {
+                    mc.dropMessage("@bosshp display has been stopped.");
                 }
+                final DecimalFormat df = new DecimalFormat("#.00");
+                player.getMap().getMapObjectsInRange(
+                    new Point(0, 0),
+                    Double.POSITIVE_INFINITY,
+                    Collections.singletonList(MapleMapObjectType.MONSTER)
+                )
+                .stream()
+                .map(mmo -> (MapleMonster) mmo)
+                .filter(MapleMonster::isBoss)
+                .forEach(mob -> {
+                    double hpPercentage = (double) mob.getHp() / ((double) mob.getMaxHp()) * 100.0d;
+                    player.dropMessage("Monster: " + mob.getName() + ", HP: " + df.format(hpPercentage) + "%");
+                });
             }
         } else if (splitted[0].equals("@donated")) {
             NPCScriptManager npc = NPCScriptManager.getInstance();
@@ -943,6 +984,7 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@overflowexp")) {
             if (splitted.length != 2) {
                 mc.dropMessage("Incorrect syntax. Use: @overflowexp <playername>");
+                return;
             }
             String name = splitted[1];
             MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
@@ -965,6 +1007,8 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@vskills")) {
             NPCScriptManager.getInstance().start(c, 9201095);
+        } else if (splitted[0].equals("@voteupdate")) {
+            player.voteUpdate();
         }
     }
 
@@ -1058,7 +1102,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("ria", 0),
             new CommandDefinition("pqpoints", 0),
             new CommandDefinition("overflowexp", 0),
-            new CommandDefinition("vskills", 0)
+            new CommandDefinition("vskills", 0),
+            new CommandDefinition("voteupdate", 0)
         };
     }
 }

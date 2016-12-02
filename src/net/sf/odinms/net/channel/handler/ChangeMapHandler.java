@@ -21,6 +21,9 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
         player.setLastDamageSource(null);
         player.resetAfkTime();
         player.setInvincible(false);
+        if (player.cancelBossHpTask()) {
+            player.dropMessage("@bosshp display has been stopped.");
+        }
         if (slea.available() == 0) {
             int channel = c.getChannel();
             String ip = ChannelServer.getInstance(c.getChannel()).getIP(channel);

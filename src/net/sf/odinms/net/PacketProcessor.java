@@ -6,7 +6,6 @@ import net.sf.odinms.net.handler.LoginRequiringNoOpHandler;
 import net.sf.odinms.net.login.handler.*;
 
 public final class PacketProcessor {
-
     public enum Mode {
         LOGINSERVER,
         CHANNELSERVER
@@ -81,6 +80,7 @@ public final class PacketProcessor {
             registerHandler(RecvPacketOpcode.QUEST_ACTION, new QuestActionHandler());
             registerHandler(RecvPacketOpcode.NPC_SHOP, new NPCShopHandler());
             registerHandler(RecvPacketOpcode.ITEM_SORT, new ItemSortHandler());
+            registerHandler(RecvPacketOpcode.ITEM_SORT2, new ItemSortHandler2());
             registerHandler(RecvPacketOpcode.ITEM_MOVE, new ItemMoveHandler());
             registerHandler(RecvPacketOpcode.MESO_DROP, new MesoDropHandler());
             registerHandler(RecvPacketOpcode.PLAYER_LOGGEDIN, new PlayerLoggedinHandler());
