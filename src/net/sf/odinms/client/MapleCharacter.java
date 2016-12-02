@@ -1836,7 +1836,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.close();
             long timeleft = (24 * 60 * 60 * 1000) - (System.currentTimeMillis() - date);
             if (timeleft < 1) {
-                dropMessage("You may vote right now! Remember to use @updatevp if you want to spend your new vote point without logging out!");
+                dropMessage("You may vote right now! Remember to use @voteupdate if you want to spend your new vote point/NX without logging out!");
             } else {
                 int hours = (int) ((timeleft - (timeleft % (1000 * 60 * 60))) / (1000 * 60 * 60));
                 int remainder = (int) (timeleft - (hours * (1000 * 60 * 60)));
