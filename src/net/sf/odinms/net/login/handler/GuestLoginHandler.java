@@ -1,21 +1,24 @@
 package net.sf.odinms.net.login.handler;
 
 import net.sf.odinms.client.MapleClient;
-import net.sf.odinms.database.DatabaseConnection;
+//import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.MaplePacketHandler;
+/*
 import net.sf.odinms.net.login.LoginServer;
 import net.sf.odinms.net.login.LoginWorker;
 import net.sf.odinms.tools.MaplePacketCreator;
+*/
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
+/*
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+*/
 import java.util.Random;
 
 public class GuestLoginHandler implements MaplePacketHandler {
-
     @Override
     public boolean validateState(MapleClient c) {
         return !c.isLoggedIn();
@@ -23,6 +26,7 @@ public class GuestLoginHandler implements MaplePacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        /*
         Connection con = DatabaseConnection.getConnection();
         Random r = new Random();
         c.getSession().write(MaplePacketCreator.sendGuestTOS(r.nextInt(999999)));
@@ -68,6 +72,7 @@ public class GuestLoginHandler implements MaplePacketHandler {
         c.setAccountName("GUEST" + guestid);
         c.setGuest(true);
         LoginWorker.getInstance().registerClient(c);
+        */
     }
 
     private String createRandomPass() {
