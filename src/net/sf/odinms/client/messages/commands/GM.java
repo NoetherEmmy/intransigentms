@@ -46,8 +46,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 import static net.sf.odinms.client.messages.CommandProcessor.*;
 
@@ -142,7 +144,7 @@ public class GM implements Command {
         splitted[0] = splitted[0].toLowerCase();
         ChannelServer cserv = c.getChannelServer();
         Collection<ChannelServer> cservs = ChannelServer.getAllInstances();
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
         switch (splitted[0]) {
             case "!lowhp":
                 player.setHp(1);
@@ -380,7 +382,7 @@ public class GM implements Command {
                             player.saveGuildStatus();
                         }
                         player.setGuildId(rs.getInt("guildid"));
-                        player.setGuildRank(2); // Jr.master :D
+                        player.setGuildRank(2); // Jr. Master
                         try {
                             cserv.getWorldInterface().addGuildMember(player.getMGC());
                         } catch (RemoteException e) {
@@ -2106,6 +2108,67 @@ public class GM implements Command {
                     player.dropMessage(5, "You're not in a party.");
                 }
                 break;
+            case "!toggledpm":
+                player.toggleDpm();
+                player.dropMessage("Showing DPM on death is now " + (player.doShowDpm() ? "on" : "off"));
+                break;
+            case "!showdpm":
+                final DecimalFormat df = new DecimalFormat("#.000");
+                TimerManager tMan = TimerManager.getInstance();
+                int duration, repeatTime;
+                switch (splitted.length) {
+                    case 1:
+                        player.getMap()
+                              .getMapObjectsInRange(
+                                  player.getPosition(),
+                                  Double.POSITIVE_INFINITY,
+                                  Collections.singletonList(MapleMapObjectType.MONSTER)
+                              )
+                              .stream()
+                              .map(mmo -> (MapleMonster) mmo)
+                              .forEach(mob ->
+                                  player.dropMessage(
+                                      mob.getName() +
+                                          ", oid: " +
+                                          mob.getObjectId() +
+                                          ", incoming DPM: " +
+                                          df.format(mob.avgIncomingDpm())
+                                  )
+                              );
+                        return;
+                    case 2:
+                        duration = Integer.parseInt(splitted[1]) * 1000;
+                        repeatTime = 5000;
+                        break;
+                    case 3:
+                        duration = Integer.parseInt(splitted[1]) * 1000;
+                        repeatTime = Integer.parseInt(splitted[2]) * 1000;
+                        break;
+                    default:
+                        player.dropMessage("Invalid syntax.");
+                        return;
+                }
+                final ScheduledFuture<?> showDpmTask = tMan.register(() ->
+                        player.getMap()
+                              .getMapObjectsInRange(
+                                  player.getPosition(),
+                                  Double.POSITIVE_INFINITY,
+                                  Collections.singletonList(MapleMapObjectType.MONSTER)
+                              )
+                              .stream()
+                              .map(mmo -> (MapleMonster) mmo)
+                              .forEach(mob ->
+                                  player.dropMessage(
+                                      mob.getName() +
+                                          ", oid: " +
+                                          mob.getObjectId() +
+                                          ", incoming DPM: " +
+                                          df.format(mob.avgIncomingDpm())
+                                  )
+                              ),
+                    repeatTime, 0);
+                tMan.schedule(() -> showDpmTask.cancel(false), duration);
+                break;
         }
     }
 
@@ -2250,7 +2313,9 @@ public class GM implements Command {
             new CommandDefinition("moveup", 3),
             new CommandDefinition("invokemethod", 3),
             new CommandDefinition("clearpqs", 3),
-            new CommandDefinition("registerpqmi", 3)
+            new CommandDefinition("registerpqmi", 3),
+            new CommandDefinition("toggledpm", 3),
+            new CommandDefinition("showdpm", 3)
         };
     }
 }

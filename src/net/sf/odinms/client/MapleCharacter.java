@@ -159,7 +159,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     //
     private final MapleCQuests quest = new MapleCQuests();
     private int story, storypoints, offensestory, buffstory;
-    private Map<Integer, Integer> questkills = new HashMap<>(4, 0.8f);
+    private Map<Integer, Integer> questkills = new HashMap<>(6, 0.8f);
     private int questidd, queststatus;
     private int returnmap;
     private int trialreturnmap;
@@ -221,6 +221,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private ScheduledFuture<?> bossHpCancelTask = null;
     private int initialVotePoints, initialNx;
     private boolean zakDc = false;
+    
+    private final Map<IItem, Short> buyBacks = new LinkedHashMap<>();
+    private boolean showDpm = false;
     //
 
     public MapleCharacter() {
@@ -5041,6 +5044,45 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             forcedWarp = null;
         }
     }
+    
+    public void addBuyBack(IItem item, short quantity) {
+        if (buyBacks.size() > 100) {
+            buyBacks.remove(buyBacks.keySet().iterator().next());
+        }
+        buyBacks.put(item, quantity);
+    }
+    
+    public Map<IItem, Short> readBuyBacks() {
+        return Collections.unmodifiableMap(buyBacks);
+    }
+    
+    public boolean removeBuyBack(IItem item) {
+        return buyBacks.remove(item) != null;
+    }
+    
+    public boolean removeBuyBack(final int itemId) {
+        IItem item =
+                buyBacks.keySet()
+                        .stream()
+                        .filter(i -> i.getItemId() == itemId)
+                        .findAny()
+                        .orElse(null);
+        return item != null && buyBacks.remove(item) != null;
+    }
+    
+    public Pair<IItem, Short> getBuyBack(final int itemId) {
+        Map.Entry<IItem, Short> bb =
+                buyBacks.entrySet()
+                        .stream()
+                        .filter(b -> b.getKey().getItemId() == itemId)
+                        .findAny()
+                        .orElse(null);
+        return bb != null ? new Pair<>(bb.getKey(), bb.getValue()) : null;
+    }
+    
+    public void clearBuyBacks() {
+        buyBacks.clear();
+    }
 
     public void setBossHpTask(long repeatTime, long duration) {
         cancelBossHpTask();
@@ -5084,6 +5126,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void resetQuestKills() {
         questkills.clear();
         getCQuest().readMonsterTargets().keySet().forEach(monsterId -> questkills.put(monsterId, 0));
+    }
+
+    public void toggleDpm() {
+        showDpm = !showDpm;
+    }
+    
+    public boolean doShowDpm() {
+        return showDpm;
     }
 
     private static class MapleBuffStatValueHolder {

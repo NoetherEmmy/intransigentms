@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -754,6 +755,21 @@ public class MapleMap {
     @SuppressWarnings("static-access")
     public void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean secondTime, int animation) {
         monster.stopOtherMobHitChecking();
+        monster.getMap()
+               .getAllPlayers()
+               .stream()
+               .map(mmo -> (MapleCharacter) mmo)
+               .filter(p -> p.isGM() && p.doShowDpm())
+               .forEach(p -> {
+                   DecimalFormat df = new DecimalFormat("#.000");
+                   p.dropMessage(
+                       monster.getName() +
+                           ", oid: " +
+                           monster.getObjectId() +
+                           ", death DPM: " +
+                           df.format(monster.avgIncomingDpm())
+                   );
+               });
         if (monster.getId() == 8810018 && !secondTime) {
             TimerManager.getInstance().schedule(() -> {
                 killMonster(monster, chr, withDrops, true, 1);

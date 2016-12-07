@@ -31,8 +31,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ScheduledFuture;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -1299,9 +1297,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         List<MapleCharacter> chars = new ArrayList<>();
         for (ChannelServer channel : ChannelServer.getAllInstances()) {
-            for (MapleCharacter chr : channel.getPartyMembers(getPlayer().getParty())) {
-                if (chr != null) {
-                    chars.add(chr);
+            for (MapleCharacter p : channel.getPartyMembers(getPlayer().getParty())) {
+                if (p != null) {
+                    chars.add(p);
                 }
             }
         }
@@ -1356,87 +1354,91 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public String equipList(MapleClient c, int lb1, int lb2, int lb3, int lb4) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         StringBuilder str = new StringBuilder();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<String> stra = new ArrayList<>();
-        List<Integer> leavebehind = new ArrayList<>();
-        leavebehind.add(lb1);
-        leavebehind.add(lb2);
-        leavebehind.add(lb3);
-        leavebehind.add(lb4);
-        Equip tempitem;
-        ArrayList<IItem> equiplist = new ArrayList<>();
-        for (IItem equipitem : equip.list()) {
-            equiplist.add(equipitem);
-        }
+        List<Integer> leaveBehind = new ArrayList<>();
+        leaveBehind.add(lb1);
+        leaveBehind.add(lb2);
+        leaveBehind.add(lb3);
+        leaveBehind.add(lb4);
+        List<IItem> equipList = new ArrayList<>(equip.list());
         
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, (o1, o2) -> (int) Math.signum(o1.getPosition() - o2.getPosition()));
+        equipList.sort(Comparator.comparingInt(IItem::getPosition));
         
-        for (IItem equipitem : equiplist) {
-            tempitem = (Equip) equipitem;
-            if (!leavebehind.contains((int) equipitem.getPosition())) {
-                if(tempitem.getStr() != 0 || tempitem.getDex() != 0 || tempitem.getInt() != 0 || tempitem.getLuk() != 0 || tempitem.getHp() != 0 || tempitem.getMp() != 0 || tempitem.getWatk() != 0 || tempitem.getMatk() != 0 || tempitem.getWdef() != 0 || tempitem.getMdef() != 0 || tempitem.getAcc() != 0 || tempitem.getAvoid() != 0 || tempitem.getSpeed() != 0 || tempitem.getJump() != 0 || tempitem.getUpgradeSlots() != 0) {
-                    stra.add("#L" + equipitem.getPosition() + "##v" + equipitem.getItemId() + "##l");
+        for (IItem equipItem : equipList) {
+            if (!leaveBehind.contains((int) equipItem.getPosition())) {
+                if (!ii.isCash(equipItem.getItemId())) {
+                    str.append("#L")
+                       .append(equipItem.getPosition())
+                       .append("##v")
+                       .append(equipItem.getItemId())
+                       .append("##l");
                 }
             }
         }
-        if (!stra.isEmpty()) {
-            for (String strb : stra) {
-                str.append(strb);
-            }
-            return str.toString();
-        } else {
-            return "";
-        }
+
+        return str.toString();
     }
 
     public String plainEquipList() {
         return plainEquipList(4);
     }
-    
+
     public String plainEquipList(int itemsPerLine) {
+        return plainInventoryList(MapleInventoryType.EQUIP, itemsPerLine);
+    }
+
+    public String plainInventoryList(MapleInventoryType type) {
+        return plainInventoryList(type, 4);
+    }
+
+    public String plainInventoryList(MapleInventoryType type, int itemsPerLine) {
         StringBuilder str = new StringBuilder();
-        MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<String> stra = new ArrayList<>();
-        ArrayList<IItem> equiplist = new ArrayList<>(equip.list());
+        MapleInventory inv = c.getPlayer().getInventory(type);
+        List<IItem> itemList = new ArrayList<>(inv.list());
 
         // This sorts the items by their position in the inventory
-        Collections.sort(equiplist, (o1, o2) -> (int) Math.signum(o1.getPosition() - o2.getPosition()));
+        itemList.sort(Comparator.comparingInt(IItem::getPosition));
 
         int itemsInLine = 0;
-        for (IItem equipitem : equiplist) {
-            stra.add("#L" + equipitem.getPosition() + "##i" + equipitem.getItemId() + "##l");
+        for (IItem item : itemList) {
+            str.append("#L")
+               .append(item.getPosition())
+               .append("##i")
+               .append(item.getItemId())
+               .append("##l");
             itemsInLine++;
             if (itemsPerLine > 0 && itemsInLine >= itemsPerLine) {
-                stra.add("\r\n");
+                str.append("\r\n");
                 itemsInLine = 0;
             }
         }
-        if (!stra.isEmpty()) {
-            for (String strb : stra) {
-                str.append(strb);
-            }
-            return str.toString();
-        } else {
-            return "";
-        }
+
+        return str.toString();
     }
     
     public void sellSlotRange(byte start, byte end) {
+        sellSlotRange(start, end, MapleInventoryType.EQUIP);
+    }
+
+    public void sellSlotRange(byte start, byte end, MapleInventoryType type) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
+        MapleInventory inv = c.getPlayer().getInventory(type);
         double price;
         IItem item;
         int recvMesos;
         for (byte i = start; i <= end; ++i) {
-            item = equip.getItem(i);
+            item = inv.getItem(i);
             if (item != null) {
+                c.getPlayer().addBuyBack(item, item.getQuantity());
+                int realQty = ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId()) ? 1 : item.getQuantity();
                 MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(item.getItemId()), i, (short) 1, false);
                 price = ii.getPrice(item.getItemId());
                 recvMesos = (int) Math.max(Math.ceil(price), 0.0d);
                 if (price >= 0.0d && recvMesos > 0) {
-                    c.getPlayer().gainMeso(recvMesos, true);
+                    c.getPlayer().gainMeso(recvMesos * realQty, true);
                 }
             }
         }
@@ -1572,26 +1574,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String listConsume(char initial) {
         StringBuilder sb = new StringBuilder();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Pair<Integer, String>> consumelist = ii.getAllConsume(initial);
+        List<Pair<Integer, String>> consumeList = ii.getAllConsume(initial);
         
-        if (consumelist.isEmpty()) {
+        if (consumeList.isEmpty()) {
             return "There are no use items with the selected initial letter.";
         }
         
-        Collections.sort(consumelist, (o1, o2) -> {
-            int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
-            if (comparison < 0) {
-                return -1;
-            } else {
-                if (comparison > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
+        consumeList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
         
-        for (Pair<Integer, String> itempair : consumelist) {
+        for (Pair<Integer, String> itempair : consumeList) {
             sb.append("#L").append(itempair.getLeft()).append("#");
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
@@ -1602,26 +1593,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String listEqp(char initial) {
         StringBuilder sb = new StringBuilder();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Pair<Integer, String>> eqplist = ii.getAllEqp(initial);
+        List<Pair<Integer, String>> eqpList = ii.getAllEqp(initial);
         
-        if (eqplist.isEmpty()) {
+        if (eqpList.isEmpty()) {
             return "There are no equipment items with the selected initial letter.";
         }
         
-        Collections.sort(eqplist, (o1, o2) -> {
-            int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
-            if (comparison < 0) {
-                return -1;
-            } else {
-                if (comparison > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
+        eqpList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
         
-        for (Pair<Integer, String> itempair : eqplist) {
+        for (Pair<Integer, String> itempair : eqpList) {
             sb.append("#L").append(itempair.getLeft()).append("#");
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
@@ -1632,26 +1612,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String listEtc(char initial) {
         StringBuilder sb = new StringBuilder();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Pair<Integer, String>> etclist = ii.getAllEtc(initial);
+        List<Pair<Integer, String>> etcList = ii.getAllEtc(initial);
         
-        if (etclist.isEmpty()) {
+        if (etcList.isEmpty()) {
             return "There are no etc items with the selected initial letter.";
         }
         
-        Collections.sort(etclist, (o1, o2) -> {
-            int comparison = o1.getRight().compareToIgnoreCase(o2.getRight());
-            if (comparison < 0) {
-                return -1;
-            } else {
-                if (comparison > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
+        etcList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
         
-        for (Pair<Integer, String> itempair : etclist) {
+        for (Pair<Integer, String> itempair : etcList) {
             sb.append("#L").append(itempair.getLeft()).append("#");
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
@@ -1741,14 +1710,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         Calendar currenttime = Calendar.getInstance();
         currenttime.setTimeInMillis(System.currentTimeMillis());
         if (validtime.compareTo(currenttime) > 0) {
-            // valid time is in the future
+            // Valid time is in the future
             if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) && validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
                 return 0;
             } else {
                 return 1;
             }
         } else if (validtime.compareTo(currenttime) < 0) {
-            // valid time is in the past
+            // Valid time is in the past
             if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) && validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
                 return 0;
             } else {

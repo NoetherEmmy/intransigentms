@@ -7,8 +7,7 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class NPCShopHandler extends AbstractMaplePacketHandler {
-	
-    /** Creates a new instance of NPCBuyHandler */
+    /** Creates a new instance of NPCShopHandler */
     public NPCShopHandler() {
     }
 

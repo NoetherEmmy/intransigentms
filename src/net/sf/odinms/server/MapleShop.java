@@ -20,14 +20,12 @@ import java.util.List;
 import java.util.Set;
 
 public class MapleShop {
-
     private static final Set<Integer> rechargeableItems = new LinkedHashSet<>();
     private final int id;
     private final int npcId;
     private final List<MapleShopItem> items;
     private static final Logger log = LoggerFactory.getLogger(PacketProcessor.class);
-
-
+    
     static {
         for (int i = 2070000; i <= 2070018; ++i) {
             rechargeableItems.add(i);
@@ -108,7 +106,7 @@ public class MapleShop {
     }
 
     public void sell(MapleClient c, MapleInventoryType type, byte slot, short quantity) {
-        if (quantity == 0xFFFF || quantity == 0) {
+        if (quantity == 0) {
             quantity = 1;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -120,9 +118,6 @@ public class MapleShop {
             return;
         }
         short iQuant = item.getQuantity();
-        if (iQuant == 0xFFFF) {
-            iQuant = 1;
-        }
         if (quantity <= iQuant && iQuant > 0) {
             MapleInventoryManipulator.removeFromSlot(c, type, slot, quantity, false);
             double price;
@@ -136,6 +131,7 @@ public class MapleShop {
                 c.getPlayer().gainMeso(recvMesos, false);
             }
             c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 0x8));
+            c.getPlayer().addBuyBack(item, quantity);
         }
     }
 

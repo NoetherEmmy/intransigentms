@@ -60,7 +60,7 @@ public class MapleClient {
     private boolean gm = false;
     private byte greason = 1;
     private boolean guest;
-    private final Map<Pair<MapleCharacter, Integer>, Integer> timesTalked = new HashMap<>(); //npcid, times
+    private final Map<Pair<MapleCharacter, Integer>, Integer> timesTalked = new HashMap<>(); // NPC Id, times
     private final Set<String> macs = new HashSet<>();
     private final Map<String, ScriptEngine> engines = new HashMap<>();
     private ScheduledFuture<?> idleTask = null;

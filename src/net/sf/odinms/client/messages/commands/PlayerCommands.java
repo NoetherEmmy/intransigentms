@@ -69,6 +69,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@damagescale - | - Displays the current multiplier by which all incoming damage is multiplied.");
             mc.dropMessage("@votepoints - | - Displays your current vote point count.");
             mc.dropMessage("@sell - | - Opens up an NPC to mass-sell equipment items.");
+            mc.dropMessage("@buyback - | - Opens up an NPC to buy back items sold at NPC shops or sold using @sell.");
             mc.dropMessage("@vskills - | - Allows viewing and taking points in/out of virtual skills.");
             mc.dropMessage("@morgue <playername> - | - Displays the past 5 lives of the player.");
             mc.dropMessage("@deathinfo <playername> - | - Displays death count, highest level achieved, paragon level, and suicide count of player.");
@@ -1009,6 +1010,8 @@ public class PlayerCommands implements Command {
             NPCScriptManager.getInstance().start(c, 9201095);
         } else if (splitted[0].equals("@voteupdate")) {
             player.voteUpdate();
+        } else if (splitted[0].equals("@buyback")) {
+            NPCScriptManager.getInstance().start(c, 9201097);
         }
     }
 
@@ -1103,7 +1106,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("pqpoints", 0),
             new CommandDefinition("overflowexp", 0),
             new CommandDefinition("vskills", 0),
-            new CommandDefinition("voteupdate", 0)
+            new CommandDefinition("voteupdate", 0),
+            new CommandDefinition("buyback", 0)
         };
     }
 }
