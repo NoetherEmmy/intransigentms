@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.sf.odinms.client.messages.CommandProcessor.getOptionalIntArg;
 
@@ -37,7 +38,7 @@ public class Admins implements Command {
     @Override
     public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
         ChannelServer cserv = c.getChannelServer();
         switch (splitted[0]) {
             case "!speakall": {
@@ -48,19 +49,24 @@ public class Admins implements Command {
                 break;
             }
             case "!dcall": {
-                for (ChannelServer channel : ChannelServer.getAllInstances()) {
-                    for (MapleCharacter cplayer : channel.getPlayerStorage().getAllCharacters()) {
-                        if (cplayer != player) {
-                            cplayer.getClient().disconnect();
-                            cplayer.getClient().getSession().close();
-                        }
-                    }
-                }
+                ChannelServer.getAllInstances()
+                             .stream()
+                             .flatMap(channel -> channel.getPlayerStorage().getAllCharacters().stream())
+                             .filter(p -> p != player)
+                             .collect(Collectors.toList())
+                             .forEach(p -> {
+                                 p.getClient().disconnect();
+                                 p.getClient().getSession().close();
+                             });
                 break;
             }
             case "!killnear": {
                 MapleMap map = player.getMap();
-                List<MapleMapObject> players = map.getMapObjectsInRange(player.getPosition(), (double) 50000, Collections.singletonList(MapleMapObjectType.PLAYER));
+                List<MapleMapObject> players = map.getMapObjectsInRange(
+                    player.getPosition(),
+                    50000.0d,
+                    Collections.singletonList(MapleMapObjectType.PLAYER)
+                );
                 for (MapleMapObject closeplayers : players) {
                     MapleCharacter playernear = (MapleCharacter) closeplayers;
                     if (playernear.isAlive() && playernear != player) {
@@ -259,7 +265,7 @@ public class Admins implements Command {
                 Thread[] threads = new Thread[Thread.activeCount()];
                 Thread.enumerate(threads);
                 Thread t = threads[Integer.parseInt(splitted[1])];
-                mc.dropMessage(t.toString() + ":");
+                mc.dropMessage(t + ":");
                 for (StackTraceElement elem : t.getStackTrace()) {
                     mc.dropMessage(elem.toString());
                 }

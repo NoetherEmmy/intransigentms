@@ -2331,13 +2331,12 @@ public class MapleMap {
     }
 
     public int mobCount() {
-        List<MapleMapObject> mobsCount =
+        return
             getMapObjectsInRange(
                 new Point(0, 0),
                 Double.POSITIVE_INFINITY,
                 Collections.singletonList(MapleMapObjectType.MONSTER)
-            );
-        return mobsCount.size();
+            ).size();
     }
 
     public void setReactorState() {

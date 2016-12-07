@@ -119,7 +119,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 }
                 if (monster != null) {
                     ElementalEffectiveness ee = monster.getAddedEffectiveness(skillused.getElement());
-                    if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) && monster.getEffectiveness(skillused.getElement()) == ElementalEffectiveness.WEAK) {
+                    if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
+                            monster.getEffectiveness(skillused.getElement()) == ElementalEffectiveness.WEAK) {
                         continue;
                     }
                     double multiplier;

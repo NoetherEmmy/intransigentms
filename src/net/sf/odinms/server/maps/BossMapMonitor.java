@@ -6,7 +6,6 @@ import net.sf.odinms.server.TimerManager;
 import java.util.concurrent.ScheduledFuture;
 
 public class BossMapMonitor {
-
     private final MaplePortal portal;
     private final MapleMap map;
     private final MapleMap pMap;

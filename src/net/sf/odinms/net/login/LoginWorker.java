@@ -11,7 +11,6 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class LoginWorker implements Runnable {
-
     private static final LoginWorker instance = new LoginWorker();
     private final Deque<MapleClient> waiting;
     private final Set<String> waitingNames;

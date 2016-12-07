@@ -2570,7 +2570,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 sn.execute();
                 con.commit();
                 sn.close();
+                final ChannelServer cserv = getClient().getChannelServer();
+                cserv.removePlayer(this);
                 this.name = name;
+                cserv.addPlayer(this);
             } catch (SQLException e) {
                 sqlException(e);
             }

@@ -37,7 +37,6 @@ import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 
 public class MapleClient {
-
     public static final int LOGIN_NOTLOGGEDIN = 0;
     public static final int LOGIN_SERVER_TRANSITION = 1;
     public static final int LOGIN_LOGGEDIN = 2;
@@ -785,13 +784,13 @@ public class MapleClient {
             try {
                 if (lastPong - then < 0) {
                     if (getSession().isConnected()) {
-                        System.out.println("Auto DC : " + session.getRemoteAddress() + " : Ping Timeout.");
+                        System.out.println("Auto DC : " + session.getRemoteAddress() + " : Ping timeout.");
                         getSession().close();
                     }
                 }
             } catch (NullPointerException ignored) {
             }
-        }, 15000);
+        }, 30000);
     }
 
     public static String getLogMessage(MapleClient cfor, String message) {

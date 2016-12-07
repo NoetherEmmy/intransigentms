@@ -5,7 +5,6 @@ import net.sf.odinms.client.MapleClient;
 import java.awt.*;
 
 public interface MaplePortal {
-
     int MAP_PORTAL = 2;
     int DOOR_PORTAL = 6;
     boolean OPEN = true;
