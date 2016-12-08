@@ -314,7 +314,7 @@ public class MapleMap {
     }
 
     private void dropFromMonster(MapleCharacter dropOwner, MapleMonster monster) {
-        boolean partyevent = false;
+        boolean partyevent = true;
         if (dropsDisabled || monster.dropsDisabled()) {
             return;
         }
@@ -382,20 +382,24 @@ public class MapleMap {
                 chance = (int) (Math.random() * 112); // 1/112 droprate
                 if (chance == 61) { // Arbitrary
                     switch (Math.min(monster.dropShareCount.get(), 6)) {
-                        case 2:
+                        case 1:
                             toDrop.add(4031439);
                             break;
-                        case 3:
+                        case 2:
                             toDrop.add(4031440);
                             break;
-                        case 4:
+                        case 3:
                             toDrop.add(4031441);
                             break;
-                        case 5:
+                        case 4:
                             toDrop.add(4031442);
+                            break;
+                        case 5:
+                            toDrop.add(4031443);
                             break;
                         case 6:
                             toDrop.add(4031443);
+                            toDrop.add(4031439);
                             break;
                         default:
                             break;
