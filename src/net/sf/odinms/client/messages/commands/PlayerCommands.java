@@ -298,12 +298,7 @@ public class PlayerCommands implements Command {
                 }
             }
         } else if (splitted[0].equals("@absolutexprate")) {
-            int absxp = (int) Math.floor(0.1d * (double) player.getLevel());
-            if (absxp > 1) {
-                mc.dropMessage("Your total absolute XP multiplier: " + absxp * c.getChannelServer().getExpRate());
-            } else {
-                mc.dropMessage("Your total absolute XP multiplier: " + c.getChannelServer().getExpRate());
-            }
+            mc.dropMessage("Your total absolute XP multiplier: " + (player.getAbsoluteXp() * c.getChannelServer().getExpRate()));
         } else if (splitted[0].equalsIgnoreCase("@whodrops")) {
             if (splitted.length < 2) {
                 NPCScriptManager npc = NPCScriptManager.getInstance();

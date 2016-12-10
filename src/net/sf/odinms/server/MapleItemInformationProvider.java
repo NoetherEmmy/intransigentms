@@ -1217,14 +1217,14 @@ public class MapleItemInformationProvider {
         if (equip instanceof Equip) {
             Equip nEquip = (Equip) equip;
             Map<String, Integer> stats = this.getEquipStats(scrollId);
-            Map<String, Integer> eqstats = this.getEquipStats(equip.getItemId());
-            if ((nEquip.getUpgradeSlots() > 0 || isCleanSlate(scrollId)) && Math.ceil(Math.random() * 100.0) <= stats.get("success") || isGM || noFail) {
+            Map<String, Integer> eqStats = this.getEquipStats(equip.getItemId());
+            if ((nEquip.getUpgradeSlots() > 0 || isCleanSlate(scrollId)) && Math.ceil(Math.random() * 100.0d) <= stats.get("success") || isGM || noFail) {
                 switch (scrollId) {
                     case 2049000:
                     case 2049001:
                     case 2049002:
                     case 2049003:
-                        if (nEquip.getLevel() + nEquip.getUpgradeSlots() < eqstats.get("tuc")) {
+                        if (nEquip.getLevel() + nEquip.getUpgradeSlots() < eqStats.get("tuc")) {
                             byte newSlots = (byte) (nEquip.getUpgradeSlots() + 1);
                             nEquip.setUpgradeSlots(newSlots);
                         }
@@ -1234,63 +1234,63 @@ public class MapleItemInformationProvider {
                     case 2049102:
                     case 2049122: // Chaos Scroll of Goodness
                         int increase = 1;
-                        if (Math.ceil(Math.random() * 100.0) <= 50 && scrollId != 2049122) {
+                        if (Math.ceil(Math.random() * 100.0d) <= 50 && scrollId != 2049122) {
                             increase = increase * -1;
                         }
                         if (nEquip.getStr() > 0) {
-                            short newStat = (short) (nEquip.getStr() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getStr() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setStr(newStat);
                         }
                         if (nEquip.getDex() > 0) {
-                            short newStat = (short) (nEquip.getDex() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getDex() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setDex(newStat);
                         }
                         if (nEquip.getInt() > 0) {
-                            short newStat = (short) (nEquip.getInt() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getInt() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setInt(newStat);
                         }
                         if (nEquip.getLuk() > 0) {
-                            short newStat = (short) (nEquip.getLuk() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getLuk() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setLuk(newStat);
                         }
                         if (nEquip.getWatk() > 0) {
-                            short newStat = (short) (nEquip.getWatk() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getWatk() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setWatk(newStat);
                         }
                         if (nEquip.getWdef() > 0) {
-                            short newStat = (short) (nEquip.getWdef() + Math.ceil(Math.random() * 50.0) * increase);
+                            short newStat = (short) (nEquip.getWdef() + Math.ceil(Math.random() * 50.0d) * increase);
                             nEquip.setWdef(newStat);
                         }
                         if (nEquip.getMatk() > 0) {
-                            short newStat = (short) (nEquip.getMatk() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getMatk() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setMatk(newStat);
                         }
                         if (nEquip.getMdef() > 0) {
-                            short newStat = (short) (nEquip.getMdef() + Math.ceil(Math.random() * 50.0) * increase);
+                            short newStat = (short) (nEquip.getMdef() + Math.ceil(Math.random() * 50.0d) * increase);
                             nEquip.setMdef(newStat);
                         }
                         if (nEquip.getAcc() > 0) {
-                            short newStat = (short) (nEquip.getAcc() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getAcc() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setAcc(newStat);
                         }
                         if (nEquip.getAvoid() > 0) {
-                            short newStat = (short) (nEquip.getAvoid() + Math.ceil(Math.random() * 50.0) * increase);
+                            short newStat = (short) (nEquip.getAvoid() + Math.ceil(Math.random() * 50.0d) * increase);
                             nEquip.setAvoid(newStat);
                         }
                         if (nEquip.getSpeed() > 0) {
-                            short newStat = (short) (nEquip.getSpeed() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getSpeed() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setSpeed(newStat);
                         }
                         if (nEquip.getJump() > 0) {
-                            short newStat = (short) (nEquip.getJump() + Math.ceil(Math.random() * 5.0) * increase);
+                            short newStat = (short) (nEquip.getJump() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setJump(newStat);
                         }
                         if (nEquip.getHp() > 0) {
-                            short newStat = (short) (nEquip.getHp() + Math.ceil(Math.random() * 50.0) * increase);
+                            short newStat = (short) (nEquip.getHp() + Math.ceil(Math.random() * 50.0d) * increase);
                             nEquip.setHp(newStat);
                         }
                         if (nEquip.getMp() > 0) {
-                            short newStat = (short) (nEquip.getMp() + Math.ceil(Math.random() * 50.0) * increase);
+                            short newStat = (short) (nEquip.getMp() + Math.ceil(Math.random() * 50.0d) * increase);
                             nEquip.setMp(newStat);
                         }
                         break;
@@ -1360,9 +1360,9 @@ public class MapleItemInformationProvider {
                 }
             } else {
                 if (!usingWhiteScroll && !isCleanSlate(scrollId)) {
-                    nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+                    nEquip.setUpgradeSlots((byte) Math.max(nEquip.getUpgradeSlots() - 1, 0));
                 }
-                if (Math.ceil(1.0 + Math.random() * 100.0) < stats.get("cursed")) {
+                if (Math.ceil(1.0d + Math.random() * 100.0d) < stats.get("cursed")) {
                     return null;
                 }
             }

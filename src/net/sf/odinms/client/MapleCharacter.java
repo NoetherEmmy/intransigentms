@@ -224,7 +224,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     private final Map<IItem, Short> buyBacks = new LinkedHashMap<>();
     private boolean showDpm = false;
-    //
 
     public MapleCharacter() {
         setStance(0);
@@ -5681,31 +5680,31 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         double relativeLevelMultiplier;
         if (getLevel() < 70) {
             if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0 + 0.1 * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
             } else {
-                relativeLevelMultiplier = 1.0 + 0.07 * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.07d * (double) (monsterlevel - getLevel());
             }
         } else if (getLevel() >= 70 && getLevel() < 95) {
             if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0 + 0.1 * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
             } else {
-                relativeLevelMultiplier = 1.0 + 0.05 * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.05d * (double) (monsterlevel - getLevel());
             }
         } else if (getLevel() >= 95 && getLevel() < 110) {
             if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0 + 0.1 * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
             } else {
-                relativeLevelMultiplier = 1.0 + 0.03 * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.03d * (double) (monsterlevel - getLevel());
             }
         } else {
             if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0 + 0.1 * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
             } else {
-                relativeLevelMultiplier = 1.0;
+                relativeLevelMultiplier = 1.0d;
             }
         }
-        if (relativeLevelMultiplier < (double) 0) {
-            relativeLevelMultiplier = (double) 0;
+        if (relativeLevelMultiplier < 0.0d) {
+            relativeLevelMultiplier = 0.0d;
         }
         return relativeLevelMultiplier;
     }

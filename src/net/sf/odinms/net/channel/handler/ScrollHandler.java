@@ -33,13 +33,14 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             toScroll = (IEquip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
         }
         byte oldLevel = toScroll.getLevel();
-        if (toScroll.getUpgradeSlots() < 1) {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return;
-        }
+
         MapleInventory useInventory = c.getPlayer().getInventory(MapleInventoryType.USE);
         IItem scroll = useInventory.getItem(slot);
         IItem wscroll = null;
+        if (toScroll.getUpgradeSlots() < 1 && scroll.getItemId() != 2049004) {
+            c.getSession().write(MaplePacketCreator.getInventoryFull());
+            return;
+        }
 
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
         if (!scrollReqs.isEmpty() && !scrollReqs.contains(toScroll.getItemId())) {
