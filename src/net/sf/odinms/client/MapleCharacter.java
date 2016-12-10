@@ -1854,7 +1854,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
     
     public int getMorph() {
-        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isMorph() && mbsvh.effect.getSourceId() != 5111005 && mbsvh.effect.getSourceId() != 5121003) {
                 return mbsvh.effect.getSourceId();
