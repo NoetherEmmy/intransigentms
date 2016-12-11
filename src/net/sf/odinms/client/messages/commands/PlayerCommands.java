@@ -286,7 +286,7 @@ public class PlayerCommands implements Command {
             ArrayList<Integer> monsterids = new ArrayList<>(4);
             double rx;
             int absxp = player.getAbsoluteXp();
-            absxp *= 4;
+            absxp *= c.getChannelServer().getExpRate();
             for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster monster = (MapleMonster) mmo;
                 if (!monsterids.contains(monster.getId())) {

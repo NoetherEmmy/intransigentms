@@ -2110,7 +2110,7 @@ public class GM implements Command {
                 break;
             case "!toggledpm":
                 player.toggleDpm();
-                player.dropMessage("Showing DPM on death is now " + (player.doShowDpm() ? "on" : "off"));
+                player.dropMessage("Showing DPM on death is now " + (player.doShowDpm() ? "on" : "off") + ".");
                 break;
             case "!showdpm":
                 final DecimalFormat df = new DecimalFormat("#.000");
@@ -2157,6 +2157,7 @@ public class GM implements Command {
                               )
                               .stream()
                               .map(mmo -> (MapleMonster) mmo)
+                              .filter(MapleMonster::isBoss)
                               .forEach(mob ->
                                   player.dropMessage(
                                       mob.getName() +
