@@ -37,11 +37,12 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             int mpattack = 0;
             MapleMonster attacker = null;
             int removeddamage = 0;
-            boolean belowlevellimit = player.getMap().getPartyQuestInstance() != null && player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
+            boolean belowLevelLimit = player.getMap().getPartyQuestInstance() != null &&
+                                      player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
             boolean dodge = false;
 
-            float damagescale = player.getDamageScale();
-            damage = (int) (((float) damage) * damagescale);
+            float damageScale = player.getDamageScale();
+            damage = (int) ((float) damage * damageScale);
 
             if (damagefrom == -2) {
                 int debuffLevel = slea.readByte();
@@ -152,7 +153,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 return;
             }
             player.getCheatTracker().checkTakeDamage();
-            if (belowlevellimit && damage > 1) {
+            if (belowLevelLimit && damage > 1) {
                 removeddamage += damage - 1;
                 damage = 1;
             }
@@ -188,7 +189,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     if (player.getBuffedValue(MapleBuffStat.MORPH) != null) {
                         player.cancelMorphs();
                     }
-                    if (!belowlevellimit && attacker != null) {
+                    if (!belowLevelLimit && attacker != null) {
                         if (damagefrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) {
                             int bouncedamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / 100));
                             bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 10);
@@ -221,8 +222,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 ISkill manaReflectSkill = SkillFactory.getSkill(manaReflect);
                                 if (player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, manaReflectSkill) && player.getSkillLevel(manaReflectSkill) > 0 && manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).makeChanceResult()) {
                                     int bouncedamage = damage * (manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).getX() / 100);
-                                    if (bouncedamage > attacker.getMaxHp() * .2) {
-                                        bouncedamage = (int) (attacker.getMaxHp() * .2);
+                                    if (bouncedamage > attacker.getMaxHp() * 0.2d) {
+                                        bouncedamage = (int) (attacker.getMaxHp() * 0.2d);
                                     }
                                     player.getMap().damageMonster(player, attacker, bouncedamage);
                                     player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bouncedamage), true);
@@ -233,15 +234,15 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             }
                         }
                     }
-                    if (!belowlevellimit && damagefrom == -1) {
+                    if (!belowLevelLimit) {
                         try {
                             int[] achillesSkillId = {1120004, 1220005, 1320005};
                             for (int achilles : achillesSkillId) {
                                 ISkill achillesSkill = SkillFactory.getSkill(achilles);
                                 if (player.getSkillLevel(achillesSkill) > 0) {
-                                    double multiplier = achillesSkill.getEffect(player.getSkillLevel(achillesSkill)).getX() / 1000.0;
+                                    double multiplier = (double) achillesSkill.getEffect(player.getSkillLevel(achillesSkill)).getX() / 1000.0d;
                                     int olddamage = damage;
-                                    int newdamage = (int) (multiplier * damage);
+                                    int newdamage = (int) (multiplier * (double) damage);
                                     removeddamage += Math.max(olddamage - newdamage, 0);
                                     damage = newdamage;
                                     break;
@@ -251,8 +252,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             System.out.println("Failed to handle achilles: " + e);
                         }
                     }
-                    if (!belowlevellimit && player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null && mpattack == 0) {
-                        int mploss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0));
+                    if (!belowLevelLimit && player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null && mpattack == 0) {
+                        int mploss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0d));
                         int hploss = damage - mploss;
                         int hypotheticalmploss = 0;
                         if (player.getBuffedValue(MapleBuffStat.INFINITY) != null) {
@@ -269,11 +270,11 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             mploss = hypotheticalmploss;
                         }
                         removeddamage += mploss;
-                    } else if (!belowlevellimit && player.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
+                    } else if (!belowLevelLimit && player.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
                         int olddamage = damage;
                         damage = (damage % 2 == 0) ? damage / 2 : (damage / 2) + 1; // Damage rounds up!
                         removeddamage += olddamage - damage;
-                        int mesoloss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0));
+                        int mesoloss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0d));
                         if (player.getMeso() < mesoloss) {
                             player.gainMeso(-player.getMeso(), false);
                             player.cancelBuffStats(MapleBuffStat.MESOGUARD);

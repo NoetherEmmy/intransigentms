@@ -35,7 +35,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private final Map<MonsterStatus, MonsterStatusEffect> stati = new LinkedHashMap<>();
     private final List<MonsterStatusEffect> activeEffects = new ArrayList<>();
     private MapleMap map;
-    private int VenomMultiplier = 0;
+    private int venomMultiplier = 0;
     private boolean fake = false;
     private boolean dropsDisabled = false;
     private final List<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
@@ -182,11 +182,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public int getVenomMulti() {
-        return this.VenomMultiplier;
+        return this.venomMultiplier;
     }
 
     public void setVenomMulti(int multiplier) {
-        this.VenomMultiplier = multiplier;
+        this.venomMultiplier = multiplier;
     }
 
     public boolean isBoss() {
@@ -1038,7 +1038,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (minPoisonDamage == maxPoisonDamage) {
                 damage = maxPoisonDamage;
             } else {
-                damage = (int) (minPoisonDamage + StrictMath.random() * (maxPoisonDamage - minPoisonDamage + 1));
+                damage = (int) (minPoisonDamage + StrictMath.random() * (maxPoisonDamage - minPoisonDamage + 1.0d));
             }
             if (damage >= hp) {
                 damage = hp - 1;

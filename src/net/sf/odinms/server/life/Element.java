@@ -17,6 +17,6 @@ public enum Element {
             case 'H':
                 return HOLY;
         }
-        throw new IllegalArgumentException("unknown elemnt char " + c);
+        throw new IllegalArgumentException("Unknown element char '" + c + "'");
     }
 }
