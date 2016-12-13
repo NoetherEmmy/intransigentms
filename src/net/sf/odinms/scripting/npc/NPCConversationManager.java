@@ -30,7 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -80,7 +79,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void sendSimple(String text) {
         if (!text.contains("#L")) {
-            getPlayer().dropMessage(6, "!!! This NPC is broken. @gm someone and tell them you got this message. If no one is online, just remember for later. !!!");
+            getPlayer().dropMessage(
+                6,
+                "!!! This NPC is broken. @gm someone and tell them you got this message. " +
+                        "If no one is online, just remember for later. !!!"
+            );
             dispose();
         } else {
             getClient().getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 4, text, ""));
@@ -193,10 +196,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void clearSkills() {
-        Map<ISkill, MapleCharacter.SkillEntry> skills = getPlayer().getSkills();
-        for (Entry<ISkill, MapleCharacter.SkillEntry> skill : skills.entrySet()) {
-            getPlayer().changeSkillLevel(skill.getKey(), 0, 0);
-        }
+        getPlayer().getSkills().keySet().forEach(skill ->
+            getPlayer().changeSkillLevel(skill, 0, 0)
+        );
     }
 
     /**
@@ -306,7 +308,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public String selectQuest(int questid, String msg) {
         String intro = msg + "\r\n\r\n#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L0#";
-        String selection = "#k[" + (getPlayer().getQuestId() == 0 ? "#rAvailable" : (getPlayer().getQuestId() == questid && !canComplete()) ? "#dIn progress" : "#gComplete") + "#k]";
+        String selection = "#k[" +
+                (getPlayer().getQuestId() == 0 ?
+                        "#rAvailable" :
+                        (getPlayer().getQuestId() == questid && !canComplete()) ?
+                                "#dIn progress" :
+                                "#gComplete") +
+                "#k]";
         return intro + selection + " #e" + getPlayer().getCQuest().loadTitle(questid);
     }
 
@@ -314,10 +322,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         final StringBuilder sb = new StringBuilder();
         sb.append(msg);
         sb.append("\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n\r\n");
-        sb.append("#fUI/UIWindow.img/QuestIcon/8/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getExpReward())).append("\r\n");
-        sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ").append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getMesoReward())).append("\r\n");
+        sb.append("#fUI/UIWindow.img/QuestIcon/8/0#  ")
+          .append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getExpReward()))
+          .append("\r\n");
+        sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ")
+          .append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getMesoReward()))
+          .append("\r\n");
         getPlayer().getCQuest().readItemRewards().entrySet().forEach(reward ->
-            sb.append("\r\n#i").append(reward.getKey()).append("#  ").append(MapleCharacter.makeNumberReadable(reward.getValue()))
+            sb.append("\r\n#i")
+              .append(reward.getKey())
+              .append("#  ")
+              .append(MapleCharacter.makeNumberReadable(reward.getValue()))
         );
         return sb.toString();
     }
@@ -327,7 +342,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         int questId = q.getId();
         getPlayer().addStory(story);
         getPlayer().addStoryPoints(storypoints);
-        gainExp(q.getExpReward());
+        double expMulti = (double) getPlayer().getExpEffectiveLevel() / 10.0d;
+        gainExp((int) (q.getExpReward() * expMulti));
         gainMeso(q.getMesoReward());
         q.readItemRewards().entrySet().forEach(reward -> gainItem(reward.getKey(), reward.getValue().shortValue()));
         q.readItemsToCollect()
@@ -336,14 +352,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
         c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
         startCQuest(0);
-        if (completedAllQuests() && (questId / 1000 == 1 || questId / 1000 == 2) && !c.getPlayer().completedAllQuests()) {
+        if (completedAllQuests() &&
+                (questId / 1000 == 1 || questId / 1000 == 2) &&
+                !getPlayer().completedAllQuests() &&
+                itemQuantity(3992027) < 1) {
             MapleInventoryManipulator.addById(c, 3992027, (short) 1);
             getPlayer().dropMessage(6,
-                  "Congratulations on finishing all of the IntransigentQuests! "
-                + "For completing them all, you have been awarded with a single Red Candle. "
-                + "At level 110+ you may use this candle to revive yourself once, and avoid permanent death."
+                  "Congratulations on finishing all of the IntransigentQuests! " +
+                  "For completing them all, you have been awarded with a single Red Candle. " +
+                  "At level 110+ you may use this candle to revive yourself once, and avoid permanent death."
             );
-            c.getPlayer().setCompletedAllQuests(true);
+            getPlayer().setCompletedAllQuests(true);
         }
     }
 
@@ -416,7 +435,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             case 6:
                 return "Quest complete!";
             case 7:
-                return "You haven't completed your task yet! You can look it up by typing #b@questinfo#k in the chat.\r\nDo you want to cancel this quest?";
+                return "You haven't completed your task yet! You can look it up by typing #b@questinfo#k in the chat." +
+                       "\r\nDo you want to cancel this quest?";
         }
         return "";
     }
@@ -518,7 +538,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 itemstats += "M. def: #b" + eqp.getMdef() + "#k\r\n";
             }
             itemstats += "Slots: #b" + eqp.getUpgradeSlots() + "#k";
-        } else if (ii.isArrowForBow(itemid) || ii.isArrowForCrossBow(itemid) || ii.isBullet(itemid) || ii.isThrowingStar(itemid)) {
+        } else if (ii.isArrowForBow(itemid) ||
+                   ii.isArrowForCrossBow(itemid) ||
+                   ii.isBullet(itemid) ||
+                   ii.isThrowingStar(itemid)) {
             itemstats += "Attack: #b" + ii.getWatkForProjectile(itemid) + "#k\r\n";
         } else {
             itemstats += "Description: #b" + ii.getDesc(itemid) + "#k\r\n";
@@ -579,7 +602,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (tier < 1) {
             return 0;
         }
-        return (int) (getTierPoints(tier - 1) + (10 * Math.pow(tier + 1, 2)) * (Math.floor(tier * 1.5) + 3));
+        return (int) (getTierPoints(tier - 1) + (10 * Math.pow(tier + 1, 2)) * (Math.floor(tier * 1.5d) + 3));
     }
     
     public int calculateLevelGroup(int level) {
@@ -662,11 +685,20 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     try {
                         map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(monsterid), monsterspawnpoint);
                     } catch (NullPointerException npe) {
-                        System.out.println("Player " + player.getName() + " booted from Monster Trials; monsterchoice, monsterid: " + monsterchoice + ", " + monsterid);
+                        System.out.println(
+                            "Player " +
+                            player.getName() +
+                            " booted from Monster Trials; monsterchoice, monsterid: " +
+                            monsterchoice +
+                            ", " +
+                            monsterid
+                        );
                         npe.printStackTrace();
                         tMan.schedule(() -> {
                             player.changeMap(returnmapid, 0);
-                            player.dropMessage("There was an error loading your Monster Trial! Tell a GM about this and try again.");
+                            player.dropMessage(
+                                "There was an error loading your Monster Trial! Tell a GM about this and try again."
+                            );
                         }, 500);
                         return true;
                     }
@@ -755,7 +787,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         String r = "";
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE deathcount > ? && gm < 1 ORDER BY deathcount DESC");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM characters WHERE deathcount > ? && gm < 1 ORDER BY deathcount DESC"
+            );
             ps.setInt(1, 0);
             ResultSet rs = ps.executeQuery();
             int i = -1;
@@ -779,14 +813,20 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         String r = "";
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE highestlevelachieved > ? && gm < 1 ORDER BY highestlevelachieved DESC");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM characters " +
+                "WHERE highestlevelachieved > ? && gm < 1 ORDER BY highestlevelachieved DESC"
+            );
             ps.setInt(1, 120);
             ResultSet rs = ps.executeQuery();
             int i = -1;
             while (rs.next()) {
                 i++;
                 if (i < top) {
-                    r += rs.getString("name") + ": #b" + rs.getInt("highestlevelachieved") + "#k\r\n";
+                    r += rs.getString("name") +
+                            ": #b" +
+                            rs.getInt("highestlevelachieved") +
+                            "#k\r\n";
                 } else {
                     break;
                 }
@@ -803,7 +843,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         String r = "";
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE suicides > ? && gm < 1 ORDER BY suicides DESC");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM characters WHERE suicides > ? && gm < 1 ORDER BY suicides DESC"
+            );
             ps.setInt(1, 1);
             ResultSet rs = ps.executeQuery();
             int i = -1;
@@ -827,7 +869,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         String r = "";
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE totalparagonlevel > ? && gm < 1 ORDER BY totalparagonlevel DESC");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM characters WHERE totalparagonlevel > ? && gm < 1 ORDER BY totalparagonlevel DESC"
+            );
             ps.setInt(1, 121);
             ResultSet rs = ps.executeQuery();
             int i = -1;
@@ -886,8 +930,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             if (chr_ == null || !chr_.isOnline()) continue;
             MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr_.getName());
             if (curChar == null || curChar.isDead() || curChar.getMapId() == 100) continue;
-            if ((curChar.getEventInstance() == null && c.getPlayer().getEventInstance() == null) || curChar.getEventInstance() == getPlayer().getEventInstance()) {
-                if ((curChar.getPartyQuest() == null && c.getPlayer().getPartyQuest() == null) || curChar.getPartyQuest() == getPlayer().getPartyQuest()) {
+            if ((curChar.getEventInstance() == null && getPlayer().getEventInstance() == null) ||
+                    curChar.getEventInstance() == getPlayer().getEventInstance()) {
+                if ((curChar.getPartyQuest() == null && getPlayer().getPartyQuest() == null) ||
+                        curChar.getPartyQuest() == getPlayer().getPartyQuest()) {
                     curChar.changeMap(mapId);
                     if (exp > 0) {
                         curChar.gainExp(exp, true, false, true);
@@ -1013,10 +1059,20 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public String searchItem(String item) {
         StringBuilder message = new StringBuilder("Choose the item you want:");
-        getPlayer().getMap().broadcastMessage(getPlayer(), MaplePacketCreator.showJobChange(getPlayer().getId()), false);
+        getPlayer().getMap().broadcastMessage(
+            getPlayer(),
+            MaplePacketCreator.showJobChange(getPlayer().getId()),
+            false
+        );
         for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
             if (itemPair.getRight().toLowerCase().contains(item.toLowerCase())) {
-                message.append("\r\n#L").append(itemPair.getLeft()).append("##i").append(itemPair.getLeft()).append("# - #b").append(itemPair.getRight()).append("#k#l");
+                message.append("\r\n#L")
+                       .append(itemPair.getLeft())
+                       .append("##i")
+                       .append(itemPair.getLeft())
+                       .append("# - #b")
+                       .append(itemPair.getRight())
+                       .append("#k#l");
             }
         }
         if (!message.toString().contains("#L")) {
@@ -1242,7 +1298,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void broadcastMessage(int type, String message) {
         try {
-            getPlayer().getClient().getChannelServer().getWorldInterface().broadcastMessage(null, MaplePacketCreator.serverNotice(type, message).getBytes());
+            getPlayer().getClient()
+                       .getChannelServer()
+                       .getWorldInterface()
+                       .broadcastMessage(null, MaplePacketCreator.serverNotice(type, message).getBytes());
         } catch (RemoteException e) {
             c.getChannelServer().reconnectWorld();
         }
@@ -1251,7 +1310,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void setClan(int set) {
         getPlayer().setClan(set);
         try {
-            getPlayer().getClient().getChannelServer().getWorldInterface().broadcastToClan((getPlayer().getName() + " has entered the clan! Give them a nice welcome.").getBytes(), set);
+            getPlayer().getClient()
+                       .getChannelServer()
+                       .getWorldInterface()
+                       .broadcastToClan(
+                           (getPlayer().getName() + " has entered the clan! Give them a nice welcome.").getBytes(),
+                           set
+                       );
         } catch (RemoteException e) {
             c.getChannelServer().reconnectWorld();
         }
@@ -1347,7 +1412,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 disease = MapleDisease.SEDUCE;
                 break;
             default:
-                System.out.println("Failed to apply debuff of skill ID " + debuff + " and skill level " + level + " to player " + getPlayer().getName() + " from NPC with ID " + this.getNpc() + ". Function: giveDebuff");
+                System.out.println(
+                    "Failed to apply debuff of skill ID " +
+                        debuff +
+                        " and skill level " +
+                        level +
+                        " to player " +
+                        getPlayer().getName() +
+                        " from NPC with ID " +
+                        this.getNpc() +
+                        ". Function: giveDebuff"
+                );
                 return;
         }
         getPlayer().giveDebuff(disease, ms);
@@ -1432,10 +1507,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         for (byte i = start; i <= end; ++i) {
             item = inv.getItem(i);
             if (item != null) {
+                int itemId = item.getItemId();
                 c.getPlayer().addBuyBack(item, item.getQuantity());
-                int realQty = ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId()) ? 1 : item.getQuantity();
-                MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(item.getItemId()), i, (short) 1, false);
-                price = ii.getPrice(item.getItemId());
+                int realQty = ii.isThrowingStar(itemId) || ii.isBullet(itemId) ? 1 : item.getQuantity();
+                MapleInventoryManipulator.removeFromSlot(
+                    c,
+                    MapleItemInformationProvider.getInstance().getInventoryType(itemId),
+                    i,
+                    (short) 1,
+                    false
+                );
+                price = ii.getPrice(itemId);
                 recvMesos = (int) Math.max(Math.ceil(price), 0.0d);
                 if (price >= 0.0d && recvMesos > 0) {
                     c.getPlayer().gainMeso(recvMesos * realQty, true);
@@ -1473,29 +1555,30 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public void clearItems(MapleClient c, int lb1, int lb2, int lb3, int lb4) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
         MapleInventory use = c.getPlayer().getInventory(MapleInventoryType.USE);
         MapleInventory etc = c.getPlayer().getInventory(MapleInventoryType.ETC);
-        Equip tempitem;
-        List<Integer> leavebehind = new ArrayList<>();
-        leavebehind.add(lb1);
-        leavebehind.add(lb2);
-        leavebehind.add(lb3);
-        leavebehind.add(lb4);
+        List<Integer> leaveBehind = Arrays.asList(lb1, lb2, lb3, lb4);
         int i = 0;
-        byte[] equipslots = new byte[equip.list().size()];
-        for (IItem equipitem : equip.list()) {
-            tempitem = (Equip) equipitem;
-            if (!leavebehind.contains((int) equipitem.getPosition())) {
-                if (tempitem.getStr() != 0 || tempitem.getDex() != 0 || tempitem.getInt() != 0 || tempitem.getLuk() != 0 || tempitem.getHp() != 0 || tempitem.getMp() != 0 || tempitem.getWatk() != 0 || tempitem.getMatk() != 0 || tempitem.getWdef() != 0 || tempitem.getMdef() != 0 || tempitem.getAcc() != 0 || tempitem.getAvoid() != 0 || tempitem.getSpeed() != 0 || tempitem.getJump() != 0 || tempitem.getUpgradeSlots() != 0 || (tempitem.getItemId() >= 1902000 && tempitem.getItemId() < 1920000) /* Mounts/saddles */) {
-                    equipslots[i] = equipitem.getPosition();
+        byte[] equipSlots = new byte[equip.list().size()];
+        for (IItem equipItem : equip.list()) {
+            if (!leaveBehind.contains((int) equipItem.getPosition())) {
+                if (!ii.isCash(equipItem.getItemId())) {
+                    equipSlots[i] = equipItem.getPosition();
                     i++;
                 }
             }
         }
         
         for (byte j = 0; j < i; ++j) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(equip.getItem(equipslots[j]).getItemId()), equipslots[j], (short) 1, false);
+            MapleInventoryManipulator.removeFromSlot(
+                c,
+                ii.getInventoryType(equip.getItem(equipSlots[j]).getItemId()),
+                equipSlots[j],
+                (short) 1,
+                false
+            );
         }
         i = 0;
         byte[] useslots = new byte[use.list().size()];
@@ -1504,7 +1587,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             i++;
         }
         for (byte j = 0; j < i; ++j) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(use.getItem(useslots[j]).getItemId()), useslots[j], use.getItem(useslots[j]).getQuantity(), false);
+            MapleInventoryManipulator.removeFromSlot(
+                c,
+                ii.getInventoryType(use.getItem(useslots[j]).getItemId()),
+                useslots[j],
+                use.getItem(useslots[j]).getQuantity(),
+                false
+            );
         }
         i = 0;
         byte[] etcslots = new byte[etc.list().size()];
@@ -1513,7 +1602,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             i++;
         }
         for (byte j = 0; j < i; ++j) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleItemInformationProvider.getInstance().getInventoryType(etc.getItem(etcslots[j]).getItemId()), etcslots[j], etc.getItem(etcslots[j]).getQuantity(), false);
+            MapleInventoryManipulator.removeFromSlot(
+                c,
+                ii.getInventoryType(etc.getItem(etcslots[j]).getItemId()),
+                etcslots[j],
+                etc.getItem(etcslots[j]).getQuantity(),
+                false
+            );
         }
     }
     
@@ -1568,7 +1663,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         map = c.getChannelServer().getMapFactory().getMap(240060200);
         map.spawnMonsterOnGroudBelow(ht, new Point(89, 290));
         map.killMonster(ht, getPlayer(), false);
-        map.broadcastMessage(MaplePacketCreator.serverNotice(0, "As the cave shakes and rattles, here comes Horntail."));
+        map.broadcastMessage(
+            MaplePacketCreator.serverNotice(0, "As the cave shakes and rattles, here comes Horntail.")
+        );
     }
     
     public String listConsume(char initial) {
@@ -1633,7 +1730,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         try {
             List<String> retMobs = new ArrayList<>();
             MapleData data;
-            MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
+            MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(
+                new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
+            );
             data = dataProvider.getData("Mob.img");
             List<Pair<Integer, String>> mobPairList = new ArrayList<>();
             Connection con = DatabaseConnection.getConnection();
@@ -1681,7 +1780,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 if (charid == getPlayer().getId()) {
                     continue;
                 }
-                PreparedStatement invps = con.prepareStatement("SELECT itemid FROM inventoryitems WHERE characterid = ?");
+                PreparedStatement invps = con.prepareStatement(
+                    "SELECT itemid FROM inventoryitems WHERE characterid = ?"
+                );
                 invps.setInt(1, charid);
                 ResultSet invrs = invps.executeQuery();
                 while (invrs.next()) {
@@ -1711,14 +1812,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         currenttime.setTimeInMillis(System.currentTimeMillis());
         if (validtime.compareTo(currenttime) > 0) {
             // Valid time is in the future
-            if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) && validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
+            if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
+                    validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
                 return 0;
             } else {
                 return 1;
             }
         } else if (validtime.compareTo(currenttime) < 0) {
             // Valid time is in the past
-            if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) && validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
+            if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
+                    validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
                 return 0;
             } else {
                 return -1;
@@ -1843,7 +1946,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (tempItem) Table = "temp";
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM hiredmerchant" + Table + " WHERE itemid = ? AND ownerid = ? LIMIT 1");
+            PreparedStatement ps = con.prepareStatement(
+                "DELETE FROM hiredmerchant" +
+                    Table +
+                    " WHERE itemid = ? AND ownerid = ? LIMIT 1"
+            );
             ps.setInt(1, itemId);
             ps.setInt(2, getPlayer().getId());
             ps.executeUpdate();
@@ -1862,7 +1969,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM hiredmerchant" + Table + " WHERE ownerid = ?");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM hiredmerchant" +
+                    Table +
+                    " WHERE ownerid = ?"
+            );
             ps.setInt(1, getPlayer().getId());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -1895,7 +2006,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                         return false;
                     }
                 } else {
-                    Item spItem = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
+                    Item spItem = new Item(
+                        rs.getInt("itemid"),
+                        (byte) 0,
+                        (short) rs.getInt("quantity")
+                    );
                     spItem.setOwner(rs.getString("owner"));
                     MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     MapleInventoryType type = ii.getInventoryType(spItem.getItemId());

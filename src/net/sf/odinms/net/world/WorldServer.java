@@ -14,7 +14,6 @@ import java.rmi.registry.Registry;
 import java.util.Properties;
 
 public class WorldServer {
-
     private static WorldServer instance = null;
     private static final Logger log = LoggerFactory.getLogger(WorldServer.class);
     private int worldId;

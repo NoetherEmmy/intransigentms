@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements InventoryContainer {
-    public static final double MAX_VIEW_RANGE_SQ = 850d * 850d;
+    public static final double MAX_VIEW_RANGE_SQ = 850.0d * 850.0d;
     private static final double READING_PRIZE_PROP = 0.017d;
     private int world;
     private int accountid;
@@ -68,7 +68,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private transient int localmaxhp, localmaxmp;
     private transient int localstr, localdex, localluk, localint;
     private transient int magic, watk;
-    private transient int accuracy;
+    private transient int accuracy, avoidability;
     private transient double speedMod, jumpMod;
     private transient int localmaxbasedamage;
     private int id;
@@ -100,9 +100,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private final MapleInventory[] inventory;
     private final Map<MapleQuest, MapleQuestStatus> quests;
     private final Set<MapleMonster> controlled = new LinkedHashSet<>();
-    private final Set<MapleMapObject> visibleMapObjects = Collections.synchronizedSet(new LinkedHashSet<MapleMapObject>());
+    private final Set<MapleMapObject> visibleMapObjects =
+            Collections.synchronizedSet(
+                new LinkedHashSet<MapleMapObject>()
+            );
     private final Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
-    private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentHashMap<>(8, 0.8f, 2);
+    private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects =
+            new ConcurrentHashMap<>(
+                8,
+                0.8f,
+                2
+            );
     private final HashMap<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
     private final List<MapleDoor> doors = new ArrayList<>();
     private final Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
@@ -458,7 +466,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 equip.setLevel((byte) rs.getInt("level"));
                 ret.getInventory(type).addFromDB(equip);
             } else {
-                Item item = new Item(rs.getInt("itemid"), (byte) rs.getInt("position"), (short) rs.getInt("quantity"), rs.getInt("petid"));
+                Item item = new Item(
+                    rs.getInt("itemid"),
+                    (byte) rs.getInt("position"),
+                    (short) rs.getInt("quantity"),
+                    rs.getInt("petid")
+                );
                 item.setOwner(rs.getString("owner"));
                 ret.getInventory(type).addFromDB(item);
             }
@@ -501,7 +514,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(1, charid);
             rs = ps.executeQuery();
             while (rs.next()) {
-                ret.skills.put(SkillFactory.getSkill(rs.getInt("skillid")), new SkillEntry(rs.getInt("skilllevel"), rs.getInt("masterlevel")));
+                ret.skills.put(
+                    SkillFactory.getSkill(rs.getInt("skillid")),
+                    new SkillEntry(
+                        rs.getInt("skilllevel"),
+                        rs.getInt("masterlevel")
+                    )
+                );
             }
             rs.close();
             ps.close();
@@ -1589,6 +1608,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
         pastLifeExp = Math.max((pastLifeLevel / 2 + pastLifeLevel % 2 + 9) / 10, 1);
+    }
+
+    public int getExpEffectiveLevel() {
+        int pastLifeLevel = 1;
+        for (List<Integer> pastLife : pastlives) {
+            if (pastLife.get(0) > 1) {
+                pastLifeLevel = pastLife.get(0);
+                break;
+            }
+        }
+        return Math.max(pastLifeLevel / 2 + pastLifeLevel % 2 + 9, getLevel());
     }
 
     public void toggleGenderFilter() {
@@ -3535,6 +3565,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return accuracy;
     }
 
+    public int getAvoidability() {
+        return avoidability;
+    }
+
     public int getTotalDex() {
         return localdex;
     }
@@ -4130,6 +4164,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         wdef = 0;
         mdef = 0;
         accuracy = 0;
+        avoidability = 0;
         Integer mapleWarrior = getBuffedValue(MapleBuffStat.MAPLE_WARRIOR);
         double mapleWarriorMultiplier;
         if (mapleWarrior != null && mapleWarrior > 0) {
@@ -4173,6 +4208,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
             mdef += equip.getMdef();
             accuracy += equip.getAcc();
+            avoidability += equip.getAvoid();
         }
         if (mapleWarriorMultiplier > 1.0d) {
             magic += localint * (mapleWarriorMultiplier - 1.0d);
@@ -4183,11 +4219,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         Integer hbhp = getBuffedValue(MapleBuffStat.HYPERBODYHP);
         if (hbhp != null) {
-            localmaxhp += (hbhp.doubleValue() / 100) * localmaxhp;
+            localmaxhp += (int) ((hbhp.doubleValue() / 100.0d) * (double) localmaxhp);
         }
         Integer hbmp = getBuffedValue(MapleBuffStat.HYPERBODYMP);
         if (hbmp != null) {
-            localmaxmp += (hbmp.doubleValue() / 100) * localmaxmp;
+            localmaxmp += (int) ((hbmp.doubleValue() / 100.0d) * (double) localmaxmp);
         }
         localmaxhp = Math.min(30000, localmaxhp);
         localmaxmp = Math.min(30000, localmaxmp);
@@ -4209,6 +4245,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
             }
         }
+
+        ISkill bulletTime = SkillFactory.getSkill(5000000);
+        ISkill nimbleBody = SkillFactory.getSkill(4000000);
+        if (getSkillLevel(bulletTime) > 0) {
+            avoidability += bulletTime.getEffect(getSkillLevel(bulletTime)).getY();
+        }
+        if (getSkillLevel(nimbleBody) > 0) {
+            avoidability += nimbleBody.getEffect(getSkillLevel(nimbleBody)).getY();
+        }
+
+        if (getJob().isA(MapleJob.BRAWLER)) {
+            avoidability += (int) (localdex * 1.5d + localluk * 0.5d);
+        } else if (getJob().isA(MapleJob.GUNSLINGER)) {
+            avoidability += (int) (localdex * 0.125d + localluk * 0.5d);
+        } else {
+            avoidability += (int) (localdex * 0.25d + localluk * 0.5d);
+        }
        
         Integer matkbuff = getBuffedValue(MapleBuffStat.MATK);
         if (matkbuff != null) {
@@ -4228,27 +4281,27 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (jump > 123) {
             jump = 123;
         }
-        speedMod = speed / 100.0;
-        jumpMod = jump / 100.0;
+        speedMod = speed / 100.0d;
+        jumpMod = jump / 100.0d;
         Integer mount = getBuffedValue(MapleBuffStat.MONSTER_RIDING);
         if (mount != null) {
-            jumpMod = 1.23;
+            jumpMod = 1.23d;
             switch (mount) {
                 case 1:
-                    speedMod = 1.5;
+                    speedMod = 1.5d;
                     break;
                 case 2:
-                    speedMod = 1.7;
+                    speedMod = 1.7d;
                     break;
                 case 3:
-                    speedMod = 1.8;
+                    speedMod = 1.8d;
                     break;
                 case 5:
-                    speedMod = 1.0;
-                    jumpMod = 1.0;
+                    speedMod = 1.0d;
+                    jumpMod = 1.0d;
                     break;
                 default:
-                    speedMod = 2.0;
+                    speedMod = 2.0d;
             }
         }
         //
@@ -4263,6 +4316,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         Integer accbuff = getBuffedValue(MapleBuffStat.ACC);
         if (accbuff != null) {
             accuracy += accbuff;
+        }
+
+        Integer avoidbuff = getBuffedValue(MapleBuffStat.AVOID);
+        if (avoidbuff != null) {
+            avoidability += avoidbuff;
         }
 
         Integer wdefbuff = getBuffedValue(MapleBuffStat.WDEF);

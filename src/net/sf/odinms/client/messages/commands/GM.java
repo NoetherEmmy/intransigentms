@@ -2170,6 +2170,14 @@ public class GM implements Command {
                     repeatTime, 0);
                 tMan.schedule(() -> showDpmTask.cancel(false), duration);
                 break;
+            case "!toggletrackmissgodmode":
+                ChannelServer.getAllInstances().forEach(cs -> cs.setTrackMissGodmode(!cs.getTrackMissGodmode()));
+                player.dropMessage(
+                    "Miss godmode is now " +
+                        (c.getChannelServer().getTrackMissGodmode() ? "" : "no longer ") +
+                        "being tracked."
+                );
+                break;
         }
     }
 
@@ -2316,7 +2324,8 @@ public class GM implements Command {
             new CommandDefinition("clearpqs", 3),
             new CommandDefinition("registerpqmi", 3),
             new CommandDefinition("toggledpm", 3),
-            new CommandDefinition("showdpm", 3)
+            new CommandDefinition("showdpm", 3),
+            new CommandDefinition("toggletrackmissgodmode", 3)
         };
     }
 }

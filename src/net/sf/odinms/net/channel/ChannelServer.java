@@ -95,9 +95,27 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private final Collection<FakeCharacter> clones = new ArrayList<>();
     private int levelCap;
     private boolean multiLevel;
+    private boolean trackMissGodmode = true;
 
     private ChannelServer(String key) {
-        mapFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")));
+        mapFactory =
+                new MapleMapFactory(
+                    MapleDataProviderFactory.getDataProvider(
+                        new File(
+                        System.getProperty(
+                                "net.sf.odinms.wzpath"
+                            ) +
+                                "/Map.wz"
+                        )
+                    ), MapleDataProviderFactory.getDataProvider(
+                        new File(
+                            System.getProperty(
+                                "net.sf.odinms.wzpath"
+                            ) +
+                                "/String.wz"
+                        )
+                    )
+                );
         this.key = key;
     }
 
@@ -545,6 +563,14 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
 
     public boolean allowMoreThanOne() {
         return moreThanOne;
+    }
+
+    public boolean getTrackMissGodmode() {
+        return trackMissGodmode;
+    }
+
+    public void setTrackMissGodmode(boolean tmg) {
+        trackMissGodmode = tmg;
     }
 
     public MapleGuild getGuild(MapleGuildCharacter mgc) {

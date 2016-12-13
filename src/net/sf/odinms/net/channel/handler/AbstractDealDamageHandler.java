@@ -183,9 +183,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 switch (attack.skill) {
                     case 1221011: // Sanctuary
                         if (attack.isHH) {
-                            // TODO: Min damage still needs calculated. Using -20% as minimum damage in the meantime... seems to work.
+                            // TODO: Min damage still needs calculation. Using -20% as minimum damage in the meantime... seems to work.
                             int HHDmg = player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100);
-                            HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * .80) + HHDmg * .80));
+                            HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * 0.80d) + HHDmg * 0.80d));
                             map.damageMonster(player, monster, HHDmg);
                         }
                         break;
@@ -193,11 +193,11 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
                         int upperRange = player.getCurrentMaxBaseDamage();
                         int lowerRange = player.calculateMinBaseDamage(player);
-                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 45.0d);
+                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 100.0d);
                         break;
                     case 4101005: // Drain
                     case 5111004: // Energy drain
-                        int gainhp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0);
+                        int gainhp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0d);
                         gainhp = Math.min(monster.getMaxHp(), Math.min(gainhp, player.getMaxHp() / 2));
                         player.addHP(gainhp);
                         break;

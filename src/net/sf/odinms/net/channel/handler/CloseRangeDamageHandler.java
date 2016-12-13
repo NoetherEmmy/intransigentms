@@ -59,8 +59,9 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             weapon = MapleItemInformationProvider.getInstance().getWeaponType(weaponItem.getItemId());
         }
         if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
-            if (player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null && player.getSkillLevel(SkillFactory.getSkill(2321002)) > 0) {
-                double mrmultiplier = 1.0d + (double) player.getSkillLevel(SkillFactory.getSkill(2321002)) * 0.05d;
+            int mrSkillLevel = player.getSkillLevel(SkillFactory.getSkill(2321002));
+            if (player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null && mrSkillLevel > 0) {
+                double mrmultiplier = 2.0d + (double) mrSkillLevel * 0.05d;
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     List<Integer> additionaldmg = new ArrayList<>();
