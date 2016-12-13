@@ -226,10 +226,10 @@ public class AbstractPlayerInteraction {
     }
     //PQ gain EXP: Multiplied by channel rate here to allow global values to be input direct into NPCs
 
-    public void givePartyExp(int amount, List<MapleCharacter> party) {
-        for (MapleCharacter chr : party) {
-            chr.gainExp(amount * c.getChannelServer().getExpRate(), true, true);
-        }
+    public void givePartyExp(final int amount, List<MapleCharacter> party) {
+        party.forEach(chr ->
+            chr.gainExp(amount * c.getChannelServer().getExpRate() * chr.getAbsoluteXp(), true, true)
+        );
     }
     //remove all items of type from party
     //combination of haveItem and gainItem
