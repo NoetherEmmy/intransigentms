@@ -298,7 +298,7 @@ public class AbstractPlayerInteraction {
     }
 
     public void startMapEffect(String msg) {
-        getPlayer().getMap().startMapEffect(msg, 5120008); // might work ?
+        getPlayer().getMap().startMapEffect(msg, 5120008); // Might work?
     }
 
     /**

@@ -370,7 +370,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         final MapleCQuests q = getPlayer().getCQuest();
         getPlayer().addOffenseStory(offensestory);
         getPlayer().addBuffStory(buffstory);
-        gainExp(q.getExpReward());
+        double expMulti = (double) getPlayer().getExpEffectiveLevel() / 10.0d;
+        gainExp((int) (q.getExpReward() * expMulti));
         gainMeso(q.getMesoReward());
         q.readItemRewards().entrySet().forEach(reward -> gainItem(reward.getKey(), reward.getValue().shortValue()));
         q.readItemsToCollect()
