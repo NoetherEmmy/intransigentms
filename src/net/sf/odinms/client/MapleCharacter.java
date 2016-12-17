@@ -232,6 +232,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     private final Map<IItem, Short> buyBacks = new LinkedHashMap<>();
     private boolean showDpm = false;
+    private boolean showSnipeDmg = false;
+    private int preEventMap = 0;
 
     public MapleCharacter() {
         setStance(0);
@@ -612,6 +614,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.lastkillonmap = (long) 0;
         ret.unclaimeditem = 0;
         ret.unclaimeditemquantity = (short) 0;
+        ret.preEventMap = 0;
         ret.recalcLocalStats();
         ret.silentEnforceMaxHpMp();
         
@@ -678,6 +681,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.scpqflag = false;
         ret.overflowExp = (long) 0;
         ret.questCompletion = 0;
+        ret.preEventMap = 0;
         ret.setDefaultKeyMap();
         ret.recalcLocalStats();
         return ret;
@@ -718,6 +722,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             } else {
                 if (map.getForcedReturnId() != 999999999) {
                     ps.setInt(20, map.getForcedReturnId());
+                } else if (preEventMap > 0) {
+                    ps.setInt(20, preEventMap);
                 } else {
                     ps.setInt(20, map.getId());
                 }
@@ -1746,6 +1752,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             queststatus++;
         }
     }
+
+    public void setPreEventMap(int pem) {
+        preEventMap = pem;
+    }
+
+    public int getPreEventMap() {
+        return preEventMap;
+    }
     
     public void sendHint(String ms) {
         sendHint(ms, 275, 10);
@@ -2410,6 +2424,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
+    public boolean showSnipeDmg() {
+        return showSnipeDmg;
+    }
+
+    public void toggleShowSnipeDmg() {
+        showSnipeDmg = !showSnipeDmg;
+    }
+
     public MapleMap getMap() {
         return map;
     }
@@ -2725,7 +2747,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     private void changeMapInternal(final MapleMap to, final Point pos, MaplePacket warpPacket) {
-        if (getCheatTracker().Spam(2000, 5) || to.getId() == 40000) { // || to.getId() == 50000
+        if (getCheatTracker().Spam(2000, 5)) {
             client.getSession().write(MaplePacketCreator.enableActions());
         } else {
             if (getPartyQuest() != null && !to.isPQMap()) {
@@ -3943,7 +3965,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void tempban(String reason, Calendar duration, int greason) {
         tempban(reason, duration, greason, client.getAccID());
-        client.getSession().write(MaplePacketCreator.sendGMPolice(greason, reason, (int) (duration.getTimeInMillis() / 1000))); //put duration as seconds
+        client.getSession().write(MaplePacketCreator.sendGMPolice(greason, reason, (int) (duration.getTimeInMillis() / 1000))); // Put duration as seconds
         TimerManager.getInstance().schedule(() -> client.getSession().close(), 10000);
     }
 

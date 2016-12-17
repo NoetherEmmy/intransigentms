@@ -12,7 +12,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import java.awt.*;
 
 public class MapleGenericPortal implements MaplePortal {
-
     private String name;
     private String target;
     private Point position;
@@ -107,7 +106,7 @@ public class MapleGenericPortal implements MaplePortal {
 
         boolean changed = false;
         if (getScriptName() != null) {
-            if (!FourthJobQuestsPortalHandler.handlePortal(getScriptName(), c.getPlayer())) {
+            if (!FourthJobQuestsPortalHandler.handlePortal(getScriptName(), player)) {
                 changed = PortalScriptManager.getInstance().executePortalScript(this, c);
             }
         } else if (getTargetMapId() != 999999999) {

@@ -189,6 +189,10 @@ public class MapleMap {
         dropsDisabled = !dropsDisabled;
     }
 
+    public void setDropsDisabled(boolean dd) {
+        dropsDisabled = dd;
+    }
+
     public int getId() {
         return mapid;
     }
@@ -314,10 +318,10 @@ public class MapleMap {
     }
 
     private void dropFromMonster(MapleCharacter dropOwner, MapleMonster monster) {
-        boolean partyevent = true;
         if (dropsDisabled || monster.dropsDisabled()) {
             return;
         }
+        boolean partyevent = true;
         int maxDrops;
         final boolean explosive = monster.isExplosive();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -333,22 +337,21 @@ public class MapleMap {
         }
         //
         if (dropOwner != null && dropOwner.getEventInstance() == null && dropOwner.getPartyQuest() == null) {
-            int chance = (int) (Math.random() * 150); // 1/150 droprate
+            int chance = (int) (Math.random() * 150.0d); // 1/150 droprate
             if (chance < 1) {
                 toDrop.add(4001126); // Maple leaf
             }
-            chance = (int) (Math.random() * 150); // 1/150 droprate
+            chance = (int) (Math.random() * 150.0d); // 1/150 droprate
             if (chance < 1) {
                 toDrop.add(5072000); // Super megaphone
             }
             if (dropOwner.getMapId() == 2000) { // Pirate 2nd job adv. map
-                chance = (int) (Math.random() * 3); // 1/3 droprate
+                chance = (int) (Math.random() * 3.0d); // 1/3 droprate
                 if (chance < 1) {
                     toDrop.add(4031013); // Dark marble
                 }
-            }
-            if (dropOwner.getQuest(MapleQuest.getInstance(7104 /* A Piece of Crack */)).getStatus() == MapleQuestStatus.Status.STARTED && (monster.getId() == 8141100 || monster.getId() == 8143000)) {
-                chance = (int) (Math.random() * 180); // 1/180 droprate
+            } else if (dropOwner.getQuest(MapleQuest.getInstance(7104 /* A Piece of Crack */)).getStatus() == MapleQuestStatus.Status.STARTED && (monster.getId() == 8141100 || monster.getId() == 8143000)) {
+                chance = (int) (Math.random() * 180.0d); // 1/180 droprate
                 switch (chance) {
                     case 1:
                         toDrop.add(4031176); // Piece of Cracked Dimension A
@@ -362,9 +365,8 @@ public class MapleMap {
                     default:
                         break;
                 }
-            }
-            if (dropOwner.getMapId() == 4000 && monster.getId() == 9300101) { // Taming Hog map
-                if (Math.random() < 0.5) {
+            } else if (dropOwner.getMapId() == 4000 && monster.getId() == 9300101) { // Taming Hog map
+                if (Math.random() < 0.5d) {
                     toDrop.add(4031507);
                 } else {
                     toDrop.add(4031508);
@@ -379,7 +381,7 @@ public class MapleMap {
                 }
             }
             if (partyevent && dropOwner.getParty() != null) {
-                chance = (int) (Math.random() * 112); // 1/112 droprate
+                chance = (int) (Math.random() * 112.0d); // 1/112 droprate
                 if (chance == 61) { // Arbitrary
                     switch (Math.min(monster.dropShareCount.get(), 6)) {
                         case 1:
@@ -407,7 +409,7 @@ public class MapleMap {
                 }
             }
             if (monster.getId() == 9500196) {
-                chance = (int) (Math.random() * 5); // 1/5 droprate
+                chance = (int) (Math.random() * 5.0d); // 1/5 droprate
                 if (chance == 2) { // Arbitrary
                     toDrop.add(4031203);
                 }
@@ -507,15 +509,15 @@ public class MapleMap {
                         final int cc = cserv.getMesoRate() + 25;
                         final MapleMonster dropMonster = monster;
                         final Random r = new Random();
-                        double mesoDecrease = Math.pow(0.93, monster.getExp() / 300.0);
-                        if (mesoDecrease > 1.0) {
-                            mesoDecrease = 1.0;
-                        } else if (mesoDecrease < 0.001) {
-                            mesoDecrease = 0.005;
+                        double mesoDecrease = Math.pow(0.93d, (double) monster.getExp() / 300.0d);
+                        if (mesoDecrease > 1.0d) {
+                            mesoDecrease = 1.0d;
+                        } else if (mesoDecrease < 0.001d) {
+                            mesoDecrease = 0.005d;
                         }
-                        int tempmeso = Math.min(30000, (int) (mesoDecrease * (monster.getExp()) * (1.0 + r.nextInt(20)) / 10.0));
+                        int tempmeso = Math.min(30000, (int) (mesoDecrease * (double) monster.getExp() * (1.0d + (double) r.nextInt(20)) / 10.0d));
                         if (dropOwner != null && dropOwner.getBuffedValue(MapleBuffStat.MESOUP) != null) {
-                            tempmeso = (int) (tempmeso * dropOwner.getBuffedValue(MapleBuffStat.MESOUP).doubleValue() / 100.0);
+                            tempmeso = (int) ((double) tempmeso * dropOwner.getBuffedValue(MapleBuffStat.MESOUP).doubleValue() / 100.0d);
                         }
                         final int dmesos = tempmeso;
                         if (dmesos > 0) { 
@@ -579,10 +581,10 @@ public class MapleMap {
                         idrop = new Item(drop, (byte) 0, (short) 1);
                         if ((ii.isArrowForBow(drop) || ii.isArrowForCrossBow(drop)) && dropOwner != null) {
                             if (dropOwner.getJob().getId() / 100 == 3) {
-                                idrop.setQuantity((short) (1 + 100 * Math.random()));
+                                idrop.setQuantity((short) (1.0d + 100.0d * Math.random()));
                             }
                         } else if (ii.isThrowingStar(drop) || ii.isBullet(drop)) {
-                            idrop.setQuantity((short) (1));
+                            idrop.setQuantity((short) 1);
                         }
                     }
                     final MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, monster, dropOwner);
@@ -878,7 +880,33 @@ public class MapleMap {
     }
 
     public List<MapleMapObject> getAllPlayers() {
-        return getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.PLAYER));
+        return getMapObjectsInRange(
+            new Point(0, 0),
+            Double.POSITIVE_INFINITY,
+            Collections.singletonList(MapleMapObjectType.PLAYER)
+        );
+    }
+
+    public List<MapleMonster> getAllMonsters() {
+        return getMapObjectsInRange(
+            new Point(0, 0),
+            Double.POSITIVE_INFINITY,
+            Collections.singletonList(MapleMapObjectType.MONSTER)
+        )
+        .stream()
+        .map(mmo -> (MapleMonster) mmo)
+        .collect(Collectors.toList());
+    }
+
+    public List<MapleReactor> getAllReactors() {
+        return getMapObjectsInRange(
+            new Point(0, 0),
+            Double.POSITIVE_INFINITY,
+            Collections.singletonList(MapleMapObjectType.REACTOR)
+        )
+        .stream()
+        .map(mmo -> (MapleReactor) mmo)
+        .collect(Collectors.toList());
     }
 
     public void destroyReactor(int oid) {
@@ -892,6 +920,17 @@ public class MapleMap {
             if (reactor.getDelay() > 0) {
                 tMan.schedule(() -> respawnReactor(reactor), reactor.getDelay());
             }
+        }
+    }
+
+    public void removeReactor(int oid) {
+        synchronized (mapobjects) {
+            final MapleReactor reactor = getReactorByOid(oid);
+            TimerManager tMan = TimerManager.getInstance();
+            broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
+            reactor.setAlive(false);
+            removeMapObject(reactor);
+            reactor.setTimerActive(false);
         }
     }
 
@@ -1089,7 +1128,7 @@ public class MapleMap {
                             false,
                             false,
                             3
-                        ), new Random().nextInt(4500 + 500)
+                        ), new Random().nextInt(5000)
                     );
                 } else if (monster.getId() == 9500196) {
                     monster.startOtherMobHitChecking(() -> {
@@ -1720,6 +1759,22 @@ public class MapleMap {
         return ret;
     }
 
+    public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, MapleMapObjectType type) {
+        List<MapleMapObject> ret = new ArrayList<>();
+        synchronized (mapobjects) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject l = mmoiter.next();
+                if (type.equals(l.getType())) {
+                    if (from.distanceSq(l.getPosition()) <= rangeSq) {
+                        ret.add(l);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
     public List<MapleMapObject> getItemsInRange(Point from, double rangeSq) {
         List<MapleMapObject> ret = new ArrayList<>();
         synchronized (mapobjects) {
@@ -1743,6 +1798,22 @@ public class MapleMap {
             while (mmoiter.hasNext()) {
                 MapleMapObject l = mmoiter.next();
                 if (types.contains(l.getType())) {
+                    if (box.contains(l.getPosition())) {
+                        ret.add(l);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    public List<MapleMapObject> getMapObjectsInRect(Rectangle box, MapleMapObjectType type) {
+        List<MapleMapObject> ret = new ArrayList<>();
+        synchronized (mapobjects) {
+            Iterator<MapleMapObject> mmoiter = mapobjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject l = mmoiter.next();
+                if (type.equals(l.getType())) {
                     if (box.contains(l.getPosition())) {
                         ret.add(l);
                     }
@@ -2068,11 +2139,13 @@ public class MapleMap {
         private final MapleMapItem mapitem;
         private final MapleReactor reactor;
         private final MapleClient c;
+
         public ActivateItemReactor(MapleMapItem mapitem, MapleReactor reactor, MapleClient c) {
             this.mapitem = mapitem;
             this.reactor = reactor;
             this.c = c;
         }
+
         @Override
         public void run() {
             if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId())) {
@@ -2103,8 +2176,8 @@ public class MapleMap {
             if (playersOnMap == 0) return;
             
             int ispawnedMonstersOnMap = spawnedMonstersOnMap.get();
-            int getMaxSpawn = (int) (getMaxRegularSpawn() * 1.6);
-            int numShouldSpawn = (int) Math.ceil(Math.random() * (playersOnMap / 1.5 + (getMaxSpawn - ispawnedMonstersOnMap)));
+            int getMaxSpawn = (int) (getMaxRegularSpawn() * 1.6d);
+            int numShouldSpawn = (int) Math.ceil(Math.random() * (playersOnMap / 1.5d + (getMaxSpawn - ispawnedMonstersOnMap)));
             // int numShouldSpawn = (int) Math.round(Math.random() * (2 + playersOnMap / 1.5 + (getMaxRegularSpawn() - ispawnedMonstersOnMap) / 4.0));
             if (numShouldSpawn + ispawnedMonstersOnMap > getMaxSpawn) {
                 numShouldSpawn = getMaxSpawn - ispawnedMonstersOnMap;
@@ -2341,13 +2414,12 @@ public class MapleMap {
     }
 
     public int playerCount() {
-        List<MapleMapObject> players =
-                getMapObjectsInRange(
-                        new Point(0, 0),
-                        Double.POSITIVE_INFINITY,
-                        Collections.singletonList(MapleMapObjectType.PLAYER)
-                );
-        return players.size();
+        return
+            getMapObjectsInRange(
+                new Point(0, 0),
+                Double.POSITIVE_INFINITY,
+                Collections.singletonList(MapleMapObjectType.PLAYER)
+            ).size();
     }
 
     public int mobCount() {
@@ -2356,6 +2428,15 @@ public class MapleMap {
                 new Point(0, 0),
                 Double.POSITIVE_INFINITY,
                 Collections.singletonList(MapleMapObjectType.MONSTER)
+            ).size();
+    }
+
+    public int reactorCount() {
+        return
+            getMapObjectsInRange(
+                new Point(0, 0),
+                Double.POSITIVE_INFINITY,
+                Collections.singletonList(MapleMapObjectType.REACTOR)
             ).size();
     }
 

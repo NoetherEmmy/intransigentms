@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class QuestScriptManager extends AbstractScriptManager {
-
     private final Map<MapleClient, QuestActionManager> qms = new HashMap<>();
     private final Map<MapleClient, QuestScript> scripts = new HashMap<>();
     private static final QuestScriptManager instance = new QuestScriptManager();
@@ -34,7 +33,7 @@ public class QuestScriptManager extends AbstractScriptManager {
             scripts.put(c, qs);
             qs.start((byte)1, (byte)0, 0);
         } catch (Exception e) {
-            log.error("Error executing Quest script. (" + quest + ")", e);
+            log.error("Error executing quest script. (" + quest + ")", e);
             dispose(c);
         }
     }
@@ -45,7 +44,7 @@ public class QuestScriptManager extends AbstractScriptManager {
             try {
                 qs.start(mode, type, selection);
             } catch (Exception e) {
-                log.error("Error executing Quest script. (" + c.getQM().getQuest() + ")", e);
+                log.error("Error executing quest script. (" + c.getQM().getQuest() + ")", e);
                 dispose(c);
             }
         }
@@ -68,7 +67,7 @@ public class QuestScriptManager extends AbstractScriptManager {
             scripts.put(c, qs);
             qs.end((byte) 1, (byte) 0, 0);
         } catch (Exception e) {
-            log.error("Error executing Quest script. (" + quest + ")", e);
+            log.error("Error executing quest script. (" + quest + ")", e);
             dispose(c);
         }
     }
@@ -79,7 +78,7 @@ public class QuestScriptManager extends AbstractScriptManager {
             try {
                 qs.end(mode, type, selection);
             } catch (Exception e) {
-                log.error("Error executing Quest script. (" + c.getQM().getQuest() + ")", e);
+                log.error("Error executing quest script. (" + c.getQM().getQuest() + ")", e);
                 dispose(c);
             }
         }

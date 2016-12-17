@@ -45,7 +45,7 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
             } else {
                 if (c.getPlayer().getMapId() != 910000000) {
                     c.getPlayer().saveLocation(SavedLocationType.FREE_MARKET);
-                    c.getPlayer().changeMap(c.getChannelServer().getMapFactory().getMap(910000000), c.getChannelServer().getMapFactory().getMap(910000000).getPortal("out00"));
+                    c.getPlayer().changeMap(910000000);
                 }
             }
             c.getSession().write(MaplePacketCreator.enableActions());

@@ -297,12 +297,15 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (getId() == 9500196) { // Ghost
             exp = 0;
         }
-        if (attacker.getLevel() <= this.getLevel() + 20) {
+        if (this.getLevel() >= 100 || attacker.getLevel() <= this.getLevel() + 20) {
             this.dropShareCount.incrementAndGet();
         }
         if (highestDamage) {
             if (eventInstance != null) {
                 eventInstance.monsterKilled(attacker, this);
+            }
+            if (attacker.getPartyQuest() != null) {
+                attacker.getPartyQuest().getMapInstance(getMap()).invokeMethod("mobKilled", this, attacker);
             }
             highestDamageChar = attacker;
         }
@@ -348,9 +351,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 attacker.gainExp((int) personalExp, true, false, highestDamage, false);
             }
             attacker.mobKilled(this.getId());
-            if (attacker.getPartyQuest() != null) {
-                attacker.getPartyQuest().getMapInstance(getMap()).invokeMethod("mobKilled", this, attacker);
-            }
         }
     }
 

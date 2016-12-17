@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class NPCScriptManager extends AbstractScriptManager {
-    
     private final Map<MapleClient, NPCConversationManager> cms = new HashMap<>();
     private final Map<MapleClient, NPCScript> scripts = new HashMap<>();
     private static final NPCScriptManager instance = new NPCScriptManager();

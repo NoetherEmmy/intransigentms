@@ -97,13 +97,13 @@ public class Admins implements Command {
                 player.getMap().spawnItemDrop(player, player, toDrop, player.getPosition(), true, true);
                 break;
             }
-            case "!startProfiling": {
+            case "!startprofiling": {
                 CPUSampler sampler = CPUSampler.getInstance();
                 sampler.addIncluded("net.sf.odinms");
                 sampler.start();
                 break;
             }
-            case "!stopProfiling": {
+            case "!stopprofiling": {
                 CPUSampler sampler = CPUSampler.getInstance();
                 try {
                     String filename = "odinprofile.txt";
@@ -221,7 +221,7 @@ public class Admins implements Command {
                     victim.updateSingleStat(MapleStat.HP, 0);
                     victim.updateSingleStat(MapleStat.MP, 0);
                 } else {
-                    mc.dropMessage("Player not found");
+                    mc.dropMessage("Player not found.");
                 }
                 break;
             }
@@ -522,10 +522,10 @@ public class Admins implements Command {
                     mc.dropMessage("RemoteException occurred while attempting to reload guilds.");
                 }
                 break;
-            case "!clearPortalScripts":
+            case "!clearportalscripts":
                 PortalScriptManager.getInstance().clearScripts();
                 break;
-            case "!clearReactorDrops":
+            case "!clearreactordrops":
                 ReactorScriptManager.getInstance().clearDrops();
                 break;
             case "!monsterdebug": {

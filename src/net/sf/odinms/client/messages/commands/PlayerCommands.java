@@ -14,6 +14,7 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MaplePortal;
+import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.life.MapleLifeFactory;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.maps.MapleMap;
@@ -35,6 +36,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PlayerCommands implements Command {
@@ -46,6 +48,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("================================================================");
             mc.dropMessage("               " + c.getChannelServer().getServerName() + " Commands");
             mc.dropMessage("================================================================");
+            mc.dropMessage("@snipedisplay - | - Toggles displaying the damage you do every time you use the Snipe skill.");
             mc.dropMessage("@checkstat - | - Displays your stats.");
             mc.dropMessage("@save - | - Saves your progress.");
             mc.dropMessage("@expfix - | - Fixes your negative experience.");
@@ -60,6 +63,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@afk <playername> - | - Shows how long a person has been AFK.");
             mc.dropMessage("@onlinetime - | - Shows how long a person has been online.");
             mc.dropMessage("@online - | - Lists all online players.");
+            mc.dropMessage("@event - | - Teleports you to the currectly active event, if there is one.");
             mc.dropMessage("@monstertrialtime - | - Shows how much longer you must wait to enter another Monster Trial.");
             mc.dropMessage("@mapleadmin - | - Opens up chat with Maple Adminstrator NPC.");
             mc.dropMessage("@monsterlevels - | - Displays levels and relative XP multipliers for all monsters on the map.");
@@ -729,32 +733,12 @@ public class PlayerCommands implements Command {
                 }
                 if (!mobList.isEmpty()) {
                     if (sortbylevel) {
-                        mobList.sort((o1, o2) -> {
-                            int comparison = Integer.valueOf(o1.getLevel()).compareTo(o2.getLevel());
-                            if (comparison < 0) {
-                                return -1;
-                            } else {
-                                if (comparison > 0) {
-                                    return 1;
-                                } else {
-                                    return 0;
-                                }
-                            }
-                        });
+                        mobList.sort(Comparator.comparingInt(MapleMonster::getLevel));
                     } else {
                         mobList.sort((o1, o2) -> {
                             double xphpratio1 = ((double) o1.getExp() * player.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
                             double xphpratio2 = ((double) o2.getExp() * player.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
-                            int comparison = Double.valueOf(xphpratio1).compareTo(xphpratio2);
-                            if (comparison < 0) {
-                                return -1;
-                            } else {
-                                if (comparison > 0) {
-                                    return 1;
-                                } else {
-                                    return 0;
-                                }
-                            }
+                            return Double.valueOf(xphpratio1).compareTo(xphpratio2);
                         });
                     }
                     
@@ -1007,6 +991,22 @@ public class PlayerCommands implements Command {
             player.voteUpdate();
         } else if (splitted[0].equals("@buyback")) {
             NPCScriptManager.getInstance().start(c, 9201097);
+        } else if (splitted[0].equals("@snipedisplay")) {
+            player.toggleShowSnipeDmg();
+            mc.dropMessage("Snipe damage display is now " + (player.showSnipeDmg() ? "on" : "off") + ".");
+        } else if (splitted[0].equals("@event")) {
+            final int eventMapId = c.getChannelServer().getEventMap();
+            if (eventMapId == 0) {
+                mc.dropMessage("It doesn't look like there's an event going on in this channel at the moment. Maybe you're in the wrong channel?");
+            } else {
+                mc.dropMessage("Going to the event, please wait...");
+                TimerManager.getInstance().schedule(() -> {
+                    if (player.isAlive() && player.getMapId() != 100) {
+                        player.setPreEventMap(player.getMapId());
+                        player.changeMap(eventMapId);
+                    }
+                }, 4 * 1000);
+            }
         }
     }
 
@@ -1102,7 +1102,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("overflowexp", 0),
             new CommandDefinition("vskills", 0),
             new CommandDefinition("voteupdate", 0),
-            new CommandDefinition("buyback", 0)
+            new CommandDefinition("buyback", 0),
+            new CommandDefinition("snipedisplay", 0)
         };
     }
 }

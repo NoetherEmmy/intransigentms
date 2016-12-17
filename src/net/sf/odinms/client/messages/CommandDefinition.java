@@ -1,9 +1,8 @@
 package net.sf.odinms.client.messages;
 
 public class CommandDefinition {
-
     private final String command;
-    private final int requiredLevel; // GM level.
+    private final int requiredLevel; // GM level
 
     public CommandDefinition(String command, int requiredLevel) {
         this.command = command;

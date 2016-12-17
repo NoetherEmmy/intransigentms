@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public class MapleKeyBinding {
-
     private final int type;
     private final int action;
 

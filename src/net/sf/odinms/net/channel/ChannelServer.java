@@ -96,6 +96,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private int levelCap;
     private boolean multiLevel;
     private boolean trackMissGodmode = true;
+    private int eventMap = 0;
 
     private ChannelServer(String key) {
         mapFactory =
@@ -366,6 +367,14 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         for (MapleCharacter chr : players.getAllCharacters()) {
             chr.getClient().getSession().write(data);
         }
+    }
+
+    public void setEventMap(int eventMapId) {
+        eventMap = eventMapId;
+    }
+
+    public int getEventMap() {
+        return eventMap;
     }
 
     @Override
