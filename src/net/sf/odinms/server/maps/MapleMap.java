@@ -683,6 +683,14 @@ public class MapleMap {
         dynamicSpawnWorkers.clear();
     }
 
+    public int dynamicSpawnWorkerCount() {
+        return dynamicSpawnWorkers.size();
+    }
+
+    public List<DynamicSpawnWorker> readDynamicSpawnWorkers() {
+        return new ArrayList<>(dynamicSpawnWorkers);
+    }
+
     public boolean damageMonster(MapleCharacter chr, final MapleMonster monster, int damage) {
         boolean withDrops = true;
         if (monster.getId() == 9500196) { // Ghost
@@ -909,6 +917,30 @@ public class MapleMap {
         .collect(Collectors.toList());
     }
 
+    public List<MapleNPC> getAllNPCs() {
+        return getMapObjectsInRange(
+            new Point(0, 0),
+            Double.POSITIVE_INFINITY,
+            Collections.singletonList(MapleMapObjectType.NPC)
+        )
+        .stream()
+        .map(mmo -> (MapleNPC) mmo)
+        .collect(Collectors.toList());
+    }
+
+    public MapleNPC getNPCById(int npcId) {
+        return getMapObjectsInRange(
+            new Point(0, 0),
+            Double.POSITIVE_INFINITY,
+            Collections.singletonList(MapleMapObjectType.NPC)
+        )
+        .stream()
+        .map(mmo -> (MapleNPC) mmo)
+                .filter(npc -> npc.getId() == npcId)
+                .findAny()
+                .orElse(null);
+    }
+
     public void destroyReactor(int oid) {
         synchronized (mapobjects) {
             final MapleReactor reactor = getReactorByOid(oid);
@@ -926,7 +958,6 @@ public class MapleMap {
     public void removeReactor(int oid) {
         synchronized (mapobjects) {
             final MapleReactor reactor = getReactorByOid(oid);
-            TimerManager tMan = TimerManager.getInstance();
             broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
             reactor.setAlive(false);
             removeMapObject(reactor);
@@ -2313,7 +2344,7 @@ public class MapleMap {
                 }
 
                 if (duration > 0) {
-                    cancelTask = tMan.schedule(this::dispose, duration);
+                    cancelTask = tMan.schedule(() -> MapleMap.this.disposeDynamicSpawnWorker(this), duration);
                 }
             }
         }
@@ -2350,8 +2381,8 @@ public class MapleMap {
         }
         
         public void dispose() {
-            if (cancelTask != null) cancelTask.cancel(false);
             if (spawnTask != null) spawnTask.cancel(false);
+            if (cancelTask != null) cancelTask.cancel(false);
             cancelTask = null;
             spawnTask = null;
         }

@@ -1601,6 +1601,10 @@ public class MapleStatEffect implements Serializable {
     public boolean isPirateMorph() {
         return skill && (sourceid == 5111005 || sourceid == 5121003);
     }
+
+    public boolean removeStatup(final MapleBuffStat mbs) {
+        return statups.removeIf(s -> s.getLeft().equals(mbs));
+    }
     
     //
     public boolean isRecovery() {

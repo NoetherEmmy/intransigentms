@@ -390,6 +390,9 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                             break;
                         }
+                        if (player.getPartyQuest() != null) {
+                            player.leaveParty();
+                        }
                         player.changeMap(mapId);
                     } else {
                         String name = slea.readMapleAsciiString();
@@ -412,13 +415,16 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 player.dropMessage(1, "You cannot use VIP teleport rocks to teleport to GM maps.");
                                 break;
                             }
-                            if (map.getId() < 2000000 || map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) || map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT)) {
+                            if (map.getId() < 2000000 || map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) || map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT) || map.isPQMap()) {
                                 player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                                 break;
                             }
                             if (!victim.isGM() || player.isGM()) { // Should really handle this before the switch
                                 //if ((player.getMap().getMapName().equals(victim.getMap().getMapName()) && !vip) || vip) {
-                                    player.changeMap(map, map.findClosestSpawnpoint(victim.getPosition()));
+                                if (player.getPartyQuest() != null) {
+                                    player.leaveParty();
+                                }
+                                player.changeMap(map, map.findClosestSpawnpoint(victim.getPosition()));
                                     /*System.out.print("Good player TP, map: " + map.getId() + " spawn: " + map.findClosestSpawnpoint(victim.getPosition()).getName());
                                 } else {
                                     player.dropMessage(1, "You cannot warp to this player because they are not on the same continent.");

@@ -67,7 +67,10 @@ public class PartyQuest {
     }
 
     public void registerMap(int mapId) {
-        final MapleMap newMap = ChannelServer.getInstance(channel).getMapFactory().getMap(mapId);
+        registerMap(ChannelServer.getInstance(channel).getMapFactory().getMap(mapId));
+    }
+
+    public void registerMap(MapleMap newMap) {
         if (newMap.playerCount() > 0 || newMap.getPartyQuestInstance() != null) {
             throw new IllegalStateException("Attempting to register map that is currently in use.");
         }
@@ -82,7 +85,10 @@ public class PartyQuest {
     }
 
     public void unregisterMap(int mapId) {
-        MapleMap oldMap = ChannelServer.getInstance(channel).getMapFactory().getMap(mapId);
+        unregisterMap(ChannelServer.getInstance(channel).getMapFactory().getMap(mapId));
+    }
+
+    public void unregisterMap(MapleMap oldMap) {
         if (!this.mapInstances.contains(oldMap.getPartyQuestInstance())) {
             throw new IllegalStateException("Attempting to deregister map that is not owned by the PartyQuest.");
         }
@@ -148,20 +154,23 @@ public class PartyQuest {
         player.setPartyQuest(null);
     }
 
-    private void removePlayer(MapleCharacter player) {
+    public void removePlayer(MapleCharacter player, boolean autoDispose) {
         unregisterPlayer(player);
         player.changeMap(exitMapId);
+        if (autoDispose && playerCount() == 0) {
+            dispose();
+        }
     }
 
     public void registerParty(MapleParty party) {
         party.getMembers().forEach(pc -> {
-            final MapleCharacter player = ChannelServer.getInstance(this.channel).getPlayerStorage().getCharacterById(pc.getId());
+            final MapleCharacter player = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterById(pc.getId());
             registerPlayer(player);
         });
     }
 
     public void leftParty(MapleCharacter player) {
-        removePlayer(player);
+        removePlayer(player, false);
         if (players.size() < minPlayers) dispose();
     }
 

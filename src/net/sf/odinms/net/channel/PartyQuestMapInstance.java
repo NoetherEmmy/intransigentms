@@ -45,8 +45,8 @@ public class PartyQuestMapInstance {
             FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
             scriptFile.close();
-            scriptEngine.put("mi",  this);
-            scriptEngine.put("pq",  this.partyQuest);
+            scriptEngine.put("mi", this);
+            scriptEngine.put("pq", this.partyQuest);
             scriptEngine.put("map", this.map);
         } catch (FileNotFoundException fnfe) {
             System.out.println("PartyQuestMapInstance could not locate script at path: " + path);
@@ -199,6 +199,8 @@ public class PartyQuestMapInstance {
                      invokeMethod("playerHitObstacle", player, o);
                  });
         lastPointsHeard.put(player, position);
+
+        invokeMethod("heardPlayerMovement", player, player.getPosition());
     }
 
     public int registerObstacle(int reactorId, Point closed) {
@@ -268,6 +270,10 @@ public class PartyQuestMapInstance {
 
     public void resetAllObstacles() {
         obstacles.values().forEach(Obstacle::reset);
+    }
+
+    public int obstacleCount() {
+        return obstacles.size();
     }
 
     /** Returns <code>true</code> if an <code>Obstacle</code> was removed, <code>false</code>

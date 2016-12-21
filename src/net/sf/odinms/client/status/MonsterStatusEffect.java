@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledFuture;
 
 public class MonsterStatusEffect {
 
-    private final ConcurrentHashMap<MonsterStatus, Integer> stati;
+    private final Map<MonsterStatus, Integer> stati;
     private final ISkill skill;
     private final boolean monsterSkill;
     private ScheduledFuture<?> cancelTask;

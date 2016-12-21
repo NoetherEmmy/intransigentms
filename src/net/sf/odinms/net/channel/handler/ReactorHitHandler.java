@@ -7,7 +7,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ReactorHitHandler extends AbstractMaplePacketHandler {
-//private static Logger log = LoggerFactory.getLogger(ReactorHitHandler.class);
+    //private static Logger log = LoggerFactory.getLogger(ReactorHitHandler.class);
 
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -18,7 +18,7 @@ public class ReactorHitHandler extends AbstractMaplePacketHandler {
         MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
         if (reactor != null && reactor.isAlive()) {
             reactor.hitReactor(charPos, stance, c);
-        } else { // player hit a destroyed reactor, likely due to lag
+        } else { // Player hit a destroyed reactor, likely due to lag
             //log.trace(c.getPlayer().getName() + "<" + c.getPlayer().getId() + "> attempted to hit destroyed reactor with oid " + oid);
             c.getSession().write(MaplePacketCreator.enableActions());
         }

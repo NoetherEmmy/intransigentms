@@ -70,17 +70,17 @@ public class MapleItemInformationProvider {
         return instance;
     }
 
-    /* returns the inventory type for the specified item id */
+    /** Returns the inventory type for the specified item ID. */
     public MapleInventoryType getInventoryType(int itemId) {
         if (inventoryTypeCache.containsKey(itemId)) {
             return inventoryTypeCache.get(itemId);
         }
         MapleInventoryType ret;
         String idStr = "0" + String.valueOf(itemId);
-        // first look in items...
+        // First look in items...
         MapleDataDirectoryEntry root = itemData.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            // we should have .img files here beginning with the first 4 IID
+            // We should have .img files here beginning with the first 4 IID
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
                     ret = MapleInventoryType.getByWZName(topDir.getName());
@@ -93,7 +93,7 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        // not found? maybe its equip...
+        // Not found? Maybe it's an equip...
         root = equipData.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
@@ -1372,6 +1372,14 @@ public class MapleItemInformationProvider {
 
     public IItem getEquipById(int equipId) {
         return getEquipById(equipId, -1);
+    }
+
+    public Equip getEquipByIdAsEquip(int equipId) {
+        return (Equip) getEquipById(equipId);
+    }
+
+    public Equip getEquipByIdAsEquip(int equipId, int ringId) {
+        return (Equip) getEquipById(equipId, ringId);
     }
 
     public IItem getEquipById(int equipId, int ringId) {

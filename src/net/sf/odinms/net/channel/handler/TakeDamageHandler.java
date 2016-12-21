@@ -78,7 +78,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
         if (c.getChannelServer().getTrackMissGodmode() && attacker != null) {
             if (damage < 1) {
-                int difference = Math.max(player.getLevel() - attacker.getLevel(), 0);
+                double difference = (double) Math.max(player.getLevel() - attacker.getLevel(), 0);
                 double chanceToBeHit = (double) attacker.getAccuracy() / ((1.84d + 0.07d * difference) * (double) player.getAvoidability()) - 1.0d;
                 if (chanceToBeHit > 0.85d) {
                     player.getCheatTracker().incrementNumGotMissed();

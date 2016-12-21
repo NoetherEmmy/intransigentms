@@ -2310,7 +2310,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void dispel() {
-        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.getSourceId() == 2001002) continue;
             if (mbsvh.effect.isSkill()) {
@@ -2322,14 +2322,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void cancelAllBuffs() {
-        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             cancelEffect(mbsvh.effect, false, mbsvh.startTime);
         }
     }
     
     private void cancelBuffsBySourceId(int sourceid) {
-        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (sourceid == mbsvh.effect.getSourceId()) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
@@ -2338,7 +2338,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void cancelMorphs() {
-        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isMorph() && mbsvh.effect.getSourceId() != 5111005 && mbsvh.effect.getSourceId() != 5121003) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
@@ -2361,7 +2361,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void cancelMagicDoor() {
-        ArrayList<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isMagicDoor()) {
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
@@ -6236,7 +6236,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         return rockmaps;
     }
-
 
     public void leaveParty() {
         WorldChannelInterface wci = ChannelServer.getInstance(getClient().getChannel()).getWorldInterface();

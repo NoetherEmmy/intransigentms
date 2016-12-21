@@ -10,8 +10,6 @@ import net.sf.odinms.tools.Pair;
 import java.awt.*;
 
 public class MapleReactor extends AbstractMapleMapObject {
-    //private static Logger log = LoggerFactory.getLogger(MapleReactor.class);
-
     private final int rid;
     private final MapleReactorStats stats;
     private byte state;
@@ -21,6 +19,7 @@ public class MapleReactor extends AbstractMapleMapObject {
     private String name;
     private boolean timerActive;
     private Integer trigger = null;
+    //private static Logger log = LoggerFactory.getLogger(MapleReactor.class);
 
     public MapleReactor(MapleReactorStats stats, int rid) {
         this.stats = stats;
@@ -123,25 +122,25 @@ public class MapleReactor extends AbstractMapleMapObject {
             }
         }
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
-            // type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
+            // Type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
             if (!(stats.getType(state) == 2 && (charPos == 0 || charPos == 2))) {
-                // get next state
+                // Get next state
                 state = stats.getNextState(state);
 
-                if (stats.getNextState(state) == -1) { // end of reactor
-                    if (stats.getType(state) < 100) { // reactor broken
+                if (stats.getNextState(state) == -1) { // End of reactor
+                    if (stats.getType(state) < 100) { // Reactor broken
                         if (delay > 0) {
                             map.destroyReactor(getObjectId());
-                        } else { // trigger as normal
+                        } else { // Trigger as normal
                             map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
                         }
-                    } else { // item-triggered on final step
+                    } else { // Item-triggered on final step
                         map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
                     }
                     ReactorScriptManager.getInstance().act(c, this);
-                } else { // reactor not broken yet
+                } else { // Reactor not broken yet
                     map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-                    if (state == stats.getNextState(state)) { // current state = next state, looping reactor
+                    if (state == stats.getNextState(state)) { // Current state = next state, looping reactor
                         ReactorScriptManager.getInstance().act(c, this);
                     }
                 }
@@ -184,6 +183,15 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     @Override
     public String toString() {
-        return "Reactor " + getObjectId() + " of id " + rid + " at position " + getPosition().toString() + " state" + state + " type " + stats.getType(state);
+        return "Reactor " +
+               getObjectId() +
+               " of id " +
+               rid +
+               " at position " +
+               getPosition() +
+               ", with state " +
+               state +
+               ", and type " +
+               stats.getType(state);
     }
 }

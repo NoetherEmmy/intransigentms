@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EnterMTSHandler extends AbstractMaplePacketHandler {
-
     private static final Logger log = LoggerFactory.getLogger(DistributeSPHandler.class);
 
     @Override

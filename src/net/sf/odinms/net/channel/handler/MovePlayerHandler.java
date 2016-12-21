@@ -55,11 +55,10 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
                         }
                     }
                 }
-                if (player.getPartyQuest() != null && player.getMap().getPartyQuestInstance() != null) {
-                    if (player.getMap().getPartyQuestInstance().isListeningForPlayerMovement()) {
-                        player.getMap().getPartyQuestInstance().heardPlayerMovement(player, player.getPosition());
-                        player.getMap().getPartyQuestInstance().invokeMethod("heardPlayerMovement", player, player.getPosition());
-                    }
+                if (player.getPartyQuest() != null &&
+                        player.getMap().getPartyQuestInstance() != null &&
+                        player.getMap().getPartyQuestInstance().isListeningForPlayerMovement()) {
+                    player.getMap().getPartyQuestInstance().heardPlayerMovement(player, player.getPosition());
                 }
             }
         } catch (Exception e) {

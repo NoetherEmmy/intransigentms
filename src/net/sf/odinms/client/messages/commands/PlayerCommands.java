@@ -235,7 +235,7 @@ public class PlayerCommands implements Command {
                 } else {
                     StringBuilder sb = new StringBuilder();
                     sb.append(victim.getName());
-                    sb.append(" has been afk for");
+                    sb.append(" has been AFK for");
                     compareTime(sb, blahblah);
                     mc.dropMessage(sb.toString());
                 }
@@ -287,7 +287,7 @@ public class PlayerCommands implements Command {
             NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9010000);
         } else if (splitted[0].equals("@monsterlevels")) {
-            ArrayList<Integer> monsterids = new ArrayList<>(4);
+            List<Integer> monsterids = new ArrayList<>(4);
             double rx;
             int absxp = player.getAbsoluteXp();
             absxp *= c.getChannelServer().getExpRate();
@@ -1103,7 +1103,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("vskills", 0),
             new CommandDefinition("voteupdate", 0),
             new CommandDefinition("buyback", 0),
-            new CommandDefinition("snipedisplay", 0)
+            new CommandDefinition("snipedisplay", 0),
+            new CommandDefinition("event", 0)
         };
     }
 }

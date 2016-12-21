@@ -18,9 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ReactorActionManager extends AbstractPlayerInteraction {
-    // private static final Logger log = LoggerFactory.getLogger(ReactorActionManager.class);
-
     private final MapleReactor reactor;
+    //private static final Logger log = LoggerFactory.getLogger(ReactorActionManager.class);
 
     public ReactorActionManager(MapleClient c, MapleReactor reactor) {
         super(c);
@@ -45,7 +44,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
             items.add(new DropEntry(0, mesoChance));
         }
 
-        // narrow list down by chances
+        // Narrow list down by chances
         Iterator<DropEntry> iter = chances.iterator();
         // for (DropEntry d : chances){
         while (iter.hasNext()) {
@@ -56,13 +55,13 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
             }
         }
 
-        // if a minimum number of drops is required, add meso
+        // If a minimum number of drops is required, add meso
         while (items.size() < minItems) {
             items.add(new DropEntry(0, mesoChance));
             numItems++;
         }
 
-        // randomize drop order
+        // Randomize drop order
         java.util.Collections.shuffle(items);
 
         final Point dropPos = reactor.getPosition();
@@ -89,31 +88,58 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         }
     }
 
+    public void dropItem(int itemId) {
+        dropItem(itemId, 1);
+    }
+
+    public void dropItem(int itemId, int qty) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        Point dropPos = new Point(reactor.getPosition().x, reactor.getPosition().y);
+
+        dropPos.x -= 12 * qty;
+
+        for (int i = 0; i < qty; ++i) {
+            if (itemId == 0) {
+                int mesoDrop = qty * ChannelServer.getInstance(getClient().getChannel()).getMesoRate();
+                reactor.getMap().spawnMesoDrop(mesoDrop, qty, dropPos, reactor, getPlayer(), true);
+            } else {
+                IItem drop;
+                if (ii.getInventoryType(itemId) != MapleInventoryType.EQUIP) {
+                    drop = new Item(itemId, (byte) 0, (short) 1);
+                } else {
+                    drop = ii.randomizeStats(getClient(), ii.getEquipByIdAsEquip(itemId));
+                }
+                reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, true);
+            }
+            dropPos.x += 25;
+        }
+    }
+
     private List<DropEntry> getDropChances() {
         return ReactorScriptManager.getInstance().getDrops(reactor.getId());
     }
 
-    // Summon one monster on reactor location.
+    // Summon one monster on reactor location
     public void spawnMonster(int id) {
         spawnMonster(id, 1, getPosition());
     }
 
-    // Summon one monster, remote location.
+    // Summon one monster, remote location
     public void spawnMonster(int id, int x, int y) {
         spawnMonster(id, 1, new Point(x, y));
     }
 
-    // Multiple monsters, reactor location.
+    // Multiple monsters, reactor location
     public void spawnMonster(int id, int qty) {
         spawnMonster(id, qty, getPosition());
     }
 
-    // Multiple monsters, remote location.
+    // Multiple monsters, remote location
     public void spawnMonster(int id, int qty, int x, int y) {
         spawnMonster(id, qty, new Point(x, y));
     }
 
-    // Handler for all spawnMonster.
+    // Handler for all spawnMonster
     private void spawnMonster(int id, int qty, Point pos) {
         for (int i = 0; i < qty; ++i) {
             MapleMonster mob = MapleLifeFactory.getMonster(id);
@@ -121,7 +147,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         }
     }
 
-    // Returns slightly above the reactor's position for monster spawns.
+    // Returns slightly above the reactor's position for monster spawns
     public Point getPosition() {
         Point pos = reactor.getPosition();
         pos.y -= 10;
@@ -150,22 +176,22 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         spawnFakeMonster(id, 1, getPosition());
     }
 
-    // Summon one monster, remote location.
+    // Summon one monster, remote location
     public void spawnFakeMonster(int id, int x, int y) {
         spawnFakeMonster(id, 1, new Point(x, y));
     }
 
-    // Multiple monsters, reactor location.
+    // Multiple monsters, reactor location
     public void spawnFakeMonster(int id, int qty) {
         spawnFakeMonster(id, qty, getPosition());
     }
 
-    // Multiple monsters, remote location.
+    // Multiple monsters, remote location
     public void spawnFakeMonster(int id, int qty, int x, int y) {
         spawnFakeMonster(id, qty, new Point(x, y));
     }
 
-    // Handler for all spawnFakeMonster.
+    // Handler for all spawnFakeMonster
     private void spawnFakeMonster(int id, int qty, Point pos) {
         for (int i = 0; i < qty; ++i) {
             MapleMonster mob = MapleLifeFactory.getMonster(id);
