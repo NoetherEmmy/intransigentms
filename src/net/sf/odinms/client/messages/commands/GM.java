@@ -1353,11 +1353,11 @@ public class GM implements Command {
             }
             case "!nearestportal":
                 final MaplePortal portal = player.getMap().findClosestSpawnpoint(player.getPosition());
-                mc.dropMessage(portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName() + " target: " + portal.getTarget());
+                mc.dropMessage(portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName() + " target: " + portal.getTarget() + " targetMapId: " + portal.getTargetMapId());
                 break;
             case "!unban":
                 if (MapleCharacter.unban(splitted[1])) {
-                    mc.dropMessage("Sucess!");
+                    mc.dropMessage("Success!");
                 } else {
                     mc.dropMessage("Error while unbanning.");
                 }
@@ -2211,6 +2211,15 @@ public class GM implements Command {
                 }
                 break;
             }
+            case "!unregisterallpqmis": {
+                MapleMapFactory mapFact = c.getChannelServer().getMapFactory();
+                for (int i = 5000; i <= 5012; ++i) {
+                    if (mapFact.isMapLoaded(i)) {
+                        mapFact.getMap(i).unregisterPartyQuestInstance();
+                    }
+                }
+                break;
+            }
         }
     }
 
@@ -2362,7 +2371,8 @@ public class GM implements Command {
             new CommandDefinition("unregisterevent", 3),
             new CommandDefinition("warpoutofevent", 3),
             new CommandDefinition("resetpreeventmaps", 3),
-            new CommandDefinition("giftvp", 3)
+            new CommandDefinition("giftvp", 3),
+            new CommandDefinition("unregisterallpqmis", 3)
         };
     }
 }

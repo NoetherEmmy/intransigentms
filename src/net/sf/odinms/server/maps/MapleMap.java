@@ -12,10 +12,7 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.TimerManager;
-import net.sf.odinms.server.life.MapleLifeFactory;
-import net.sf.odinms.server.life.MapleMonster;
-import net.sf.odinms.server.life.MapleNPC;
-import net.sf.odinms.server.life.SpawnPoint;
+import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.pvp.PvPLibrary;
 import net.sf.odinms.server.quest.MapleQuest;
 import net.sf.odinms.tools.Direction;
@@ -656,7 +653,13 @@ public class MapleMap {
         dynamicSpawnWorkers.add(dsw);
         return dsw;
     }
-    
+
+    public DynamicSpawnWorker registerDynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod, MapleMonsterStats overrideStats) {
+        final DynamicSpawnWorker dsw = new DynamicSpawnWorker(monsterId, spawnArea, period, duration, putPeriodicMonsterDrops, monsterDropPeriod, overrideStats);
+        dynamicSpawnWorkers.add(dsw);
+        return dsw;
+    }
+
     public DynamicSpawnWorker getDynamicSpawnWorker(int index) {
         return dynamicSpawnWorkers.get(index);
     }
@@ -2273,6 +2276,7 @@ public class MapleMap {
         private final int monsterId;
         private boolean putPeriodicMonsterDrops;
         private int monsterDropPeriod;
+        private final MapleMonsterStats overrideStats;
         private ScheduledFuture<?> spawnTask = null;
         private ScheduledFuture<?> cancelTask = null;
         
@@ -2291,6 +2295,7 @@ public class MapleMap {
             this.monsterId = monsterId;
             this.putPeriodicMonsterDrops = putPeriodicMonsterDrops;
             this.monsterDropPeriod = monsterDropPeriod;
+            this.overrideStats = null;
         }
 
         public DynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period) {
@@ -2298,6 +2303,10 @@ public class MapleMap {
         }
 
         public DynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod) {
+            this(monsterId, spawnArea, period, duration, putPeriodicMonsterDrops, monsterDropPeriod, null);
+        }
+
+        public DynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod, MapleMonsterStats overrideStats) {
             if (MapleLifeFactory.getMonster(monsterId) == null) {
                 throw new IllegalArgumentException("Monster ID for DynamicSpawnWorker must be a valid monster ID!");
             }
@@ -2308,6 +2317,7 @@ public class MapleMap {
             this.monsterId = monsterId;
             this.putPeriodicMonsterDrops = putPeriodicMonsterDrops;
             this.monsterDropPeriod = monsterDropPeriod;
+            this.overrideStats = overrideStats;
         }
         
         public void start() {
@@ -2316,6 +2326,16 @@ public class MapleMap {
                 if (spawnArea != null) {
                     spawnTask = tMan.register(() -> {
                         final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
+                        if (overrideStats != null) {
+                            toSpawn.setOverrideStats(overrideStats);
+                            if (overrideStats.getHp() > 0) {
+                                toSpawn.setHp(overrideStats.getHp());
+                            }
+                            if (overrideStats.getMp() > 0) {
+                                toSpawn.setMp(overrideStats.getMp());
+                            }
+                        }
+
                         for (int i = 0; i < 10; ++i) {
                             try {
                                 int x = (int) (spawnArea.x + Math.random() * (spawnArea.getWidth() + 1));
@@ -2334,6 +2354,16 @@ public class MapleMap {
                 } else {
                     spawnTask = tMan.register(() -> {
                         final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
+                        if (overrideStats != null) {
+                            toSpawn.setOverrideStats(overrideStats);
+                            if (overrideStats.getHp() > 0) {
+                                toSpawn.setHp(overrideStats.getHp());
+                            }
+                            if (overrideStats.getMp() > 0) {
+                                toSpawn.setMp(overrideStats.getMp());
+                            }
+                        }
+
                         toSpawn.setPosition(spawnPoint);
                         MapleMap.this.spawnMonster(toSpawn);
 
@@ -2365,6 +2395,10 @@ public class MapleMap {
         
         public int getPeriod() {
             return period;
+        }
+
+        public MapleMonsterStats getOverrideStats() {
+            return overrideStats;
         }
 
         public void turnOffPeriodicMonsterDrops() {

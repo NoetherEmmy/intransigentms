@@ -125,7 +125,7 @@ public class PartyQuest {
         if (increment > 0) {
             color = "#b(+";
         } else if (increment < 0) {
-            color = "#r(-";
+            color = "#r(";
         } else {
             color = "(";
         }
