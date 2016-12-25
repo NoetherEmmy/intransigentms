@@ -45,7 +45,7 @@ Coding guidelines
                 );
             ```
 
-        * Split apart declaration and assignment (thanks Java, for having no type inference whatsoever):
+        * Split apart declaration and assignment (thanks Java, for having no type inference):
 
             ```java
             ReallyLongButAppropriateClassName thingWeNeed;
@@ -385,7 +385,7 @@ Coding guidelines
         ```
 
 + When implementing a getter method that returns some kind of `Collection`, consider the implementation carefully and **include a javadoc comment for the method** explaining exactly what it returns.
-    - (In general do not do the following kind of implementation:) If you want callers of the method to be able to directly manipulate the `Collection` that they are "getting," i.e. you want them to have a reference to the `Collection` itself, then the method can work like a normal getter but should indicate that it hands of a direct reference (again, don't do this as it breaks encapsulation, very often produces bugs, and is often not what you really want anyways).
+    - (In general do not do the following kind of implementation:) If you want callers of the method to be able to directly manipulate the `Collection` that they are "getting," i.e. you want them to have a reference to the `Collection` itself, then the method can work like a normal getter but should indicate that it hands off a direct reference (again, don't do this as it breaks encapsulation, very often produces bugs, and is often not what you really want anyways).
     - If you want callers to have a *view* of the `Collection`'s contents, real-time (even as they are possibly modified by other threads) but don't want them to be able to modify it (keeping encapsulation and reducing bugs), use the wrapper methods that come `static` with the `Collections` class:
 
         ```java
@@ -415,7 +415,7 @@ Coding guidelines
         ```
 
 + Prefer to use static methods (and static classes) over instanced/singleton classes.
-+ Do not make unchecked assignments to parametrized types, i.e. always specify parameter type:
++ Do not make unchecked assignments with parametrized types, i.e. always specify parameter type:
     - Bad:
 
         ```java
