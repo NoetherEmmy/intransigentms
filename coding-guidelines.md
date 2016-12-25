@@ -496,6 +496,7 @@ Coding guidelines
 + Use the strongest access specifier that is appropriate when declaring methods, classes, and fields. Viz., prefer `private` over `protected` over `public`.
 + Methods that are to be called inside of scripts **must** be `public`.
 + Do **not** use reflection, with the slight exception of `instanceof`.
++ When doing `String` concatenation many times into a single `String` (i.e. inside of a loop, `.forEach()`, or `.reduce()`), use `StringBuilder`, and make sure not to do any concatenation inside of `StringBuilder` method calls. Call `.append()` multiple times instead.
 + When dealing with `Collection` instances that are quite volatile and prone to concurrency errors, prefer to use synchronized variants or wrappers to the `Collection`, and use `Iterator`s instead of `Stream`s or `for` loops, like so:
 
     ```java
