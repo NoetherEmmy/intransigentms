@@ -80,7 +80,7 @@ public class PartyQuest {
         newInstance.invokeMethod("init");
         mapInstances.add(newInstance);
         mapInstances.stream()
-                    .filter(mi -> mi != newInstance)
+                    .filter(mi -> mi.getMap().getId() != newInstance.getMap().getId())
                     .forEach(mi -> mi.invokeMethod("mapRegistered", newInstance));
     }
 

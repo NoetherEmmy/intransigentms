@@ -322,7 +322,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
 
                 if (numExpSharers > 1) {
-                    personalExp *= 1.0d + (0.1d * ((double) numExpSharers - 1.0d));
+                    personalExp *= 1.0d + (0.25d * ((double) numExpSharers - 1.0d));
                 }
 
                 double mltpercent = 1.0d;
@@ -1306,7 +1306,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
                 double expBonus = 1.0d;
                 if (expApplicable.size() > 1) {
-                    expBonus = 1.10d + 0.05d * expApplicable.size();
+                    expBonus = 1.1d + 0.05d * expApplicable.size();
                     averagePartyLevel /= expApplicable.size();
                 }
                 int iDamage = attacker.getValue().damage;
@@ -1315,7 +1315,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     highestDamage = iDamage;
                 }
                 double innerBaseExp = baseExp * ((double) iDamage / totDamage);
-                double expFraction = (innerBaseExp * expBonus) / (expApplicable.size() + 1);
+                double expFraction = (innerBaseExp * expBonus) / (expApplicable.size() + 1.0d);
                 for (MapleCharacter expReceiver : expApplicable) {
                     Integer oexp = expMap.get(expReceiver);
                     int iexp;
@@ -1333,16 +1333,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     expMap.put(expReceiver, iexp);
                 }
             }
-            for (Entry<MapleCharacter, Integer> expReceiver : expMap.entrySet()) {
+            for (Map.Entry<MapleCharacter, Integer> expReceiver : expMap.entrySet()) {
                 boolean white = mostDamage && expReceiver.getKey() == highest;
                 if (highest != null && !isboss) {
-                    if (expReceiver.getKey().getLevel() >= highest.getLevel() - 5) {
+                    if (expReceiver.getKey().getLevel() >= highest.getLevel() - 15) {
                         giveExpToCharacter(expReceiver.getKey(), expReceiver.getValue(), white, expMap.size());
                         if (expReceiver.getKey().getId() == highest.getId()) {
                             expReceiver.getKey().updateLastKillOnMap();
                         }
-                    } else if (expReceiver.getKey().getLevel() >= highest.getLevel() - 40 && expReceiver.getKey().lastKillOnMapWithin(12)) {
-                        // EXP receiver is within +inf/-40 lvls of killer and has killed a mob in map within the last 12 sec.
+                    } else if (expReceiver.getKey().getLevel() >= highest.getLevel() - 60 && expReceiver.getKey().lastKillOnMapWithin(16)) {
+                        // EXP receiver is within +inf/-60 lvls of killer and has killed a mob in map within the last 16 sec.
                         giveExpToCharacter(expReceiver.getKey(), expReceiver.getValue(), white, expMap.size());
                     }
                 } else {

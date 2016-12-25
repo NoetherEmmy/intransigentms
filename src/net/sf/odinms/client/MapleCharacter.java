@@ -167,7 +167,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     //
     private final MapleCQuests quest = new MapleCQuests();
     private int story, storypoints, offensestory, buffstory;
-    private Map<Integer, Integer> questkills = new HashMap<>(6, 0.8f);
+    private Map<Integer, Integer> questkills = new HashMap<>(4, 0.8f);
     private int questidd, queststatus;
     private int returnmap;
     private int trialreturnmap;

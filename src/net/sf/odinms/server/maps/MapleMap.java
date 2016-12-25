@@ -86,8 +86,8 @@ public class MapleMap {
         this.returnMapId = returnMapId;
         if (monsterRate > 0) {
             this.monsterRate = monsterRate;
-            boolean greater1 = monsterRate > 1.0;
-            this.monsterRate = (float) Math.abs(1.0 - this.monsterRate);
+            boolean greater1 = monsterRate > 1.0f;
+            this.monsterRate = Math.abs(1.0f - this.monsterRate);
             this.monsterRate = this.monsterRate / 2.0f;
             if (greater1) {
                 this.monsterRate = 1.0f + this.monsterRate;
