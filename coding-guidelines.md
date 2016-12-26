@@ -243,6 +243,19 @@ Coding guidelines
         List<String> someStrings = new ArrayList<>();
         ```
 
++ Whenever there exist syntactic tokens separated by commas (e.g. argument lists, array literals), put a single space between each comma and the following item.
++ Array literals (and other possibly similar syntax) should be arranged like the following when it matters for line length/readability:
+
+    ```java
+    int[] someInts =
+    {
+        415, 5,   837, 461, 101, 694, 147, 3,   81,  919,
+        555, 319, 79,  597, 66,  461, 267, 567, 6,   191,
+        352, 353, 444, 537, 859, 0,   97,  444, 231, 296,
+        1,   987, 202, 51
+    };
+    ```
+
 + Whenever possible, use lambda (`->`) syntax. Do not explicitly create a new instance of `Runnable` and `@Override` its `run()` method.
 + Lambda expressions should be styled with the following rules:
     - Use method references instead of using explicit arrow syntax whenever possible:
@@ -609,3 +622,5 @@ Coding guidelines
         }
     }
     ```
+
++ When using a `Comparator` (e.g. for sorting), use the `static` methods provided by the `Comparator` class instead of an explicitly coded `Comparator` whenever there is one available.

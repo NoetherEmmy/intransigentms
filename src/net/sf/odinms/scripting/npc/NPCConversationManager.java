@@ -1561,6 +1561,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleInventory use = c.getPlayer().getInventory(MapleInventoryType.USE);
         MapleInventory etc = c.getPlayer().getInventory(MapleInventoryType.ETC);
         List<Integer> leaveBehind = Arrays.asList(lb1, lb2, lb3, lb4);
+        List<IItem> cleared = new LinkedList<>(); // Linked list for a damn reason
+
         int i = 0;
         byte[] equipSlots = new byte[equip.list().size()];
         for (IItem equipItem : equip.list()) {
@@ -1571,16 +1573,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 }
             }
         }
-        
         for (byte j = 0; j < i; ++j) {
+            IItem item = equip.getItem(equipSlots[j]);
+            cleared.add(item.copy());
             MapleInventoryManipulator.removeFromSlot(
                 c,
-                ii.getInventoryType(equip.getItem(equipSlots[j]).getItemId()),
+                ii.getInventoryType(item.getItemId()),
                 equipSlots[j],
                 (short) 1,
                 false
             );
         }
+
         i = 0;
         byte[] useslots = new byte[use.list().size()];
         for (IItem useitem : use.list()) {
@@ -1588,14 +1592,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             i++;
         }
         for (byte j = 0; j < i; ++j) {
+            IItem item = use.getItem(useslots[j]);
+            cleared.add(item.copy());
             MapleInventoryManipulator.removeFromSlot(
                 c,
-                ii.getInventoryType(use.getItem(useslots[j]).getItemId()),
+                ii.getInventoryType(item.getItemId()),
                 useslots[j],
-                use.getItem(useslots[j]).getQuantity(),
+                item.getQuantity(),
                 false
             );
         }
+
         i = 0;
         byte[] etcslots = new byte[etc.list().size()];
         for (IItem etcitem : etc.list()) {
@@ -1603,13 +1610,19 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             i++;
         }
         for (byte j = 0; j < i; ++j) {
+            IItem item = etc.getItem(etcslots[j]);
+            cleared.add(item.copy());
             MapleInventoryManipulator.removeFromSlot(
                 c,
-                ii.getInventoryType(etc.getItem(etcslots[j]).getItemId()),
+                ii.getInventoryType(item.getItemId()),
                 etcslots[j],
-                etc.getItem(etcslots[j]).getQuantity(),
+                item.getQuantity(),
                 false
             );
+        }
+
+        if (!DeathLogger.logItems(cleared, c)) {
+            System.err.println("There was an error logging " + getPlayer().getName() + "'s items lost on death.");
         }
     }
     

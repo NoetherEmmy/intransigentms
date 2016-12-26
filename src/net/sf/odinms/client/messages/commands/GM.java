@@ -965,6 +965,7 @@ public class GM implements Command {
                 builder.append(" | FH: ");
                 builder.append(victim.getMap().getFootholds().findBelow(player.getPosition()).getId());
                 mc.dropMessage(builder.toString());
+
                 builder = new StringBuilder();
                 builder.append("HP: ");
                 builder.append(victim.getHp());
@@ -981,6 +982,7 @@ public class GM implements Command {
                 builder.append(" | In a Trade: ");
                 builder.append(victim.getTrade() != null);
                 mc.dropMessage(builder.toString());
+
                 builder = new StringBuilder();
                 builder.append("Remote Address: ");
                 builder.append(victim.getClient().getSession().getRemoteAddress());

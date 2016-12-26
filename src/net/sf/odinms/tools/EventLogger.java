@@ -31,7 +31,7 @@ public class EventLogger {
      * @throws InvalidPathException when <code>pathString</code> does
      * not represent a valid path.
      */
-    EventLogger(String pathString) {
+    public EventLogger(String pathString) {
         path = Paths.get(pathString);
     }
 
@@ -47,7 +47,7 @@ public class EventLogger {
      *
      * @throws NullPointerException when <code>path == null</code>.
      */
-    EventLogger(Path path) {
+    public EventLogger(Path path) {
         if (path == null) {
             throw new NullPointerException("The Path given to the EventLogger constructor may not be null.");
         }
@@ -66,7 +66,7 @@ public class EventLogger {
      *              to the event log.
      * @return <code>true</code> on success, <code>false</code> on failure.
      */
-    public boolean write(List<String> lines) {
+    public synchronized boolean write(List<String> lines) {
         try {
             Files.write(
                 path,
@@ -96,7 +96,7 @@ public class EventLogger {
      *             the event log.
      * @return <code>true</code> on success, <code>false</code> on failure.
      */
-    public boolean write(byte[] data) {
+    public synchronized boolean write(byte[] data) {
         try {
             Files.write(
                 path,
@@ -125,7 +125,7 @@ public class EventLogger {
      * @param line A line (as a <code>String</code>) to write to the event log.
      * @return <code>true</code> on success, <code>false</code> on failure.
      */
-    public boolean writeln(String line) {
+    public synchronized boolean writeln(String line) {
         return write(Collections.singletonList(line));
     }
 
@@ -140,7 +140,7 @@ public class EventLogger {
      * @return <code>true</code> on success, <code>false</code> on failure
      * or if the file does not exist.
      */
-    public boolean delete() {
+    public synchronized boolean delete() {
         try {
             return Files.deleteIfExists(path);
         } catch (IOException ioe) {
@@ -224,7 +224,7 @@ public class EventLogger {
      * @return An <code>Optional</code> containing a lazy stream of lines from the event
      * log file, or an empty <code>Optional</code> if the initial read failed.
      */
-    public Optional<Stream<String>> getLines() {
+    public synchronized Optional<Stream<String>> getLines() {
         try {
             return Optional.of(Files.lines(path, StandardCharsets.UTF_8));
         } catch (IOException ioe) {
