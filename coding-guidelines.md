@@ -5,7 +5,7 @@ Coding guidelines
 
 + Do not use tabs. When indenting, use four spaces per level of indentation.
 + Use indentation appropriately and consistently, as shown throughout the examples.
-+ Lines should not be longer than 115 characters (ideally no longer than 79).
++ Lines should not be longer than 120 characters (ideally no longer than 79).
     - Ways to produce shorter lines:
         * Chained methods almost always look better when each method call is on its own line, in line with other methods in the chain:
 
@@ -74,27 +74,29 @@ Coding guidelines
 
         ```java
         /**
-         * <Description of what the method does>
-         * <some more description...>
-         * <etc...>
+         * `Description of what the method does`
+         * `some more description...`
+         * `etc...`
          *
-         * @param <parameter name> <parameter description>
-         * @param <parameter name> <parameter description>
+         * <ul>
+         * <li>pure?: `true/false`</li>
+         * <li>nullable?: `true/false`</li>
+         * </ul>
+         *
+         * @param `parameter name` `parameter description`
+         * @param `parameter name` `parameter description`
          * @param...
          *
-         * @return <description of return value and what values it can take>
+         * @return `description of return value and what values it can take`
          *
-         * @throws <exception name> when <condition>
-         * @throws <exception name> when <condition>
+         * @throws `exception name` when `condition`
+         * @throws `exception name` when `condition`
          * @throws...
-         *
-         * @pure: <true/false>
-         * @nullable: <true/false>
          */
         ```
 
-    - Of course, the `@param` parts of the javadoc can be omitted if the method takes no parameters, `@return` can be omitted if the method returns `void`, `@throws` can be omitted if the method has no notable exceptions it's prone to throw, and `@nullable` can be omitted if the return type is `void` or the return type is a type that isn't `null`able (e.g. `int`, `boolean`, and even `Optional<T>` in this case).
-    - `@pure` refers to whether or not the method is a [pure function](https://en.wikipedia.org/wiki/Pure_function).
+    - Of course, the `@param` parts of the javadoc can be omitted if the method takes no parameters, `@return` can be omitted if the method returns `void`, `@throws` can be omitted if the method has no notable exceptions it's prone to throw, and `nullable?` can be omitted if the return type is `void` or the return type is a type that isn't `null`able (e.g. `int`, `boolean`, and even `Optional<T>` in this case).
+    - `pure?` refers to whether or not the method is a [pure function](https://en.wikipedia.org/wiki/Pure_function).
 
 + Block comments should be of the form:
 
@@ -492,6 +494,7 @@ Coding guidelines
         }
         ```
 
++ Prefer not to deal directly with `null` values, especially in the context of returning them from a method. In general, `Optional<T>`s should be used instead. Good practice is to return `Optional.empty()` when a method has no 'good' return value or it fails in some way to produce results, instead of returning the usual `null`.
 + Whenever possible, make all fields, local variables, and method parameters that are declared outside of and used inside of an anonymous function explicitly `final`. (Fields should already be `final` anyways.)
 + Use the strongest access specifier that is appropriate when declaring methods, classes, and fields. Viz., prefer `private` over `protected` over `public`.
 + Methods that are to be called inside of scripts **must** be `public`.

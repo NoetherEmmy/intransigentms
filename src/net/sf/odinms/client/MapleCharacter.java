@@ -2919,7 +2919,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         statup.add(new Pair<>(MapleStat.MAXMP, maxmp));
         if (getJob().getId() % 10 == 2) {
             setDefaultCoreSkillMasterLevels();
-            MapleInventoryManipulator.addById(client, 2280003, (short) 1);
+            //MapleInventoryManipulator.addById(client, 2280003, (short) 1);
         }
         recalcLocalStats();
         getClient().getSession().write(MaplePacketCreator.updatePlayerStats(statup));
