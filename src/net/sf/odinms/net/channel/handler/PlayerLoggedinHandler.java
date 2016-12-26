@@ -29,7 +29,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
         int cid = slea.readInt();
-        MapleCharacter player;
+        final MapleCharacter player;
         try {
             player = MapleCharacter.loadCharFromDB(cid, c, true);
             c.setPlayer(player);
@@ -207,8 +207,17 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         player.checkMessenger();
         player.checkBerserk();
-        player.setMagicArmor(false);
-        player.setMagicArmorCancelTask(null);
+        if (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) == null ||
+            player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) < 1) {
+            player.setMagicGuard(false);
+            player.setMagicGuardCancelTask(null);
+        }
+        WorldServer.getInstance()
+                   .getEnergyChargeRetention(player.getId())
+                   .ifPresent(ec -> {
+                       player.setEnergyBar(ec);
+                       WorldServer.getInstance().removeEnergyChargeRetention(player.getId());
+                   });
         player.updatePastLifeExp();
         player.reactivateExpBonus();
         player.dropVoteTime();

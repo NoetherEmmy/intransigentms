@@ -143,7 +143,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     }
                     if (multiplier != 1.0d) {
                         for (Integer dmgnumber : dmg.getRight()) {
-                            additionaldmg.add((int) (dmgnumber * (multiplier - 1.0)));
+                            additionaldmg.add((int) (dmgnumber * (multiplier - 1.0d)));
                             newdmg.add((int) (dmgnumber * multiplier));
                         }
                         attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
@@ -156,15 +156,15 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         }
 
         if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
-            if (player.hasMagicArmor()) { // If player has Magic Armor on them currently.
-                final double magicarmorradius = 70000.0d; // Squared distance
-                int magicarmorlevel = player.getSkillLevel(SkillFactory.getSkill(2001003));
-                if (magicarmorlevel > 0) { // Their Magic Armor level should be greater than 0 if they have the buff on, but this is to make absolutely sure.
-                    int splashedmonstercount = (magicarmorlevel / 10) + 1; // Magic Armor strikes 1 additional mob at lvls 1 - 9, 2 at lvls 10 - 19, and 3 at lvl 20.
-                    double maxdmgmulti = ((double) magicarmorlevel * 0.01d) + 0.8d; // The maximum damage (% of original strike) that splash damage can do.
-                                                                                  // This value scales with skill level, and the % dealt is only this % if the monster is
-                                                                                  // close to 0.0 distance from the originally struck monster. Otherwise it scales down
-                                                                                  // with distance to this % - 30%.
+            if (player.hasMagicGuard()) { // If player has Magic Guard on them currently.
+                final double magicGuardRadius = 70000.0d; // Squared distance
+                int magicGuardLevel = player.getSkillLevel(SkillFactory.getSkill(2001002));
+                if (magicGuardLevel > 0) { // Their Magic Guard level should be greater than 0 if they have the buff on, but this is to make absolutely sure.
+                    int splashedmonstercount = (magicGuardLevel / 10) + 1; // Magic Guard strikes 1 additional mob at lvls 1 - 9, 2 at lvls 10 - 19, and 3 at lvl 20.
+                    double maxdmgmulti = ((double) magicGuardLevel * 0.01d) + 0.8d; // The maximum damage (% of original strike) that splash damage can do.
+                                                                                    // This value scales with skill level, and the % dealt is only this % if the monster is
+                                                                                    // close to 0.0 distance from the originally struck monster. Otherwise it scales down
+                                                                                    // with distance to this % - 30%.
                     List<Pair<Integer, List<Integer>>> additionaldmgs = new ArrayList<>(); // Stores additional monster ID/dmg line(s) pairs from splash dmg.
                     for (int i = 0; i < attack.allDamage.size(); ++i) { // For each instance of damage lines dealt to a monster:
                         Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i); // This pair has the monster's identifier for the map, and a list of damage lines it takes.
@@ -175,7 +175,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                             }
                             List<MapleMonster> splashedmonsters = new ArrayList<>(); // This will store all monsters that are affected by splash damage.
                             // The following for loop gets all the map objects of type MONSTER within a squared distance of 100,000 from the initially struck monster (~316.23 linear distance).
-                            for (MapleMapObject _mob : player.getMap().getMapObjectsInRange(struckmonster.getPosition(), magicarmorradius, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+                            for (MapleMapObject _mob : player.getMap().getMapObjectsInRange(struckmonster.getPosition(), magicGuardRadius, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                                 MapleMonster mob = (MapleMonster) _mob; // Casting to MapleMonster since we know we are only getting objs of type MONSTER.
                                 if (mob.getObjectId() != struckmonster.getObjectId()) { // Making sure the map object isn't the initially struck monster, since they get no splash damage.
                                     if (splashedmonsters.size() < splashedmonstercount) { // If we haven't yet gathered as many monsters as can be splashed, just add it in to the list.
@@ -206,9 +206,9 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                 for (Integer dmgline : dmg.getRight()) { // For each dmg line done in the init strike, we scale the dmg line by the %, and add it to out new splash dmg.
                                     double chancetohit = (double) player.getAccuracy() / ((1.84d + 0.07d * Math.max((double) splashedmonster.getLevel() - (double) player.getLevel(), 0.0d)) * (double) splashedmonster.getAvoid()) - 1.0d;
                                     if (Math.random() < chancetohit) {
-                                        splashdamage.add((int) (dmgline * (maxdmgmulti - 0.3d * (distancesq / magicarmorradius)))); // distancesq / radius is small when the monster is close to
-                                    } else {                                                                                       // the init struck monster, so 0.3 is multiplied by a small
-                                        splashdamage.add(0);                                                                       // number and the dmg multiplier (%) is closer to the max %.
+                                        splashdamage.add((int) (dmgline * (maxdmgmulti - 0.3d * (distancesq / magicGuardRadius)))); // distancesq / radius is small when the monster is close to
+                                    } else {                                                                                        // the init struck monster, so 0.3 is multiplied by a small
+                                        splashdamage.add(0);                                                                        // number and the dmg multiplier (%) is closer to the max %.
                                     }
                                 }
                                 additionaldmgs.add(new Pair<>(splashedoid, splashdamage)); // The additional splash dmg pairs are stored in their own container to be used later.
@@ -227,24 +227,24 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             }
         }
             
-            if (player.getDeathPenalty() > 0) {
-                double dpmultiplier = Math.max(1.0 - (double) player.getDeathPenalty() * 0.03d, 0.0d);
-                for (int i = 0; i < attack.allDamage.size(); ++i) {
-                    Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    if (dmg != null) {
-                        List<Integer> additionaldmg = new ArrayList<>();
-                        List<Integer> newdmg = new ArrayList<>();
-                        for (Integer dmgnumber : dmg.getRight()) {
-                            additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0)));
-                            newdmg.add((int) (dmgnumber * dpmultiplier));
-                        }
-                        attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                        for (Integer additionald : additionaldmg) {
-                            player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                        }
+        if (player.getDeathPenalty() > 0) {
+            double dpmultiplier = Math.max(1.0d - (double) player.getDeathPenalty() * 0.03d, 0.0d);
+            for (int i = 0; i < attack.allDamage.size(); ++i) {
+                Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                if (dmg != null) {
+                    List<Integer> additionaldmg = new ArrayList<>();
+                    List<Integer> newdmg = new ArrayList<>();
+                    for (Integer dmgnumber : dmg.getRight()) {
+                        additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0d)));
+                        newdmg.add((int) (dmgnumber * dpmultiplier));
+                    }
+                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
+                    for (Integer additionald : additionaldmg) {
+                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
                     }
                 }
             }
+        }
 
         // Handle sacrifice hp loss.
         if (attack.numAttacked > 0 && attack.skill == 1311005) {
@@ -289,7 +289,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             ISkill combo = SkillFactory.getSkill(1111002);
             int comboLevel = player.getSkillLevel(combo);
             MapleStatEffect comboEffect = combo.getEffect(comboLevel);
-            double comboMod = 1.0 + (comboEffect.getDamage() / 100.0 - 1.0) * (comboBuff - 1);
+            double comboMod = 1.0d + (comboEffect.getDamage() / 100.0d - 1.0d) * (comboBuff - 1);
             maxdamage *= comboMod;
         }
         */

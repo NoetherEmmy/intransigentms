@@ -240,8 +240,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int unclaimeditem = 0;
     private short unclaimeditemquantity = 0;
     
-    private boolean hasmagicarmor = false;
-    private ScheduledFuture<?> magicarmorcanceltask = null;
+    private boolean hasMagicGuard = false;
+    private ScheduledFuture<?> magicGuardCancelTask = null;
     
     private boolean completedallquests = false;
 
@@ -645,7 +645,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ret.maplemount.setTiredness(mounttiredness);
             ret.maplemount.setActive(false);
         }
-        ret.lastkillonmap = (long) 0;
+        ret.lastkillonmap = 0L;
         ret.unclaimeditem = 0;
         ret.unclaimeditemquantity = (short) 0;
         ret.preEventMap = 0;
@@ -2185,8 +2185,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             checkBerserk();
         } else if (effect.isBeholder()) {
             prepareBeholderEffect();
-        } else if (effect.isMagicArmor()) {
-            registerMagicArmor();
+        } else if (effect.isMagicGuard()) {
+            registerMagicGuard();
         }
         for (int i = 0; i < effect.getStatups().size(); ++i) {
             Pair<MapleBuffStat, Integer> statup = effect.getStatups().get(i);
@@ -2211,9 +2211,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         for (MapleBuffStat stat : stats) {
             MapleBuffStatValueHolder mbsvh = effects.get(stat);
             if (mbsvh != null) {
-                if (mbsvh.effect.getSourceId() == 2001003) {
-                    this.setMagicArmor(false);
-                    this.cancelMagicArmorCancelTask();
+                if (mbsvh.effect.getSourceId() == 2001002) {
+                    this.setMagicGuard(false);
+                    this.cancelMagicGuardCancelTask();
                 }
                 effects.remove(stat);
                 boolean addMbsvh = true;
@@ -2292,9 +2292,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 this.getMount().setActive(false);
             //}
         }
-        if (effect.isMagicArmor()) {
-            setMagicArmor(false);
-            this.cancelMagicArmorCancelTask();
+        if (effect.isMagicGuard()) {
+            setMagicGuard(false);
+            this.cancelMagicGuardCancelTask();
         }
         if (!overwrite) {
             cancelPlayerBuffs(buffstats);
@@ -2335,8 +2335,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (getClient().getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
             for (MapleBuffStat mbs : buffstats) {
                 if (mbs == MapleBuffStat.WDEF) {
-                    setMagicArmor(false);
-                    this.cancelMagicArmorCancelTask();
+                    setMagicGuard(false);
+                    this.cancelMagicGuardCancelTask();
                 }
             }
             recalcLocalStats();
@@ -2354,8 +2354,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
             }
         }
-        setMagicArmor(false);
-        this.cancelMagicArmorCancelTask();
+        setMagicGuard(false);
+        this.cancelMagicGuardCancelTask();
     }
 
     public void cancelAllBuffs() {
@@ -5080,45 +5080,49 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    private void registerMagicArmor() {
-        cancelMagicArmorCancelTask();
+    private void registerMagicGuard() {
+        cancelMagicGuardCancelTask();
         
-        ISkill magicarmor = SkillFactory.getSkill(2001003);
-        MapleStatEffect magicarmoreffect = magicarmor.getEffect(getSkillLevel(magicarmor));
-        setMagicArmor(true);
+        ISkill magicGuard = SkillFactory.getSkill(2001002);
+        MapleStatEffect magicGuardEffect = magicGuard.getEffect(getSkillLevel(magicGuard));
+        setMagicGuard(true);
         TimerManager tMan = TimerManager.getInstance();
-        final Runnable cancelTask = () -> setMagicArmor(false);
+        final Runnable cancelTask = () -> setMagicGuard(false);
         
-        setMagicArmorCancelTask(tMan.schedule(cancelTask, magicarmoreffect.getDuration()));
+        setMagicGuardCancelTask(tMan.schedule(cancelTask, magicGuardEffect.getDuration()));
     }
     
-    private void cancelMagicArmorCancelTask() {
-        if (getMagicArmorCancelTask() != null) {
-            magicarmorcanceltask.cancel(true);
+    private void cancelMagicGuardCancelTask() {
+        if (getMagicGuardCancelTask() != null) {
+            magicGuardCancelTask.cancel(false);
         }
     }
     
-    private ScheduledFuture<?> getMagicArmorCancelTask() {
-        return this.magicarmorcanceltask;
+    private ScheduledFuture<?> getMagicGuardCancelTask() {
+        return magicGuardCancelTask;
     }
     
-    public void setMagicArmorCancelTask(ScheduledFuture<?> mact) {
-        this.magicarmorcanceltask = mact;
+    public void setMagicGuardCancelTask(ScheduledFuture<?> mgct) {
+        this.magicGuardCancelTask = mgct;
     }
     
-    public void setMagicArmor(boolean hma) {
-        this.hasmagicarmor = hma;
+    public void setMagicGuard(boolean hmg) {
+        this.hasMagicGuard = hmg;
     }
     
-    public boolean hasMagicArmor() {
-        return this.hasmagicarmor;
+    public boolean hasMagicGuard() {
+        return this.hasMagicGuard;
     }
 
     public void setForcedWarp(final MapleCharacter to, long delay) {
         cancelForcedWarp();
         forcedWarp = TimerManager.getInstance().schedule(() ->
-            changeMap(to.getMap(), to.getMap().findClosestSpawnpoint(to.getPosition())),
-            delay);
+            changeMap(
+                to.getMap(),
+                to.getMap().findClosestSpawnpoint(to.getPosition())
+            ),
+            delay
+        );
     }
 
     public void setForcedWarp(final MapleMap map, long delay) {
@@ -6118,7 +6122,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
             getClient().getSession().write(MaplePacketCreator.giveEnergyCharge(energybar));
         }/*else {
-            
             TimerManager.getInstance().schedule(new Runnable() {
                 @Override
                 public void run() {

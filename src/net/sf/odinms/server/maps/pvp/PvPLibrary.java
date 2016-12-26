@@ -985,15 +985,15 @@ public class PvPLibrary {
     public static void playerReward(MapleCharacter player, MapleCharacter attackedPlayers) {
         Integer holysymbol = player.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
         int resultexpgain = attackedPlayers.getLevel() * 250;
-        if (holysymbol != null && (player.getPvpKills() * .10 > player.getPvpDeaths())) {
+        if (holysymbol != null && (player.getPvpKills() * 0.1d > player.getPvpDeaths())) {
             resultexpgain *= 2;
-        } else if (holysymbol != null && player.getPvpKills() * .10 <= player.getPvpDeaths()) {
-            resultexpgain *= 1.5;
-        } else if (player.getPvpKills() * .10 > player.getPvpDeaths() && holysymbol == null) {
-            resultexpgain *= 1.5;
+        } else if (holysymbol != null && player.getPvpKills() * 0.1d <= player.getPvpDeaths()) {
+            resultexpgain *= 1.5d;
+        } else if (player.getPvpKills() * 0.1d > player.getPvpDeaths() && holysymbol == null) {
+            resultexpgain *= 1.5d;
         }
         int mesoReward = attackedPlayers.getLevel() * 2000;
-        if (player.getPvpKills() * .25 >= player.getPvpDeaths()) {
+        if (player.getPvpKills() * 0.25d >= player.getPvpDeaths()) {
             mesoReward *= 30;
         }
 

@@ -1614,6 +1614,10 @@ public class MapleStatEffect implements Serializable {
     public boolean isMagicArmor() {
         return skill && sourceid == 2001003;
     }
+
+    public boolean isMagicGuard() {
+        return skill && sourceid == 2001002;
+    }
     //
 
     public boolean isInfusion() {
