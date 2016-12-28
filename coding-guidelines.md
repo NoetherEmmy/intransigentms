@@ -325,7 +325,7 @@ Coding guidelines
 
 ##Method
 
-+ Avoid using explicit loops (`for`, `while`) and temporary variables (e.g. `int i = 0;`, `List<Object> objectsCollectedInLoop = new ArrayList<>();`). Prefer to use Java 8 features like `.forEach()` and the `Stream` interface instead (`.map()`, `.filter()`, `.reduce()`, etc.) instead, unless explicit loops are necessary or `Stream` methods are problematic in the specific case in question.
++ Avoid using explicit loops (`for`, `while`) and temporary variables (e.g. `int i = 0;`, `List<Object> objectsCollectedInLoop = new ArrayList<>();`). Prefer to use Java 8 features like `.forEach()` and the `Stream` interface (`.map()`, `.filter()`, `.reduce()`, etc.) instead, unless explicit loops are necessary or `Stream` methods are problematic in the specific case in question.
 + When one has found the need to use explicit loops, use `:` syntax whenever possible:
 
     ```java

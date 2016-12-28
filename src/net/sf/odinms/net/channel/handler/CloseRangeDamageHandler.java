@@ -248,7 +248,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
         // Handle sacrifice hp loss.
         if (attack.numAttacked > 0 && attack.skill == 1311005) {
-            int totDamageToOneMonster = attack.allDamage.get(0).getRight().get(0); // sacrifice attacks only 1 mob with 1 attack
+            int totDamageToOneMonster = attack.allDamage.get(0).getRight().get(0); // Sacrifice attacks only 1 mob with 1 attack.
             int remainingHP = player.getHp() - totDamageToOneMonster * attack.getAttackEffect(player).getX() / 100;
             if (remainingHP > 1) {
                 player.setHp(remainingHP);

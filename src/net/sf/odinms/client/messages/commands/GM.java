@@ -1525,7 +1525,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetNpc);
                             }
                         } else {
-                            mc.dropMessage("No NPC's Found");
+                            mc.dropMessage("No NPCs found.");
                         }
                     } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
                         List<String> retMaps = new ArrayList<>();
@@ -1548,7 +1548,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetMap);
                             }
                         } else {
-                            mc.dropMessage("No Maps Found");
+                            mc.dropMessage("No maps found.");
                         }
                     } else if (type.equalsIgnoreCase("MOB") || type.equalsIgnoreCase("MOBS") || type.equalsIgnoreCase("MONSTER") || type.equalsIgnoreCase("MONSTERS")) {
                         List<String> retMobs = new ArrayList<>();
@@ -1569,7 +1569,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetMob);
                             }
                         } else {
-                            mc.dropMessage("No Mob's Found");
+                            mc.dropMessage("No mobs found.");
                         }
                     } else if (type.equalsIgnoreCase("REACTOR") || type.equalsIgnoreCase("REACTORS")) {
                         mc.dropMessage("NOT ADDED YET");
@@ -1585,7 +1585,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetItem);
                             }
                         } else {
-                            mc.dropMessage("No Item's Found");
+                            mc.dropMessage("No items found.");
                         }
                     } else if (type.equalsIgnoreCase("SKILL") || type.equalsIgnoreCase("SKILLS")) {
                         List<String> retSkills = new ArrayList<>();
@@ -1606,10 +1606,10 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetSkill);
                             }
                         } else {
-                            mc.dropMessage("No skills found");
+                            mc.dropMessage("No skills found.");
                         }
                     } else {
-                        mc.dropMessage("Sorry, that search call is unavailable");
+                        mc.dropMessage("Sorry, that search type is unavailable.");
                     }
                 } else {
                     mc.dropMessage("Invalid search.  Proper usage: '!search <type> <search for>', where <type> is MAP, USE, ETC, CASH, EQUIP, MOB (or MONSTER), or SKILL.");

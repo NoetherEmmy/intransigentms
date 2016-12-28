@@ -460,11 +460,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public boolean completedAllQuests() {
-        if (getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000)) {
-            return false;
-        } else {
-            return !getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000);
-        }
+        return !getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000) &&
+               !getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000);
     }
     
     public String getAllItemStats(int itemid) {

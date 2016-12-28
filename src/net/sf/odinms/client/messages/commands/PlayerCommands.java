@@ -81,6 +81,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@expboostinfo - | - Displays how much time you have left on your EXP bonus.");
             mc.dropMessage("@deathpenalty - | - Displays your current death penalty level and its effects, as well as how long until you can next rest.");
             mc.dropMessage("@defense/@defence - | - Displays your true current weapon and magic defense.");
+            mc.dropMessage("@magic - | - Displays your true current magic attack.");
             mc.dropMessage("@monsterhp - | - Displays the current HP % of all mobs on the map.");
             mc.dropMessage("@bosshp <repeat_time_in_milliseconds> - | - Displays the current HP % of all bosses on the map once, or optionally repeating (if specified). Cancels previous @bosshp displays.");
             mc.dropMessage("@truedamage - | - Toggles the display of true damage received.");
@@ -230,7 +231,7 @@ public class PlayerCommands implements Command {
                     }
                 }
                 long blahblah = System.currentTimeMillis() - victim.getAfkTime();
-                if (Math.floor(blahblah / 60000) == 0) { // less than a minute
+                if (Math.floor(blahblah / 60000) == 0) { // Less than a minute
                     mc.dropMessage("This player has not been AFK in the last minute.");
                 } else {
                     StringBuilder sb = new StringBuilder();
@@ -1007,6 +1008,8 @@ public class PlayerCommands implements Command {
                     }
                 }, 4 * 1000);
             }
+        } else if (splitted[0].equals("@magic")) {
+            mc.dropMessage("Your current total magic attack: " + player.getTotalMagic());
         }
     }
 
@@ -1104,7 +1107,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("voteupdate", 0),
             new CommandDefinition("buyback", 0),
             new CommandDefinition("snipedisplay", 0),
-            new CommandDefinition("event", 0)
+            new CommandDefinition("event", 0),
+            new CommandDefinition("magic", 0)
         };
     }
 }
