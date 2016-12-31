@@ -11,7 +11,10 @@ import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 public class WorldServer {
     private static WorldServer instance = null;
@@ -68,8 +71,8 @@ public class WorldServer {
         energyChargeRetention.put(charId, energyLevel);
     }
 
-    public synchronized int removeEnergyChargeRetention(int charId) {
-        return energyChargeRetention.remove(charId);
+    public synchronized Optional<Integer> removeEnergyChargeRetention(int charId) {
+        return Optional.ofNullable(energyChargeRetention.remove(charId));
     }
 
     public synchronized Optional<Integer> getEnergyChargeRetention(int charId) {

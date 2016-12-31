@@ -19,8 +19,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.net.InetAddress;
 import java.rmi.RemoteException;
-import java.sql.Time;
-import java.util.Optional;
 
 public class ChangeChannelHandler extends AbstractMaplePacketHandler {
     @Override

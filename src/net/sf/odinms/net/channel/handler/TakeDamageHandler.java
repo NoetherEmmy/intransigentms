@@ -4,6 +4,7 @@ import net.sf.odinms.client.*;
 import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
+import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.server.AutobanManager;
 import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.MapleMapObject;
@@ -14,18 +15,21 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.rmi.RemoteException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TakeDamageHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
         slea.readInt();
-        int damagefrom = slea.readByte();
+        int damageFrom = slea.readByte();
         slea.readByte();
         int damage = slea.readInt();
         int oid = 0;
-        int monsteridfrom = 0;
+        int monsterIdFrom = 0;
         int pgmr = 0;
         int direction = 0;
         int pos_x = 0;
@@ -33,18 +37,23 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         int fake = 0;
         boolean is_pgmr = false;
         boolean is_pg = true;
-        boolean deadlyattack = false;
-        int mpattack = 0;
+        boolean deadlyAttack = false;
+        int mpAttack = 0;
         MapleMonster attacker = null;
-        int removeddamage = 0;
+        int removedDamage = 0;
         boolean belowLevelLimit = player.getMap().getPartyQuestInstance() != null &&
                                   player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
         boolean dodge = false;
+        boolean advaita = false;
+
+        if (player.getMap().isDamageMuted()) {
+            return;
+        }
 
         float damageScale = player.getDamageScale();
         damage = (int) ((float) damage * damageScale);
 
-        if (damagefrom == -2) {
+        if (damageFrom == -2) {
             int debuffLevel = slea.readByte();
             int debuffId = slea.readByte();
             if (debuffId == 125) {
@@ -62,14 +71,14 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 }
             }
         } else {
-            monsteridfrom = slea.readInt();
+            monsterIdFrom = slea.readInt();
             oid = slea.readInt();
             try {
                 attacker = (MapleMonster) player.getMap().getMapObject(oid);
             } catch (ClassCastException ignored) {
             }
             try {
-                player.setLastDamageSource(MapleLifeFactory.getMonster(monsteridfrom));
+                player.setLastDamageSource(MapleLifeFactory.getMonster(monsterIdFrom));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -94,10 +103,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                      .broadcastGMMessage(null,
                          MaplePacketCreator.serverNotice(6,
                              "WARNING: The player with name " +
-                                 MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
-                                 " on channel " +
-                                 c.getChannel() +
-                                 " MAY be using miss godmode."
+                             MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
+                             " on channel " +
+                             c.getChannel() +
+                             " MAY be using miss godmode."
                          ).getBytes()
                      );
                 } catch (RemoteException re) {
@@ -107,12 +116,12 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             }
         }
 
-        if (damagefrom != -1 && damagefrom != -2 && attacker != null) {
-            MobAttackInfo attackInfo = MobAttackInfoFactory.getMobAttackInfo(attacker, damagefrom);
+        if (damageFrom != -1 && damageFrom != -2 && attacker != null) {
+            MobAttackInfo attackInfo = MobAttackInfoFactory.getMobAttackInfo(attacker, damageFrom);
             if (damage != -1) {
                 if (attackInfo != null && attackInfo.isDeadlyAttack()) {
-                    deadlyattack = true;
-                    mpattack = 0; // mpattack = player.getMp() - 1;
+                    deadlyAttack = true;
+                    mpAttack = 0; // mpAttack = player.getMp() - 1;
                     if (damage != 0) {
                         damage = 0;
                     } else {
@@ -120,11 +129,11 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     }
                 } else {
                     if (attackInfo != null) {
-                        mpattack += attackInfo.getMpBurn();
+                        mpAttack += attackInfo.getMpBurn();
                     }
                 }
-                if (player.getMp() - mpattack < 0) {
-                    mpattack = player.getMp();
+                if (player.getMp() - mpAttack < 0) {
+                    mpAttack = player.getMp();
                 }
             }
             MobSkill skill = null;
@@ -148,8 +157,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     if (mmo instanceof MapleMist) {
                         MapleMist mist = (MapleMist) mmo;
                         if (mist.getSourceSkill().getId() == 4221006) { // Smokescreen
-                            for (MapleMapObject mmoplayer : player.getMap().getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
-                                if (player == mmoplayer) {
+                            for (MapleMapObject mmoPlayer : player.getMap().getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
+                                if (player == mmoPlayer) {
                                     damage = -1;
                                     smokescreened = true;
                                 }
@@ -166,7 +175,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got damage removed by smokescreen don't get to stun mobs
             int job = player.getJob().getId() / 10 - 40;
             fake = 4020002 + (job * 100000);
-            if (damagefrom == -1 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
+            if (damageFrom == -1 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
                 int[] guardianSkillId = {1120005, 1220006};
                 for (int guardian : guardianSkillId) {
                     ISkill guardianSkill = SkillFactory.getSkill(guardian);
@@ -186,14 +195,23 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         }
         player.getCheatTracker().checkTakeDamage();
         if (belowLevelLimit && damage > 1) {
-            removeddamage += damage - 1;
+            removedDamage += damage - 1;
             damage = 1;
         }
         if (player.isInvincible()) {
-            removeddamage += damage;
+            removedDamage += damage;
             damage = 0;
         }
-        if (damage > 0 && !deadlyattack) {
+        if (
+            !belowLevelLimit &&
+            (player.getJob().equals(MapleJob.BUCCANEER) || player.getJob().equals(MapleJob.MARAUDER)) &&
+            player.getSkillLevel(SkillFactory.getSkill(5110001)) > 0 &&
+            player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null &&
+            player.getTotalInt() >= 350
+        ) {
+            player.handleEnergyChargeGain();
+        }
+        if (damage > 0 && !deadlyAttack) {
             player.getCheatTracker().setAttacksWithoutHit(0);
             player.getCheatTracker().resetHPRegen();
             player.resetAfkTime();
@@ -201,8 +219,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 player.getPartyQuest().getMapInstance(player.getMap()).invokeMethod("playerHit", player, damage, attacker);
             }
             if (!player.isHidden() && player.isAlive()) {
-                if (player.getTotalWdef() > 1999 && damagefrom == -1) {
-                    int olddamage = damage;
+                if (player.getTotalWdef() > 1999 && damageFrom == -1) {
+                    int oldDamage = damage;
                     damage = Math.max(damage - (player.getTotalWdef() - 1999), 1);
 
                     double dodgeChance = (Math.log1p(player.getTotalWdef() - 1999) / Math.log(2.0d)) / 25.0d;
@@ -210,55 +228,65 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         damage = 0;
                         dodge = true;
                     }
-                    removeddamage += olddamage - damage;
+                    removedDamage += oldDamage - damage;
                 }
-                if (player.getTotalMdef() > 1999 && (damagefrom == 0 || damagefrom == 1)) {
-                    int olddamage = damage;
+                if (player.getTotalMdef() > 1999 && (damageFrom == 0 || damageFrom == 1) && damage > 0) {
+                    int oldDamage = damage;
                     damage = (int) Math.max(damage - Math.pow(player.getTotalMdef() - 1999.0d, 1.2d), 1);
-                    removeddamage += olddamage - damage;
+                    removedDamage += oldDamage - damage;
+                }
+                int advaitaLevel = player.getSkillLevel(5121004);
+                if (advaitaLevel > 10 && (damageFrom == 0 || damageFrom == 1)) {
+                    double advaitaChance = (double) (advaitaLevel - 10) / 100.0d;
+                    int oldDamage = damage;
+                    if (Math.random() < advaitaChance) {
+                        damage = 0;
+                        advaita = true;
+                    }
+                    removedDamage += oldDamage - damage;
                 }
 
                 if (player.getBuffedValue(MapleBuffStat.MORPH) != null) {
                     player.cancelMorphs();
                 }
                 if (!belowLevelLimit && attacker != null) {
-                    if (damagefrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) {
-                        int bouncedamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / 100));
-                        bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 10);
-                        player.getMap().damageMonster(player, attacker, bouncedamage);
-                        damage -= bouncedamage;
-                        removeddamage += bouncedamage;
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bouncedamage), false, true);
+                    if (damageFrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) {
+                        int bounceDamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / 100));
+                        bounceDamage = Math.min(bounceDamage, attacker.getMaxHp() / 10);
+                        player.getMap().damageMonster(player, attacker, bounceDamage);
+                        damage -= bounceDamage;
+                        removedDamage += bounceDamage;
+                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bounceDamage), false, true);
                         player.checkMonsterAggro(attacker);
                     }
-                    if (damagefrom == -1 && player.getSkillLevel(SkillFactory.getSkill(2310000)) != 0) {
-                        boolean iswearingshield = false;
+                    if (damageFrom == -1 && player.getSkillLevel(SkillFactory.getSkill(2310000)) != 0) {
+                        boolean isWearingShield = false;
                         for (IItem item : player.getInventory(MapleInventoryType.EQUIPPED)) {
                             IEquip equip = (IEquip) item;
                             if (equip.getItemId() / 10000 == 109) {
-                                iswearingshield = true;
+                                isWearingShield = true;
                                 break;
                             }
                         }
-                        if (iswearingshield) {
-                            int bouncedamage = (int) ((double) damage * ((10.0d * (double) player.getSkillLevel(SkillFactory.getSkill(2310000))) / 100.0d));
-                            bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 2);
-                            player.getMap().damageMonster(player, attacker, bouncedamage);
-                            player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bouncedamage), true, true);
+                        if (isWearingShield) {
+                            int bounceDamage = (int) ((double) damage * ((10.0d * (double) player.getSkillLevel(SkillFactory.getSkill(2310000))) / 100.0d));
+                            bounceDamage = Math.min(bounceDamage, attacker.getMaxHp() / 2);
+                            player.getMap().damageMonster(player, attacker, bounceDamage);
+                            player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bounceDamage), true, true);
                             player.checkMonsterAggro(attacker);
                         }
                     }
-                    if ((damagefrom == 0 || damagefrom == 1) && player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null) {
+                    if ((damageFrom == 0 || damageFrom == 1) && player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null) {
                         int[] manaReflectSkillId = {2121002, 2221002, 2321002};
                         for (int manaReflect : manaReflectSkillId) {
                             ISkill manaReflectSkill = SkillFactory.getSkill(manaReflect);
                             if (player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, manaReflectSkill) && player.getSkillLevel(manaReflectSkill) > 0 && manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).makeChanceResult()) {
-                                int bouncedamage = damage * (manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).getX() / 100);
-                                if (bouncedamage > attacker.getMaxHp() * 0.2d) {
-                                    bouncedamage = (int) (attacker.getMaxHp() * 0.2d);
+                                int bounceDamage = damage * (manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).getX() / 100);
+                                if (bounceDamage > attacker.getMaxHp() * 0.2d) {
+                                    bounceDamage = (int) (attacker.getMaxHp() * 0.2d);
                                 }
-                                player.getMap().damageMonster(player, attacker, bouncedamage);
-                                player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bouncedamage), true);
+                                player.getMap().damageMonster(player, attacker, bounceDamage);
+                                player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bounceDamage), true);
                                 player.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(manaReflect, 5));
                                 player.getMap().broadcastMessage(player, MaplePacketCreator.showBuffeffect(player.getId(), manaReflect, 5, (byte) 3), false);
                                 break;
@@ -273,60 +301,131 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             ISkill achillesSkill = SkillFactory.getSkill(achilles);
                             if (player.getSkillLevel(achillesSkill) > 0) {
                                 double multiplier = (double) achillesSkill.getEffect(player.getSkillLevel(achillesSkill)).getX() / 1000.0d;
-                                int olddamage = damage;
-                                int newdamage = (int) (multiplier * (double) damage);
-                                removeddamage += Math.max(olddamage - newdamage, 0);
-                                damage = newdamage;
+                                int oldDamage = damage;
+                                int newDamage = (int) (multiplier * (double) damage);
+                                removedDamage += Math.max(oldDamage - newDamage, 0);
+                                damage = newDamage;
                                 break;
                             }
                         }
                     } catch (Exception e) {
-                        System.out.println("Failed to handle achilles: " + e);
+                        System.out.println("Failed to handle Achilles: " + e);
                     }
                 }
-                if (!belowLevelLimit && player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null && mpattack == 0) {
-                    int mploss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0d));
-                    int hploss = damage - mploss;
-                    int hypotheticalmploss = 0;
+
+                if (!belowLevelLimit && (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null || player.getSkillLevel(5100000) > 0) && mpAttack == 0) {
+                    int mpLoss;
+                    if (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null) {
+                        mpLoss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0d));
+                    } else {
+                        mpLoss = (int) (damage * ((2.0d * player.getSkillLevel(5100000) + 5.0d) / 100.0d));
+                    }
+                    int hpLoss = damage - mpLoss;
+                    int hypotheticalMpLoss = 0;
                     if (player.getBuffedValue(MapleBuffStat.INFINITY) != null) {
-                        hypotheticalmploss = mploss;
-                        mploss = 0;
+                        hypotheticalMpLoss = mpLoss;
+                        mpLoss = 0;
                     }
-                    if (mploss > player.getMp()) {
-                        hploss += mploss - player.getMp();
-                        mploss = player.getMp();
+                    if (mpLoss > player.getMp()) {
+                        hpLoss += mpLoss - player.getMp();
+                        mpLoss = player.getMp();
                     }
-                    player.addMPHP(-hploss, -mploss);
-                    damage = hploss;
-                    if (hypotheticalmploss > 0) {
-                        mploss = hypotheticalmploss;
+                    player.addMP(-mpLoss);
+                    damage = hpLoss;
+                    if (hypotheticalMpLoss > 0) {
+                        mpLoss = hypotheticalMpLoss;
                     }
-                    removeddamage += mploss;
+                    removedDamage += mpLoss;
                 } else if (!belowLevelLimit && player.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
-                    int olddamage = damage;
+                    int oldDamage = damage;
                     damage = (damage % 2 == 0) ? damage / 2 : (damage / 2) + 1; // Damage rounds up!
-                    removeddamage += olddamage - damage;
-                    int mesoloss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0d));
-                    if (player.getMeso() < mesoloss) {
+                    removedDamage += oldDamage - damage;
+                    int mesoLoss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0d));
+                    if (player.getMeso() < mesoLoss) {
                         player.gainMeso(-player.getMeso(), false);
                         player.cancelBuffStats(MapleBuffStat.MESOGUARD);
                     } else {
-                        player.gainMeso(-mesoloss, false);
+                        player.gainMeso(-mesoLoss, false);
                     }
-                    player.addMPHP(-damage, -mpattack);
+                    player.addMP(-mpAttack);
                 } else {
-                    player.addMPHP(-damage, -mpattack);
+                    player.addMP(-mpAttack);
                 }
 
-                if (deadlyattack) {
-                    player.addMPHP(damage, 0);
+                if (deadlyAttack) {
+                    //player.addMPHP(damage, 0);
                     damage = 0;
                 }
-                if (MapleLifeFactory.getMonster(monsteridfrom) != null) {
-                    player.getMap().broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
+
+                if (player.getParty() != null) {
+                    final MaplePartyCharacter thisPartyChr = player.getParty().getMemberById(player.getId());
+                    List<MapleCharacter> transformed =
+                        player.getMap()
+                              .getCharacters()
+                              .stream()
+                              .filter(p ->
+                                  p.getId() != player.getId() &&
+                                      p.getParty() != null &&
+                                      p.getParty().containsMembers(thisPartyChr) &&
+                                      (
+                                          (p.getTotalInt() >= 400 && p.isAffectedBySourceId(5111005)) ||
+                                          (p.getTotalInt() >= 750 && p.isAffectedBySourceId(5121003))
+                                      ) &&
+                                      p.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null
+                              )
+                              .sorted(Comparator.comparingDouble(p -> p.getPosition().distanceSq(player.getPosition())))
+                              .collect(Collectors.toList());
+
+                    for (MapleCharacter p : transformed) {
+                        double absorptionProportion;
+                        if (p.isAffectedBySourceId(5111005)) { // Transformation
+                            absorptionProportion = (double) (p.getSkillLevel(5111005) / 2) / 100.0d;
+                        } else { // Super Transformation
+                            absorptionProportion = (double) p.getSkillLevel(5121003) / 100.0d;
+                        }
+                        int absorbed = (int) (damage * absorptionProportion);
+                        removedDamage += absorbed;
+                        damage -= absorbed;
+
+                        float absorbedDamageScaling = 1.0f + 200.0f / (float) p.getTotalInt();
+                        p.absorbDamage(absorbed * absorbedDamageScaling, damageFrom);
+                    }
+                }
+
+                player.addHP(-damage);
+
+                if (MapleLifeFactory.getMonster(monsterIdFrom) != null) {
+                    player.getMap()
+                          .broadcastMessage(
+                              player,
+                              MaplePacketCreator.damagePlayer(
+                                  damageFrom,
+                                  monsterIdFrom,
+                                  player.getId(),
+                                  damage,
+                                  fake,
+                                  direction,
+                                  is_pgmr,
+                                  pgmr,
+                                  is_pg,
+                                  oid,
+                                  pos_x,
+                                  pos_y
+                              ),
+                              false
+                          );
                 }
                 if (player.getTrueDamage()) {
-                    player.sendHint("#e" + (dodge ? "MISS! " : "") + "#r" + damage + "#k#n" + (removeddamage > 0 ? " #e#b(" + removeddamage + ")#k#n" : ""), 0, 0);
+                    player.sendHint(
+                        "#e" +
+                            (dodge ? "MISS! " : (advaita ? "Advaita: " : "")) +
+                            "#r" +
+                            damage +
+                            "#k#n" +
+                            (removedDamage > 0 ? " #e#b(" + removedDamage + ")#k#n" : ""),
+                        0,
+                        0
+                    );
                 }
                 if (player.getMount() != null && (player.getMount().getSkillId() == 5221006 && player.getMount().isActive())) {
                     player.decrementBattleshipHp(damage);

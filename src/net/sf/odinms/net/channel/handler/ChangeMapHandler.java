@@ -17,7 +17,7 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         final MapleCharacter player = c.getPlayer();
-        player.setLastKillOnMap((long) 0);
+        player.setLastKillOnMap(0L);
         player.setLastDamageSource(null);
         player.resetAfkTime();
         player.setInvincible(false);

@@ -13,10 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public final class DeathLogger {
-    private static final Path PATH = Paths.get(
-        System.getProperty("user.home") +
-        "/Server/XiuzSource/logs/death.log"
-    );
+    private static final Path PATH = Paths.get("/etc/logs/death.log");
     private static final EventLogger LOGGER = new EventLogger(PATH);
 
     /**

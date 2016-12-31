@@ -63,7 +63,8 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         switch (APFrom) {
                             case 64: // str
                                 if (player.getStr() <= 4 || ((player.getJob().getId() / 100) == 1 && player.getStr() <= 35)) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setStr(player.getStr() - 1);
                                 statupdate.add(new Pair<>(MapleStat.STR, player.getStr()));
@@ -73,21 +74,24 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                         (((player.getJob().getId() / 100) == 4 ||
                                         (player.getJob().getId() / 100) == 3) &&
                                         player.getDex() <= 25)) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setDex(player.getDex() - 1);
                                 statupdate.add(new Pair<>(MapleStat.DEX, player.getDex()));
                                 break;
                             case 256: // int
                                 if (player.getInt() <= 4 || ((player.getJob().getId() / 100) == 2 && player.getInt() <= 20)) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setInt(player.getInt() - 1);
                                 statupdate.add(new Pair<>(MapleStat.INT, player.getInt()));
                                 break;
                             case 512: // luk
                                 if (player.getLuk() <= 4 || ((player.getJob().getId() / 100) == 4 && player.getLuk() <= 35)) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setLuk(player.getLuk() - 1);
                                 statupdate.add(new Pair<>(MapleStat.LUK, player.getLuk()));
@@ -102,33 +106,37 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 return;
                             default:
                                 c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true));
-                                break;
+                                return;
                         }
                         switch (APTo) {
                             case 64: // str
                                 if (player.getStr() >= 999) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setStr(player.getStr() + 1);
                                 statupdate.add(new Pair<>(MapleStat.STR, player.getStr()));
                                 break;
                             case 128: // dex
                                 if (player.getDex() >= 999) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setDex(player.getDex() + 1);
                                 statupdate.add(new Pair<>(MapleStat.DEX, player.getDex()));
                                 break;
                             case 256: // int
                                 if (player.getInt() >= 999) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setInt(player.getInt() + 1);
                                 statupdate.add(new Pair<>(MapleStat.INT, player.getInt()));
                                 break;
                             case 512: // luk
                                 if (player.getLuk() >= 999) {
-                                    break;
+                                    c.getSession().write(MaplePacketCreator.enableActions());
+                                    return;
                                 }
                                 player.setLuk(player.getLuk() + 1);
                                 statupdate.add(new Pair<>(MapleStat.LUK, player.getLuk()));
@@ -143,7 +151,10 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 return;
                             default:
                                 c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true));
-                                break;
+                                return;
+                        }
+                        if (player.getJob().isA(MapleJob.BRAWLER) && player.getInt() < 450) {
+                            player.changeSkillLevel(SkillFactory.getSkill(4111006), 0, player.getMasterLevelById(4111006));
                         }
                         c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true));
                     }
@@ -159,16 +170,16 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         }
                         eq = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) equipSlot);
                         eq.setOwner(player.getName());
-                    } else if (tagType == 1) { // Sealing lock
+                    } else if (tagType == 1) { // Sealing lock.
                         byte type = (byte) slea.readInt();
-                        if (type == 2) { // We can't do setLocked() for stars
+                        if (type == 2) { // We can't do setLocked() for stars.
                             break;
                         }
                         byte slot_ = (byte) slea.readInt();
                         eq = player.getInventory(MapleInventoryType.getByType(type)).getItem(slot_);
                         Equip equip = (Equip) eq;
                         equip.setLocked((byte) 1);
-                    }/* else if (tagType == 2) { // Incubator
+                    }/* else if (tagType == 2) { // Incubator.
                     }*/
                     slea.readInt();
                     c.getSession().write(MaplePacketCreator.updateEquipSlot(eq));

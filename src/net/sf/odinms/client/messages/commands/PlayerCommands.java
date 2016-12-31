@@ -815,12 +815,22 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@expboostinfo")) {
             if (player.getExpBonus()) {
                 long timeleft = player.getExpBonusEnd() - System.currentTimeMillis();
-                long hours = timeleft / (long) 3600000;
-                timeleft %= (long) 3600000;
-                long minutes = timeleft / (long) 60000;
-                timeleft %= (long) 60000;
-                long seconds = timeleft / (long) 1000;
-                mc.dropMessage("Your " + player.getExpBonusMulti() + "x exp boost lasts for another " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds.");
+                long hours = timeleft / 3600000L;
+                timeleft %= 3600000L;
+                long minutes = timeleft / 60000L;
+                timeleft %= 60000L;
+                long seconds = timeleft / 1000L;
+                mc.dropMessage(
+                    "Your " +
+                        player.getExpBonusMulti() +
+                        "x exp boost lasts for another " +
+                        hours +
+                        " hours, " +
+                        minutes +
+                        " minutes, and " +
+                        seconds +
+                        " seconds."
+                );
             } else {
                 mc.dropMessage("You do not currently have an exp boost active.");
             }
@@ -942,13 +952,21 @@ public class PlayerCommands implements Command {
             mc.dropMessage("PQ point display is now turned " + s + ".");
         } else if (splitted[0].equals("@readingtime")) {
             if (player.getReadingTime() > 0) {
-                long sittingTime = System.currentTimeMillis() - ((long) player.getReadingTime() * 1000);
-                long hours = sittingTime / (long) 3600000;
-                sittingTime %= (long) 3600000;
-                long minutes = sittingTime / (long) 60000;
-                sittingTime %= (long) 60000;
-                long seconds = sittingTime / (long) 1000;
-                player.dropMessage("You've been reading for a total of " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds this session.");
+                long sittingTime = System.currentTimeMillis() - ((long) player.getReadingTime() * 1000L);
+                long hours = sittingTime / 3600000L;
+                sittingTime %= 3600000L;
+                long minutes = sittingTime / 60000L;
+                sittingTime %= 60000L;
+                long seconds = sittingTime / 1000L;
+                player.dropMessage(
+                    "You've been reading for a total of " +
+                        hours +
+                        " hours, " +
+                        minutes +
+                        " minutes, and " +
+                        seconds +
+                        " seconds this session."
+                );
             } else {
                 player.dropMessage("It doesn't look like you're reading at the moment.");
             }

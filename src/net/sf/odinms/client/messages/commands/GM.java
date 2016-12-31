@@ -1958,7 +1958,7 @@ public class GM implements Command {
                 break;
             }
             case "!resettrialcooldown":
-                player.setLastTrialTime((long) 0);
+                player.setLastTrialTime(0L);
                 mc.dropMessage("Your Monster Trial cooldown has been reset.");
                 break;
             case "!resetap":

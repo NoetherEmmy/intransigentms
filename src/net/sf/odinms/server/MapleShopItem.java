@@ -43,6 +43,6 @@ public class MapleShopItem {
     }
 
     public long getRefresh() {
-        return (long) 0;
+        return 0L;
     }
 }

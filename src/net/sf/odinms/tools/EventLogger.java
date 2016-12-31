@@ -1,6 +1,6 @@
 package net.sf.odinms.tools;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Collections;

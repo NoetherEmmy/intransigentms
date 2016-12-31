@@ -573,7 +573,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
     
     public boolean canEnterMonsterTrial() {
-        if (System.currentTimeMillis() - getPlayer().getLastTrialTime() >= (long) 7200000) {
+        if (System.currentTimeMillis() - getPlayer().getLastTrialTime() >= 7200000L) {
             if (getPlayer().getLevel() >= 20) {
                 return true;
             }
@@ -1885,7 +1885,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             p.setMp(p.getMaxMp());
             p.updateSingleStat(MapleStat.HP, p.getMaxHp());
             p.updateSingleStat(MapleStat.MP, p.getMaxMp());
-            long cooldowntime = (long) 3600000 - (180000 * resurrectionlevel);
+            long cooldowntime = 3600000L - (180000L * (long) resurrectionlevel);
             p.giveCoolDowns(2321006, System.currentTimeMillis(), cooldowntime, true);
             p.incrementDeathPenaltyAndRecalc(5);
             p.setExp(0);

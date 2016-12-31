@@ -79,6 +79,9 @@ public class MapleMap {
     private PartyQuestMapInstance partyQuestInstance = null;
     private ScheduledFuture<?> respawnWorker = null;
     private Set<FieldLimit> fieldLimits;
+    private boolean damageMuted = false;
+    private ScheduledFuture<?> damageMuteCancelTask = null;
+    private ScheduledFuture<?> damageMuteHintTask = null;
 
     public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
         this.mapid = mapid;
@@ -175,6 +178,38 @@ public class MapleMap {
 
     public boolean hasFieldLimit(FieldLimit fl) {
         return fieldLimits.contains(fl);
+    }
+
+    public void setDamageMuted(boolean muted, final long duration) {
+        if (damageMuteCancelTask != null && !damageMuteCancelTask.isDone()) {
+            damageMuteCancelTask.cancel(false);
+            damageMuteCancelTask = null;
+        }
+        if (damageMuteHintTask != null && !damageMuteHintTask.isDone()) {
+            damageMuteHintTask.cancel(false);
+            damageMuteHintTask = null;
+        }
+        TimerManager tMan = TimerManager.getInstance();
+        damageMuted = muted;
+
+        if (duration > 0L) {
+            if (muted) {
+                final long startTime = System.currentTimeMillis();
+                damageMuteHintTask = tMan.register(() -> {
+                    long remainingTime = duration - (System.currentTimeMillis() - startTime);
+                    final int remainingSeconds = (int) (remainingTime / 1000);
+                    getCharacters().forEach(p ->
+                        p.sendHint("All damage muted: #b#e" + remainingSeconds + "#n sec.#k")
+                    );
+                }, 1000L, 0L);
+            }
+
+            damageMuteCancelTask = tMan.schedule(() -> setDamageMuted(false, -1L), duration);
+        }
+    }
+
+    public boolean isDamageMuted() {
+        return damageMuted;
     }
     
     public void restartRespawnWorker() {

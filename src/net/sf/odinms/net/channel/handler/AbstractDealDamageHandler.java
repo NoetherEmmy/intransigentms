@@ -130,7 +130,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             if (oned == null || oned.getLeft() == null) {
                 continue;
             }
-            MapleMonster monster = map.getMonsterByOid(oned.getLeft());
+            final MapleMonster monster = map.getMonsterByOid(oned.getLeft());
 
             if (monster != null && oned.getRight() != null) {
                 int totDamageToOneMonster = 0;
@@ -149,8 +149,17 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     }
                 }
                 if (totDamageToOneMonster >= 12000000) {
-                    AutobanManager.getInstance().autoban
-                    (player.getClient(),"XSource| " + player.getName() + " dealt " + totDamageToOneMonster + " to monster " + monster.getId() + ".");
+                    AutobanManager.getInstance()
+                                  .autoban(
+                                      player.getClient(),
+                                      "XSource| " +
+                                          player.getName() +
+                                          " dealt " +
+                                          totDamageToOneMonster +
+                                          " to monster " +
+                                          monster.getId() +
+                                          "."
+                                  );
                 }
 
                 double distance = player.getPosition().distanceSq(monster.getPosition());
@@ -238,6 +247,29 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             monster.applyFlame(player, flamethrower, flameEffect.getDuration(), attack.charge == 1);
                         }
                         break;
+                    case 5111006: // Shockwave
+                        if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                            ISkill shockwave = SkillFactory.getSkill(5111006);
+                            monster.applyFlame(player, shockwave, 20 * 1000, false);
+                        }
+                        break;
+                    case 5121001: // Dragon Strike
+                        if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                            monster.applyStatus(
+                                player,
+                                new MonsterStatusEffect(
+                                    Collections.singletonMap(
+                                        MonsterStatus.SPEED,
+                                        -100
+                                    ),
+                                    theSkill,
+                                    false
+                                ),
+                                false,
+                                1000L
+                            );
+                        }
+                        break;
                     default:
                         // Passives' attack bonuses
                         if (totDamageToOneMonster > 0 && monster.isAlive()) {
@@ -294,44 +326,79 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                     }
                 }
-                if (totDamageToOneMonster > 0 && attackEffect != null && !attackEffect.getMonsterStati().isEmpty()) {
-                    if (attackEffect.makeChanceResult()) {
+                if (totDamageToOneMonster > 0 && ((attackEffect != null && !attackEffect.getMonsterStati().isEmpty()) || attack.skill == 5101004)) {
+                    if (attackEffect == null || attackEffect.makeChanceResult()) {
+                        boolean apply = true;
                         MonsterStatusEffect monsterStatusEffect;
                         switch (attack.skill) {
                             case 4121003:
                             case 4221003:
                                 // Fixing Taunt skill
-                                Map<MonsterStatus, Integer> tauntstati = new LinkedHashMap<>(3);
-                                tauntstati.put(MonsterStatus.WDEF, 300);
-                                tauntstati.put(MonsterStatus.MDEF, 300);
-                                tauntstati.put(MonsterStatus.SHOWDOWN, player.getSkillLevel(SkillFactory.getSkill(attack.skill)));
-                                monsterStatusEffect = new MonsterStatusEffect(tauntstati, SkillFactory.getSkill(attack.skill), false);
+                                Map<MonsterStatus, Integer> tauntStati = new LinkedHashMap<>(3);
+                                tauntStati.put(MonsterStatus.WDEF, 300);
+                                tauntStati.put(MonsterStatus.MDEF, 300);
+                                tauntStati.put(MonsterStatus.SHOWDOWN, player.getSkillLevel(SkillFactory.getSkill(attack.skill)));
+                                monsterStatusEffect = new MonsterStatusEffect(tauntStati, theSkill, false);
                                 break;
                             case 4001002:
                                 // Handle Disorder's scaling with player level
-                                Map<MonsterStatus, Integer> disorderstati = attackEffect.getMonsterStati();
-                                if (disorderstati.containsKey(MonsterStatus.WATK)) {
-                                    disorderstati.put(MonsterStatus.WATK, disorderstati.get(MonsterStatus.WATK) - (player.getLevel() / 2));
+                                Map<MonsterStatus, Integer> disorderStati = new LinkedHashMap<>(attackEffect.getMonsterStati());
+                                if (disorderStati.containsKey(MonsterStatus.WATK)) {
+                                    disorderStati.put(MonsterStatus.WATK, disorderStati.get(MonsterStatus.WATK) - (player.getLevel() / 2));
                                 }
-                                if (disorderstati.containsKey(MonsterStatus.WDEF)) {
-                                    disorderstati.put(MonsterStatus.WDEF, disorderstati.get(MonsterStatus.WDEF) - (player.getLevel() / 2));
+                                if (disorderStati.containsKey(MonsterStatus.WDEF)) {
+                                    disorderStati.put(MonsterStatus.WDEF, disorderStati.get(MonsterStatus.WDEF) - (player.getLevel() / 2));
                                 }
-                                monsterStatusEffect = new MonsterStatusEffect(disorderstati, theSkill, false);
+                                monsterStatusEffect = new MonsterStatusEffect(disorderStati, theSkill, false);
+                                break;
+                            case 5101002: // Backspin Blow
+                            case 5101003: // Double Uppercut
+                                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                                    apply = false;
+                                    monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), theSkill, false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 3 * 1000);
+                                } else {
+                                    monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
+                                }
+                                break;
+                            case 5101004: // Corkscrew Blow
+                                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                                    apply = false;
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.STUN, 1), theSkill, false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 1000);
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), theSkill, false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 3 * 1000);
+                                } else {
+                                    monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
+                                }
                                 break;
                             default:
                                 monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
                                 break;
                         }
-                        monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
+                        if (apply) {
+                            monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
+                        }
                     }
                 }
 
                 // Apply attack
-                if (!attack.isHH) {
+                if (!attack.isHH && monster.isAlive()) {
                     map.damageMonster(player, monster, totDamageToOneMonster);
+                }
+                if (
+                    attack.skill == 5121005 /* Snatch */ &&
+                    !monster.isAlive() &&
+                    player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null &&
+                    player.getTotalInt() >= 650
+                ) {
+                    player.handleEnergyChargeGain();
                 }
             }
         }
+
         if (totDamage > 1) {
             player.getCheatTracker().setAttacksWithoutHit(player.getCheatTracker().getAttacksWithoutHit() + 1);
             final int offenseLimit;

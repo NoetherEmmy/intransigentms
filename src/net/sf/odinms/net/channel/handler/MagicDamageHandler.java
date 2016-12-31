@@ -26,6 +26,26 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         AttackInfo attack = parseDamage(slea, false);
         MapleCharacter player = c.getPlayer();
 
+        if (player.getMap().isDamageMuted()) {
+            for (int i = 0; i < attack.allDamage.size(); ++i) {
+                Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                MapleMonster monster = null;
+                if (dmg != null) {
+                    monster = player.getMap().getMonsterByOid(dmg.getLeft());
+                }
+                if (monster != null) {
+                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                    for (Integer dmgNumber : dmg.getRight()) {
+                        additionalDmg.add(-dmgNumber);
+                    }
+                    for (Integer additionald : additionalDmg) {
+                        c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
+                    }
+                }
+            }
+            return;
+        }
+
         int totalMagic = player.getTotalMagic();
         final ISkill skillUsed = SkillFactory.getSkill(attack.skill);
         if (totalMagic > 1999) {
@@ -78,21 +98,24 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             }
         }
 
-        if (attack.allDamage != null && skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
-            for (int i = 0; i < attack.allDamage.size(); ++i) {
-                Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                MapleMonster monster = null;
-                if (dmg != null && dmg.getLeft() != null) {
-                    monster = player.getMap().getMonsterByOid(dmg.getLeft());
-                }
-                if (monster != null) {
-                    ElementalEffectiveness ee = monster.getAddedEffectiveness(skillUsed.getElement());
+        for (int i = 0; i < attack.allDamage.size(); ++i) {
+            Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+            MapleMonster monster = null;
+            if (dmg != null) {
+                monster = player.getMap().getMonsterByOid(dmg.getLeft());
+            }
+            if (monster != null) {
+                ElementalEffectiveness ee = null;
+                if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
+                    ee = monster.getAddedEffectiveness(skillUsed.getElement());
                     if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) && monster.getEffectiveness(skillUsed.getElement()) == ElementalEffectiveness.WEAK) {
-                        continue;
+                        ee = null;
                     }
-                    double multiplier;
-                    List<Integer> additionaldmg = new ArrayList<>();
-                    List<Integer> newdmg = new ArrayList<>();
+                }
+                double multiplier = monster.getVulnerability();
+                List<Integer> additionalDmg = new ArrayList<>();
+                List<Integer> newDmg = new ArrayList<>();
+                if (ee != null) {
                     switch (ee) {
                         case WEAK:
                             multiplier = 1.5d;
@@ -103,19 +126,16 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                         case IMMUNE:
                             multiplier = 0.0d;
                             break;
-                        default:
-                            multiplier = 1.0d;
-                            break;
                     }
-                    if (multiplier != 1.0d && dmg.getRight() != null) {
-                        for (Integer dmgnumber : dmg.getRight()){
-                            additionaldmg.add((int) (dmgnumber * (multiplier - 1.0d)));
-                            newdmg.add((int) (dmgnumber * multiplier));
-                        }
-                        attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                        for (Integer additionald : additionaldmg){
-                            player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                        }
+                }
+                if (multiplier != 1.0d) {
+                    for (Integer dmgNumber : dmg.getRight()) {
+                        additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
+                        newDmg.add((int) (dmgNumber * multiplier));
+                    }
+                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
+                    for (Integer additionald : additionalDmg) {
+                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
                     }
                 }
             }

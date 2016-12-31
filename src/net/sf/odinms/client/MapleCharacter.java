@@ -228,7 +228,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int eventpoints;
     
     private long lastelanrecharge;
-    private long lastkillonmap = (long) 0;
+    private long lastkillonmap = 0L;
     
     private long laststrengthening;
     private int deathpenalty = 0;
@@ -246,7 +246,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private boolean completedallquests = false;
 
     private boolean scpqflag = false;
-    private boolean showpqpoints = true;
+    private boolean showPqPoints = true;
 
     private int readingTime = 0;
     ScheduledFuture<?> readingTask = null;
@@ -268,6 +268,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private boolean showDpm = false;
     private boolean showSnipeDmg = false;
     private int preEventMap = 0;
+
+    private long lastSamsara;
+    public static final long SAMSARA_COOLDOWN = 3L * 60L * 60L * 1000L;
 
     public MapleCharacter() {
         setStance(0);
@@ -394,6 +397,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.overflowExp = rs.getLong("overflowexp");
         ret.questCompletion = rs.getInt("questcompletion");
         ret.zakDc = rs.getInt("zakdc") == 1;
+        ret.lastSamsara = rs.getLong("lastsamsara");
         ret.battleshiphp = 0;
         //
         if (ret.guildid > 0) {
@@ -713,7 +717,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.maplemount = null;
         ret.completedallquests = false;
         ret.scpqflag = false;
-        ret.overflowExp = (long) 0;
+        ret.overflowExp = 0L;
+        ret.lastSamsara = 0L;
         ret.questCompletion = 0;
         ret.preEventMap = 0;
         ret.setDefaultKeyMap();
@@ -728,9 +733,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             con.setAutoCommit(false);
             PreparedStatement ps;
             if (update) {
-                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ?, questcompletion = ?, zakdc = ? WHERE id = ?");
+                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ?, questcompletion = ?, zakdc = ?, lastsamsara = ? WHERE id = ?");
             } else {
-                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, questcompletion, zakdc, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, questcompletion, zakdc, lastsamsara, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -840,12 +845,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             } else {
                 ps.setInt(70, 0);
             }
+            ps.setLong(71, lastSamsara);
             if (update) {
-                ps.setInt(71, id);
+                ps.setInt(72, id);
             } else {
-                ps.setInt(71, accountid);
-                ps.setString(72, name);
-                ps.setInt(73, world);
+                ps.setInt(72, accountid);
+                ps.setString(73, name);
+                ps.setInt(74, world);
             }
             if (!full) {
                 ps.executeUpdate();
@@ -1295,13 +1301,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public String getElanRechargeTimeString() {
         long time = System.currentTimeMillis() - getLastElanRecharge();
-        if (time < 5 * 24 * 60 * 60 * 1000) {
-            time = 5 * 24 * 60 * 60 * 1000 - time;
-            long hours = time / (long) 3600000;
-            time %= (long) 3600000;
-            long minutes = time / (long) 60000;
-            time %= (long) 60000;
-            long seconds = time / (long) 1000;
+        if (time < 5L * 24L * 60L * 60L * 1000L) {
+            time = 5L * 24L * 60L * 60L * 1000L - time;
+            long hours = time / 3600000L;
+            time %= 3600000L;
+            long minutes = time / 60000L;
+            time %= 60000L;
+            long seconds = time / 1000L;
             return "You must wait another " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds to recharge your Elans Vital.";
         } else {
             return "You may recharge your Elans Vital.";
@@ -1326,13 +1332,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     
     public String getStrengtheningTimeString() {
         long time = System.currentTimeMillis() - getLastStrengthening();
-        if (time < 24 * 60 * 60 * 1000) {
-            time = 24 * 60 * 60 * 1000 - time;
-            long hours = time / (long) 3600000;
-            time %= (long) 3600000;
-            long minutes = time / (long) 60000;
-            time %= (long) 60000;
-            long seconds = time / (long) 1000;
+        if (time < 24L * 60L * 60L * 1000L) {
+            time = 24L * 60L * 60L * 1000L - time;
+            long hours = time / 3600000L;
+            time %= 3600000L;
+            long minutes = time / 60000L;
+            time %= 60000L;
+            long seconds = time / 1000L;
             return "You must wait another " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds before you can rest again.";
         } else {
             return "You may rest.";
@@ -1503,7 +1509,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
     
     public boolean lastKillOnMapWithin(int seconds) {
-        return System.currentTimeMillis() - getLastKillOnMap() < ((long) seconds * (long) 1000);
+        return System.currentTimeMillis() - getLastKillOnMap() < ((long) seconds * 1000L);
     }
     
     public void updateLastKillOnMap() {
@@ -1523,15 +1529,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public boolean showPqPoints() {
-        return this.showpqpoints;
+        return this.showPqPoints;
     }
 
     public void setShowPqPoints(boolean spqp) {
-        this.showpqpoints = spqp;
+        this.showPqPoints = spqp;
     }
 
     public void toggleShowPqPoints() {
-        this.showpqpoints = !this.showpqpoints;
+        this.showPqPoints = !this.showPqPoints;
     }
     
     public boolean completedAllQuests() {
@@ -1595,7 +1601,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (this.battleshiphp < 1 && battleShipEffect != null) {
             this.cancelBuffsBySourceId(5221006);
             ISkill battleShip = SkillFactory.getSkill(5221006);
-            long cooldownTime = (long) battleShip.getEffect(getSkillLevel(battleShip)).getCooldown() * (long) 1000;
+            long cooldownTime = (long) battleShip.getEffect(getSkillLevel(battleShip)).getCooldown() * 1000L;
             this.giveCoolDowns(5221006, System.currentTimeMillis(), cooldownTime, true);
         }
     }
@@ -1614,7 +1620,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (this.battleshiphp < 1 && battleshipeffect != null) {
             this.cancelBuffsBySourceId(5221006);
             ISkill battleship = SkillFactory.getSkill(5221006);
-            long cooldowntime = (long) battleship.getEffect(getSkillLevel(battleship)).getCooldown() * (long) 1000;
+            long cooldowntime = (long) battleship.getEffect(getSkillLevel(battleship)).getCooldown() * 1000L;
             this.giveCoolDowns(5221006, System.currentTimeMillis(), cooldowntime, true);
         }
         return this.battleshiphp;
@@ -2033,7 +2039,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         return null;
     }
-    
+
+    /** Nullable */
     public Integer getBuffedValue(MapleBuffStat effect) {
         MapleBuffStatValueHolder mbsvh = effects.get(effect);
         if (mbsvh == null) {
@@ -2044,10 +2051,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public boolean isBuffFrom(MapleBuffStat stat, ISkill skill) {
         MapleBuffStatValueHolder mbsvh = effects.get(stat);
-        if (mbsvh == null) {
-            return false;
-        }
-        return mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skill.getId();
+        return mbsvh != null && mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skill.getId();
     }
 
     public int getBuffSource(MapleBuffStat stat) {
@@ -2372,6 +2376,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 cancelEffect(mbsvh.effect, false, mbsvh.startTime);
             }
         }
+    }
+
+    public boolean isAffectedBySourceId(final int sourceId) {
+        return effects.values().stream().anyMatch(mbsvh -> mbsvh.effect.getSourceId() == sourceId);
     }
 
     public void cancelMorphs() {
@@ -3084,10 +3092,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         resetQuestKills();
         setCompletedAllQuests(false);
         setScpqFlag(false);
-        overflowExp = (long) 0;
+        overflowExp = 0L;
+        lastSamsara = 0L;
         setMonsterTrialPoints(0);
         setMonsterTrialTier(0);
-        setLastTrialTime((long) 0);
+        setLastTrialTime(0L);
         resetAllQuestProgress();
         for (int s : SKILL_IDS) {
             changeSkillLevel(SkillFactory.getSkill(s), 0, 0);
@@ -3214,7 +3223,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                         setMp(getMaxMp());
                         updateSingleStat(MapleStat.HP, getMaxHp());
                         updateSingleStat(MapleStat.MP, getMaxMp());
-                        long cooldowntime = (long) 3600000 - (180000 * resurrectionlevel);
+                        long cooldowntime = 3600000L - (180000L * (long) resurrectionlevel);
                         giveCoolDowns(2321006, System.currentTimeMillis(), cooldowntime, true);
                         incrementDeathPenaltyAndRecalc(5);
                         setExp(0);
@@ -3290,7 +3299,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void addMPHP(int hpDiff, int mpDiff) {
         setHp(hp + hpDiff);
         setMp(mp + mpDiff);
-        List<Pair<MapleStat, Integer>> stats = new ArrayList<>();
+        List<Pair<MapleStat, Integer>> stats = new ArrayList<>(2);
         stats.add(new Pair<>(MapleStat.HP, hp));
         stats.add(new Pair<>(MapleStat.MP, mp));
         MaplePacket updatePacket = MaplePacketCreator.updatePlayerStats(stats);
@@ -3740,50 +3749,50 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     skil = SkillFactory.getSkill(1100000);
                     skill = player.getSkillLevel(skil);
                     if (skill > 0) {
-                        sword = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                        sword = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                     } else {
-                        sword = 0.1;
+                        sword = 0.1d;
                     }
                 } else {
                     skil = SkillFactory.getSkill(1200000);
                     skill = player.getSkillLevel(skil);
                     if (skill > 0) {
-                        sword = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                        sword = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                     } else {
-                        sword = 0.1;
+                        sword = 0.1d;
                     }
                 }
                 skil = SkillFactory.getSkill(1100001);
                 skill = player.getSkillLevel(skil);
                 double axe;
                 if (skill > 0) {
-                    axe = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    axe = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                 } else {
-                    axe = 0.1;
+                    axe = 0.1d;
                 }
                 skil = SkillFactory.getSkill(1200001);
                 skill = player.getSkillLevel(skil);
                 double blunt;
                 if (skill > 0) {
-                    blunt = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    blunt = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                 } else {
-                    blunt = 0.1;
+                    blunt = 0.1d;
                 }
                 skil = SkillFactory.getSkill(1300000);
                 skill = player.getSkillLevel(skil);
                 double spear;
                 if (skill > 0) {
-                    spear = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    spear = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                 } else {
-                    spear = 0.1;
+                    spear = 0.1d;
                 }
                 skil = SkillFactory.getSkill(1300001);
                 skill = player.getSkillLevel(skil);
                 double polearm;
                 if (skill > 0) {
-                    polearm = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    polearm = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                 } else {
-                    polearm = 0.1;
+                    polearm = 0.1d;
                 }
                 skil = SkillFactory.getSkill(3200000);
                 skill = player.getSkillLevel(skil);
@@ -3792,12 +3801,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 double crossbow;
                 if (skill > 0 || skill2 > 0) {
                     if (skill2 <= 0) {
-                        crossbow = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                        crossbow = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                     } else {
-                        crossbow = ((skil2.getEffect(player.getSkillLevel(skil2)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                        crossbow = (skil2.getEffect(player.getSkillLevel(skil2)).getMastery() * 5.0d + 10.0d) / 100.0d;
                     }
                 } else {
-                    crossbow = 0.1;
+                    crossbow = 0.1d;
                 }
                 skil = SkillFactory.getSkill(3100000);
                 skill = player.getSkillLevel(skil);
@@ -3806,71 +3815,71 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 double bow;
                 if (skill > 0 || skill2 > 0) {
                     if (skill2 <= 0) {
-                        bow = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                        bow = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                     } else {
-                        bow = ((skil2.getEffect(player.getSkillLevel(skil2)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                        bow = (skil2.getEffect(player.getSkillLevel(skil2)).getMastery() * 5.0d + 10.0d) / 100.0d;
                     }
                 } else {
-                    bow = 0.1;
+                    bow = 0.1d;
                 }
                 skil = SkillFactory.getSkill(4100000);
                 skill = player.getSkillLevel(skil);
                 double claw;
                 if (skill > 0) {
-                    claw = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    claw = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                 } else {
-                    claw = 0.1;
+                    claw = 0.1d;
                 }
                 skil = SkillFactory.getSkill(4200000);
                 skill = player.getSkillLevel(skil);
                 double dagger;
                 if (skill > 0) {
-                    dagger = ((skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d);
+                    dagger = (skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5.0d + 10.0d) / 100.0d;
                 } else {
-                    dagger = 0.1;
+                    dagger = 0.1d;
                 }
                 if (weapon == MapleWeaponType.CROSSBOW) {
-                    minbasedamage = (int) ((localdex * 0.9 * 3.6 * crossbow + localstr) / 100.0d * (atk + 15.0d));
+                    minbasedamage = (int) ((localdex * 0.9d * 3.6d * crossbow + localstr) / 100.0d * (atk + 15.0d));
                 }
                 if (weapon == MapleWeaponType.BOW) {
-                    minbasedamage = (int) ((localdex * 0.9 * 3.4 * bow + localstr) / 100.0d * (atk + 15.0d));
+                    minbasedamage = (int) ((localdex * 0.9d * 3.4d * bow + localstr) / 100.0d * (atk + 15.0d));
                 }
                 if (getJob().isA(MapleJob.THIEF) && (weapon == MapleWeaponType.DAGGER)) {
-                    minbasedamage = (int) ((localluk * 0.9 * 3.6 * dagger + localstr + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localluk * 0.9d * 3.6d * dagger + localstr + localdex) / 100.0d * atk);
                 }
                 if (!getJob().isA(MapleJob.THIEF) && (weapon == MapleWeaponType.DAGGER)) {
-                    minbasedamage = (int) ((localstr * 0.9 * 4.0 * dagger + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 4.0d * dagger + localdex) / 100.0d * atk);
                 }
                 if (getJob().isA(MapleJob.THIEF) && (weapon == MapleWeaponType.CLAW)) {
-                    minbasedamage = (int) ((localluk * 0.9 * 3.6 * claw + localstr + localdex) / 100.0d * (atk + 15.0d));
+                    minbasedamage = (int) ((localluk * 0.9d * 3.6d * claw + localstr + localdex) / 100.0d * (atk + 15.0d));
                 }
                 if (weapon == MapleWeaponType.SPEAR) {
-                    minbasedamage = (int) ((localstr * 0.9 * 3.0 * spear + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 3.0d * spear + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.POLE_ARM) {
-                    minbasedamage = (int) ((localstr * 0.9 * 3.0 * polearm + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 3.0d * polearm + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.SWORD1H) {
-                    minbasedamage = (int) ((localstr * 0.9 * 4.0 * sword + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 4.0d * sword + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.SWORD2H) {
-                    minbasedamage = (int) ((localstr * 0.9 * 4.6 * sword + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 4.6d * sword + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.AXE1H) {
-                    minbasedamage = (int) ((localstr * 0.9 * 3.2 * axe + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 3.2d * axe + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.BLUNT1H) {
-                    minbasedamage = (int) ((localstr * 0.9 * 3.2 * blunt + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 3.2d * blunt + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.AXE2H) {
-                    minbasedamage = (int) ((localstr * 0.9 * 3.4 * axe + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 3.4d * axe + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.BLUNT2H) {
-                    minbasedamage = (int) ((localstr * 0.9 * 3.4 * blunt + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 3.4d * blunt + localdex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.STAFF || weapon == MapleWeaponType.WAND) {
                     double staffwand = 0.1d;
-                    minbasedamage = (int) ((localstr * 0.9 * 3.0 * staffwand + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localstr * 0.9d * 3.0d * staffwand + localdex) / 100.0d * atk);
                 }
             }
         }
@@ -4835,6 +4844,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return summons;
     }
 
+    public void cleanNullSummons() {
+        List<Integer> keys = new LinkedList<>();
+        synchronized (summons) {
+            for (Map.Entry<Integer, MapleSummon> e : summons.entrySet()) {
+                if (e.getValue() == null) {
+                    keys.add(e.getKey());
+                }
+            }
+
+            for (Integer i : keys) {
+                summons.remove(i);
+            }
+        }
+    }
+
     public int getChair() {
         return chair;
     }
@@ -5251,6 +5275,110 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return showDpm;
     }
 
+    public void absorbDamage(float dmg, int damageFrom) {
+        if (isHidden() || !isAlive()) {
+            return;
+        }
+
+        boolean belowLevelLimit = getMap().getPartyQuestInstance() != null &&
+                                  getMap().getPartyQuestInstance().getLevelLimit() > getLevel();
+        int damage = (int) (dmg * getDamageScale());
+        int removedDamage = 0;
+        boolean dodge = false;
+        boolean advaita = false;
+
+        if (belowLevelLimit) damage = 1;
+        if (isInvincible()) {
+            removedDamage += damage;
+            damage = 0;
+        }
+
+        if (getTotalWdef() > 1999 && damageFrom == -1) {
+            int oldDamage = damage;
+            damage = Math.max(damage - (getTotalWdef() - 1999), 1);
+
+            double dodgeChance = (Math.log1p(getTotalWdef() - 1999) / Math.log(2.0d)) / 25.0d;
+            if (Math.random() < dodgeChance) {
+                damage = 0;
+                dodge = true;
+            }
+            removedDamage += oldDamage - damage;
+        }
+
+        if (getTotalMdef() > 1999 && (damageFrom == 0 || damageFrom == 1)) {
+            int oldDamage = damage;
+            damage = (int) Math.max(damage - Math.pow(getTotalMdef() - 1999.0d, 1.2d), 1);
+            removedDamage += oldDamage - damage;
+        }
+
+        int advaitaLevel = getSkillLevel(5121004);
+        if (advaitaLevel > 10 && (damageFrom == 0 || damageFrom == 1)) {
+            double advaitaChance = (double) (advaitaLevel - 10) / 100.0d;
+            int oldDamage = damage;
+            if (Math.random() < advaitaChance) {
+                damage = 0;
+                advaita = true;
+            }
+            removedDamage += oldDamage - damage;
+        }
+
+        if (getBuffedValue(MapleBuffStat.MORPH) != null) {
+            cancelMorphs();
+        }
+
+        if (damage > 1 && getSkillLevel(5100000) > 0) {
+            int mpLoss;
+            if (getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null) {
+                mpLoss = (int) (damage * (getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0d));
+            } else {
+                mpLoss = (int) (damage * ((2.0d * getSkillLevel(5100000) + 5.0d) / 100.0d));
+            }
+            int hpLoss = damage - mpLoss;
+            int hypotheticalMpLoss = 0;
+            if (getBuffedValue(MapleBuffStat.INFINITY) != null) {
+                hypotheticalMpLoss = mpLoss;
+                mpLoss = 0;
+            }
+            if (mpLoss > getMp()) {
+                hpLoss += mpLoss - getMp();
+                mpLoss = getMp();
+            }
+            addMP(-mpLoss);
+            damage = hpLoss;
+            if (hypotheticalMpLoss > 0) {
+                mpLoss = hypotheticalMpLoss;
+            }
+            removedDamage += mpLoss;
+        }
+
+        if (damage > 0) addHP(-damage);
+
+        if (getTrueDamage()) {
+            sendHint(
+                "Absorbed: #e" +
+                    (dodge ? "MISS! " : (advaita ? "Advaita: " : "")) +
+                    "#r" +
+                    damage +
+                    "#k#n" +
+                    (removedDamage > 0 ? " #e#b(" + removedDamage + ")#k#n" : ""),
+                0,
+                0
+            );
+        }
+    }
+
+    public void setLastSamsara(long time) {
+        lastSamsara = time;
+    }
+
+    public long getLastSamsara() {
+        return lastSamsara;
+    }
+
+    public boolean canSamsara() {
+        return System.currentTimeMillis() - getLastSamsara() >= SAMSARA_COOLDOWN;
+    }
+
     private static class MapleBuffStatValueHolder {
         public final MapleStatEffect effect;
         public final long startTime;
@@ -5424,6 +5552,44 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void giveDebuff(MapleDisease disease, MobSkill mobSkill) {
+        int stillMindLevel = getSkillLevel(5110000);
+        if (stillMindLevel > 0) {
+            double stillMindProp = (double) ((stillMindLevel * getTotalInt() - 500) / 250) / 100.0d;
+            if (Math.random() < stillMindProp) {
+                if (getTrueDamage()) {
+                    String diseaseName = disease.toString().toLowerCase();
+                    sendHint("#bStill Mind: Negated #e" + diseaseName + "#n#k");
+                }
+                return;
+            }
+        }
+
+        synchronized (diseases) {
+            if (isAlive() && !isActiveBuffedValue(2321005) && !diseases.contains(disease) && diseases.size() < 2) {
+                diseases.add(disease);
+                List<Pair<MapleDisease, Integer>> debuff = Collections.singletonList(new Pair<>(disease, mobSkill.getX()));
+                long mask = 0;
+                for (Pair<MapleDisease, Integer> statup : debuff) {
+                    mask |= statup.getLeft().getValue();
+                }
+                getClient().getSession().write(MaplePacketCreator.giveDebuff(mask, debuff, mobSkill));
+                if (disease != MapleDisease.POISON) {
+                    getMap().broadcastMessage(this, MaplePacketCreator.giveForeignDebuff(id, mask, mobSkill), false);
+                }
+                if (isAlive()) {
+                    final MapleCharacter character = this;
+                    final MapleDisease disease_ = disease;
+                    TimerManager.getInstance().schedule(() -> {
+                        if (character.diseases.contains(disease_)) {
+                            dispelDebuff(disease_);
+                        }
+                    }, mobSkill.getDuration());
+                }
+            }
+        }
+    }
+
+    public void forciblyGiveDebuff(MapleDisease disease, MobSkill mobSkill) {
         synchronized (diseases) {
             if (isAlive() && !isActiveBuffedValue(2321005) && !diseases.contains(disease) && diseases.size() < 2) {
                 diseases.add(disease);
@@ -5529,7 +5695,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void giveDebuff(int debuff, int level) {
-        giveDebuff(debuff, level, (long) -1);
+        giveDebuff(debuff, level, -1L);
     }
 
     public void giveDebuff(int debuff, int level, long time) {
@@ -5564,10 +5730,52 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 System.out.println("Failed to apply debuff of skill ID " + debuff + " and skill level " + level + " to player " + getName() + ". Function: giveDebuff()");
                 return;
         }
-        if (time > (long) 0) {
+        if (time > 0L) {
             ms.setDuration(time);
         }
         giveDebuff(disease, ms);
+    }
+
+    public void forciblyGiveDebuff(int debuff, int level) {
+        forciblyGiveDebuff(debuff, level, -1L);
+    }
+
+    public void forciblyGiveDebuff(int debuff, int level, long time) {
+        final MobSkill ms = MobSkillFactory.getMobSkill(debuff, level);
+        MapleDisease disease;
+        switch (debuff) {
+            case 120:
+                disease = MapleDisease.SEAL;
+                break;
+            case 121:
+                disease = MapleDisease.DARKNESS;
+                break;
+            case 122:
+                disease = MapleDisease.WEAKEN;
+                break;
+            case 123:
+                disease = MapleDisease.STUN;
+                break;
+            case 124:
+                disease = MapleDisease.CURSE;
+                break;
+            case 125:
+                disease = MapleDisease.POISON;
+                break;
+            case 126:
+                disease = MapleDisease.SLOW;
+                break;
+            case 128:
+                disease = MapleDisease.SEDUCE;
+                break;
+            default:
+                System.out.println("Failed to apply debuff of skill ID " + debuff + " and skill level " + level + " to player " + getName() + ". Function: giveDebuff()");
+                return;
+        }
+        if (time > 0L) {
+            ms.setDuration(time);
+        }
+        forciblyGiveDebuff(disease, ms);
     }
 
     public boolean isMarried() {
@@ -5792,29 +6000,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
     
-    public double getRelativeXp(int monsterlevel) {
+    public double getRelativeXp(int monsterLevel) {
         double relativeLevelMultiplier;
         if (getLevel() < 70) {
-            if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
+            if (monsterLevel - getLevel() >= 0) {
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterLevel - getLevel());
             } else {
-                relativeLevelMultiplier = 1.0d + 0.07d * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.07d * (double) (monsterLevel - getLevel());
             }
         } else if (getLevel() >= 70 && getLevel() < 95) {
-            if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
+            if (monsterLevel - getLevel() >= 0) {
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterLevel - getLevel());
             } else {
-                relativeLevelMultiplier = 1.0d + 0.05d * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.05d * (double) (monsterLevel - getLevel());
             }
         } else if (getLevel() >= 95 && getLevel() < 110) {
-            if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
+            if (monsterLevel - getLevel() >= 0) {
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterLevel - getLevel());
             } else {
-                relativeLevelMultiplier = 1.0d + 0.03d * (double) (monsterlevel - getLevel());
+                relativeLevelMultiplier = 1.0d + 0.03d * (double) (monsterLevel - getLevel());
             }
         } else {
-            if (monsterlevel - getLevel() >= 0) {
-                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterlevel - getLevel());
+            if (monsterLevel - getLevel() >= 0) {
+                relativeLevelMultiplier = 1.0d + 0.1d * (double) (monsterLevel - getLevel());
             } else {
                 relativeLevelMultiplier = 1.0d;
             }
@@ -5886,7 +6094,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (isGM()) {
             int[] skillgm =
             {
-                    9001000, 9001001, 9001002, 9101000, 9101001, 9101002, 9101003, 9101004, 9101005, 9101006, 9101007, 9101008};
+                9001000, 9001001, 9001002, 9101000,
+                9101001, 9101002, 9101003, 9101004,
+                9101005, 9101006, 9101007, 9101008
+            };
             for (int s : skillgm) {
                 maxSkillLevel(s);
             }
@@ -5898,7 +6109,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             resetSkillLevel(s);
         }
         if (isGM()) {
-            int[] skillgm = {9001000, 9001001, 9001002, 9101000, 9101001, 9101002, 9101003, 9101004, 9101005, 9101006, 9101007, 9101008};
+            int[] skillgm =
+            {
+                9001000, 9001001, 9001002, 9101000,
+                9101001, 9101002, 9101003, 9101004,
+                9101005, 9101006, 9101007, 9101008
+            };
             for (int s : skillgm) {
                 resetSkillLevel(s);
             }
@@ -6111,10 +6327,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void handleEnergyChargeGain() {
-        ISkill energycharge = SkillFactory.getSkill(5110001);
-        int energyChargeSkillLevel = getSkillLevel(energycharge);
-        MapleStatEffect ceffect = energycharge.getEffect(energyChargeSkillLevel);
+        handleEnergyChargeGain(1.0d);
+    }
+
+    public void handleEnergyChargeGain(double multiplier) {
+        ISkill energyCharge = SkillFactory.getSkill(5110001);
+        int energyChargeSkillLevel = getSkillLevel(energyCharge);
+        MapleStatEffect ceffect = energyCharge.getEffect(energyChargeSkillLevel);
         int gain = rand((int) ceffect.getProp(), (int) ceffect.getProp() * 2);
+        if (multiplier != 1.0d) {
+            gain = (int) (multiplier * (double) gain);
+        }
         if (energybar < 10000) {
             energybar += gain;
             if (energybar > 10000) {
@@ -6133,7 +6356,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getEnergyBar() {
-        return this.energybar;
+        return energybar;
     }
 
     public void setEnergyBar(int set) {

@@ -8,16 +8,15 @@ import java.util.concurrent.ScheduledFuture;
 //import net.sf.odinms.tools.ArrayMap;
 
 public class MonsterStatusEffect {
-
     private final Map<MonsterStatus, Integer> stati;
     private final ISkill skill;
     private final boolean monsterSkill;
     private ScheduledFuture<?> cancelTask;
     private ScheduledFuture<?> poisonSchedule;
 
-    public MonsterStatusEffect(Map<MonsterStatus, Integer> stati, ISkill skillId, boolean monsterSkill) {
+    public MonsterStatusEffect(Map<MonsterStatus, Integer> stati, ISkill skill, boolean monsterSkill) {
         this.stati = new ConcurrentHashMap<>(stati); // ArrayMap
-        this.skill = skillId;
+        this.skill = skill;
         this.monsterSkill = monsterSkill;
     }
 

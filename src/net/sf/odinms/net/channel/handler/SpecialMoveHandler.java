@@ -73,21 +73,23 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                     break;
             }
         } catch (Exception e) {
-            log.warn("Failed to handle monster magnet.", e);
+            log.warn("Failed to handle Monster Magnet.", e);
         }
         if (slea.available() == 5) {
             pos = new Point(slea.readShort(), slea.readShort());
         }
         try {
             if (skillLevel == 0 || skillLevel != __skillLevel) {
-                log.warn(c.getPlayer().getName() + " is using a move skill he doesn't have. ID: " + skill.getId());
+                log.warn(c.getPlayer().getName() + " is using a move skill they don't have. ID: " + skill.getId());
                 c.disconnect();
             } else {
                 if (c.getPlayer().isAlive()) {
                     if (skill.getId() != 2311002 || c.getPlayer().canDoor()) {
                         skill.getEffect(skillLevel).applyTo(c.getPlayer(), pos);
                     } else {
-                        new ServernoticeMapleClientMessageCallback(5, c).dropMessage("Please wait 5 seconds before casting Mystic Door again.");
+                        new ServernoticeMapleClientMessageCallback(5, c).dropMessage(
+                            "Please wait 5 seconds before casting Mystic Door again."
+                        );
                         c.getSession().write(MaplePacketCreator.enableActions());
                     }
                 } else {

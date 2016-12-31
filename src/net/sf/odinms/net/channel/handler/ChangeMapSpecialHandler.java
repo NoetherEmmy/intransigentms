@@ -12,7 +12,7 @@ public class ChangeMapSpecialHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         try {
-            c.getPlayer().setLastKillOnMap((long) 0);
+            c.getPlayer().setLastKillOnMap(0L);
             c.getPlayer().setLastDamageSource(null);
             c.getPlayer().resetAfkTime();
             slea.readByte();
