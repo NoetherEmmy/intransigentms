@@ -2191,6 +2191,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             prepareBeholderEffect();
         } else if (effect.isMagicGuard()) {
             registerMagicGuard();
+        } else if (effect.getSourceId() == 5101005) { // MP Recovery
+            effects.put(MapleBuffStat.BOOSTER, new MapleBuffStatValueHolder(effect, starttime, schedule, -2));
         }
         for (int i = 0; i < effect.getStatups().size(); ++i) {
             Pair<MapleBuffStat, Integer> statup = effect.getStatups().get(i);
@@ -2467,6 +2469,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (!stats.isEmpty()) {
             getClient().getSession().write(MaplePacketCreator.updatePlayerStats(stats));
         }
+    }
+
+    public boolean isUnarmed() {
+        return getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null &&
+               getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) == null;
     }
 
     public boolean showSnipeDmg() {

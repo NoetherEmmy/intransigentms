@@ -116,13 +116,13 @@ public class MapleStatEffect implements Serializable {
         MapleStatEffect ret = new MapleStatEffect();
         ret.duration = MapleDataTool.getIntConvert("time", source, -1);
         ret.hp = (short) MapleDataTool.getInt("hp", source, 0);
-        ret.hpR = MapleDataTool.getInt("hpR", source, 0) / 100.0;
+        ret.hpR = MapleDataTool.getInt("hpR", source, 0) / 100.0d;
         ret.mp = (short) MapleDataTool.getInt("mp", source, 0);
-        ret.mpR = MapleDataTool.getInt("mpR", source, 0) / 100.0;
+        ret.mpR = MapleDataTool.getInt("mpR", source, 0) / 100.0d;
         ret.mpCon = (short) MapleDataTool.getInt("mpCon", source, 0);
         ret.hpCon = (short) MapleDataTool.getInt("hpCon", source, 0);
         ret.iProp = MapleDataTool.getInt("prop", source, 100);
-        ret.prop = ret.iProp / 100.0;
+        ret.prop = ret.iProp / 100.0d;
         ret.mobCount = MapleDataTool.getInt("mobCount", source, 1);
         ret.cooldown = MapleDataTool.getInt("cooltime", source, 0);
         ret.morphId = MapleDataTool.getInt("morph", source, 0);
@@ -572,7 +572,7 @@ public class MapleStatEffect implements Serializable {
             }
 
             if (sourceid == 5101005) {
-                if (applyFrom.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                if (applyFrom.isUnarmed()) {
                     int localDuration = applyFrom.getSkillLevel(sourceid) * 20 * 1000;
                     applyTo.getClient()
                            .getSession()
@@ -868,7 +868,7 @@ public class MapleStatEffect implements Serializable {
                 sourceid == 5121000 &&
                 applyFrom.getTotalInt() >= 750 &&
                 applyFrom.getEnergyBar() >= 10000 &&
-                applyFrom.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null &&
+                applyFrom.isUnarmed() &&
                 applyFrom.haveItem(elanVital, 1, false, true) &&
                 applyFrom.canSamsara()
             ) {
@@ -925,14 +925,14 @@ public class MapleStatEffect implements Serializable {
                     boolean isResurrection = isResurrection();
                     if ((isResurrection && !affected.isAlive()) || (!isResurrection && affected.isAlive())) {
                         if (isResurrection) {
-                            if (applyFrom.getPosition().distanceSq(affected.getPosition()) < closestDistance) {
+                            if (applyFrom.getPosition().distanceSq(affected.getPosition()) < closestDistance && affected.getLevel() >= 110) {
                                 closestDistance = applyFrom.getPosition().distanceSq(affected.getPosition());
                                 closestPlayer = affected;
                             }
                         } else {
                             affectedp.add(affected);
                             if (potentiallySamsara) {
-                                if (!affected.isAlive() && applyFrom.getPosition().distanceSq(affected.getPosition()) < closestDistance) {
+                                if (!affected.isAlive() && applyFrom.getPosition().distanceSq(affected.getPosition()) < closestDistance && affected.getLevel() >= 110) {
                                     closestDistance = applyFrom.getPosition().distanceSq(affected.getPosition());
                                     closestPlayer = affected;
                                 }
@@ -1763,7 +1763,7 @@ public class MapleStatEffect implements Serializable {
      * @return true if the effect should happen based on its probability, false otherwise
      */
     public boolean makeChanceResult() {
-        return prop == 1.0 || Math.random() < prop;
+        return prop == 1.0d || Math.random() < prop;
     }
 
     private boolean isCrash() {

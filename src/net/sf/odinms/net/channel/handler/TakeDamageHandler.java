@@ -206,7 +206,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             !belowLevelLimit &&
             (player.getJob().equals(MapleJob.BUCCANEER) || player.getJob().equals(MapleJob.MARAUDER)) &&
             player.getSkillLevel(SkillFactory.getSkill(5110001)) > 0 &&
-            player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null &&
+            player.isUnarmed() &&
             player.getTotalInt() >= 350
         ) {
             player.handleEnergyChargeGain();
@@ -371,7 +371,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                           (p.getTotalInt() >= 400 && p.isAffectedBySourceId(5111005)) ||
                                           (p.getTotalInt() >= 750 && p.isAffectedBySourceId(5121003))
                                       ) &&
-                                      p.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null
+                                      p.isUnarmed()
                               )
                               .sorted(Comparator.comparingDouble(p -> p.getPosition().distanceSq(player.getPosition())))
                               .collect(Collectors.toList());

@@ -89,7 +89,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         MapleWeaponType weapon = null;
         if (weaponItem != null) {
             weapon = MapleItemInformationProvider.getInstance().getWeaponType(weaponItem.getItemId());
-        } else { // No weapon; Monk stuff goes here
+        } else if (player.isUnarmed()) { // Unarmed; Monk stuff goes here
             int perfectStrikeLevel = player.getSkillLevel(5000000);
             if (perfectStrikeLevel > 0) {
                 int mobsHit = 1;
@@ -113,7 +113,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         (int) map.getMapObject(d.getLeft()).getPosition().distanceSq(player.getPosition())
                     )
                 );
-                List<Pair<Integer, List<Integer>>> removedDmg = new ArrayList<>(6);
+                List<Pair<Integer, List<Integer>>> removedDmg = new ArrayList<>(attack.allDamage.size());
                 if (attack.allDamage.size() > mobsHit) {
                     for (int i = mobsHit; i < attack.allDamage.size(); ++i) {
                         removedDmg.add(attack.allDamage.get(i));
@@ -123,7 +123,18 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
                 double effectiveMagic = (double) (perfectStrikeLevel * player.getTotalMagic()) * 0.05d;
                 double mastery = fistMasteryLevel > 0 ? ((double) fistMastery.getEffect(fistMasteryLevel).getMastery() * 5.0d + 10.0d) / 100.0d : 0.1d;
-                double skillDamage = (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(attack.skill)).getDamage() / 100.0d;
+                double skillDamage;
+                if (attack.skill > 0) {
+                    double chargeMulti;
+                    if (attack.charge > 0) {
+                        chargeMulti = (double) attack.charge / 1000.0d;
+                    } else {
+                        chargeMulti = 1.0d;
+                    }
+                    skillDamage = chargeMulti * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(attack.skill)).getDamage() / 100.0d;
+                } else {
+                    skillDamage = 1.0d;
+                }
                 int minDmg = (int) (((double) player.getTotalInt() * 0.9d * mastery + (double) player.getTotalDex()) * effectiveMagic / 100.0d);
                 int maxDmg = (int) ((double) (player.getTotalInt() + player.getTotalDex()) * effectiveMagic / 100.0d);
 
@@ -132,19 +143,46 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     List<Integer> additionalDmg = new ArrayList<>();
                     List<Integer> newDmg = new ArrayList<>();
+                    double critMulti = 1.0d;
+                    if (stunMasteryLevel > 0) {
+                        boolean stunned = map.getMonsterByOid(dmg.getLeft()).isBuffed(MonsterStatus.STUN);
+                        if (stunned) {
+                            MapleStatEffect stunMasteryEffect = SkillFactory.getSkill(5110000)
+                                                                            .getEffect(stunMasteryLevel);
+                            if (stunMasteryEffect.makeChanceResult()) {
+                                critMulti = (double) stunMasteryEffect.getDamage() / 100.0d;
+                            }
+                        }
+                    }
                     for (Integer dmgNumber : dmg.getRight()) {
                         if (dmgNumber == null || dmgNumber < 1) continue;
-                        int magicDmgNumber = (int) ((double) (minDmg + rand.nextInt(maxDmg - minDmg + 1)) * skillDamage);
+                        int magicDmgNumber = (int) ((double) (minDmg + rand.nextInt(maxDmg - minDmg + 1)) * skillDamage * critMulti);
                         additionalDmg.add(magicDmgNumber);
                         newDmg.add(dmgNumber + magicDmgNumber);
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
-                    for (Integer additionald : additionalDmg) {
-                        map.broadcastMessage(
-                            player,
-                            MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
-                            true
-                        );
+                    if (attack.skill == 5121004 || attack.skill == 5121007) {
+                        // Demolition, Barrage
+                        // Skills that hit multiple numbers per mob.
+                        int delay = 0;
+                        for (Integer additionald : additionalDmg) {
+                            final int additionald_ = additionald;
+                            TimerManager.getInstance().schedule(() ->
+                                map.broadcastMessage(
+                                    player,
+                                    MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
+                                    true
+                                ), delay);
+                            delay += 200;
+                        }
+                    } else {
+                        for (Integer additionald : additionalDmg) {
+                            map.broadcastMessage(
+                                player,
+                                MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
+                                true
+                            );
+                        }
                     }
                 }
 
@@ -159,7 +197,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 );
             }
             if (player.getEnergyBar() >= 10000) {
-                final double radiusSq = 400000.0d;
+                final double radiusSq = 500000.0d;
 
                 boolean someHit =
                     attack.allDamage.size() > 0 &&
@@ -193,7 +231,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                               MonsterStatus.STUN,
                                               1
                                           ),
-                                          SkillFactory.getSkill(attack.skill),
+                                          SkillFactory.getSkill(5101003),
                                           false
                                       ),
                                       false,
@@ -238,7 +276,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         double multiplier =
                             (double) player.getSkillLevel(5121007) *
                                 (Math.sqrt(1.0d / (struckMobHpPercentage + 0.01d)) - 0.9d);
-                        final long animationInterval = SkillFactory.getSkill(5121007).getAnimationTime() / 5L;
+                        final long animationInterval = 200L; //SkillFactory.getSkill(5121007).getAnimationTime() / 5L;
                         List<MapleMonster> targets =
                             player.getMap()
                                   .getMapObjectsInRange(
@@ -258,8 +296,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                 if (dmgNumber == null || dmgNumber < 1) continue;
                                 final int inflicted = (int) (dmgNumber * multiplier * target.getVulnerability());
                                 player.getMap().damageMonster(player, target, inflicted);
-                                TimerManager.getInstance().schedule(() -> {
-                                    if (!target.isAlive()) return;
+                                TimerManager.getInstance().schedule(() ->
                                     player.getMap()
                                           .broadcastMessage(
                                               player,
@@ -269,8 +306,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                               ),
                                               true,
                                               true
-                                          );
-                                }, i * animationInterval);
+                                          ), i * animationInterval);
                             }
                             player.checkMonsterAggro(target);
                             i++;

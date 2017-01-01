@@ -248,13 +248,13 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                         break;
                     case 5111006: // Shockwave
-                        if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                        if (player.isUnarmed()) {
                             ISkill shockwave = SkillFactory.getSkill(5111006);
                             monster.applyFlame(player, shockwave, 20 * 1000, false);
                         }
                         break;
                     case 5121001: // Dragon Strike
-                        if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                        if (player.isUnarmed()) {
                             monster.applyStatus(
                                 player,
                                 new MonsterStatusEffect(
@@ -353,22 +353,22 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                 break;
                             case 5101002: // Backspin Blow
                             case 5101003: // Double Uppercut
-                                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                                if (player.isUnarmed()) {
                                     apply = false;
                                     monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
                                     monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
-                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), theSkill, false);
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), SkillFactory.getSkill(2111004), false);
                                     monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 3 * 1000);
                                 } else {
                                     monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
                                 }
                                 break;
                             case 5101004: // Corkscrew Blow
-                                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
+                                if (player.isUnarmed()) {
                                     apply = false;
-                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.STUN, 1), theSkill, false);
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.STUN, 1), SkillFactory.getSkill(5101002), false);
                                     monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 1000);
-                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), theSkill, false);
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), SkillFactory.getSkill(2111004), false);
                                     monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 3 * 1000);
                                 } else {
                                     monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
@@ -391,7 +391,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 if (
                     attack.skill == 5121005 /* Snatch */ &&
                     !monster.isAlive() &&
-                    player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null &&
+                    player.isUnarmed() &&
                     player.getTotalInt() >= 650
                 ) {
                     player.handleEnergyChargeGain();

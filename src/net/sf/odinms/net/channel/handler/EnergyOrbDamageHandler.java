@@ -33,7 +33,7 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
             if (
                 player.getTotalInt() >= 650 &&
                 attack.skill == 5121002 &&
-                player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null
+                player.isUnarmed()
             ) {
                 // Ahimsa
                 c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
