@@ -49,6 +49,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("               " + c.getChannelServer().getServerName() + " Commands");
             mc.dropMessage("================================================================");
             mc.dropMessage("@snipedisplay - | - Toggles displaying the damage you do every time you use the Snipe skill.");
+            mc.dropMessage("@samsara - | - Displays the current cooldown for the Samsara ability.");
             mc.dropMessage("@checkstat - | - Displays your stats.");
             mc.dropMessage("@save - | - Saves your progress.");
             mc.dropMessage("@expfix - | - Fixes your negative experience.");
@@ -1028,6 +1029,20 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@magic")) {
             mc.dropMessage("Your current total magic attack: " + player.getTotalMagic());
+        } else if (splitted[0].equals("@samsara")) {
+            if (player.getSkillLevel(5121000) > 0) {
+                StringBuilder sb = new StringBuilder();
+                long timeDiff = player.getLastSamsara() + MapleCharacter.SAMSARA_COOLDOWN - System.currentTimeMillis();
+                if (timeDiff > 0) {
+                    sb.append("You may use Samsara again in ");
+                    compareTime(sb, player.getLastSamsara() + MapleCharacter.SAMSARA_COOLDOWN - System.currentTimeMillis());
+                } else {
+                    sb.append("You may use Samsara.");
+                }
+                mc.dropMessage(sb.toString());
+            } else {
+                mc.dropMessage("You do not have access to the Samsara ability.");
+            }
         }
     }
 
@@ -1126,7 +1141,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("buyback", 0),
             new CommandDefinition("snipedisplay", 0),
             new CommandDefinition("event", 0),
-            new CommandDefinition("magic", 0)
+            new CommandDefinition("magic", 0),
+            new CommandDefinition("samsara", 0)
         };
     }
 }
