@@ -262,7 +262,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                         MonsterStatus.SPEED,
                                         -100
                                     ),
-                                    theSkill,
+                                    SkillFactory.getSkill(2101003),
                                     false
                                 ),
                                 false,
