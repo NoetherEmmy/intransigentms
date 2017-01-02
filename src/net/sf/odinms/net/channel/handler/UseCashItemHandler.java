@@ -70,10 +70,12 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 statupdate.add(new Pair<>(MapleStat.STR, player.getStr()));
                                 break;
                             case 128: // dex
-                                if (player.getDex() <= 4 ||
-                                        (((player.getJob().getId() / 100) == 4 ||
-                                        (player.getJob().getId() / 100) == 3) &&
-                                        player.getDex() <= 25)) {
+                                if (
+                                    player.getDex() <= 4 ||
+                                    (((player.getJob().getId() / 100) == 4 ||
+                                    (player.getJob().getId() / 100) == 3) &&
+                                    player.getDex() <= 25)
+                                ) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
                                     return;
                                 }
@@ -108,11 +110,13 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true));
                                 return;
                         }
+                        boolean undo = false;
                         switch (APTo) {
                             case 64: // str
                                 if (player.getStr() >= 999) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
-                                    return;
+                                    undo = true;
+                                    break;
                                 }
                                 player.setStr(player.getStr() + 1);
                                 statupdate.add(new Pair<>(MapleStat.STR, player.getStr()));
@@ -120,7 +124,8 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             case 128: // dex
                                 if (player.getDex() >= 999) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
-                                    return;
+                                    undo = true;
+                                    break;
                                 }
                                 player.setDex(player.getDex() + 1);
                                 statupdate.add(new Pair<>(MapleStat.DEX, player.getDex()));
@@ -128,7 +133,8 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             case 256: // int
                                 if (player.getInt() >= 999) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
-                                    return;
+                                    undo = true;
+                                    break;
                                 }
                                 player.setInt(player.getInt() + 1);
                                 statupdate.add(new Pair<>(MapleStat.INT, player.getInt()));
@@ -136,7 +142,8 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             case 512: // luk
                                 if (player.getLuk() >= 999) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
-                                    return;
+                                    undo = true;
+                                    break;
                                 }
                                 player.setLuk(player.getLuk() + 1);
                                 statupdate.add(new Pair<>(MapleStat.LUK, player.getLuk()));
@@ -144,17 +151,37 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             case 2048: // hp
                                 player.dropMessage(1, "You may not use AP Resets on HP or MP.");
                                 c.getSession().write(MaplePacketCreator.enableActions());
-                                return;
+                                undo = true;
+                                break;
                             case 8192: // mp
                                 player.dropMessage(1, "You may not use AP Resets on HP or MP.");
                                 c.getSession().write(MaplePacketCreator.enableActions());
-                                return;
+                                undo = true;
+                                break;
                             default:
                                 c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true));
-                                return;
+                                undo = true;
+                                break;
                         }
                         if (player.getJob().isA(MapleJob.BRAWLER) && player.getInt() < 450) {
                             player.changeSkillLevel(SkillFactory.getSkill(4111006), 0, player.getMasterLevelById(4111006));
+                        }
+                        if (undo) {
+                            switch (APFrom) {
+                                case 64: // str
+                                    player.setStr(player.getStr() + 1);
+                                    break;
+                                case 128: // dex
+                                    player.setDex(player.getDex() + 1);
+                                    break;
+                                case 256: // int
+                                    player.setInt(player.getInt() + 1);
+                                    break;
+                                case 512: // luk
+                                    player.setLuk(player.getLuk() + 1);
+                                    break;
+                            }
+                            return;
                         }
                         c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true));
                     }

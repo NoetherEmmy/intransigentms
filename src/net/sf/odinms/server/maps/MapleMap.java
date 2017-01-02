@@ -353,7 +353,7 @@ public class MapleMap {
         if (dropsDisabled || monster.dropsDisabled()) {
             return;
         }
-        boolean partyevent = true;
+        boolean partyevent = false;
         int maxDrops;
         final boolean explosive = monster.isExplosive();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();

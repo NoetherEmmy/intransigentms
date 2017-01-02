@@ -87,7 +87,7 @@ public final class DeathLogger {
         toWrite.add(
             "Cleared items for " +
             c.getPlayer().getName() +
-            " (account: " +
+            " (Account: " +
             c.getAccountName() +
             "), at time " +
             System.currentTimeMillis()
