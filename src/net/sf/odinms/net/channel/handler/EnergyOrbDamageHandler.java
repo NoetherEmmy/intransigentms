@@ -19,31 +19,6 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
         if (player.getEnergyBar() >= 10000) {
             AttackInfo attack = parseDamage(slea, false);
 
-            boolean someHit =
-                attack.allDamage.size() > 0 &&
-                    attack.allDamage
-                          .stream()
-                          .allMatch(dmg ->
-                              dmg.getRight()
-                                 .stream()
-                                 .anyMatch(num ->
-                                     num > 0
-                                 )
-                          );
-            if (
-                player.getTotalInt() >= 650 &&
-                attack.skill == 5121002 &&
-                player.isUnarmed()
-            ) {
-                // Ahimsa
-                c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
-                player.setEnergyBar(0);
-                if (someHit) {
-                    long duration = (long) player.getSkillLevel(5121002) / 3L * 1000L;
-                    player.getMap().setDamageMuted(true, duration);
-                }
-            }
-
             if (player.getMap().isDamageMuted()) {
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);

@@ -572,7 +572,9 @@ public class MapleStatEffect implements Serializable {
             }
 
             if (sourceid == 5101005) {
-                if (applyFrom.isUnarmed()) {
+                // This commented code was for the old Fist Booster version of MP Recovery.
+                /*
+                if (applyFrom.isBareHanded()) {
                     int localDuration = applyFrom.getSkillLevel(sourceid) * 20 * 1000;
                     applyTo.getClient()
                            .getSession()
@@ -588,6 +590,7 @@ public class MapleStatEffect implements Serializable {
                     final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
                     applyTo.registerEffect(this, startTime, schedule);
                 }
+                */
                 hpChange = (int) ((double) applyFrom.getMaxHp() * (-x / 100.0d));
                 if (-hpChange >= applyTo.getHp()) {
                     applyFrom.dropMessage(5, "You do not have enough HP to use the MP Recovery skill.");
@@ -868,7 +871,7 @@ public class MapleStatEffect implements Serializable {
                 sourceid == 5121000 &&
                 applyFrom.getTotalInt() >= 750 &&
                 applyFrom.getEnergyBar() >= 10000 &&
-                applyFrom.isUnarmed() &&
+                applyFrom.isBareHanded() &&
                 applyFrom.haveItem(elanVital, 1, false, true) &&
                 applyFrom.canSamsara()
             ) {

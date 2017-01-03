@@ -11,10 +11,10 @@ import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldServer {
     private static WorldServer instance = null;
@@ -22,7 +22,7 @@ public class WorldServer {
     private int worldId;
     private final Properties dbProp = new Properties();
     private final Properties worldProp = new Properties();
-    private final Map<Integer, Integer> energyChargeRetention = new HashMap<>(8, 0.8f);
+    private final Map<Integer, Integer> energyChargeRetention = new ConcurrentHashMap<>(8, 0.8f);
 
     private WorldServer() {
         try {
@@ -67,15 +67,21 @@ public class WorldServer {
         }
     }
 
-    public synchronized void addEnergyChargeRetention(int charId, int energyLevel) {
-        energyChargeRetention.put(charId, energyLevel);
+    public void addEnergyChargeRetention(int charId, int energyLevel) {
+        synchronized (energyChargeRetention) {
+            energyChargeRetention.put(charId, energyLevel);
+        }
     }
 
-    public synchronized Optional<Integer> removeEnergyChargeRetention(int charId) {
-        return Optional.ofNullable(energyChargeRetention.remove(charId));
+    public Optional<Integer> removeEnergyChargeRetention(int charId) {
+        synchronized (energyChargeRetention) {
+            return Optional.ofNullable(energyChargeRetention.remove(charId));
+        }
     }
 
-    public synchronized Optional<Integer> getEnergyChargeRetention(int charId) {
-        return Optional.ofNullable(energyChargeRetention.get(charId));
+    public Optional<Integer> getEnergyChargeRetention(int charId) {
+        synchronized (energyChargeRetention) {
+            return Optional.ofNullable(energyChargeRetention.get(charId));
+        }
     }
 }

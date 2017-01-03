@@ -89,7 +89,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         MapleWeaponType weapon = null;
         if (weaponItem != null) {
             weapon = MapleItemInformationProvider.getInstance().getWeaponType(weaponItem.getItemId());
-        } else if (player.isUnarmed()) { // Unarmed; Monk stuff goes here
+        }
+        if (player.isBareHanded()) { // Bare-handed; Monk stuff goes here
             int perfectStrikeLevel = player.getSkillLevel(5000000);
             if (perfectStrikeLevel > 0) {
                 int mobsHit = 1;
@@ -104,7 +105,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     mobsHit++;
                 }
                 Integer flurryOfBlowsBuff = player.getBuffedValue(MapleBuffStat.SPEED_INFUSION);
-                if (flurryOfBlowsBuff != null && flurryOfBlowsBuff > 0) {
+                if (flurryOfBlowsBuff != null && flurryOfBlowsBuff != 0) {
                     mobsHit++;
                 }
 
@@ -145,20 +146,31 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     List<Integer> newDmg = new ArrayList<>();
                     double critMulti = 1.0d;
                     if (stunMasteryLevel > 0) {
-                        boolean stunned = map.getMonsterByOid(dmg.getLeft()).isBuffed(MonsterStatus.STUN);
-                        if (stunned) {
-                            MapleStatEffect stunMasteryEffect = SkillFactory.getSkill(5110000)
-                                                                            .getEffect(stunMasteryLevel);
-                            if (stunMasteryEffect.makeChanceResult()) {
-                                critMulti = (double) stunMasteryEffect.getDamage() / 100.0d;
+                        MapleMonster m = map.getMonsterByOid(dmg.getLeft());
+                        if (m != null) {
+                            boolean stunned = m.isBuffed(MonsterStatus.STUN);
+                            if (stunned) {
+                                MapleStatEffect stunMasteryEffect = SkillFactory.getSkill(5110000)
+                                                                                .getEffect(stunMasteryLevel);
+                                if (stunMasteryEffect.makeChanceResult()) {
+                                    critMulti = (double) stunMasteryEffect.getDamage() / 100.0d;
+                                }
                             }
                         }
                     }
+                    int hitIndex = 0;
                     for (Integer dmgNumber : dmg.getRight()) {
                         if (dmgNumber == null || dmgNumber < 1) continue;
-                        int magicDmgNumber = (int) ((double) (minDmg + rand.nextInt(maxDmg - minDmg + 1)) * skillDamage * critMulti);
+                        int magicDmgNumber;
+                        if (attack.skill == 5121007 && hitIndex > 3 && hitIndex < 6) {
+                            // Barrage's last two strikes do additional damage.
+                            magicDmgNumber = (int) ((double) (minDmg + rand.nextInt(maxDmg - minDmg + 1)) * skillDamage * critMulti * (hitIndex - 3.0d) * 2.0d);
+                        } else {
+                            magicDmgNumber = (int) ((double) (minDmg + rand.nextInt(maxDmg - minDmg + 1)) * skillDamage * critMulti);
+                        }
                         additionalDmg.add(magicDmgNumber);
                         newDmg.add(dmgNumber + magicDmgNumber);
+                        hitIndex++;
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
                     if (attack.skill == 5121004 || attack.skill == 5121007) {
@@ -173,7 +185,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                     MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
                                     true
                                 ), delay);
-                            delay += 200;
+                            delay += 250;
                         }
                     } else {
                         for (Integer additionald : additionalDmg) {
@@ -249,18 +261,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         player.setInvincible(true);
                         TimerManager.getInstance().schedule(() -> player.setInvincible(false), 5 * 1000);
                     }
-                } else if (player.getTotalInt() >= 650 && attack.skill == 5121002) {
-                    // Ahimsa
-                    c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
-                    player.setEnergyBar(0);
-                    if (someHit) {
-                        long duration = (long) player.getSkillLevel(5121002) / 3L * 1000L;
-                        player.getMap().setDamageMuted(true, duration);
-                    }
                 } else if (player.getTotalInt() >= 750 && attack.skill == 5121007) {
                     // Despondency
-                    c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
-                    player.setEnergyBar(0);
                     if (someHit) {
                         Pair<Integer, List<Integer>> strike = null;
                         int i = 0;
@@ -271,46 +273,54 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         if (strike == null) return;
 
                         final MapleMonster struckMob = player.getMap().getMonsterByOid(strike.getLeft());
-                        final Point struckMobPos = struckMob.getPosition();
-                        double struckMobHpPercentage = (double) struckMob.getHp() / (double) struckMob.getMaxHp();
-                        double multiplier =
-                            (double) player.getSkillLevel(5121007) *
-                                (Math.sqrt(1.0d / (struckMobHpPercentage + 0.01d)) - 0.9d);
-                        final long animationInterval = 200L; //SkillFactory.getSkill(5121007).getAnimationTime() / 5L;
-                        List<MapleMonster> targets =
-                            player.getMap()
-                                  .getMapObjectsInRange(
-                                      struckMobPos,
-                                      radiusSq,
-                                      MapleMapObjectType.MONSTER
-                                  )
-                                  .stream()
-                                  .map(mmo -> (MapleMonster) mmo)
-                                  .sorted(Comparator.comparingDouble(m -> struckMobPos.distanceSq(m.getPosition())))
-                                  .collect(Collectors.toCollection(ArrayList::new));
+                        if (struckMob != null) {
+                            c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
+                            player.setEnergyBar(0);
 
-                        i = 0;
-                        while (i < targets.size() && i < 8) {
-                            final MapleMonster target = targets.get(i);
-                            for (Integer dmgNumber : strike.getRight()) {
-                                if (dmgNumber == null || dmgNumber < 1) continue;
-                                final int inflicted = (int) (dmgNumber * multiplier * target.getVulnerability());
-                                player.getMap().damageMonster(player, target, inflicted);
-                                TimerManager.getInstance().schedule(() ->
-                                    player.getMap()
-                                          .broadcastMessage(
-                                              player,
-                                              MaplePacketCreator.damageMonster(
-                                                  target.getObjectId(),
-                                                  inflicted
-                                              ),
-                                              true,
-                                              true
-                                          ), i * animationInterval);
+                            final Point struckMobPos = struckMob.getPosition();
+                            double struckMobHpPercentage = (double) struckMob.getHp() / (double) struckMob.getMaxHp();
+                            double multiplier =
+                                (double) player.getSkillLevel(5121007) *
+                                    (Math.sqrt(1.0d / (struckMobHpPercentage + 0.01d)) - 0.9d);
+                            final long animationInterval = 250L; //SkillFactory.getSkill(5121007).getAnimationTime() / 5L;
+                            List<MapleMonster> targets =
+                                player.getMap()
+                                      .getMapObjectsInRange(
+                                          struckMobPos,
+                                          radiusSq,
+                                          MapleMapObjectType.MONSTER
+                                      )
+                                      .stream()
+                                      .map(mmo -> (MapleMonster) mmo)
+                                      .sorted(Comparator.comparingDouble(m -> struckMobPos.distanceSq(m.getPosition())))
+                                      .collect(Collectors.toCollection(ArrayList::new));
+
+                            i = 0;
+                            while (i < targets.size() && i < 8) {
+                                final MapleMonster target = targets.get(i);
+                                for (Integer dmgNumber : strike.getRight()) {
+                                    if (dmgNumber == null || dmgNumber < 1) continue;
+                                    final int inflicted = (int) (dmgNumber * multiplier * target.getVulnerability());
+                                    player.getMap().damageMonster(player, target, inflicted);
+                                    TimerManager.getInstance().schedule(() ->
+                                        player.getMap()
+                                              .broadcastMessage(
+                                                  player,
+                                                  MaplePacketCreator.damageMonster(
+                                                      target.getObjectId(),
+                                                      inflicted
+                                                  ),
+                                                  true,
+                                                  true
+                                              ), i * animationInterval);
+                                }
+                                player.checkMonsterAggro(target);
+                                i++;
                             }
-                            player.checkMonsterAggro(target);
-                            i++;
                         }
+                    } else {
+                        c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
+                        player.setEnergyBar(0);
                     }
                 }
             }

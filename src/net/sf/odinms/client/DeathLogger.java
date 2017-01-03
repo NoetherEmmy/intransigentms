@@ -148,6 +148,7 @@ public final class DeathLogger {
                         if (eqp.getMdef() > 0) {
                             statString.append("M. def.: ").append(eqp.getMdef()).append(" ");
                         }
+                        statString.append("Slots: ").append(eqp.getUpgradeSlots());
                         return statString.toString();
                     case 2:
                         return

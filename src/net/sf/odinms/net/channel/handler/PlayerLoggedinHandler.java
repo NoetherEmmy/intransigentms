@@ -212,12 +212,12 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             player.setMagicGuard(false);
             player.setMagicGuardCancelTask(null);
         }
-        WorldServer.getInstance()
-                   .getEnergyChargeRetention(player.getId())
-                   .ifPresent(ec -> {
-                       player.setEnergyBar(ec);
-                       WorldServer.getInstance().removeEnergyChargeRetention(player.getId());
-                   });
+        final WorldServer ws = WorldServer.getInstance();
+        ws.getEnergyChargeRetention(player.getId())
+          .ifPresent(ec -> {
+              player.setEnergyBar(ec);
+              ws.removeEnergyChargeRetention(player.getId());
+          });
         player.updatePastLifeExp();
         player.reactivateExpBonus();
         player.dropVoteTime();

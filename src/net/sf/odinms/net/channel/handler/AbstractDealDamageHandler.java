@@ -248,13 +248,13 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                         break;
                     case 5111006: // Shockwave
-                        if (player.isUnarmed()) {
+                        if (player.isBareHanded()) {
                             ISkill shockwave = SkillFactory.getSkill(5111006);
                             monster.applyFlame(player, shockwave, 20 * 1000, false);
                         }
                         break;
                     case 5121001: // Dragon Strike
-                        if (player.isUnarmed()) {
+                        if (player.isBareHanded()) {
                             monster.applyStatus(
                                 player,
                                 new MonsterStatusEffect(
@@ -353,7 +353,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                 break;
                             case 5101002: // Backspin Blow
                             case 5101003: // Double Uppercut
-                                if (player.isUnarmed()) {
+                                if (player.isBareHanded()) {
                                     apply = false;
                                     monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
                                     monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
@@ -364,7 +364,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                 }
                                 break;
                             case 5101004: // Corkscrew Blow
-                                if (player.isUnarmed()) {
+                                if (player.isBareHanded()) {
                                     apply = false;
                                     monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.STUN, 1), SkillFactory.getSkill(5101002), false);
                                     monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 1000);
@@ -391,7 +391,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 if (
                     attack.skill == 5121005 /* Snatch */ &&
                     !monster.isAlive() &&
-                    player.isUnarmed() &&
+                    player.isBareHanded() &&
                     player.getTotalInt() >= 650
                 ) {
                     player.handleEnergyChargeGain();

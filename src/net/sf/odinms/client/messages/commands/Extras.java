@@ -98,7 +98,7 @@ public class Extras implements Command {
                         StringBuilder builder = new StringBuilder("Syntax: @go <mapname>");
                         int i = 0;
                         for (String mapss : maps.keySet()) {
-                            if (1 % 10 == 0) { // 10 maps per line
+                            if (i % 10 == 0) { // 10 maps per line
                                 mc.dropMessage(builder.toString());
                             } else {
                                 builder.append(mapss).append(", ");
