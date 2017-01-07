@@ -769,6 +769,7 @@ public class Admins implements Command {
             new CommandDefinition("sreactor", 4),
             new CommandDefinition("hreactor", 4),
             new CommandDefinition("dreactor", 4),
+            new CommandDefinition("lreactor", 4),
             new CommandDefinition("writecommands", 4),
             new CommandDefinition("saveall", 4),
             new CommandDefinition("getpw", 4),

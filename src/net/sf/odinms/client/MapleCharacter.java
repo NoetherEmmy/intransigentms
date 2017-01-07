@@ -1790,8 +1790,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
         if (canComplete() && queststatus == 0) {
-            sendHint("#eReturn to the NPC: " + getCQuest().getNPC());
-            dropMessage("Return to the NPC: " + getCQuest().getNPC());
+            sendHint("#eReturn to the NPC: " + getCQuest().getEndNpc());
+            dropMessage("Return to the NPC: " + getCQuest().getEndNpc());
             queststatus++;
         }
     }

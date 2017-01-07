@@ -8,6 +8,9 @@ import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.channel.PartyQuestMapInstance;
 import net.sf.odinms.net.world.MaplePartyCharacter;
+import net.sf.odinms.net.world.WorldChannelInterfaceImpl;
+import net.sf.odinms.net.world.WorldServer;
+import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.MapleStatEffect;
@@ -75,7 +78,7 @@ public class MapleMap {
     private boolean showGate = false;
     private final List<Pair<PeriodicMonsterDrop, ScheduledFuture<?>>> periodicMonsterDrops = new ArrayList<>(3);
     private final List<DynamicSpawnWorker> dynamicSpawnWorkers = new ArrayList<>(2);
-    private static final Map<Integer, Integer> lastLatanicaTimes = new ConcurrentHashMap<>(4, 0.75f, 1);
+    private static final Map<Integer, Integer> lastLatanicaTimes = new ConcurrentHashMap<>(5, 0.85f, 1);
     private PartyQuestMapInstance partyQuestInstance = null;
     private ScheduledFuture<?> respawnWorker = null;
     private Set<FieldLimit> fieldLimits;

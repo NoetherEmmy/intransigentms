@@ -34,7 +34,7 @@ public class ReactorScriptManager extends AbstractScriptManager {
             ReactorScript rs = iv.getInterface(ReactorScript.class);
             rs.act();
         } catch (Exception e) {
-            log.error("Error executing reactor script.", e);
+            log.error("Error executing reactor script: " + reactor.getId(), e);
         }
     }
 

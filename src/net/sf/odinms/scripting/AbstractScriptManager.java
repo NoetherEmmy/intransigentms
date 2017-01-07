@@ -17,7 +17,6 @@ import java.io.FileReader;
 //import javax.script.ScriptException;
 
 public abstract class AbstractScriptManager {
-
     protected ScriptEngine engine;
     private final ScriptEngineManager sem;
 

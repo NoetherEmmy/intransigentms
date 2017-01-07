@@ -1353,10 +1353,33 @@ public class GM implements Command {
                 }
                 break;
             }
-            case "!nearestportal":
+            case "!nearestspawn": {
                 final MaplePortal portal = player.getMap().findClosestSpawnpoint(player.getPosition());
                 mc.dropMessage(portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName() + " target: " + portal.getTarget() + " targetMapId: " + portal.getTargetMapId());
                 break;
+            }
+            case "!nearestportal": {
+                final MaplePortal portal =
+                    player.getMap()
+                          .getPortals()
+                          .stream()
+                          .reduce(
+                              (closest, port) -> {
+                                  if (port.getPosition().distanceSq(player.getPosition()) <
+                                      closest.getPosition().distanceSq(player.getPosition())) {
+                                      return port;
+                                  }
+                                  return closest;
+                              }
+                          )
+                          .orElse(null);
+                if (portal != null) {
+                    mc.dropMessage("name: " + portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName() + " target: " + portal.getTarget() + " targetMapId: " + portal.getTargetMapId());
+                } else {
+                    mc.dropMessage("null");
+                }
+                break;
+            }
             case "!unban":
                 if (MapleCharacter.unban(splitted[1])) {
                     mc.dropMessage("Success!");
@@ -2324,6 +2347,7 @@ public class GM implements Command {
             new CommandDefinition("getrings", 3),
             new CommandDefinition("ring", 3),
             new CommandDefinition("removering", 3),
+            new CommandDefinition("nearestspawn", 3),
             new CommandDefinition("nearestportal", 3),
             new CommandDefinition("unban", 3),
             new CommandDefinition("spawn", 3),

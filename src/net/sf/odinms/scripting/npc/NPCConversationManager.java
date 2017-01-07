@@ -404,7 +404,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         sb.append("\r\n");
 
         if (q.requiresItemCollection()) sb.append("\r\n#eItems to collect:#n \r\n");
-        q.readMonsterTargets().entrySet().forEach(toCollect ->
+        q.readItemsToCollect().entrySet().forEach(toCollect ->
             sb.append(toCollect.getValue().getRight())
               .append(": ")
               .append(getPlayer().getQuestKills(toCollect.getKey()) >= toCollect.getValue().getLeft() ? "#g" : "#r")
@@ -414,8 +414,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
               .append("\r\n")
         );
         sb.append("\r\n");
-        
-        sb.append("#eQuest NPC: #n\r\n#d").append(q.getNPC()).append("#k\r\n");
+
+        if (q.hasIdenticalStartEnd()) {
+            sb.append("#eQuest NPC: #n\r\n#d").append(q.getStartNpc()).append("#k\r\n");
+        } else {
+            sb.append("#eQuest start NPC: #n\r\n#d").append(q.getStartNpc()).append("#k\r\n");
+            sb.append("#eQuest end NPC: #n\r\n#d").append(q.getEndNpc()).append("#k\r\n");
+        }
         sb.append("#eQuest info: #n\r\n").append(q.getInfo());
         
         return sb.toString();
@@ -447,14 +452,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleCQuests q = new MapleCQuests();
         if (getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000)) {
             q.loadQuest(getPlayer().getStory() + 1000);
-            s += "#e" + q.getTitle() + "#n\r\nNPC contact: #b" + q.getNPC() + "#k";
+            s += "#e" + q.getTitle() + "#n\r\nNPC contact: #b" + q.getStartNpc() + "#k";
         }
         if (getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000)) {
             q.loadQuest(getPlayer().getStoryPoints() + 2000);
             if (s.length() > 1) {
                 s += "\r\n\r\n";
             }
-            s += "#e" + q.getTitle() + "#n\r\nNPC contact: #b" + q.getNPC() + "#k";
+            s += "#e" + q.getTitle() + "#n\r\nNPC contact: #b" + q.getStartNpc() + "#k";
         }
         return s;
     }
