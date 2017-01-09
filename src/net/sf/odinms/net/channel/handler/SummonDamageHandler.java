@@ -199,7 +199,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 AutobanManager.getInstance()
                               .autoban(
                                   player.getClient(),
-                                  "XSource| " +
+                                  "" +
                                       player.getName() +
                                       "'s summon dealt " +
                                       damage +

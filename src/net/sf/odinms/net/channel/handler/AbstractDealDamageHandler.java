@@ -152,7 +152,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     AutobanManager.getInstance()
                                   .autoban(
                                       player.getClient(),
-                                      "XSource| " +
+                                      "" +
                                           player.getName() +
                                           " dealt " +
                                           totDamageToOneMonster +

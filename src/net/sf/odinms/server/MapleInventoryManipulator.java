@@ -34,7 +34,7 @@ public class MapleInventoryManipulator {
 
     public static boolean addById(MapleClient c, int itemId, short quantity, String owner, int petid) {
         if (quantity >= 4000 || quantity < 0) {
-            AutobanManager.getInstance().autoban(c.getPlayer().getClient(), "XSource| PE Item: " + quantity + "x " + itemId);
+            AutobanManager.getInstance().autoban(c.getPlayer().getClient(), "Packet edited Item: " + quantity + "x " + itemId);
             return false;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -135,7 +135,7 @@ public class MapleInventoryManipulator {
         }
         short quantity = item.getQuantity();
         if (quantity >= 4000 || quantity < 0) {
-            AutobanManager.getInstance().autoban(c.getPlayer().getClient(), "XSource| PE Item: " + quantity + "x " + item.getItemId());
+            AutobanManager.getInstance().autoban(c.getPlayer().getClient(), "Packet edited item: " + quantity + "x " + item.getItemId());
             return false;
         }
         if (!type.equals(MapleInventoryType.EQUIP)) {

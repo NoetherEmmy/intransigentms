@@ -123,8 +123,7 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
                         c.getPlayer().setInteraction(shop);
                         c.getSession().write(MaplePacketCreator.getInteraction(c.getPlayer(), true));
                     } else {
-                        AutobanManager.getInstance().autoban(c, "XSource| Merchant Shop: Attempt to open a shop without the item.");
-                        return;
+                        AutobanManager.getInstance().autoban(c, "Merchant Shop: Attempt to open a shop without the item.");
                     }
                 } else {
                     System.out.println("Unhandled PLAYER_INTERACTION packet: " + slea.toString());
@@ -307,7 +306,7 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             byte targetSlot = slea.readByte();
             if (c.getPlayer().getTrade() != null && item != null) {
                 if (checkq > 4000) {
-                    AutobanManager.getInstance().autoban(c, "XSource| PE while in trade.");
+                    AutobanManager.getInstance().autoban(c, "Packet editing while in trade.");
                 }
                 if ((quantity <= item.getQuantity() && quantity >= 0) || ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId())) {
                     if ((!c.getChannelServer().allowUndroppablesDrop() && ii.isDropRestricted(item.getItemId())) || ii.isCash(item.getItemId())) {
@@ -351,11 +350,11 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             if (shop != null && shop.isOwner(c.getPlayer())) {
                 if (ivItem.getQuantity() >= bundles * perBundle) {
                     if (price < 0) {
-                        AutobanManager.getInstance().autoban(c, "XSource| PE adding a negative priced item.");
+                        AutobanManager.getInstance().autoban(c, "Packet editing, adding a negative priced item.");
                         return;
                     }
                     if (bundles <= 0 || perBundle <= 0 || checkquantity > 20000 || checksmquantity < 0 || checkiquantity < 0 || checkiquantity > 20000) {
-                        AutobanManager.getInstance().autoban(c, "XSource| PE Player Shop item: " + sellItem.getItemId());
+                        AutobanManager.getInstance().autoban(c, "Packet edited player shop item: " + sellItem.getItemId());
                         return;
                     }
                     if (bundles > 100 || perBundle > 4000) {

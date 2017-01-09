@@ -735,6 +735,13 @@ public class Admins implements Command {
                 }
                 break;
             }
+            case "!reinitdiscord":
+                mc.dropMessage("Reinitialization of discord bot " + (DeathBot.reInit() ? "succeeded" : "failed") + ".");
+                break;
+            case "!disposediscord":
+                DeathBot.getInstance().dispose();
+                mc.dropMessage("Discord bot disposed.");
+                break;
         }
     }
 
@@ -789,7 +796,9 @@ public class Admins implements Command {
             new CommandDefinition("itemvac", 4),
             new CommandDefinition("playernpc", 4),
             new CommandDefinition("removeplayernpcs", 4),
-            new CommandDefinition("pmob", 4)
+            new CommandDefinition("pmob", 4),
+            new CommandDefinition("reinitdiscord", 4),
+            new CommandDefinition("disposediscord", 4)
         };
     }
 }

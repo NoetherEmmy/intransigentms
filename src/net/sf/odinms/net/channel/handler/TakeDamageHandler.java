@@ -96,7 +96,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 player.getCheatTracker().setNumGotMissed(0);
             }
             if (player.getCheatTracker().getNumGotMissed() > 5 && player.getCheatTracker().getNumGotMissed() < 15) {
-                System.out.println("Character" + player.getName() + " 5 < cheatTracker.getNumGotMissed() < 15");
+                System.out.println("Character " + player.getName() + ": 5 < cheatTracker.getNumGotMissed() < 15");
                 try {
                     c.getChannelServer()
                      .getWorldInterface()
@@ -113,6 +113,9 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     re.printStackTrace();
                     c.getChannelServer().reconnectWorld();
                 }
+            } else if (player.getCheatTracker().getNumGotMissed() >= 15) {
+                AutobanManager.getInstance().autoban(c, "Miss godmode.");
+                return;
             }
         }
 
@@ -150,18 +153,22 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
         boolean smokescreened = false;
         try {
-            synchronized (player.getMap().getMapObjects()) {
-                Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
-                while (mmoiter.hasNext()) {
-                    MapleMapObject mmo = mmoiter.next();
-                    if (mmo instanceof MapleMist) {
-                        MapleMist mist = (MapleMist) mmo;
-                        if (mist.getSourceSkill().getId() == 4221006) { // Smokescreen
-                            for (MapleMapObject mmoPlayer : player.getMap().getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
-                                if (player == mmoPlayer) {
-                                    damage = -1;
-                                    smokescreened = true;
-                                }
+            Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
+            while (mmoiter.hasNext()) {
+                MapleMapObject mmo = mmoiter.next();
+                if (mmo instanceof MapleMist) {
+                    MapleMist mist = (MapleMist) mmo;
+                    if (mist.getSourceSkill().getId() == 4221006) { // Smokescreen
+                        List<MapleMapObject> mmoPlayers =
+                            player.getMap()
+                                  .getMapObjectsInRect(
+                                      mist.getBox(),
+                                      Collections.singletonList(MapleMapObjectType.PLAYER)
+                                  );
+                        for (MapleMapObject mmoPlayer : mmoPlayers) {
+                            if (player == mmoPlayer) {
+                                damage = -1;
+                                smokescreened = true;
                             }
                         }
                     }
@@ -172,7 +179,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             e.printStackTrace();
         }
 
-        if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got damage removed by smokescreen don't get to stun mobs
+        if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got
+                                              // damage removed by smokescreen don't get to stun mobs
             int job = player.getJob().getId() / 10 - 40;
             fake = 4020002 + (job * 100000);
             if (damageFrom == -1 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
@@ -180,16 +188,28 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 for (int guardian : guardianSkillId) {
                     ISkill guardianSkill = SkillFactory.getSkill(guardian);
                     if (player.getSkillLevel(guardianSkill) > 0 && attacker != null) {
-                        MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.STUN, 1), guardianSkill, false);
+                        MonsterStatusEffect monsterStatusEffect =
+                            new MonsterStatusEffect(
+                                Collections.singletonMap(MonsterStatus.STUN, 1),
+                                guardianSkill,
+                                false
+                            );
                         attacker.applyStatus(player, monsterStatusEffect, false, 2 * 1000);
                     }
                 }
             }
         }
         if (damage < -1 || damage > 100000) {
-            AutobanManager.getInstance().autoban(player.getClient(), "XSource| " + player.getName() + " took " + damage + " of damage.");
+            AutobanManager.getInstance().autoban(
+                player.getClient(),
+                player.getName() + " took " + damage + " of damage."
+            );
         } else if (damage > 60000) {
-            System.out.println(player.getName() + " received an abnormal amount of damage and so was disconnected: " + damage);
+            System.out.println(
+                player.getName() +
+                    " received an abnormal amount of damage and so was disconnected: " +
+                    damage
+            );
             c.disconnect();
             return;
         }
@@ -216,7 +236,9 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             player.getCheatTracker().resetHPRegen();
             player.resetAfkTime();
             if (player.getPartyQuest() != null && player.getPartyQuest().getMapInstance(player.getMap()) != null) {
-                player.getPartyQuest().getMapInstance(player.getMap()).invokeMethod("playerHit", player, damage, attacker);
+                player.getPartyQuest()
+                      .getMapInstance(player.getMap())
+                      .invokeMethod("playerHit", player, damage, attacker);
             }
             if (!player.isHidden() && player.isAlive()) {
                 if (player.getTotalWdef() > 1999 && damageFrom == -1) {
@@ -251,12 +273,18 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 }
                 if (!belowLevelLimit && attacker != null) {
                     if (damageFrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) {
-                        int bounceDamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / 100));
+                        int bounceDamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / 100.0d));
                         bounceDamage = Math.min(bounceDamage, attacker.getMaxHp() / 10);
                         player.getMap().damageMonster(player, attacker, bounceDamage);
                         damage -= bounceDamage;
                         removedDamage += bounceDamage;
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bounceDamage), false, true);
+                        player.getMap()
+                              .broadcastMessage(
+                                  player,
+                                  MaplePacketCreator.damageMonster(oid, bounceDamage),
+                                  false,
+                                  true
+                              );
                         player.checkMonsterAggro(attacker);
                     }
                     if (damageFrom == -1 && player.getSkillLevel(SkillFactory.getSkill(2310000)) != 0) {
@@ -272,7 +300,12 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             int bounceDamage = (int) ((double) damage * ((10.0d * (double) player.getSkillLevel(SkillFactory.getSkill(2310000))) / 100.0d));
                             bounceDamage = Math.min(bounceDamage, attacker.getMaxHp() / 2);
                             player.getMap().damageMonster(player, attacker, bounceDamage);
-                            player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bounceDamage), true, true);
+                            player.getMap().broadcastMessage(
+                                player,
+                                MaplePacketCreator.damageMonster(oid, bounceDamage),
+                                true,
+                                true
+                            );
                             player.checkMonsterAggro(attacker);
                         }
                     }
@@ -280,15 +313,35 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         int[] manaReflectSkillId = {2121002, 2221002, 2321002};
                         for (int manaReflect : manaReflectSkillId) {
                             ISkill manaReflectSkill = SkillFactory.getSkill(manaReflect);
-                            if (player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, manaReflectSkill) && player.getSkillLevel(manaReflectSkill) > 0 && manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).makeChanceResult()) {
+                            if (
+                                player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, manaReflectSkill) &&
+                                player.getSkillLevel(manaReflectSkill) > 0 &&
+                                manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).makeChanceResult()
+                            ) {
                                 int bounceDamage = damage * (manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).getX() / 100);
                                 if (bounceDamage > attacker.getMaxHp() * 0.2d) {
                                     bounceDamage = (int) (attacker.getMaxHp() * 0.2d);
                                 }
                                 player.getMap().damageMonster(player, attacker, bounceDamage);
-                                player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(oid, bounceDamage), true);
-                                player.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(manaReflect, 5));
-                                player.getMap().broadcastMessage(player, MaplePacketCreator.showBuffeffect(player.getId(), manaReflect, 5, (byte) 3), false);
+                                player.getMap().broadcastMessage(
+                                    player,
+                                    MaplePacketCreator.damageMonster(oid, bounceDamage),
+                                    true
+                                );
+                                player.getClient()
+                                      .getSession()
+                                      .write(MaplePacketCreator.showOwnBuffEffect(manaReflect, 5));
+                                player.getMap()
+                                      .broadcastMessage(
+                                          player,
+                                          MaplePacketCreator.showBuffeffect(
+                                              player.getId(),
+                                              manaReflect,
+                                              5,
+                                              (byte) 3
+                                          ),
+                                          false
+                                      );
                                 break;
                             }
                         }
@@ -313,7 +366,12 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     }
                 }
 
-                if (!belowLevelLimit && (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null || player.getSkillLevel(5100000) > 0) && mpAttack == 0) {
+                if (
+                    !belowLevelLimit &&
+                    (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null ||
+                        player.getSkillLevel(5100000) > 0) &&
+                    mpAttack == 0
+                ) {
                     int mpLoss;
                     if (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null) {
                         mpLoss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0d));
@@ -427,7 +485,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         0
                     );
                 }
-                if (player.getMount() != null && (player.getMount().getSkillId() == 5221006 && player.getMount().isActive())) {
+                if (
+                    player.getMount() != null &&
+                    (player.getMount().getSkillId() == 5221006 && player.getMount().isActive())
+                ) {
                     player.decrementBattleshipHp(damage);
                 }
             }

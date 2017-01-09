@@ -32,7 +32,7 @@ public class ItemMoveHandler extends AbstractMaplePacketHandler {
                 return;
             }
             if (checkq > 4000 || checkq < 1) {
-                AutobanManager.getInstance().autoban(c, "XSource| Drop-dupe attempt, item ("+c.getPlayer().getInventory(type).getItem(src).getItemId()+").");
+                AutobanManager.getInstance().autoban(c, "Drop-dupe attempt, item (" + c.getPlayer().getInventory(type).getItem(src).getItemId() + ").");
                 return;
             }
             MapleInventoryManipulator.drop(c, type, src, quantity);

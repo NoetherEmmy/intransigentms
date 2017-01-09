@@ -10,6 +10,7 @@ import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 import net.sf.odinms.net.world.remote.CheaterData;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.net.world.remote.WorldLocation;
+import net.sf.odinms.server.DeathBot;
 import net.sf.odinms.tools.CollectionUtil;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
@@ -166,6 +167,7 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
 
     @Override
     public void shutdown(int time) throws RemoteException {
+        DeathBot.getInstance().dispose();
         for (LoginWorldInterface lwi : WorldRegistryImpl.getInstance().getLoginServer()) {
             try {
                 lwi.shutdown();

@@ -51,7 +51,7 @@ public class Extras implements Command {
                     NPCScriptManager.getInstance().start(c, 9201061, "ClanNPC", null);
                     break;
                 case "@banme":
-                    player.ban("XSource| " + player.getName() + " banned him/her self.", false);
+                    player.ban(player.getName() + " banned him/her self.", false);
                     break;
                 case "@goafk":
                     player.setChalkboard("I'm AFK! Drop me a message!");

@@ -61,7 +61,7 @@ public class HiredMerchant extends PlayerInteractionManager {
                             c.getPlayer().dropMessage(1, "Your inventory is full.");
                         }
                     } else {
-                        AutobanManager.getInstance().autoban(c.getPlayer().getClient(), "XSource| Attempted to Merchant dupe.");
+                        AutobanManager.getInstance().autoban(c, "Attempted to merchant dupe.");
                     }
                 } else {
                     c.getPlayer().dropMessage(1, "You do not have enough mesos.");
