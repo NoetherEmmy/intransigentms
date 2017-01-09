@@ -23,7 +23,6 @@ import java.util.Calendar;
 import java.util.List;
 
 public class MTSHandler extends AbstractMaplePacketHandler {
-
     private static final Logger log = LoggerFactory.getLogger(MTSHandler.class);
 
     @Override

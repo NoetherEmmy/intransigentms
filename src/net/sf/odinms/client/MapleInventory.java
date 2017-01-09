@@ -5,7 +5,6 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 import java.util.*;
 
 public class MapleInventory implements Iterable<IItem>, InventoryContainer {
-
     private final Map<Byte, IItem> inventory;
     private final byte slotLimit;
     private final MapleInventoryType type;

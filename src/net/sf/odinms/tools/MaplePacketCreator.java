@@ -3726,11 +3726,6 @@ public class MaplePacketCreator {
 
     /**
      * mode: 0 buddychat; 1 partychat; 2 guildchat; 3 alliance
-     * 
-     * @param name
-     * @param chattext
-     * @param mode
-     * @return
      */
     public static MaplePacket multiChat(String name, String chattext, int mode) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -3841,12 +3836,12 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getClock(int time) { // time in seconds
-
+    /** Time is in seconds. */
+    public static MaplePacket getClock(int time) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.CLOCK.getValue());
-        mplew.write(2); // clock type. if you send 3 here you have to send another byte (which does not matter at all) before the timestamp
+        mplew.write(2); // Clock type. If you send 3 here you have to send another byte (which does not matter at all) before the timestamp.
 
         mplew.writeInt(time);
 
@@ -6033,13 +6028,13 @@ public class MaplePacketCreator {
         return enableCSUse0();
     }
 
-    public static MaplePacket giveEnergyCharge(int barAmmount) {
+    public static MaplePacket giveEnergyCharge(int barAmount) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.GIVE_BUFF.getValue());
         mplew.writeLong(0);
         mplew.write(HexTool.getByteArrayFromHexString("00 00 00 08 00 00 00 00")); // buffmask
         mplew.writeShort(0);
-        mplew.writeShort(barAmmount);
+        mplew.writeShort(barAmount);
         for (int i = 0; i < 3; ++i) { //  May contain animation stuff.
             mplew.writeInt(0);
         }

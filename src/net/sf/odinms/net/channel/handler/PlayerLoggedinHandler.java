@@ -29,7 +29,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
         int cid = slea.readInt();
-        MapleCharacter player;
+        final MapleCharacter player;
         try {
             player = MapleCharacter.loadCharFromDB(cid, c, true);
             c.setPlayer(player);
@@ -207,8 +207,17 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         player.checkMessenger();
         player.checkBerserk();
-        player.setMagicArmor(false);
-        player.setMagicArmorCancelTask(null);
+        if (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) == null ||
+            player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) < 1) {
+            player.setMagicGuard(false);
+            player.setMagicGuardCancelTask(null);
+        }
+        final WorldServer ws = WorldServer.getInstance();
+        ws.getEnergyChargeRetention(player.getId())
+          .ifPresent(ec -> {
+              player.setEnergyBar(ec);
+              ws.removeEnergyChargeRetention(player.getId());
+          });
         player.updatePastLifeExp();
         player.reactivateExpBonus();
         player.dropVoteTime();
@@ -222,6 +231,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         c.getSession().write(MaplePacketCreator.setNPCScriptable(2041017, "Ace of Hearts"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9010000, "Maple Administrator"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(2051001, "Kay"));
+        c.getSession().write(MaplePacketCreator.setNPCScriptable(9270030, "Ralph the wanderer"));
         //
     }
 }

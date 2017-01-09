@@ -7,7 +7,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CreateCharHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         String name = slea.readMapleAsciiString();
@@ -111,6 +110,7 @@ public class CreateCharHandler extends AbstractMaplePacketHandler {
         if (name.length() < 4 || name.length() > 12) {
             charok = false;
         }
+        newchar.setTrueDamage(true);
 
         if (charok && MapleCharacterUtil.canCreateChar(name, c.getWorld())) {
             newchar.saveToDB(false, true);

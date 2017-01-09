@@ -10,6 +10,7 @@ import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.maps.SavedLocationType;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Extras implements Command {
 
@@ -62,7 +63,7 @@ public class Extras implements Command {
                     }
                     break;
                 case "@go":
-                    HashMap<String, Integer> maps = new HashMap<>();
+                    Map<String, Integer> maps = new HashMap<>();
                     maps.put("fm", 910000000);
                     maps.put("henesys", 100000000);
                     maps.put("ellinia", 101000000);
@@ -97,7 +98,7 @@ public class Extras implements Command {
                         StringBuilder builder = new StringBuilder("Syntax: @go <mapname>");
                         int i = 0;
                         for (String mapss : maps.keySet()) {
-                            if (1 % 10 == 0) { // 10 maps per line
+                            if (i % 10 == 0) { // 10 maps per line
                                 mc.dropMessage(builder.toString());
                             } else {
                                 builder.append(mapss).append(", ");

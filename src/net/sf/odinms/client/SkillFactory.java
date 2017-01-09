@@ -25,8 +25,8 @@ public class SkillFactory {
             ret = skills.get(id);
             if (ret == null) {
                 int job = id / 10000;
-                MapleData skillroot = datasource.getData(StringUtil.getLeftPaddedStr(String.valueOf(job), '0', 3) + ".img");
-                MapleData skillData = skillroot.getChildByPath("skill/" + StringUtil.getLeftPaddedStr(String.valueOf(id), '0', 7));
+                MapleData skillRoot = datasource.getData(StringUtil.getLeftPaddedStr(String.valueOf(job), '0', 3) + ".img");
+                MapleData skillData = skillRoot.getChildByPath("skill/" + StringUtil.getLeftPaddedStr(String.valueOf(id), '0', 7));
                 if (skillData != null) {
                     ret = Skill.loadFromData(id, skillData);
                 }
@@ -39,9 +39,9 @@ public class SkillFactory {
     public static String getSkillName(int id) {
         String strId = Integer.toString(id);
         strId = StringUtil.getLeftPaddedStr(strId, '0', 7);
-        MapleData skillroot = stringData.getChildByPath(strId);
-        if (skillroot != null) {
-            return MapleDataTool.getString(skillroot.getChildByPath("name"), "");
+        MapleData skillRoot = stringData.getChildByPath(strId);
+        if (skillRoot != null) {
+            return MapleDataTool.getString(skillRoot.getChildByPath("name"), "");
         }
         return null;
     }

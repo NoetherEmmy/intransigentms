@@ -42,7 +42,7 @@ public class BuyCSItemHandler extends AbstractMaplePacketHandler {
             int itemID = item.getId();
             if (itemID == 5120015 || (itemID >= 5390000 && itemID <= 5430000) || itemID == 1812002 || itemID == 1812003 || (itemID >= 5030000 && itemID <= 5076000 && itemID != 5060000) || (itemID >= 5130000 && itemID <= 5154000) || (itemID >= 5210000 && itemID <= 5230000)) {
                 c.getPlayer().dropMessage(1, "You may not purchase this item.");
-                c.getSession().write(MaplePacketCreator.enableActions());
+                updateInformation(c);
                 return;
             }
             if (c.getPlayer().getCSPoints(useNX) >= item.getPrice()) {

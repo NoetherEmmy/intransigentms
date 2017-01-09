@@ -116,13 +116,13 @@ public class MapleStatEffect implements Serializable {
         MapleStatEffect ret = new MapleStatEffect();
         ret.duration = MapleDataTool.getIntConvert("time", source, -1);
         ret.hp = (short) MapleDataTool.getInt("hp", source, 0);
-        ret.hpR = MapleDataTool.getInt("hpR", source, 0) / 100.0;
+        ret.hpR = MapleDataTool.getInt("hpR", source, 0) / 100.0d;
         ret.mp = (short) MapleDataTool.getInt("mp", source, 0);
-        ret.mpR = MapleDataTool.getInt("mpR", source, 0) / 100.0;
+        ret.mpR = MapleDataTool.getInt("mpR", source, 0) / 100.0d;
         ret.mpCon = (short) MapleDataTool.getInt("mpCon", source, 0);
         ret.hpCon = (short) MapleDataTool.getInt("hpCon", source, 0);
         ret.iProp = MapleDataTool.getInt("prop", source, 100);
-        ret.prop = ret.iProp / 100.0;
+        ret.prop = ret.iProp / 100.0d;
         ret.mobCount = MapleDataTool.getInt("mobCount", source, 1);
         ret.cooldown = MapleDataTool.getInt("cooltime", source, 0);
         ret.morphId = MapleDataTool.getInt("morph", source, 0);
@@ -562,7 +562,7 @@ public class MapleStatEffect implements Serializable {
                     if (applyFrom.getItemQuantity(itemCon, false) >= itemConNo) {
                         MapleInventoryManipulator.removeById(applyTo.getClient(), type, itemCon, itemConNo, false, true);
                     } else {
-                        applyFrom.dropMessage("You do not have enough Elans Vital to use the Resurrection skill.");
+                        applyFrom.dropMessage(5, "You do not have enough Elans Vital to use the Resurrection skill.");
                         applyFrom.removeCooldown(sourceid);
                         applyFrom.addMPHP(0, mpCon);
                         applyFrom.getClient().getSession().write(MaplePacketCreator.enableActions());
@@ -570,7 +570,27 @@ public class MapleStatEffect implements Serializable {
                     }
                 }
             }
+
             if (sourceid == 5101005) {
+                // This commented code was for the old Fist Booster version of MP Recovery.
+                /*
+                if (applyFrom.isBareHanded()) {
+                    int localDuration = applyFrom.getSkillLevel(sourceid) * 20 * 1000;
+                    applyTo.getClient()
+                           .getSession()
+                           .write(
+                               MaplePacketCreator.giveBuff(
+                                   sourceid,
+                                   localDuration,
+                                   Collections.singletonList(new Pair<>(MapleBuffStat.BOOSTER, -2))
+                               )
+                           );
+                    final long startTime = System.currentTimeMillis();
+                    final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, this, startTime);
+                    final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
+                    applyTo.registerEffect(this, startTime, schedule);
+                }
+                */
                 hpChange = (int) ((double) applyFrom.getMaxHp() * (-x / 100.0d));
                 if (-hpChange >= applyTo.getHp()) {
                     applyFrom.dropMessage(5, "You do not have enough HP to use the MP Recovery skill.");
@@ -836,13 +856,38 @@ public class MapleStatEffect implements Serializable {
     private void applyBuff(final MapleCharacter applyFrom) {
         if (isPartyBuff() && (applyFrom.getParty() != null || isGmBuff())) {
             Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
-            List<MapleMapObject> affecteds = applyFrom.getMap().getMapObjectsInRect(bounds, Collections.singletonList(MapleMapObjectType.PLAYER));
+            List<MapleMapObject> affecteds = applyFrom.getMap()
+                                                      .getMapObjectsInRect(
+                                                          bounds,
+                                                          Collections.singletonList(MapleMapObjectType.PLAYER)
+                                                      );
             List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
-            MapleCharacter closestplayer = null;
-            double closestdistance = Double.MAX_VALUE;
+            MapleCharacter closestPlayer = null;
+            double closestDistance = Double.MAX_VALUE;
+
+            boolean potentiallySamsara = false;
+            final int elanVital = 4031485;
+            if (
+                sourceid == 5121000 &&
+                applyFrom.getTotalInt() >= 750 &&
+                applyFrom.getEnergyBar() >= 10000 &&
+                applyFrom.isBareHanded() &&
+                applyFrom.haveItem(elanVital, 1, false, true) &&
+                applyFrom.canSamsara()
+            ) {
+                potentiallySamsara = true;
+            }
+
             for (MapleMapObject affectedmo : affecteds) {
                 MapleCharacter affected = (MapleCharacter) affectedmo;
-                if (affected != null && isHeal() && affected != applyFrom && affected.getParty() != null && affected.getParty() == applyFrom.getParty() && affected.isAlive()) {
+                if (
+                    affected != null &&
+                    isHeal() &&
+                    affected != applyFrom &&
+                    affected.getParty() != null &&
+                    affected.getParty() == applyFrom.getParty() &&
+                    affected.isAlive()
+                ) {
                     int expadd = (int)
                     (
                         (
@@ -875,44 +920,79 @@ public class MapleStatEffect implements Serializable {
                         applyFrom.gainExp(expadd, true, false, false);
                     }
                 }
-                if (affected != null && affected != applyFrom && (isGmBuff() || applyFrom.getParty().equals(affected.getParty()))) {
+                if (
+                    affected != null &&
+                    affected != applyFrom &&
+                    (isGmBuff() || applyFrom.getParty().equals(affected.getParty()))
+                ) {
                     boolean isResurrection = isResurrection();
                     if ((isResurrection && !affected.isAlive()) || (!isResurrection && affected.isAlive())) {
                         if (isResurrection) {
-                            if (applyFrom.getPosition().distanceSq(affected.getPosition()) < closestdistance) {
-                                closestdistance = applyFrom.getPosition().distanceSq(affected.getPosition());
-                                closestplayer = affected;
+                            if (applyFrom.getPosition().distanceSq(affected.getPosition()) < closestDistance && affected.getLevel() >= 110) {
+                                closestDistance = applyFrom.getPosition().distanceSq(affected.getPosition());
+                                closestPlayer = affected;
                             }
                         } else {
                             affectedp.add(affected);
+                            if (potentiallySamsara) {
+                                if (!affected.isAlive() && applyFrom.getPosition().distanceSq(affected.getPosition()) < closestDistance && affected.getLevel() >= 110) {
+                                    closestDistance = applyFrom.getPosition().distanceSq(affected.getPosition());
+                                    closestPlayer = affected;
+                                }
+                            }
                         }
                     }
                     if (isTimeLeap()) {
-                        Set<Integer> disabledSkills = null;
-                        if (affected.getPartyQuest() != null) {
-                            if (affected.getPartyQuest().getMapInstance(affected.getMap()) != null) {
-                                disabledSkills = affected.getPartyQuest()
-                                                         .getMapInstance(affected.getMap())
-                                                         .readDisabledSkills();
-                            }
-                        }
                         for (PlayerCoolDownValueHolder i : affected.getAllCooldowns()) {
-                            if (i.skillId != 5121010 && (disabledSkills == null || !disabledSkills.contains(i.skillId))) {
+                            if (i.skillId != 5121010) {
                                 affected.removeCooldown(i.skillId);
                             }
                         }
                     }
                 }
             }
-            if (closestplayer != null) {
-                affectedp.add(closestplayer);
+            if (closestPlayer != null) {
+                if (potentiallySamsara) {
+                    applyFrom.setLastSamsara(System.currentTimeMillis());
+                    MapleInventoryManipulator.removeById(
+                        applyFrom.getClient(),
+                        MapleInventoryType.ETC,
+                        elanVital,
+                        1,
+                        false,
+                        false
+                    );
+                    applyFrom.getClient().getSession().write(MaplePacketCreator.giveEnergyCharge(0));
+                    applyFrom.setEnergyBar(0);
+
+                    final MapleCharacter closestPlayer_ = closestPlayer;
+                    closestPlayer_.setInvincible(true); // 10 second invincibility
+                    TimerManager.getInstance().schedule(() -> closestPlayer_.setInvincible(false), 10 * 1000);
+                    closestPlayer_.incrementDeathPenaltyAndRecalc(5);
+                    closestPlayer_.setExp(0);
+                    closestPlayer_.updateSingleStat(MapleStat.EXP, 0);
+                    closestPlayer_.getClient().getSession().write(MaplePacketCreator.getClock(0));
+
+                    applyFrom.forciblyGiveDebuff(123, 13, 20L * 1000L);
+
+                    affectedp.clear();
+                } else {
+                    affectedp.add(closestPlayer);
+                }
             }
             for (MapleCharacter affected : affectedp) {
-                // TODO actually heal (and others) shouldn't recalculate everything
+                // TODO: Actually heal (and others) shouldn't recalculate everything
                 // For heal, this is an actual bug since heal HP is decreased with the number
                 // of affected players.
                 applyTo(applyFrom, affected, false, null);
-                affected.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(sourceid, 2));
+                affected.getClient()
+                        .getSession()
+                        .write(
+                            MaplePacketCreator.showOwnBuffEffect(
+                                sourceid,
+                                2
+                            )
+                        );
                 affected.getMap().broadcastMessage(
                     affected,
                     MaplePacketCreator.showBuffeffect(
@@ -943,7 +1023,11 @@ public class MapleStatEffect implements Serializable {
 
     private void applyMonsterBuff(MapleCharacter applyFrom) {
         Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
-        List<MapleMapObject> affected = applyFrom.getMap().getMapObjectsInRect(bounds, Collections.singletonList(MapleMapObjectType.MONSTER));
+        List<MapleMapObject> affected = applyFrom.getMap()
+                                                 .getMapObjectsInRect(
+                                                     bounds,
+                                                     Collections.singletonList(MapleMapObjectType.MONSTER)
+                                                 );
         final ISkill skill_ = SkillFactory.getSkill(sourceid);
         Map<MonsterStatus, Integer> localMonsterStatus = getMonsterStati();
         if (skill_.getId() == 1201006) { // Handing Threaten's scaling with level
@@ -960,7 +1044,16 @@ public class MapleStatEffect implements Serializable {
         for (MapleMapObject mo : affected) {
             MapleMonster monster = (MapleMonster) mo;
             if (makeChanceResult()) {
-                monster.applyStatus(applyFrom, new MonsterStatusEffect(localMonsterStatus, skill_, false), isPoison(), getDuration());
+                monster.applyStatus(
+                    applyFrom,
+                    new MonsterStatusEffect(
+                        localMonsterStatus,
+                        skill_,
+                        false
+                    ),
+                    isPoison(),
+                    getDuration()
+                );
             }
             i++;
             if (i >= mobCount) {
@@ -1039,7 +1132,7 @@ public class MapleStatEffect implements Serializable {
                     Pair<MapleBuffStat, Integer> statup = localStatups.get(i);
                     if (statup.getLeft() == MapleBuffStat.WATK) {
                         alreadyHasWatk = true;
-                        // 3 * skillLevel + casterLevel / 1.5
+                        // 3 * skillLevel + casterLevel / 1.3
                         int watt = (int) ((3.0d * applyFrom.getSkillLevel(SkillFactory.getSkill(localSourceId))) + (applyFrom.getLevel() / 1.3d));
                         localStatups.set(i, new Pair<>(MapleBuffStat.WATK, watt));
                         break;
@@ -1192,14 +1285,8 @@ public class MapleStatEffect implements Serializable {
             applyTo.getMap().broadcastMessage(applyTo, MaplePacketCreator.giveForeignBuff(applyTo.getId(), stat, this), false);
         }
         if (isTimeLeap()) {
-            Set<Integer> disabledSkills = null;
-            if (applyTo.getPartyQuest() != null) {
-                if (applyTo.getPartyQuest().getMapInstance(applyTo.getMap()) != null) {
-                    disabledSkills = applyTo.getPartyQuest().getMapInstance(applyTo.getMap()).readDisabledSkills();
-                }
-            }
             for (PlayerCoolDownValueHolder i : applyTo.getAllCooldowns()) {
-                if (i.skillId != 5121010 && (disabledSkills == null || !disabledSkills.contains(i.skillId))) {
+                if (i.skillId != 5121010) {
                     applyTo.removeCooldown(i.skillId);
                 }
             }
@@ -1601,6 +1688,10 @@ public class MapleStatEffect implements Serializable {
     public boolean isPirateMorph() {
         return skill && (sourceid == 5111005 || sourceid == 5121003);
     }
+
+    public boolean removeStatup(final MapleBuffStat mbs) {
+        return statups.removeIf(s -> s.getLeft().equals(mbs));
+    }
     
     //
     public boolean isRecovery() {
@@ -1609,6 +1700,10 @@ public class MapleStatEffect implements Serializable {
     
     public boolean isMagicArmor() {
         return skill && sourceid == 2001003;
+    }
+
+    public boolean isMagicGuard() {
+        return skill && sourceid == 2001002;
     }
     //
 
@@ -1668,11 +1763,10 @@ public class MapleStatEffect implements Serializable {
     }
 
     /**
-     *
      * @return true if the effect should happen based on its probability, false otherwise
      */
     public boolean makeChanceResult() {
-        return prop == 1.0 || Math.random() < prop;
+        return prop == 1.0d || Math.random() < prop;
     }
 
     private boolean isCrash() {

@@ -15,7 +15,6 @@ import java.util.Map;
 public class PortalScriptManager {
     private static final Logger log = LoggerFactory.getLogger(PortalScriptManager.class);
     private static final PortalScriptManager instance = new PortalScriptManager();
-
     private final Map<String, PortalScript> scripts = new HashMap<>();
     private final ScriptEngineFactory sef;
 

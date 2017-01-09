@@ -14,7 +14,7 @@ public class MapleCQuests {
     private final Map<Integer, Pair<Integer, String>> itemsToCollect = new HashMap<>(4, 0.8f);
     private int expReward, mesoReward;
     private final Map<Integer, Integer> itemRewards = new HashMap<>(3);
-    private String npc;
+    private String startNpc, endNpc;
     private String title;
     private String info;
 
@@ -80,11 +80,15 @@ public class MapleCQuests {
                 itemReward = p.getProperty("ITEM" + i);
             }
             
-            npc = "" + p.getProperty("NPC");
+            startNpc = "" + p.getProperty("NPC");
+            endNpc = p.getProperty("NPC_end");
+            if (endNpc == null) {
+                endNpc = startNpc;
+            }
             title = "" + p.getProperty("Title");
             info = "" + p.getProperty("Info");
         } catch (Exception e) {
-            System.out.println(e + " -- Failed to load MapleCQuest "  + id);
+            System.err.println(e + " -- Failed to load MapleCQuest "  + id);
             this.id = 0;
         }
     }
@@ -93,8 +97,16 @@ public class MapleCQuests {
         return id;
     }
 
-    public String getNPC() {
-        return npc;
+    public String getStartNpc() {
+        return startNpc;
+    }
+
+    public String getEndNpc() {
+        return endNpc;
+    }
+
+    public boolean hasIdenticalStartEnd() {
+        return startNpc.equals(endNpc);
     }
 
     public String loadTitle(int questid) {
@@ -104,8 +116,8 @@ public class MapleCQuests {
             p.load(new FileInputStream("quests/" + questid + ".ini"));
             title += p.getProperty("Title");
         } catch (Exception e) {
-            System.out.println(e + " - Failed to load Title of Quest: " + questid);
-            title += "[Failed to load Title of Quest: " + questid + "]";
+            System.err.println(e + " - Failed to load title of quest: " + questid);
+            title += "[Failed to load title of quest: " + questid + "]";
         }
         return title;
     }
@@ -121,7 +133,7 @@ public class MapleCQuests {
             p.load(new FileInputStream("quests/" + questid + ".ini"));
             info += p.getProperty("Info");
         } catch (Exception e) {
-            System.out.println(e + " - Failed to load Info of Quest: " + questid);
+            System.err.println(e + " - Failed to load info of quest: " + questid);
             title += "[Failed to load info of quest " + questid + "]";
         }
         return info;

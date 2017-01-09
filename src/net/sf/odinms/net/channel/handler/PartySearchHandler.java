@@ -5,6 +5,7 @@ import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PartySearchHandler extends AbstractMaplePacketHandler {
     //All bolleans as for now, all is useless... just for testing somehow, but I changed method while making
@@ -14,7 +15,7 @@ public class PartySearchHandler extends AbstractMaplePacketHandler {
             AllPirate = false, Pirate1 = false, Pirate2 = false,
             AllThief = false, Thief1 = false, Thief2 = false,
             AllBowman = false, Bowman1 = false, Bowman2 = false;
-    ArrayList<Integer> boxsumconstructor = new ArrayList<>();
+    List<Integer> boxsumconstructor = new ArrayList<>();
 
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();

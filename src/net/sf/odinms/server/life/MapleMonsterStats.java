@@ -5,7 +5,6 @@ import net.sf.odinms.tools.Pair;
 import java.util.*;
 
 public class MapleMonsterStats {
-
     private int exp;
     private int hp, mp;
     private int level;

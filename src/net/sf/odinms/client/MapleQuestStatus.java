@@ -9,7 +9,6 @@ import java.util.Map;
 
 public class MapleQuestStatus {
     public enum Status {
-
         UNDEFINED(-1),
         NOT_STARTED(0),
         STARTED(1),

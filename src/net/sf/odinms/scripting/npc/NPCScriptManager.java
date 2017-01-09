@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class NPCScriptManager extends AbstractScriptManager {
-    
     private final Map<MapleClient, NPCConversationManager> cms = new HashMap<>();
     private final Map<MapleClient, NPCScript> scripts = new HashMap<>();
     private static final NPCScriptManager instance = new NPCScriptManager();
@@ -50,7 +49,7 @@ public class NPCScriptManager extends AbstractScriptManager {
             scripts.put(c, ns);
             iv.invokeFunction("start");
         } catch (Exception e) {
-            log.error("Error executing NPC script.", e);
+            log.error("Error executing NPC script: " + getCM(c).getFileName(), e);
             dispose(c);
             cms.remove(c);
         }
@@ -62,7 +61,7 @@ public class NPCScriptManager extends AbstractScriptManager {
             try {
                 ns.action(mode, type, selection);
             } catch (Exception e) {
-                log.error("Error executing NPC script.", e);
+                log.error("Error executing NPC script: " + getCM(c).getFileName(), e);
                 dispose(c);
             }
         }
@@ -120,9 +119,9 @@ public class NPCScriptManager extends AbstractScriptManager {
     
     public List<Integer> listTalkedNpcsByID(int chrid) {
         List<Integer> npcs = new ArrayList<>();
-        for (Pair<Integer, Integer> rawr : npcTalk.keySet()) {
-            if (rawr.getLeft().equals(chrid)) {
-                npcs.add(rawr.getRight());
+        for (Pair<Integer, Integer> p : npcTalk.keySet()) {
+            if (p.getLeft().equals(chrid)) {
+                npcs.add(p.getRight());
             }
         }
         return npcs;
@@ -130,17 +129,17 @@ public class NPCScriptManager extends AbstractScriptManager {
     
     public List<Integer> listAllTalkedNpcs() {
         List<Integer> npcs = new ArrayList<>();
-        for (Pair<Integer, Integer> rawr : npcTalk.keySet()) {
-            npcs.add(rawr.getRight());
+        for (Pair<Integer, Integer> p : npcTalk.keySet()) {
+            npcs.add(p.getRight());
         }
         return npcs;
     }
     
     public int talkedTimesByNpc(int npc) {
         int i = 0;
-        for (Pair<Integer, Integer> rawr : npcTalk.keySet()) {
-            if (rawr.getRight().equals(npc)) {
-                i += npcTalk.get(rawr);
+        for (Pair<Integer, Integer> p : npcTalk.keySet()) {
+            if (p.getRight().equals(npc)) {
+                i += npcTalk.get(p);
             }
         }
         return i;

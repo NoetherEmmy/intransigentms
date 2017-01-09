@@ -14,6 +14,7 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MaplePortal;
+import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.life.MapleLifeFactory;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.maps.MapleMap;
@@ -35,6 +36,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PlayerCommands implements Command {
@@ -46,6 +48,8 @@ public class PlayerCommands implements Command {
             mc.dropMessage("================================================================");
             mc.dropMessage("               " + c.getChannelServer().getServerName() + " Commands");
             mc.dropMessage("================================================================");
+            mc.dropMessage("@snipedisplay - | - Toggles displaying the damage you do every time you use the Snipe skill.");
+            mc.dropMessage("@samsara - | - Displays the current cooldown for the Samsara ability.");
             mc.dropMessage("@checkstat - | - Displays your stats.");
             mc.dropMessage("@save - | - Saves your progress.");
             mc.dropMessage("@expfix - | - Fixes your negative experience.");
@@ -60,6 +64,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@afk <playername> - | - Shows how long a person has been AFK.");
             mc.dropMessage("@onlinetime - | - Shows how long a person has been online.");
             mc.dropMessage("@online - | - Lists all online players.");
+            mc.dropMessage("@event - | - Teleports you to the currectly active event, if there is one.");
             mc.dropMessage("@monstertrialtime - | - Shows how much longer you must wait to enter another Monster Trial.");
             mc.dropMessage("@mapleadmin - | - Opens up chat with Maple Adminstrator NPC.");
             mc.dropMessage("@monsterlevels - | - Displays levels and relative XP multipliers for all monsters on the map.");
@@ -77,6 +82,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@expboostinfo - | - Displays how much time you have left on your EXP bonus.");
             mc.dropMessage("@deathpenalty - | - Displays your current death penalty level and its effects, as well as how long until you can next rest.");
             mc.dropMessage("@defense/@defence - | - Displays your true current weapon and magic defense.");
+            mc.dropMessage("@magic - | - Displays your true current magic attack.");
             mc.dropMessage("@monsterhp - | - Displays the current HP % of all mobs on the map.");
             mc.dropMessage("@bosshp <repeat_time_in_milliseconds> - | - Displays the current HP % of all bosses on the map once, or optionally repeating (if specified). Cancels previous @bosshp displays.");
             mc.dropMessage("@truedamage - | - Toggles the display of true damage received.");
@@ -226,12 +232,12 @@ public class PlayerCommands implements Command {
                     }
                 }
                 long blahblah = System.currentTimeMillis() - victim.getAfkTime();
-                if (Math.floor(blahblah / 60000) == 0) { // less than a minute
+                if (Math.floor(blahblah / 60000) == 0) { // Less than a minute
                     mc.dropMessage("This player has not been AFK in the last minute.");
                 } else {
                     StringBuilder sb = new StringBuilder();
                     sb.append(victim.getName());
-                    sb.append(" has been afk for");
+                    sb.append(" has been AFK for");
                     compareTime(sb, blahblah);
                     mc.dropMessage(sb.toString());
                 }
@@ -283,10 +289,10 @@ public class PlayerCommands implements Command {
             NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9010000);
         } else if (splitted[0].equals("@monsterlevels")) {
-            ArrayList<Integer> monsterids = new ArrayList<>(4);
+            List<Integer> monsterids = new ArrayList<>(4);
             double rx;
             int absxp = player.getAbsoluteXp();
-            absxp *= 4;
+            absxp *= c.getChannelServer().getExpRate();
             for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
                 MapleMonster monster = (MapleMonster) mmo;
                 if (!monsterids.contains(monster.getId())) {
@@ -298,12 +304,7 @@ public class PlayerCommands implements Command {
                 }
             }
         } else if (splitted[0].equals("@absolutexprate")) {
-            int absxp = (int) Math.floor(0.1d * (double) player.getLevel());
-            if (absxp > 1) {
-                mc.dropMessage("Your total absolute XP multiplier: " + absxp * c.getChannelServer().getExpRate());
-            } else {
-                mc.dropMessage("Your total absolute XP multiplier: " + c.getChannelServer().getExpRate());
-            }
+            mc.dropMessage("Your total absolute XP multiplier: " + (player.getAbsoluteXp() * c.getChannelServer().getExpRate()));
         } else if (splitted[0].equalsIgnoreCase("@whodrops")) {
             if (splitted.length < 2) {
                 NPCScriptManager npc = NPCScriptManager.getInstance();
@@ -734,32 +735,12 @@ public class PlayerCommands implements Command {
                 }
                 if (!mobList.isEmpty()) {
                     if (sortbylevel) {
-                        mobList.sort((o1, o2) -> {
-                            int comparison = Integer.valueOf(o1.getLevel()).compareTo(o2.getLevel());
-                            if (comparison < 0) {
-                                return -1;
-                            } else {
-                                if (comparison > 0) {
-                                    return 1;
-                                } else {
-                                    return 0;
-                                }
-                            }
-                        });
+                        mobList.sort(Comparator.comparingInt(MapleMonster::getLevel));
                     } else {
                         mobList.sort((o1, o2) -> {
                             double xphpratio1 = ((double) o1.getExp() * player.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
                             double xphpratio2 = ((double) o2.getExp() * player.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
-                            int comparison = Double.valueOf(xphpratio1).compareTo(xphpratio2);
-                            if (comparison < 0) {
-                                return -1;
-                            } else {
-                                if (comparison > 0) {
-                                    return 1;
-                                } else {
-                                    return 0;
-                                }
-                            }
+                            return Double.valueOf(xphpratio1).compareTo(xphpratio2);
                         });
                     }
                     
@@ -835,12 +816,22 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@expboostinfo")) {
             if (player.getExpBonus()) {
                 long timeleft = player.getExpBonusEnd() - System.currentTimeMillis();
-                long hours = timeleft / (long) 3600000;
-                timeleft %= (long) 3600000;
-                long minutes = timeleft / (long) 60000;
-                timeleft %= (long) 60000;
-                long seconds = timeleft / (long) 1000;
-                mc.dropMessage("Your " + player.getExpBonusMulti() + "x exp boost lasts for another " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds.");
+                long hours = timeleft / 3600000L;
+                timeleft %= 3600000L;
+                long minutes = timeleft / 60000L;
+                timeleft %= 60000L;
+                long seconds = timeleft / 1000L;
+                mc.dropMessage(
+                    "Your " +
+                        player.getExpBonusMulti() +
+                        "x exp boost lasts for another " +
+                        hours +
+                        " hours, " +
+                        minutes +
+                        " minutes, and " +
+                        seconds +
+                        " seconds."
+                );
             } else {
                 mc.dropMessage("You do not currently have an exp boost active.");
             }
@@ -962,13 +953,21 @@ public class PlayerCommands implements Command {
             mc.dropMessage("PQ point display is now turned " + s + ".");
         } else if (splitted[0].equals("@readingtime")) {
             if (player.getReadingTime() > 0) {
-                long sittingTime = System.currentTimeMillis() - ((long) player.getReadingTime() * 1000);
-                long hours = sittingTime / (long) 3600000;
-                sittingTime %= (long) 3600000;
-                long minutes = sittingTime / (long) 60000;
-                sittingTime %= (long) 60000;
-                long seconds = sittingTime / (long) 1000;
-                player.dropMessage("You've been reading for a total of " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds this session.");
+                long sittingTime = System.currentTimeMillis() - ((long) player.getReadingTime() * 1000L);
+                long hours = sittingTime / 3600000L;
+                sittingTime %= 3600000L;
+                long minutes = sittingTime / 60000L;
+                sittingTime %= 60000L;
+                long seconds = sittingTime / 1000L;
+                player.dropMessage(
+                    "You've been reading for a total of " +
+                        hours +
+                        " hours, " +
+                        minutes +
+                        " minutes, and " +
+                        seconds +
+                        " seconds this session."
+                );
             } else {
                 player.dropMessage("It doesn't look like you're reading at the moment.");
             }
@@ -1012,6 +1011,38 @@ public class PlayerCommands implements Command {
             player.voteUpdate();
         } else if (splitted[0].equals("@buyback")) {
             NPCScriptManager.getInstance().start(c, 9201097);
+        } else if (splitted[0].equals("@snipedisplay")) {
+            player.toggleShowSnipeDmg();
+            mc.dropMessage("Snipe damage display is now " + (player.showSnipeDmg() ? "on" : "off") + ".");
+        } else if (splitted[0].equals("@event")) {
+            final int eventMapId = c.getChannelServer().getEventMap();
+            if (eventMapId == 0) {
+                mc.dropMessage("It doesn't look like there's an event going on in this channel at the moment. Maybe you're in the wrong channel?");
+            } else {
+                mc.dropMessage("Going to the event, please wait...");
+                TimerManager.getInstance().schedule(() -> {
+                    if (player.isAlive() && player.getMapId() != 100) {
+                        player.setPreEventMap(player.getMapId());
+                        player.changeMap(eventMapId);
+                    }
+                }, 4 * 1000);
+            }
+        } else if (splitted[0].equals("@magic")) {
+            mc.dropMessage("Your current total magic attack: " + player.getTotalMagic());
+        } else if (splitted[0].equals("@samsara")) {
+            if (player.getSkillLevel(5121000) > 0) {
+                StringBuilder sb = new StringBuilder();
+                long timeDiff = player.getLastSamsara() + MapleCharacter.SAMSARA_COOLDOWN - System.currentTimeMillis();
+                if (timeDiff > 0) {
+                    sb.append("You may use Samsara again in ");
+                    compareTime(sb, player.getLastSamsara() + MapleCharacter.SAMSARA_COOLDOWN - System.currentTimeMillis());
+                } else {
+                    sb.append("You may use Samsara.");
+                }
+                mc.dropMessage(sb.toString());
+            } else {
+                mc.dropMessage("You do not have access to the Samsara ability.");
+            }
         }
     }
 
@@ -1107,7 +1138,11 @@ public class PlayerCommands implements Command {
             new CommandDefinition("overflowexp", 0),
             new CommandDefinition("vskills", 0),
             new CommandDefinition("voteupdate", 0),
-            new CommandDefinition("buyback", 0)
+            new CommandDefinition("buyback", 0),
+            new CommandDefinition("snipedisplay", 0),
+            new CommandDefinition("event", 0),
+            new CommandDefinition("magic", 0),
+            new CommandDefinition("samsara", 0)
         };
     }
 }

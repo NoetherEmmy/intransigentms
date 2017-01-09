@@ -6,7 +6,6 @@ import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.CommandProcessor;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.database.DatabaseConnection;
-import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.channel.PartyQuest;
 import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
@@ -20,13 +19,7 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.*;
 import net.sf.odinms.server.life.*;
-import net.sf.odinms.server.maps.FakeCharacter;
-import net.sf.odinms.server.maps.MapleMap;
-import net.sf.odinms.server.maps.MapleMapObject;
-import net.sf.odinms.server.maps.MapleMapObjectType;
-import net.sf.odinms.server.movement.AbsoluteLifeMovement;
-import net.sf.odinms.server.movement.LifeMovement;
-import net.sf.odinms.server.movement.LifeMovementFragment;
+import net.sf.odinms.server.maps.*;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
@@ -142,8 +135,8 @@ public class GM implements Command {
     @Override
     public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
-        ChannelServer cserv = c.getChannelServer();
-        Collection<ChannelServer> cservs = ChannelServer.getAllInstances();
+        final ChannelServer cserv = c.getChannelServer();
+        final Collection<ChannelServer> cservs = ChannelServer.getAllInstances();
         final MapleCharacter player = c.getPlayer();
         switch (splitted[0]) {
             case "!lowhp":
@@ -972,6 +965,7 @@ public class GM implements Command {
                 builder.append(" | FH: ");
                 builder.append(victim.getMap().getFootholds().findBelow(player.getPosition()).getId());
                 mc.dropMessage(builder.toString());
+
                 builder = new StringBuilder();
                 builder.append("HP: ");
                 builder.append(victim.getHp());
@@ -988,6 +982,7 @@ public class GM implements Command {
                 builder.append(" | In a Trade: ");
                 builder.append(victim.getTrade() != null);
                 mc.dropMessage(builder.toString());
+
                 builder = new StringBuilder();
                 builder.append("Remote Address: ");
                 builder.append(victim.getClient().getSession().getRemoteAddress());
@@ -1358,13 +1353,36 @@ public class GM implements Command {
                 }
                 break;
             }
-            case "!nearestPortal":
+            case "!nearestspawn": {
                 final MaplePortal portal = player.getMap().findClosestSpawnpoint(player.getPosition());
-                mc.dropMessage(portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName());
+                mc.dropMessage(portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName() + " target: " + portal.getTarget() + " targetMapId: " + portal.getTargetMapId());
                 break;
+            }
+            case "!nearestportal": {
+                final MaplePortal portal =
+                    player.getMap()
+                          .getPortals()
+                          .stream()
+                          .reduce(
+                              (closest, port) -> {
+                                  if (port.getPosition().distanceSq(player.getPosition()) <
+                                      closest.getPosition().distanceSq(player.getPosition())) {
+                                      return port;
+                                  }
+                                  return closest;
+                              }
+                          )
+                          .orElse(null);
+                if (portal != null) {
+                    mc.dropMessage("name: " + portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName() + " target: " + portal.getTarget() + " targetMapId: " + portal.getTargetMapId());
+                } else {
+                    mc.dropMessage("null");
+                }
+                break;
+            }
             case "!unban":
                 if (MapleCharacter.unban(splitted[1])) {
-                    mc.dropMessage("Sucess!");
+                    mc.dropMessage("Success!");
                 } else {
                     mc.dropMessage("Error while unbanning.");
                 }
@@ -1446,8 +1464,8 @@ public class GM implements Command {
                 } else {
                     if (MapleCharacter.ban(splitted[1], reason, false)) {
                         String readableTargetName = MapleCharacterUtil.makeMapleReadable(splitted[1]);
-                        String ip = target.getClient().getSession().getRemoteAddress().toString().split(":")[0];
-                        reason += " (IP: " + ip + ")";
+                        //String ip = target.getClient().getSession().getRemoteAddress().toString().split(":")[0];
+                        //reason += " (IP: " + ip + ")";
                         try {
                             cserv.getWorldInterface().broadcastMessage(null, MaplePacketCreator.serverNotice(6, readableTargetName + " has been banned for " + originalReason).getBytes());
                         } catch (RemoteException re) {
@@ -1530,7 +1548,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetNpc);
                             }
                         } else {
-                            mc.dropMessage("No NPC's Found");
+                            mc.dropMessage("No NPCs found.");
                         }
                     } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
                         List<String> retMaps = new ArrayList<>();
@@ -1553,7 +1571,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetMap);
                             }
                         } else {
-                            mc.dropMessage("No Maps Found");
+                            mc.dropMessage("No maps found.");
                         }
                     } else if (type.equalsIgnoreCase("MOB") || type.equalsIgnoreCase("MOBS") || type.equalsIgnoreCase("MONSTER") || type.equalsIgnoreCase("MONSTERS")) {
                         List<String> retMobs = new ArrayList<>();
@@ -1574,7 +1592,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetMob);
                             }
                         } else {
-                            mc.dropMessage("No Mob's Found");
+                            mc.dropMessage("No mobs found.");
                         }
                     } else if (type.equalsIgnoreCase("REACTOR") || type.equalsIgnoreCase("REACTORS")) {
                         mc.dropMessage("NOT ADDED YET");
@@ -1590,7 +1608,7 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetItem);
                             }
                         } else {
-                            mc.dropMessage("No Item's Found");
+                            mc.dropMessage("No items found.");
                         }
                     } else if (type.equalsIgnoreCase("SKILL") || type.equalsIgnoreCase("SKILLS")) {
                         List<String> retSkills = new ArrayList<>();
@@ -1611,10 +1629,10 @@ public class GM implements Command {
                                 mc.dropMessage(singleRetSkill);
                             }
                         } else {
-                            mc.dropMessage("No skills found");
+                            mc.dropMessage("No skills found.");
                         }
                     } else {
-                        mc.dropMessage("Sorry, that search call is unavailable");
+                        mc.dropMessage("Sorry, that search type is unavailable.");
                     }
                 } else {
                     mc.dropMessage("Invalid search.  Proper usage: '!search <type> <search for>', where <type> is MAP, USE, ETC, CASH, EQUIP, MOB (or MONSTER), or SKILL.");
@@ -1963,7 +1981,7 @@ public class GM implements Command {
                 break;
             }
             case "!resettrialcooldown":
-                player.setLastTrialTime((long) 0);
+                player.setLastTrialTime(0L);
                 mc.dropMessage("Your Monster Trial cooldown has been reset.");
                 break;
             case "!resetap":
@@ -2006,38 +2024,6 @@ public class GM implements Command {
             }
             case "!cachecashequips":
                 MapleItemInformationProvider.getInstance().cacheCashEquips();
-                break;
-            case "!moveup":
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                int displacement = getOptionalIntArg(splitted, 2, 20);
-                if (victim == null) {
-                    player.dropMessage("No such player could be found.");
-                    break;
-                }
-                try {
-                    final List<LifeMovementFragment> res = new ArrayList<>(1);
-                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(0, new Point(victim.getPosition().x, victim.getPosition().y - displacement), 1, 1);
-                    alm.setUnk(1);
-                    alm.setPixelsPerSecond(new Point(1, 1));
-                    res.add(alm);
-                    
-                    MaplePacket packet = MaplePacketCreator.movePlayer(victim.getId(), res);
-                    if (!player.isHidden()) {
-                        victim.getMap().broadcastMessage(player, packet, true);
-                    } else {
-                        victim.getMap().broadcastGMMessage(player, packet, true);
-                    }
-                    res.stream().filter(move -> move instanceof LifeMovement).forEach(move -> {
-                        if (move instanceof AbsoluteLifeMovement) {
-                            Point position = move.getPosition();
-                            victim.setPosition(position);
-                        }
-                        victim.setStance(((LifeMovement) move).getNewstate());
-                    });
-                    victim.getMap().movePlayer(victim, victim.getPosition());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 break;
             case "!invokemethod":
                 if (player.getMap().getPartyQuestInstance() != null) {
@@ -2110,7 +2096,7 @@ public class GM implements Command {
                 break;
             case "!toggledpm":
                 player.toggleDpm();
-                player.dropMessage("Showing DPM on death is now " + (player.doShowDpm() ? "on" : "off"));
+                player.dropMessage("Showing DPM on death is now " + (player.doShowDpm() ? "on" : "off") + ".");
                 break;
             case "!showdpm":
                 final DecimalFormat df = new DecimalFormat("#.000");
@@ -2157,6 +2143,7 @@ public class GM implements Command {
                               )
                               .stream()
                               .map(mmo -> (MapleMonster) mmo)
+                              .filter(MapleMonster::isBoss)
                               .forEach(mob ->
                                   player.dropMessage(
                                       mob.getName() +
@@ -2169,6 +2156,95 @@ public class GM implements Command {
                     repeatTime, 0);
                 tMan.schedule(() -> showDpmTask.cancel(false), duration);
                 break;
+            case "!toggletrackmissgodmode":
+                ChannelServer.getAllInstances().forEach(cs -> cs.setTrackMissGodmode(!cs.getTrackMissGodmode()));
+                player.dropMessage(
+                    "Miss godmode is now " +
+                        (c.getChannelServer().getTrackMissGodmode() ? "" : "no longer ") +
+                        "being tracked."
+                );
+                break;
+            case "!registerevent":
+                String syntax = "Syntax: !registerevent <mapId> or !registerevent <eventName>";
+                if (splitted.length == 2) {
+                    try {
+                        int mapId = Integer.parseInt(splitted[1]);
+                        try {
+                            if (c.getChannelServer().getMapFactory().getMap(mapId) != null) {
+                                c.getChannelServer().setEventMap(mapId);
+                                mc.dropMessage("Event map successfully set to " + mapId);
+                            } else {
+                                mc.dropMessage("That map doesn't seem to exist!");
+                            }
+                        } catch (Exception e) {
+                            mc.dropMessage("That map doesn't seem to exist!");
+                        }
+                    } catch (NumberFormatException nfe) {
+                        int mapId;
+                        switch (splitted[1].toLowerCase()) {
+                            case "":
+                                mapId = 0;
+                                break;
+                            default:
+                                mc.dropMessage(syntax);
+                                return;
+                        }
+                        c.getChannelServer().setEventMap(mapId);
+                        mc.dropMessage("Event map successfully set to " + mapId);
+                    }
+                } else {
+                    mc.dropMessage(syntax);
+                }
+                break;
+            case "!unregisterevent":
+                c.getChannelServer().setEventMap(0);
+                break;
+            case "!warpoutofevent":
+                cserv.getPlayerStorage()
+                     .getAllCharacters()
+                     .stream()
+                     .filter(p -> p.getPreEventMap() > 0)
+                     .forEach(p -> {
+                         p.changeMap(p.getPreEventMap());
+                         p.setPreEventMap(0);
+                     });
+                break;
+            case "!resetpreeventmaps":
+                cserv.getPlayerStorage()
+                     .getAllCharacters()
+                     .forEach(p -> p.setPreEventMap(0));
+                break;
+            case "!giftvp": {
+                if (splitted.length != 3) {
+                    mc.dropMessage("Syntax: !giftvp <playerName> <votePointCount>");
+                    return;
+                }
+                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                if (victim != null) {
+                    int amount;
+                    try {
+                        amount = Integer.parseInt(splitted[2]);
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage("Couldn't parse integer for <votePointCount>");
+                        return;
+                    }
+                    victim.setVotePoints(victim.getVotePoints() + amount);
+                    victim.dropMessage(5, player.getName() + " has gifted you " + amount + " vote points.");
+                    mc.dropMessage("Vote points recieved.");
+                } else {
+                    mc.dropMessage("Player not found.");
+                }
+                break;
+            }
+            case "!unregisterallpqmis": {
+                MapleMapFactory mapFact = c.getChannelServer().getMapFactory();
+                for (int i = 5000; i <= 5012; ++i) {
+                    if (mapFact.isMapLoaded(i)) {
+                        mapFact.getMap(i).unregisterPartyQuestInstance();
+                    }
+                }
+                break;
+            }
         }
     }
 
@@ -2271,6 +2347,7 @@ public class GM implements Command {
             new CommandDefinition("getrings", 3),
             new CommandDefinition("ring", 3),
             new CommandDefinition("removering", 3),
+            new CommandDefinition("nearestspawn", 3),
             new CommandDefinition("nearestportal", 3),
             new CommandDefinition("unban", 3),
             new CommandDefinition("spawn", 3),
@@ -2310,12 +2387,18 @@ public class GM implements Command {
             new CommandDefinition("levelpersongrad", 3),
             new CommandDefinition("cachecashequips", 3),
             new CommandDefinition("cleardropcache", 3),
-            new CommandDefinition("moveup", 3),
             new CommandDefinition("invokemethod", 3),
             new CommandDefinition("clearpqs", 3),
             new CommandDefinition("registerpqmi", 3),
             new CommandDefinition("toggledpm", 3),
-            new CommandDefinition("showdpm", 3)
+            new CommandDefinition("showdpm", 3),
+            new CommandDefinition("toggletrackmissgodmode", 3),
+            new CommandDefinition("registerevent", 3),
+            new CommandDefinition("unregisterevent", 3),
+            new CommandDefinition("warpoutofevent", 3),
+            new CommandDefinition("resetpreeventmaps", 3),
+            new CommandDefinition("giftvp", 3),
+            new CommandDefinition("unregisterallpqmis", 3)
         };
     }
 }

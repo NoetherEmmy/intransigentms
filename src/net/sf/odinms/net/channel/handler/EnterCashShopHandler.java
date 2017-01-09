@@ -13,7 +13,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.rmi.RemoteException;
 
 public class EnterCashShopHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         MapleCharacter player = c.getPlayer();

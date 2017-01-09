@@ -13,7 +13,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ItemPickupHandler extends AbstractMaplePacketHandler {
-
     /** Creates a new instance of ItemPickupHandler */
     public ItemPickupHandler() {
     }
@@ -26,14 +25,14 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
         slea.readInt();
         slea.readInt();
         int oid = slea.readInt();
-        MapleMapObject ob = player.getMap().getMapObject(oid);
+        final MapleMapObject ob = player.getMap().getMapObject(oid);
         if (ob == null) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             c.getSession().write(MaplePacketCreator.getShowInventoryFull());
             return;
         }
         if (ob instanceof MapleMapItem) {
-            MapleMapItem mapitem = (MapleMapItem) ob;
+            final MapleMapItem mapitem = (MapleMapItem) ob;
             synchronized (mapitem) {
                 if (mapitem.isPickedUp()) {
                     c.getSession().write(MaplePacketCreator.getInventoryFull());
@@ -78,6 +77,13 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                         // player.getCheatTracker().pickupComplete();
                         player.getMap().removeMapObject(ob);
                     } else {
+                        if (mapitem.getItem().getItemId() == 3992027) {
+                            if (player.getItemQuantity(3992027, false) > 0) {
+                                c.getSession().write(MaplePacketCreator.getInventoryFull());
+                                c.getSession().write(MaplePacketCreator.getShowInventoryFull());
+                                return;
+                            }
+                        }
                         if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true)) {
                             player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, player.getId()), mapitem.getPosition());
                             // player.getCheatTracker().pickupComplete();

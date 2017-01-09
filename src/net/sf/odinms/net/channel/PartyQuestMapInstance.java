@@ -34,7 +34,7 @@ public class PartyQuestMapInstance {
     private final Map<MapleCharacter, Point> lastPointsHeard;
     private final Set<Integer> disabledSkills = new HashSet<>(5, 0.8f);
     private int currentObstacleId = 0;
-    private int currentTriggerId  = 0;
+    private int currentTriggerId = 0;
 
     PartyQuestMapInstance(PartyQuest partyQuest, MapleMap map) {
         this.partyQuest = partyQuest;
@@ -45,8 +45,8 @@ public class PartyQuestMapInstance {
             FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
             scriptFile.close();
-            scriptEngine.put("mi",  this);
-            scriptEngine.put("pq",  this.partyQuest);
+            scriptEngine.put("mi", this);
+            scriptEngine.put("pq", this.partyQuest);
             scriptEngine.put("map", this.map);
         } catch (FileNotFoundException fnfe) {
             System.out.println("PartyQuestMapInstance could not locate script at path: " + path);
@@ -73,6 +73,7 @@ public class PartyQuestMapInstance {
         removeAllTriggers();
         removeAllObstacles();
         invokeMethod("dispose");
+        invocable = null;
     }
 
     public MapleMap getMap() {
@@ -147,7 +148,11 @@ public class PartyQuestMapInstance {
     }
 
     public Set<MapleCharacter> playersWithProperty(final String property) {
-        return playerPropertyMap.entrySet().stream().filter(e -> e.getValue().containsKey(property)).map(Map.Entry::getKey).collect(Collectors.toSet());
+        return playerPropertyMap.entrySet()
+                                .stream()
+                                .filter(e -> e.getValue().containsKey(property))
+                                .map(Map.Entry::getKey)
+                                .collect(Collectors.toSet());
     }
 
     public void setLevelLimit(int ll) {
@@ -194,6 +199,8 @@ public class PartyQuestMapInstance {
                      invokeMethod("playerHitObstacle", player, o);
                  });
         lastPointsHeard.put(player, position);
+
+        invokeMethod("heardPlayerMovement", player, player.getPosition());
     }
 
     public int registerObstacle(int reactorId, Point closed) {
@@ -263,6 +270,10 @@ public class PartyQuestMapInstance {
 
     public void resetAllObstacles() {
         obstacles.values().forEach(Obstacle::reset);
+    }
+
+    public int obstacleCount() {
+        return obstacles.size();
     }
 
     /** Returns <code>true</code> if an <code>Obstacle</code> was removed, <code>false</code>
@@ -428,7 +439,9 @@ public class PartyQuestMapInstance {
                 }
             }
 
-            this.directions = new HashSet<>(Arrays.asList(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT));
+            this.directions = new HashSet<>(
+                Arrays.asList(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
+            );
         }
 
         public void open() {
@@ -564,7 +577,7 @@ public class PartyQuestMapInstance {
             reactor.setPosition(this.position);
             map.spawnReactor(reactor);
         }
-        
+
         /** Creates a new <code>Trigger</code> whose <code>action</code> (executed upon being triggered)
          ** is toggling the <code>Obstacle</code> specified by ID as the last argument.
          **
@@ -573,7 +586,11 @@ public class PartyQuestMapInstance {
         public Trigger(int id, int reactorId, Point position, int obsId) {
             final Obstacle obs = PartyQuestMapInstance.this.getObstacle(obsId);
             if (obs == null) {
-                throw new IllegalStateException("No Obstacle with the ID of " + obsId + " registered with this Trigger's PartyQuestMapInstance.");
+                throw new IllegalStateException(
+                    "No Obstacle with the ID of " +
+                        obsId +
+                        " registered with this Trigger's PartyQuestMapInstance."
+                );
             }
 
             this.id = id;
@@ -597,7 +614,11 @@ public class PartyQuestMapInstance {
         public Trigger(int id, int reactorId, Point position, int obsId, PartyQuestMapInstance pqmi) {
             final Obstacle obs = pqmi.getObstacle(obsId);
             if (obs == null) {
-                throw new IllegalStateException("No Obstacle with the ID of " + obsId + " registered with the specified PartyQuestMapInstance.");
+                throw new IllegalStateException(
+                    "No Obstacle with the ID of " +
+                        obsId +
+                        " registered with the specified PartyQuestMapInstance."
+                );
             }
 
             this.id = id;

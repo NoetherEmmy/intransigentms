@@ -97,13 +97,13 @@ public class Admins implements Command {
                 player.getMap().spawnItemDrop(player, player, toDrop, player.getPosition(), true, true);
                 break;
             }
-            case "!startProfiling": {
+            case "!startprofiling": {
                 CPUSampler sampler = CPUSampler.getInstance();
                 sampler.addIncluded("net.sf.odinms");
                 sampler.start();
                 break;
             }
-            case "!stopProfiling": {
+            case "!stopprofiling": {
                 CPUSampler sampler = CPUSampler.getInstance();
                 try {
                     String filename = "odinprofile.txt";
@@ -221,7 +221,7 @@ public class Admins implements Command {
                     victim.updateSingleStat(MapleStat.HP, 0);
                     victim.updateSingleStat(MapleStat.MP, 0);
                 } else {
-                    mc.dropMessage("Player not found");
+                    mc.dropMessage("Player not found.");
                 }
                 break;
             }
@@ -522,10 +522,10 @@ public class Admins implements Command {
                     mc.dropMessage("RemoteException occurred while attempting to reload guilds.");
                 }
                 break;
-            case "!clearPortalScripts":
+            case "!clearportalscripts":
                 PortalScriptManager.getInstance().clearScripts();
                 break;
-            case "!clearReactorDrops":
+            case "!clearreactordrops":
                 ReactorScriptManager.getInstance().clearDrops();
                 break;
             case "!monsterdebug": {
@@ -769,6 +769,7 @@ public class Admins implements Command {
             new CommandDefinition("sreactor", 4),
             new CommandDefinition("hreactor", 4),
             new CommandDefinition("dreactor", 4),
+            new CommandDefinition("lreactor", 4),
             new CommandDefinition("writecommands", 4),
             new CommandDefinition("saveall", 4),
             new CommandDefinition("getpw", 4),
@@ -788,7 +789,6 @@ public class Admins implements Command {
             new CommandDefinition("itemvac", 4),
             new CommandDefinition("playernpc", 4),
             new CommandDefinition("removeplayernpcs", 4),
-            new CommandDefinition("pnpc", 4),
             new CommandDefinition("pmob", 4)
         };
     }

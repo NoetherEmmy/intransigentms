@@ -9,6 +9,8 @@ import net.sf.odinms.client.status.MonsterStatusEffect;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.AutobanManager;
 import net.sf.odinms.server.MapleStatEffect;
+import net.sf.odinms.server.life.Element;
+import net.sf.odinms.server.life.ElementalEffectiveness;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.maps.MapleSummon;
 import net.sf.odinms.tools.MaplePacketCreator;
@@ -17,11 +19,10 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SummonDamageHandler extends AbstractMaplePacketHandler {
-
     public class SummonAttackEntry {
-
         private final int monsterOid;
         private final int damage;
 
@@ -41,61 +42,141 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int oid = slea.readInt();
-        MapleCharacter player = c.getPlayer();
+    public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int oid = slea.readInt();
+        final MapleCharacter player = c.getPlayer();
         Collection<MapleSummon> summons = player.getSummons().values();
-        MapleSummon summon = null;
-        for (MapleSummon sum : summons) {
-            if (sum.getObjectId() == oid) {
-                summon = sum;
-            }
-        }
+        MapleSummon summon = summons.stream()
+                                    .filter(s -> s != null && s.getObjectId() == oid)
+                                    .findAny()
+                                    .orElse(null);
         if (summon == null) {
-            summons.removeIf(s -> s == null);
+            player.cleanNullSummons();
             player.getMap().removeMapObject(oid);
             return;
         }
         ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
         MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
         slea.skip(5);
-        List<SummonAttackEntry> allDamage = new ArrayList<>();
         int numAttacked = slea.readByte();
         player.getCheatTracker().checkSummonAttack();
+
+        List<SummonAttackEntry> allDamage = new ArrayList<>(numAttacked);
         for (int x = 0; x < numAttacked; ++x) {
             int monsterOid = slea.readInt(); // Attacked oid.
             slea.skip(14);
             int damage = slea.readInt();
             allDamage.add(new SummonAttackEntry(monsterOid, damage));
         }
+
+        allDamage = allDamage.stream()
+                             .filter(d -> player.getMap().getMonsterByOid(d.getMonsterOid()) != null)
+                             .collect(Collectors.toList());
+
+        if (player.getMap().isDamageMuted()) {
+            for (SummonAttackEntry attackEntry : allDamage) {
+                c.getSession().write(
+                    MaplePacketCreator.damageMonster(
+                        attackEntry.getMonsterOid(),
+                        -attackEntry.getDamage()
+                    )
+                );
+            }
+            return;
+        }
         if (!player.isAlive()) {
             player.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             return;
         }
+
+        final List<SummonAttackEntry> additionalDmg = new ArrayList<>(numAttacked);
+        for (SummonAttackEntry attackEntry : allDamage) {
+            additionalDmg.add(new SummonAttackEntry(attackEntry.getMonsterOid(), 0));
+        }
+
         if (summonSkill.getId() == 2311006 || summonSkill.getId() == 2321003) { // Summon Dragon or Bahamut
-            double percentperlevel;
+            double percentPerLevel;
             if (summonSkill.getId() == 2311006) {
-                percentperlevel = 0.05;
+                percentPerLevel = 0.05d;
             } else {
-                percentperlevel = 0.07;
+                percentPerLevel = 0.07d;
             }
             int min = player.calculateMinBaseDamage(player);
             int max = player.calculateMaxBaseDamage(player.getTotalWatk());
-            int basedmg;
-            double skilllevelmultiplier = 1.5 + player.getSkillLevel(summonSkill) * percentperlevel;
+            int baseDmg;
+            double skillLevelMultiplier = 1.5d + player.getSkillLevel(summonSkill) * percentPerLevel;
             for (int i = 0; i < allDamage.size(); ++i) {
-                basedmg = min + (int) (Math.random() * (double) (max - min + 1));
-                int thisdmg = allDamage.get(i).getDamage();
-                thisdmg += (int) (basedmg * skilllevelmultiplier);
-                allDamage.set(i, new SummonAttackEntry(allDamage.get(i).getMonsterOid(), thisdmg));
-                c.getSession().write(MaplePacketCreator.damageMonster(allDamage.get(i).getMonsterOid(), thisdmg));
+                baseDmg = min + (int) (Math.random() * (double) (max - min + 1));
+                int thisDmg = allDamage.get(i).getDamage();
+                int addedDmg = (int) (baseDmg * skillLevelMultiplier);
+                thisDmg += addedDmg;
+                additionalDmg.set(
+                    i,
+                    new SummonAttackEntry(
+                        additionalDmg.get(i).getMonsterOid(),
+                        additionalDmg.get(i).getDamage() + addedDmg
+                    )
+                );
+                allDamage.set(i, new SummonAttackEntry(allDamage.get(i).getMonsterOid(), thisDmg));
             }
         }
-        player.getMap().broadcastMessage(player, MaplePacketCreator.summonAttack(player.getId(), summonSkill.getId(), summon.getStance(), allDamage), summon.getPosition());
         
-        for (SummonAttackEntry attackEntry : allDamage) {
-            int damage = attackEntry.getDamage();
-            player.getMap().broadcastMessage(MaplePacketCreator.damageMonster(attackEntry.getMonsterOid(), attackEntry.getDamage()), summon.getPosition());
+        for (int i = 0; i < allDamage.size(); ++i) {
+            SummonAttackEntry attackEntry = allDamage.get(i);
+            MapleMonster target = player.getMap().getMonsterByOid(attackEntry.getMonsterOid());
+            if (target == null) continue;
+
+            if (target.getVulnerability() != 1.0d) {
+                int newDmg = (int) (attackEntry.getDamage() * target.getVulnerability());
+                int addedDmg = newDmg - attackEntry.getDamage();
+                additionalDmg.set(
+                    i,
+                    new SummonAttackEntry(
+                        attackEntry.getMonsterOid(),
+                        additionalDmg.get(i).getDamage() + addedDmg
+                    )
+                );
+                attackEntry = new SummonAttackEntry(attackEntry.getMonsterOid(), newDmg);
+                allDamage.set(i, attackEntry);
+            }
+
+            ElementalEffectiveness ee = null;
+            if (summonSkill.getElement() != Element.NEUTRAL) {
+                ee = target.getAddedEffectiveness(summonSkill.getElement());
+                if (
+                    (ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
+                    target.getEffectiveness(summonSkill.getElement()) == ElementalEffectiveness.WEAK
+                ) {
+                    ee = null;
+                }
+            }
+            double multiplier = target.getVulnerability();
+            if (ee != null) {
+                switch (ee) {
+                    case WEAK:
+                        multiplier = 1.5d;
+                        break;
+                    case STRONG:
+                        multiplier = 0.5d;
+                        break;
+                    case IMMUNE:
+                        multiplier = 0.0d;
+                        break;
+                }
+            }
+            if (multiplier != 1.0d) {
+                int newDmg = (int) (attackEntry.getDamage() * multiplier);
+                int addedDmg = newDmg - attackEntry.getDamage();
+                additionalDmg.set(
+                    i,
+                    new SummonAttackEntry(
+                        attackEntry.getMonsterOid(),
+                        additionalDmg.get(i).getDamage() + addedDmg
+                    )
+                );
+                attackEntry = new SummonAttackEntry(attackEntry.getMonsterOid(), newDmg);
+                allDamage.set(i, attackEntry);
+            }
             /*
             if (summonSkill.getId() == 2311006) { // Summon Dragon
                 int min = player.calculateMinBaseDamage(player);
@@ -113,21 +194,55 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 damage += (int) (basedmg * skilllevelmultiplier);
             }
             */
-            MapleMonster target = player.getMap().getMonsterByOid(attackEntry.getMonsterOid());
-            if (target != null) {
-                if (damage >= 100000000) {
-                    AutobanManager.getInstance().autoban
-                    (player.getClient(), "XSource| " + player.getName() + "'s summon dealt " + damage + " to monster " + target.getId() + ".");
-                }
-                if (damage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
-                    if (summonEffect.makeChanceResult()) {
-                        MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(summonEffect.getMonsterStati(), summonSkill, false);
-                        target.applyStatus(player, monsterStatusEffect, summonEffect.isPoison(), 4000);
-                    }
-                }
-                player.getMap().damageMonster(player, target, damage);
-                player.checkMonsterAggro(target);
+            int damage = attackEntry.getDamage();
+            if (damage >= 100000000) {
+                AutobanManager.getInstance()
+                              .autoban(
+                                  player.getClient(),
+                                  "XSource| " +
+                                      player.getName() +
+                                      "'s summon dealt " +
+                                      damage +
+                                      " to monster " +
+                                      target.getId() +
+                                      "."
+                              );
             }
+
+            if (damage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
+                if (summonEffect.makeChanceResult()) {
+                    MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(
+                        summonEffect.getMonsterStati(),
+                        summonSkill,
+                        false
+                    );
+                    target.applyStatus(player, monsterStatusEffect, summonEffect.isPoison(), 4000);
+                }
+            }
+
+            player.getMap().damageMonster(player, target, damage);
+            player.checkMonsterAggro(target);
         }
+
+        player.getMap()
+              .broadcastMessage(
+                  player,
+                  MaplePacketCreator.summonAttack(
+                      player.getId(),
+                      summonSkill.getId(),
+                      summon.getStance(),
+                      allDamage
+                  ),
+                  summon.getPosition()
+              );
+
+        additionalDmg.forEach(ad ->
+            c.getSession().write(
+                MaplePacketCreator.damageMonster(
+                    ad.getMonsterOid(),
+                    ad.getDamage()
+                )
+            )
+        );
     }
 }

@@ -17,7 +17,7 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         final MapleCharacter player = c.getPlayer();
-        player.setLastKillOnMap((long) 0);
+        player.setLastKillOnMap(0L);
         player.setLastDamageSource(null);
         player.resetAfkTime();
         player.setInvincible(false);
@@ -57,27 +57,27 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
                 player.cancelBuffStats(MapleBuffStat.PUPPET);
             }
             if (targetid != -1 && !player.isAlive()) {
+                /*
                 boolean executeStandardPath = true;
                 if (player.getEventInstance() != null) {
                     executeStandardPath = player.getEventInstance().revivePlayer(player);
                 }
                 if (executeStandardPath) {
-                    /*
                     player.cancelAllBuffs();
                     player.setHp(50);
                     MapleMap to = player.getMap().getReturnMap();
                     MaplePortal pto = to.getPortal(0);
                     player.setStance(0);
                     player.changeMap(to, pto);
-                    */
-                    player.permadeath();
                 }
+                */
+                player.permadeath();
             } else if (targetid != -1 && player.isGM()) {
                 MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                 MaplePortal pto = to.getPortal(0);
                 player.changeMap(to, pto);
             } else if (targetid != -1 && !player.isGM()) {
-                System.out.println("Player " + player.getName() + " attempted Map jumping without being a GM");
+                System.out.println("Player " + player.getName() + " attempted map jumping without being a GM.");
             } else {
                 if (portal != null) {
                     portal.enterPortal(c);

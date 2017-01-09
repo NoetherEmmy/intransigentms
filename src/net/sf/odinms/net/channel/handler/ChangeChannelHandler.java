@@ -6,12 +6,14 @@ import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.world.MapleMessengerCharacter;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.server.MapleTrade;
 import net.sf.odinms.server.PlayerInteraction.HiredMerchant;
 import net.sf.odinms.server.PlayerInteraction.IPlayerInteractionManager;
 import net.sf.odinms.server.PlayerInteraction.MaplePlayerShop;
 import net.sf.odinms.server.PublicChatHandler;
+import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
@@ -26,7 +28,7 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
     }
 
     public static void changeChannel(int channel, MapleClient c) {
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
         if (!player.isAlive()) {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
@@ -40,6 +42,12 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
             }
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
+        }
+        if (player.getEnergyBar() > 0) {
+            final WorldServer ws = WorldServer.getInstance();
+            final int playerId = player.getId();
+            ws.addEnergyChargeRetention(player.getId(), player.getEnergyBar());
+            TimerManager.getInstance().schedule(() -> ws.removeEnergyChargeRetention(playerId), 10 * 1000);
         }
         if (PublicChatHandler.getPublicChatHolder().containsKey(player.getId())) {
             PublicChatHandler.getPublicChatHolder().remove(player.getId());

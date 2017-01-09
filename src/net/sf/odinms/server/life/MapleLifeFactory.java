@@ -36,7 +36,7 @@ public class MapleLifeFactory {
         }
     }
 
-    public static MapleMonster getMonster (int mid) {
+    public static MapleMonster getMonster(int mid) {
         MapleMonsterStats stats = monsterStats.get(mid);
         if (stats == null) {
             MapleData monsterData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
@@ -59,7 +59,7 @@ public class MapleLifeFactory {
                 stats.setName(MapleDataTool.getString(mid + "/name", mobStringData, "MISSINGNO"));
             } catch (Exception e) {
                 stats.setName("MISSINGNO");
-                System.out.print(e.toString() + "   !ID!:  " + mid + "\n");
+                System.out.print(e + "   !ID!:  " + mid + "\n");
             }
             //
             stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));

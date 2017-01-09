@@ -790,7 +790,7 @@ public class MapleClient {
                 }
             } catch (NullPointerException ignored) {
             }
-        }, 30000);
+        }, 45 * 1000); // 45 seconds
     }
 
     public static String getLogMessage(MapleClient cfor, String message) {

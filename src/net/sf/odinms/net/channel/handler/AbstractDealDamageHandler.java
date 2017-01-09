@@ -130,7 +130,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             if (oned == null || oned.getLeft() == null) {
                 continue;
             }
-            MapleMonster monster = map.getMonsterByOid(oned.getLeft());
+            final MapleMonster monster = map.getMonsterByOid(oned.getLeft());
 
             if (monster != null && oned.getRight() != null) {
                 int totDamageToOneMonster = 0;
@@ -149,8 +149,17 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     }
                 }
                 if (totDamageToOneMonster >= 12000000) {
-                    AutobanManager.getInstance().autoban
-                    (player.getClient(),"XSource| " + player.getName() + " dealt " + totDamageToOneMonster + " to monster " + monster.getId() + ".");
+                    AutobanManager.getInstance()
+                                  .autoban(
+                                      player.getClient(),
+                                      "XSource| " +
+                                          player.getName() +
+                                          " dealt " +
+                                          totDamageToOneMonster +
+                                          " to monster " +
+                                          monster.getId() +
+                                          "."
+                                  );
                 }
 
                 double distance = player.getPosition().distanceSq(monster.getPosition());
@@ -183,9 +192,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 switch (attack.skill) {
                     case 1221011: // Sanctuary
                         if (attack.isHH) {
-                            // TODO: Min damage still needs calculated. Using -20% as minimum damage in the meantime... seems to work.
+                            // TODO: Min damage still needs calculation. Using -20% as minimum damage in the meantime... seems to work.
                             int HHDmg = player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100);
-                            HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * .80) + HHDmg * .80));
+                            HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * 0.80d) + HHDmg * 0.80d));
                             map.damageMonster(player, monster, HHDmg);
                         }
                         break;
@@ -193,11 +202,26 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
                         int upperRange = player.getCurrentMaxBaseDamage();
                         int lowerRange = player.calculateMinBaseDamage(player);
-                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 45.0d);
+                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 100.0d);
+                        String rawDmgString = "" + totDamageToOneMonster;
+                        List<String> digitGroupings = new ArrayList<>(5);
+                        digitGroupings.add(rawDmgString.substring(0, rawDmgString.length() % 3));
+                        for (int i = rawDmgString.length() % 3; i < rawDmgString.length(); i += 3) {
+                            digitGroupings.add(rawDmgString.substring(i, i + 3));
+                        }
+                        if (player.showSnipeDmg()) {
+                            player.sendHint(
+                                "Snipe damage: #r" +
+                                    digitGroupings.stream()
+                                                  .reduce((accu, grouping) -> accu + "," + grouping)
+                                                  .orElse("0") +
+                                    "#k"
+                            );
+                        }
                         break;
                     case 4101005: // Drain
                     case 5111004: // Energy drain
-                        int gainhp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0);
+                        int gainhp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0d);
                         gainhp = Math.min(monster.getMaxHp(), Math.min(gainhp, player.getMaxHp() / 2));
                         player.addHP(gainhp);
                         break;
@@ -221,6 +245,29 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         MapleStatEffect flameEffect = flamethrower.getEffect(player.getSkillLevel(flamethrower));
                         for (int i = 0; i < attackCount; ++i) {
                             monster.applyFlame(player, flamethrower, flameEffect.getDuration(), attack.charge == 1);
+                        }
+                        break;
+                    case 5111006: // Shockwave
+                        if (player.isBareHanded()) {
+                            ISkill shockwave = SkillFactory.getSkill(5111006);
+                            monster.applyFlame(player, shockwave, 20 * 1000, false);
+                        }
+                        break;
+                    case 5121001: // Dragon Strike
+                        if (player.isBareHanded()) {
+                            monster.applyStatus(
+                                player,
+                                new MonsterStatusEffect(
+                                    Collections.singletonMap(
+                                        MonsterStatus.SPEED,
+                                        -100
+                                    ),
+                                    SkillFactory.getSkill(2101003),
+                                    false
+                                ),
+                                false,
+                                1000L
+                            );
                         }
                         break;
                     default:
@@ -279,44 +326,79 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                     }
                 }
-                if (totDamageToOneMonster > 0 && attackEffect != null && !attackEffect.getMonsterStati().isEmpty()) {
-                    if (attackEffect.makeChanceResult()) {
+                if (totDamageToOneMonster > 0 && ((attackEffect != null && !attackEffect.getMonsterStati().isEmpty()) || attack.skill == 5101004)) {
+                    if (attackEffect == null || attackEffect.makeChanceResult()) {
+                        boolean apply = true;
                         MonsterStatusEffect monsterStatusEffect;
                         switch (attack.skill) {
                             case 4121003:
                             case 4221003:
                                 // Fixing Taunt skill
-                                Map<MonsterStatus, Integer> tauntstati = new LinkedHashMap<>(3);
-                                tauntstati.put(MonsterStatus.WDEF, 300);
-                                tauntstati.put(MonsterStatus.MDEF, 300);
-                                tauntstati.put(MonsterStatus.SHOWDOWN, player.getSkillLevel(SkillFactory.getSkill(attack.skill)));
-                                monsterStatusEffect = new MonsterStatusEffect(tauntstati, SkillFactory.getSkill(attack.skill), false);
+                                Map<MonsterStatus, Integer> tauntStati = new LinkedHashMap<>(3);
+                                tauntStati.put(MonsterStatus.WDEF, 300);
+                                tauntStati.put(MonsterStatus.MDEF, 300);
+                                tauntStati.put(MonsterStatus.SHOWDOWN, player.getSkillLevel(SkillFactory.getSkill(attack.skill)));
+                                monsterStatusEffect = new MonsterStatusEffect(tauntStati, theSkill, false);
                                 break;
                             case 4001002:
                                 // Handle Disorder's scaling with player level
-                                Map<MonsterStatus, Integer> disorderstati = attackEffect.getMonsterStati();
-                                if (disorderstati.containsKey(MonsterStatus.WATK)) {
-                                    disorderstati.put(MonsterStatus.WATK, disorderstati.get(MonsterStatus.WATK) - (player.getLevel() / 2));
+                                Map<MonsterStatus, Integer> disorderStati = new LinkedHashMap<>(attackEffect.getMonsterStati());
+                                if (disorderStati.containsKey(MonsterStatus.WATK)) {
+                                    disorderStati.put(MonsterStatus.WATK, disorderStati.get(MonsterStatus.WATK) - (player.getLevel() / 2));
                                 }
-                                if (disorderstati.containsKey(MonsterStatus.WDEF)) {
-                                    disorderstati.put(MonsterStatus.WDEF, disorderstati.get(MonsterStatus.WDEF) - (player.getLevel() / 2));
+                                if (disorderStati.containsKey(MonsterStatus.WDEF)) {
+                                    disorderStati.put(MonsterStatus.WDEF, disorderStati.get(MonsterStatus.WDEF) - (player.getLevel() / 2));
                                 }
-                                monsterStatusEffect = new MonsterStatusEffect(disorderstati, theSkill, false);
+                                monsterStatusEffect = new MonsterStatusEffect(disorderStati, theSkill, false);
+                                break;
+                            case 5101002: // Backspin Blow
+                            case 5101003: // Double Uppercut
+                                if (player.isBareHanded()) {
+                                    apply = false;
+                                    monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), SkillFactory.getSkill(2111004), false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 3 * 1000);
+                                } else {
+                                    monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
+                                }
+                                break;
+                            case 5101004: // Corkscrew Blow
+                                if (player.isBareHanded()) {
+                                    apply = false;
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.STUN, 1), SkillFactory.getSkill(5101002), false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 1000);
+                                    monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SEAL, 1), SkillFactory.getSkill(2111004), false);
+                                    monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), 3 * 1000);
+                                } else {
+                                    monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
+                                }
                                 break;
                             default:
                                 monsterStatusEffect = new MonsterStatusEffect(attackEffect.getMonsterStati(), theSkill, false);
                                 break;
                         }
-                        monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
+                        if (apply) {
+                            monster.applyStatus(player, monsterStatusEffect, attackEffect.isPoison(), attackEffect.getDuration());
+                        }
                     }
                 }
 
                 // Apply attack
-                if (!attack.isHH) {
+                if (!attack.isHH && monster.isAlive()) {
                     map.damageMonster(player, monster, totDamageToOneMonster);
+                }
+                if (
+                    attack.skill == 5121005 /* Snatch */ &&
+                    !monster.isAlive() &&
+                    player.isBareHanded() &&
+                    player.getTotalInt() >= 650
+                ) {
+                    player.handleEnergyChargeGain();
                 }
             }
         }
+
         if (totDamage > 1) {
             player.getCheatTracker().setAttacksWithoutHit(player.getCheatTracker().getAttacksWithoutHit() + 1);
             final int offenseLimit;

@@ -44,6 +44,9 @@ public class MapleInventoryManipulator {
             List<IItem> existing = c.getPlayer().getInventory(type).listById(itemId);
             if (!ii.isThrowingStar(itemId) && !ii.isBullet(itemId)) {
                 if (!existing.isEmpty()) {
+                    if (itemId == 3992027) {
+                        return false;
+                    }
                     Iterator<IItem> i = existing.iterator();
                     while (quantity > 0) {
                         if (i.hasNext()) {

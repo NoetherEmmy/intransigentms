@@ -63,8 +63,9 @@ public class FourthJobQuestsPortalHandler {
     }
 
     private static boolean checkRush(MapleCharacter c) {
-        MapleParty CsParty = c.getParty();
-        Collection<MaplePartyCharacter> CsPartyMembers = CsParty.getMembers();
+        MapleParty csParty = c.getParty();
+        if (csParty == null) return false;
+        Collection<MaplePartyCharacter> CsPartyMembers = csParty.getMembers();
         for (MaplePartyCharacter mpc : CsPartyMembers) {
             if (!MapleJob.getById(mpc.getJobId()).isA(MapleJob.WARRIOR)) return false;
             if (!(MapleJob.getById(mpc.getJobId()).isA(MapleJob.HERO) || MapleJob.getById(mpc.getJobId()).isA(MapleJob.PALADIN) || MapleJob.getById(mpc.getJobId()).isA(MapleJob.DARKKNIGHT))) {

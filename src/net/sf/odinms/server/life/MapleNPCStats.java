@@ -1,7 +1,6 @@
 package net.sf.odinms.server.life;
 
 public class MapleNPCStats {
-
     private String name;
 
     public MapleNPCStats(String name) {

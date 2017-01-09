@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 
 public class MoveLifeHandler extends AbstractMovementPacketHandler {
-
     private static final Logger log = LoggerFactory.getLogger(MoveLifeHandler.class);
 
     @Override

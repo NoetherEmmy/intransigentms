@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 public class CheatTracker {
-
-    private final Map<CheatingOffense, CheatingOffenseEntry> offenses = Collections.synchronizedMap(new LinkedHashMap<CheatingOffense, CheatingOffenseEntry>());
+    private final Map<CheatingOffense, CheatingOffenseEntry> offenses =
+            Collections.synchronizedMap(new LinkedHashMap<CheatingOffense, CheatingOffenseEntry>());
     private final WeakReference<MapleCharacter> chr;
     private long regenHPSince;
     private long regenMPSince;
@@ -32,6 +32,7 @@ public class CheatTracker {
     private Point lastMonsterMove;
     private int monsterMoveCount;
     private int attacksWithoutHit = 0;
+    private int numGotMissed = 0;
     private Boolean pickupComplete = Boolean.TRUE;
     private final long[] lastTime = new long[6];
     private final ScheduledFuture<?> invalidationTask;
@@ -202,6 +203,18 @@ public class CheatTracker {
         this.attacksWithoutHit = attacksWithoutHit;
     }
 
+    public int getNumGotMissed() {
+        return numGotMissed;
+    }
+
+    public void setNumGotMissed(int ngm) {
+        numGotMissed = ngm;
+    }
+
+    public void incrementNumGotMissed() {
+        numGotMissed++;
+    }
+
     public void registerOffense(CheatingOffense offense) {
         registerOffense(offense, null);
     }
@@ -264,7 +277,7 @@ public class CheatTracker {
                 }
             }
         }
-        Collections.sort(offenseList, (o1, o2) -> {
+        offenseList.sort((o1, o2) -> {
             int thisVal = o1.getPoints();
             int anotherVal = o2.getPoints();
             return (thisVal < anotherVal ? 1 : (thisVal == anotherVal ? 0 : -1));
@@ -286,7 +299,6 @@ public class CheatTracker {
     }
 
     private class InvalidationTask implements Runnable {
-
         @Override
         public void run() {
             CheatingOffenseEntry[] offenses_copy;

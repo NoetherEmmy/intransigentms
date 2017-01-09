@@ -11,15 +11,18 @@ import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldServer {
-
     private static WorldServer instance = null;
     private static final Logger log = LoggerFactory.getLogger(WorldServer.class);
     private int worldId;
     private final Properties dbProp = new Properties();
     private final Properties worldProp = new Properties();
+    private final Map<Integer, Integer> energyChargeRetention = new ConcurrentHashMap<>(8, 0.8f);
 
     private WorldServer() {
         try {
@@ -59,8 +62,26 @@ public class WorldServer {
         try {
             Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
             registry.rebind("WorldRegistry", WorldRegistryImpl.getInstance());
-        } catch (RemoteException ex) {
-            log.error("Could not initialize RMI system", ex);
+        } catch (RemoteException re) {
+            log.error("Could not initialize RMI system", re);
+        }
+    }
+
+    public void addEnergyChargeRetention(int charId, int energyLevel) {
+        synchronized (energyChargeRetention) {
+            energyChargeRetention.put(charId, energyLevel);
+        }
+    }
+
+    public Optional<Integer> removeEnergyChargeRetention(int charId) {
+        synchronized (energyChargeRetention) {
+            return Optional.ofNullable(energyChargeRetention.remove(charId));
+        }
+    }
+
+    public Optional<Integer> getEnergyChargeRetention(int charId) {
+        synchronized (energyChargeRetention) {
+            return Optional.ofNullable(energyChargeRetention.get(charId));
         }
     }
 }

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Skill implements ISkill {
-
     private final int id;
     private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;

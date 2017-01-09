@@ -3,9 +3,9 @@ package net.sf.odinms.client;
 import net.sf.odinms.net.LongValueHolder;
 
 public enum MapleDisease implements LongValueHolder {
-    NULL(0x0),
-    SLOW(0x1),
-    SEDUCE(0x80),
+    NULL(0x0L),
+    SLOW(0x1L),
+    SEDUCE(0x80L),
     STUN(0x2000000000000L),
     POISON(0x4000000000000L),
     SEAL(0x8000000000000L),
@@ -13,6 +13,7 @@ public enum MapleDisease implements LongValueHolder {
     WEAKEN(0x4000000000000000L),
     CURSE(0x8000000000000000L);
     private final long i;
+
     MapleDisease(long i) {
         this.i = i;
     }
