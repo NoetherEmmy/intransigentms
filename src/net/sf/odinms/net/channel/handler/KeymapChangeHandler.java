@@ -11,7 +11,7 @@ public class KeymapChangeHandler extends AbstractMaplePacketHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         MapleCharacter player = c.getPlayer();
-        if (slea.available() != 8) {
+        if (slea.available() >= 8) {
             slea.readInt();
             int numChanges = slea.readInt();
             for (int i = 0; i < numChanges; ++i) {

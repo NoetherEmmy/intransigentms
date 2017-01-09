@@ -967,14 +967,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (toUse == null) {
             return false;
         }
-        for (Pair<Integer, Integer> skill : usedSkills) {
-            if (skill.getLeft() == toUse.getSkillId() && skill.getRight() == toUse.getSkillLevel()) {
-                return false;
+        synchronized (usedSkills) {
+            for (Pair<Integer, Integer> skill : usedSkills) {
+                if (skill.getLeft() == toUse.getSkillId() && skill.getRight() == toUse.getSkillLevel()) {
+                    return false;
+                }
             }
         }
         if (toUse.getLimit() > 0) {
-            if (this.skillsUsed.containsKey(new Pair<>(toUse.getSkillId(), toUse.getSkillLevel()))) {
-                int times = this.skillsUsed.get(new Pair<>(toUse.getSkillId(), toUse.getSkillLevel()));
+            if (skillsUsed.containsKey(new Pair<>(toUse.getSkillId(), toUse.getSkillLevel()))) {
+                int times = skillsUsed.get(new Pair<>(toUse.getSkillId(), toUse.getSkillLevel()));
                 if (times >= toUse.getLimit()) {
                     return false;
                 }
@@ -996,13 +998,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void usedSkill(final int skillId, final int level, long cooltime) {
-        this.usedSkills.add(new Pair<>(skillId, level));
-        if (this.skillsUsed.containsKey(new Pair<>(skillId, level))) {
+        usedSkills.add(new Pair<>(skillId, level));
+        if (skillsUsed.containsKey(new Pair<>(skillId, level))) {
             int times = this.skillsUsed.get(new Pair<>(skillId, level)) + 1;
-            this.skillsUsed.remove(new Pair<>(skillId, level));
-            this.skillsUsed.put(new Pair<>(skillId, level), times);
+            skillsUsed.remove(new Pair<>(skillId, level));
+            skillsUsed.put(new Pair<>(skillId, level), times);
         } else {
-            this.skillsUsed.put(new Pair<>(skillId, level), 1);
+            skillsUsed.put(new Pair<>(skillId, level), 1);
         }
         final MapleMonster mons = this;
         TimerManager tMan = TimerManager.getInstance();

@@ -110,10 +110,12 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 }
 
                 final MapleMap map = player.getMap();
-                attack.allDamage.sort(Comparator.comparingInt(d ->
-                        (int) map.getMapObject(d.getLeft()).getPosition().distanceSq(player.getPosition())
-                    )
-                );
+                attack.allDamage.sort(Comparator.comparingInt(d -> {
+                    final MapleMapObject m = map.getMapObject(d.getLeft());
+                    if (m == null) return Integer.MAX_VALUE;
+                    return (int) m.getPosition().distanceSq(player.getPosition());
+                }));
+                
                 List<Pair<Integer, List<Integer>>> removedDmg = new ArrayList<>(attack.allDamage.size());
                 if (attack.allDamage.size() > mobsHit) {
                     for (int i = mobsHit; i < attack.allDamage.size(); ++i) {

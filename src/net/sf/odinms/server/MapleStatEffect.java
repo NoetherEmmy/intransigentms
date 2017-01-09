@@ -735,21 +735,16 @@ public class MapleStatEffect implements Serializable {
             if (applyTo.getMap().getReturnMapId() != applyTo.getMapId()) {
                 MapleMap target;
                 if (moveTo == 999999999) {
-                    target = applyTo.getMap().getReturnMap();
-                } else {
-                    target = ChannelServer.getInstance(applyTo.getClient().getChannel()).getMapFactory().getMap(moveTo);
-                    if (target.getId() / 10000000 != 60 && applyTo.getMapId() / 10000000 != 61) {
-                        if (target.getId() / 10000000 != 21 && applyTo.getMapId() / 10000000 != 20) {
-                            if (target.getId() / 10000000 != applyTo.getMapId() / 10000000) {
-                                log.info(
-                                    "Player {} is trying to use a return scroll to an illegal location ({}->{})",
-                                    new Object[]{applyTo.getName(), applyTo.getMapId(), target.getId()}
-                                );
-                                //applyTo.getClient().disconnect();
-                                //return false;
-                            }
-                        }
+                    try {
+                        target = applyTo.getMap().getReturnMap();
+                    } catch (NullPointerException npe) {
+                        System.err.println("NPE getting return map for map " + applyTo.getMap().getId());
+                        return false;
                     }
+                } else {
+                    target = ChannelServer.getInstance(applyTo.getClient().getChannel())
+                                          .getMapFactory()
+                                          .getMap(moveTo);
                 }
                 applyTo.changeMap(target, target.getPortal(0));
             } else {

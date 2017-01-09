@@ -52,7 +52,7 @@ public class MapleMapFactory {
         MapleMap map = maps.get(omapid);
         if (map == null) {
             synchronized (this) {
-                // check if someone else who was also synchronized has loaded the map already
+                // Check if someone else who was also synchronized has loaded the map already:
                 map = maps.get(omapid);
                 if (map != null) {
                     return map;
@@ -61,7 +61,8 @@ public class MapleMapFactory {
                 String mapName = getMapName(mapid);
 
                 MapleData mapData = source.getData(mapName);
-                float monsterRate = 0;
+                if (mapData == null) System.err.println(mapName);
+                float monsterRate = 0.0f;
                 if (respawns) {
                     MapleData mobRate = mapData.getChildByPath("info/mobRate");
                     if (mobRate != null) {
@@ -111,7 +112,7 @@ public class MapleMapFactory {
                 }
                 map.setFootholds(fTree);
 
-                // load areas (EG PQ platforms)
+                // Load areas (e.g. PQ platforms)
                 if (mapData.getChildByPath("area") != null) {
                     for (MapleData area : mapData.getChildByPath("area")) {
                         int x1 = MapleDataTool.getInt(area.getChildByPath("x1"));
@@ -162,7 +163,7 @@ public class MapleMapFactory {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                // load life data (npc, monsters)
+                // Load life data (NPCs, monsters)
                 for (MapleData life : mapData.getChildByPath("life")) {
                     String id = MapleDataTool.getString(life.getChildByPath("id"));
                     String type = MapleDataTool.getString(life.getChildByPath("type"));
@@ -176,9 +177,9 @@ public class MapleMapFactory {
                             }
                             int mobTime = MapleDataTool.getInt("mobTime", life, 0);
                             if (monster.isBoss()) {
-                                mobTime += mobTime / 10 * (2.5 + 10 * Math.random());
+                                mobTime += mobTime / 10 * (2.5d + 10 * Math.random());
                             }
-                            if (mobTime == -1 && respawns) { //does not respawn, force spawn once
+                            if (mobTime == -1 && respawns) { // Does not respawn, force spawn once
                                 map.spawnMonster(monster);
                             } else {
                                 map.addMonsterSpawn(monster, mobTime);
@@ -191,7 +192,7 @@ public class MapleMapFactory {
                     }
                 }
 
-                //load reactor data
+                // Load reactor data
                 if (reactors && mapData.getChildByPath("reactor") != null) {
                     for (MapleData reactor : mapData.getChildByPath("reactor")) {
                         String id = MapleDataTool.getString(reactor.getChildByPath("id"));

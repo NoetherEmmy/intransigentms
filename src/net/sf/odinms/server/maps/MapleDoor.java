@@ -8,11 +8,10 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MapleDoor extends AbstractMapleMapObject {
-
     private final MapleCharacter owner;
     private final MapleMap town;
     private MaplePortal townPortal;
@@ -48,23 +47,21 @@ public class MapleDoor extends AbstractMapleMapObject {
                 freePortals.add(port);
             }
         }
-        Collections.sort(freePortals, (o1, o2) -> {
-            if (o1.getId() < o2.getId())
-                return -1;
-            else if (o1.getId() == o2.getId())
-                return 0;
-            else
-                return 1;
-            });
+        
+        freePortals.sort(Comparator.comparingInt(MaplePortal::getId));
+        
         for (MapleMapObject obj : town.getMapObjects()) {
             if (obj instanceof MapleDoor) {
                 MapleDoor door = (MapleDoor) obj;
-                if (door.getOwner().getParty() != null &&
-                    owner.getParty().containsMembers(new MaplePartyCharacter(door.getOwner()))) {
+                if (
+                    door.getOwner().getParty() != null &&
+                    owner.getParty().containsMembers(new MaplePartyCharacter(door.getOwner()))
+                ) {
                     freePortals.remove(door.getTownPortal());
                 }
             }
         }
+        
         return freePortals.iterator().next();
     }
 
