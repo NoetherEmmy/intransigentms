@@ -3161,9 +3161,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             if (!DeathLogger.logDeath(this, deathMap)) {
                 System.err.println("There was an error logging " + getName() + "'s death.");
             }
+            /*
             if (!DeathBot.getInstance().announceDeath(this, deathMap)) {
                 System.err.println("There was an error announcing " + getName() + "'s death.");
             }
+            */
         }).start();
         updatePastLifeExp();
         String jobachieved = MapleJob.getJobName(getJobAchieved().getId());
