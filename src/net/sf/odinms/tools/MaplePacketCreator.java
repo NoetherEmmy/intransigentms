@@ -3182,7 +3182,7 @@ public class MaplePacketCreator {
         mplew.writeShort(SendPacketOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
         mplew.write(effectid);
         mplew.writeInt(skillid);
-        mplew.write(1); // probably buff level but we don't know it and it doesn't really matter
+        mplew.write(1); // Probably buff level but we don't know it and it doesn't really matter
 
         return mplew.getPacket();
     }

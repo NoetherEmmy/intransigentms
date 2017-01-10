@@ -308,13 +308,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public String selectQuest(int questid, String msg) {
         String intro = msg + "\r\n\r\n#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L0#";
-        String selection = "#k[" +
-                (getPlayer().getQuestId() == 0 ?
-                        "#rAvailable" :
-                        (getPlayer().getQuestId() == questid && !canComplete()) ?
-                                "#dIn progress" :
-                                "#gComplete") +
-                "#k]";
+        String selection =
+            "#k[" +
+            (getPlayer().getQuestId() == 0 ?
+                "#rAvailable" :
+                (getPlayer().getQuestId() == questid && !canComplete()) ?
+                    "#dIn progress" :
+                    "#gComplete") +
+            "#k]";
         return intro + selection + " #e" + getPlayer().getCQuest().loadTitle(questid);
     }
 

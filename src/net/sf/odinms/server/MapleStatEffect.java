@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 public class MapleStatEffect implements Serializable {
     static final long serialVersionUID = 9179541993413738569L;
@@ -215,9 +216,6 @@ public class MapleStatEffect implements Serializable {
                     statups.add(new Pair<>(MapleBuffStat.MAGIC_GUARD, x));
                     break;
                 case 2301003: // Invincible
-                    //
-                    statups.add(new Pair<>(MapleBuffStat.BOOSTER, -2));
-                    //
                     statups.add(new Pair<>(MapleBuffStat.INVINCIBLE, x));
                     break;
                 case 9101004: // Hide
@@ -381,7 +379,6 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 2311003: // Holy Symbol
                 case 9101002: // Holy Symbol (GM)
-                    statups.add(new Pair<>(MapleBuffStat.WATK, 1)); // This gets multiplied later
                     statups.add(new Pair<>(MapleBuffStat.HOLY_SYMBOL, x));
                     break;
                 case 4121006: // Shadow Claw
@@ -527,7 +524,7 @@ public class MapleStatEffect implements Serializable {
                     MapleMonster mob = (MapleMonster) obj;
                     // x is absorb percentage
                     if (!mob.isBoss()) {
-                        int absorbMp = Math.min((int) (mob.getMaxMp() * (getX() / 100.0)), mob.getMp());
+                        int absorbMp = Math.min((int) (mob.getMaxMp() * (getX() / 100.0d)), mob.getMp());
                         if (absorbMp > 0) {
                             mob.setMp(mob.getMp() - absorbMp);
                             applyto.addMP(absorbMp);
@@ -814,7 +811,7 @@ public class MapleStatEffect implements Serializable {
             applyTo.addDoor(door);
             door.getTown().spawnDoor(door);
             if (applyTo.getParty() != null) {
-                // update town doors
+                // Update town doors
                 applyTo.silentPartyUpdate();
             }
             applyTo.disableDoor();
@@ -850,6 +847,10 @@ public class MapleStatEffect implements Serializable {
 
     private void applyBuff(final MapleCharacter applyFrom) {
         if (isPartyBuff() && (applyFrom.getParty() != null || isGmBuff())) {
+            if (sourceid == 5101005 && (!applyFrom.isBareHanded() || applyFrom.getTotalInt() < 250)) {
+                // MP Recovery
+                return;
+            }
             Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
             List<MapleMapObject> affecteds = applyFrom.getMap()
                                                       .getMapObjectsInRect(
@@ -1107,12 +1108,18 @@ public class MapleStatEffect implements Serializable {
         int localSourceId = sourceid;
         int localX = x;
         int localY = y;
+        Integer recoveryVal = applyTo.getBuffedValue(MapleBuffStat.RECOVERY);
+        if (recoveryVal != null && recoveryVal == 1 && applyTo.getBuffSource(MapleBuffStat.RECOVERY) == 5101005) {
+            // MP Recovery
+            localDuration *= 2;
+        }
         int seconds = localDuration / 1000;
         MapleMount givemount = null;
         int defScaleFactor = getDefScaleFactor();
         List<Pair<MapleBuffStat, Integer>> manaReflectionDef = null;
 
         if (isHolySymbol()) {
+            /*
             if (applyFrom.getId() != applyTo.getId()) { // Making sure that other players don't get the watk buff.
                 for (int i = 0; i < localStatups.size(); ++i) {
                     Pair<MapleBuffStat, Integer> statup = localStatups.get(i);
@@ -1133,11 +1140,12 @@ public class MapleStatEffect implements Serializable {
                         break;
                     }
                 }
-                if (!alreadyHasWatk) {
-                    int watt = (int) ((3.0d * applyFrom.getSkillLevel(SkillFactory.getSkill(localSourceId))) + (applyFrom.getLevel() / 1.3d));
-                    localStatups.add(0, new Pair<>(MapleBuffStat.WATK, watt));
-                }
+                */
+            if (applyFrom.getId() == applyTo.getId()) {
+                int watt = (int) ((3.0d * applyFrom.getSkillLevel(SkillFactory.getSkill(localSourceId))) + (applyFrom.getLevel() / 1.3d));
+                localStatups.add(0, new Pair<>(MapleBuffStat.WATK, watt));
             }
+            //}
         } else if (defScaleFactor != -1 && applyFrom.getLevel() > 100) { // Making certain defense skills scale with level
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
@@ -1151,13 +1159,15 @@ public class MapleStatEffect implements Serializable {
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
-        } else if (getSourceId() == 2301003 && isSkill()) { // Removing attack speed buff from Invincible if the player isn't wielding a BW
-            IItem weaponItem = applyTo.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) - 11);
+        } else if (getSourceId() == 2301003 && isSkill()) { // Adding attack speed buff from Invincible if the player is wielding a BW
+            IItem weaponItem = applyTo.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
             MapleWeaponType weapon = null;
             if (weaponItem != null) {
                 weapon = MapleItemInformationProvider.getInstance().getWeaponType(weaponItem.getItemId());
             }
-            if (!(weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H)) {
+            if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
+                localStatups.add(0, new Pair<>(MapleBuffStat.BOOSTER, -2));
+                /*
                 for (int i = 0; i < localStatups.size(); ++i) {
                     Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                     if (localStatup.getLeft() == MapleBuffStat.BOOSTER) {
@@ -1165,9 +1175,13 @@ public class MapleStatEffect implements Serializable {
                         i--;
                     }
                 }
+                */
             }
         } else if (getSourceId() == 2321002 && isSkill() && applyFrom.getTotalStr() >= 200) { // Adding magic defense for Battle Priest's Mana Reflection
             manaReflectionDef = Collections.singletonList(new Pair<>(MapleBuffStat.MDEF, applyFrom.getTotalStr()));
+        } else if (getSourceId() == 5101005 && isSkill() && applyFrom.getTotalInt() >= 250 && applyFrom.isBareHanded()) {
+            // MP Recovery
+            localStatups.add(new Pair<>(MapleBuffStat.RECOVERY, 1));
         }
 
         if (isMonsterRiding()) {
@@ -1292,6 +1306,27 @@ public class MapleStatEffect implements Serializable {
             final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, this, startTime);
             final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
             applyTo.registerEffect(this, startTime, schedule);
+            
+            if (manaReflectionDef != null) {
+                localStatups.addAll(manaReflectionDef);
+            }
+
+            applyTo.registerStatups(
+                this,
+                localStatups
+                    .stream()
+                    .filter(statup ->
+                        statups
+                            .stream()
+                            .noneMatch(su ->
+                                su.getLeft().equals(statup.getLeft()) &&
+                                su.getRight().equals(statup.getRight())
+                            )
+                    )
+                    .collect(Collectors.toList()),
+                startTime,
+                schedule
+            );
         }
 
         if (primary) {

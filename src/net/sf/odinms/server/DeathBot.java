@@ -53,6 +53,7 @@ public final class DeathBot {
                     Paths.get("discordbottoken.txt"),
                     StandardCharsets.UTF_8
                 ).get(0);
+                System.out.println(token);
             }
             if (quotes == null) {
                 quotes = Files.readAllLines(

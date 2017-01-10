@@ -178,11 +178,19 @@ public class PlayerCommands implements Command {
             mc.dropMessage(text);
         } else if (splitted[0].equals("@str") || splitted[0].equals("@dex") || splitted[0].equals("@int") || splitted[0].equals("@luk")) {
             if (splitted.length != 2) {
-                mc.dropMessage("Syntax: @<Stat> <amount>");
-                mc.dropMessage("Stat: <STR> <DEX> <INT> <LUK>");
+                mc.dropMessage("Syntax: @<stat> <amount>");
+                mc.dropMessage("stat: <STR> <DEX> <INT> <LUK>");
                 return;
             }
-            int x = Integer.parseInt(splitted[1]), max = 30000;
+            int x;
+            try {
+                x = Integer.parseInt(splitted[1]);
+            } catch (NumberFormatException nfe) {
+                mc.dropMessage("Syntax: @<stat> <amount>");
+                mc.dropMessage("stat: <STR> <DEX> <INT> <LUK>");
+                return;
+            }
+            int max = 30000;
             if (x > 0 && x <= player.getRemainingAp() && x < Short.MAX_VALUE) {
                 if (splitted[0].equals("@str") && x + player.getStr() < max) {
                     player.addAP(c, 1, x);

@@ -2179,7 +2179,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    public void registerEffect(final MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule) {
+    public void registerEffect(final MapleStatEffect effect, long startTime, ScheduledFuture<?> schedule) {
         if (effect.isHide() && isGM()) {
             this.hidden = true;
             getMap().broadcastNONGMMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
@@ -2194,9 +2194,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         for (int i = 0; i < effect.getStatups().size(); ++i) {
             Pair<MapleBuffStat, Integer> statup = effect.getStatups().get(i);
-            effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, starttime, schedule, statup.getRight()));
+            effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, startTime, schedule, statup.getRight()));
         }
         recalcLocalStats();
+    }
+    
+    public void registerStatups(final MapleStatEffect effect, final List<Pair<MapleBuffStat, Integer>> statups, long startTime, ScheduledFuture<?> schedule) {
+        for (int i = 0; i < statups.size(); ++i) {
+            Pair<MapleBuffStat, Integer> statup = statups.get(i);
+            effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, startTime, schedule, statup.getRight()));
+        }
+        if (!statups.isEmpty()) {
+            recalcLocalStats();
+        }
     }
 
     private List<MapleBuffStat> getBuffStats(MapleStatEffect effect, long startTime) {
