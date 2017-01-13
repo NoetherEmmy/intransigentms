@@ -53,7 +53,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
     protected synchronized void applyAttack(AttackInfo attack, MapleCharacter player, int attackCount) {
         player.getCheatTracker().resetHPRegen();
         //player.getCheatTracker().checkAttack(attack.skill);
-        
+
         ISkill theSkill = null;
         MapleStatEffect attackEffect = null;
         if (attack.skill != 0) {
@@ -163,7 +163,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 }
 
                 double distance = player.getPosition().distanceSq(monster.getPosition());
-                if (distance > 400000.0) { // 600^2, 550 is approximately the range of ultimates
+                if (distance > 400000.0d) { // 600^2, 550 is approximately the range of ultimates
                     player.getCheatTracker().registerOffense(CheatingOffense.ATTACK_FARAWAY_MONSTER, Double.toString(Math.sqrt(distance)));
                 }
 
@@ -301,7 +301,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                         break;
                 }
-                
+
                 // Venom
                 if (player.getSkillLevel(SkillFactory.getSkill(4120005)) > 0) {
                     MapleStatEffect venomEffect = SkillFactory.getSkill(4120005).getEffect(player.getSkillLevel(SkillFactory.getSkill(4120005)));
@@ -416,7 +416,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             }
         }
     }
-	
+
     private void handlePickPocket(MapleCharacter player, MapleMonster monster, Pair<Integer, List<Integer>> oned) {
         int delay = 0;
         int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET);
@@ -446,7 +446,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             }
         }
     }
-    
+
     public AttackInfo parseDamage(LittleEndianAccessor lea, boolean ranged) {
         AttackInfo ret = new AttackInfo();
         lea.readByte();

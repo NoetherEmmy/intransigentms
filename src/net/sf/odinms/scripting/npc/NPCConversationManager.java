@@ -391,7 +391,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         final MapleCQuests q = getPlayer().getCQuest();
         final StringBuilder sb = new StringBuilder();
         sb.append("Your quest info for:\r\n#e#r").append(q.getTitle()).append("#n#k\r\n");
-        
+
         if (q.requiresMonsterTargets()) sb.append("\r\n#eMonster targets:#n \r\n");
         q.readMonsterTargets().entrySet().forEach(target ->
             sb.append(target.getValue().getRight())
@@ -423,7 +423,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sb.append("#eQuest end NPC: #n\r\n#d").append(q.getEndNpc()).append("#k\r\n");
         }
         sb.append("#eQuest info: #n\r\n").append(q.getInfo());
-        
+
         return sb.toString();
     }
 
@@ -464,12 +464,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return s;
     }
-    
+
     public boolean completedAllQuests() {
         return !getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000) &&
                !getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000);
     }
-    
+
     public String getAllItemStats(int itemid) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         IItem item = ii.getEquipById(itemid);
@@ -550,10 +550,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         } else {
             itemstats += "Description: #b" + ii.getDesc(itemid) + "#k\r\n";
         }
-        
+
         return itemstats;
     }
-    
+
     public void damagePlayer(int dmg, boolean lethal) {
         if (lethal) {
             getPlayer().setHp(getPlayer().getHp() - dmg);
@@ -577,7 +577,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return false;
     }
-    
+
     public boolean canEnterMonsterTrial() {
         if (System.currentTimeMillis() - getPlayer().getLastTrialTime() >= 7200000L) {
             if (getPlayer().getLevel() >= 20) {
@@ -586,29 +586,29 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return false;
     }
-    
+
     public int getMonsterTrialCooldown() {
         long timesincelast = System.currentTimeMillis() - getPlayer().getLastTrialTime();
         double inminutes = timesincelast / 60000.0;
         inminutes = Math.floor(inminutes);
         return 120 - (int) inminutes;
     }
-    
+
     public int getMonsterTrialPoints() {
         return getPlayer().getMonsterTrialPoints();
     }
-    
+
     public int getTier() {
         return getPlayer().getMonsterTrialTier();
     }
-    
+
     public int getTierPoints(int tier) {
         if (tier < 1) {
             return 0;
         }
         return (int) (getTierPoints(tier - 1) + (10 * Math.pow(tier + 1, 2)) * (Math.floor(tier * 1.5d) + 3));
     }
-    
+
     public int calculateLevelGroup(int level) {
 	    int lg = 0;
         if (level >= 20) {
@@ -646,7 +646,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 	    return lg;
     }
-    
+
     public boolean enterMonsterTrial() {
         final int monsters[][] = { /* (In this array) 1st dimension: Corresponds to level group of player (-1 to adjust for level group not being zero-based)
                                                 2nd dimension: Monster IDs for that level group as ints, with a digit added at the end of the decimal
@@ -714,7 +714,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return false;
     }
-    
+
     public boolean enterBossMap(int bossid) {
         int mapId = 3000;
         MapleMap map;
@@ -737,7 +737,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 partyMember.setBossReturnMap(partyMember.getMapId());
             }
             warpParty(mapId);
-            
+
             partyMembers.forEach(pm ->
                 pm.setForcedWarp(
                     pm.getBossReturnMap(),
@@ -745,7 +745,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     mc -> mc.getMapId() == 3000
                 )
             );
-            
+
             for (MapleCharacter p : partyMembers) {
                 p.getClient()
                  .getSession()
@@ -765,7 +765,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         return false;
     }
-    
+
     public boolean canLeaveMonsterTrial() {
         if (getPlayer().getHp() > 0) {
             if (getPlayer().getMap().mobCount() < 1) {
@@ -774,19 +774,19 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return false;
     }
-    
+
     public int getMonsterTrialReturnMap() {
         return getPlayer().getTrialReturnMap();
     }
-    
+
     public void gainMonsterTrialPoints(int points) {
         getPlayer().setMonsterTrialPoints(getMonsterTrialPoints() + points);
     }
-    
+
     public void setTier(int tier) {
         getPlayer().setMonsterTrialTier(tier);
     }
-    
+
     public String getDeathCountRanking(int top) {
         String r = "";
         try {
@@ -812,7 +812,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return r;
     }
-    
+
     public String getHighestLevelAchievedRanking(int top) {
         String r = "";
         try {
@@ -842,7 +842,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return r;
     }
-    
+
     public String getSuicidesRanking(int top) {
         String r = "";
         try {
@@ -868,7 +868,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return r;
     }
-    
+
     public String getParagonLevelRanking(int top) {
         String r = "";
         try {
@@ -895,7 +895,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return r;
     }
-    
+
     /*
     public String getDeathRankingByLevel(int level) {
         try {
@@ -924,7 +924,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String getSkillNameById(int skillid) {
         return SkillFactory.getSkillName(skillid);
     }
-    
+
     public void warpParty(int mapId) {
         warpParty(mapId, 0, 0);
     }
@@ -1062,20 +1062,21 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String searchItem(String item) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         StringBuilder message = new StringBuilder("Choose the item you want:");
         getPlayer().getMap().broadcastMessage(
             getPlayer(),
             MaplePacketCreator.showJobChange(getPlayer().getId()),
             false
         );
-        for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
-            if (itemPair.getRight().toLowerCase().contains(item.toLowerCase())) {
+        for (Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
+            if (itemEntry.getValue().toLowerCase().contains(item.toLowerCase())) {
                 message.append("\r\n#L")
-                       .append(itemPair.getLeft())
+                       .append(itemEntry.getKey())
                        .append("##i")
-                       .append(itemPair.getLeft())
+                       .append(itemEntry.getKey())
                        .append("# - #b")
-                       .append(itemPair.getRight())
+                       .append(itemEntry.getValue())
                        .append("#k#l");
             }
         }
@@ -1145,18 +1146,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void modifyNx(int amount) {
         getPlayer().modifyCSPoints(1, amount);
-        
+
         if (amount > 0) {
             getPlayer().dropMessage(5, "You have gained " + amount + " NX.");
         } else {
             getPlayer().dropMessage(5, "You have lost " + amount + " NX.");
         }
     }
-    
+
     public int getNx(int type) {
         return getPlayer().getCSPoints(type);
     }
-    
+
     public boolean buyWithNx(int amount) {
         if (getNx(1) >= amount) {
             getPlayer().modifyCSPoints(1, -1 * amount);
@@ -1382,11 +1383,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public boolean hasTemp() {
         return !getPlayer().hasMerchant() && getPlayer().tempHasItems();
     }
-    
+
     public void giveBuff(int buff, int level) {
         SkillFactory.getSkill(buff).getEffect(level).applyTo(getPlayer());
     }
-    
+
     public void giveDebuff(int debuff, int level) {
         MobSkill ms = MobSkillFactory.getMobSkill(debuff, level);
         MapleDisease disease;
@@ -1431,7 +1432,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         getPlayer().giveDebuff(disease, ms);
     }
-    
+
     public String equipList(MapleClient c, int lb1, int lb2, int lb3, int lb4) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         StringBuilder str = new StringBuilder();
@@ -1442,10 +1443,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         leaveBehind.add(lb3);
         leaveBehind.add(lb4);
         List<IItem> equipList = new ArrayList<>(equip.list());
-        
+
         // This sorts the items by their position in the inventory
         equipList.sort(Comparator.comparingInt(IItem::getPosition));
-        
+
         for (IItem equipItem : equipList) {
             if (!leaveBehind.contains((int) equipItem.getPosition())) {
                 if (!ii.isCash(equipItem.getItemId())) {
@@ -1497,7 +1498,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         return str.toString();
     }
-    
+
     public void sellSlotRange(byte start, byte end) {
         sellSlotRange(start, end, MapleInventoryType.EQUIP);
     }
@@ -1529,7 +1530,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
         }
     }
-    
+
     public String cashEquipList() {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         final StringBuilder str = new StringBuilder();
@@ -1553,11 +1554,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         return str.toString();
     }
-    
+
     public void clearItems(MapleClient c) {
         clearItems(c, -1, -1, -1, -1);
     }
-    
+
     public void clearItems(MapleClient c, int lb1, int lb2, int lb3, int lb4) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
@@ -1628,11 +1629,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             System.err.println("There was an error logging " + getPlayer().getName() + "'s items lost on death.");
         }
     }
-    
+
     public void stripEquips(MapleClient c) {
         c.getPlayer().unequipEverything();
     }
-    
+
     public void resetMaxHpMp(MapleClient c) {
         c.getPlayer().updateSingleStat(MapleStat.HP, 50);
         c.getPlayer().updateSingleStat(MapleStat.MP, 5);
@@ -1643,37 +1644,37 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         c.getPlayer().setMaxHp(50);
         c.getPlayer().setMaxMp(5);
     }
-    
+
     public void spawnMonster(int mobid) {
         getPlayer().getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(mobid), getPlayer().getPosition());
     }
-    
+
     public void spawnMonsterInMap(int mobid) {
         spawnMonsterInMap(mobid, getPlayer().getMapId());
     }
-    
+
     public void spawnMonsterInMap(int mobid, int mapid) {
         MapleMap map;
         map = c.getChannelServer().getMapFactory().getMap(mapid);
         map.spawnMonster(MapleLifeFactory.getMonster(mobid));
     }
-    
+
     public void spawnMonsterInMap(MapleMonster mob, int mapid) {
         MapleMap map;
         map = c.getChannelServer().getMapFactory().getMap(mapid);
         map.spawnMonster(mob);
     }
-    
+
     public void spawnMonsterInMapAtPos(MapleMonster mob, int mapid, int x, int y) {
         MapleMap map;
         map = c.getChannelServer().getMapFactory().getMap(mapid);
         map.spawnMonsterOnGroudBelow(mob, new Point(x, y));
     }
-    
+
     public MapleMonster getMonster(int mobid) {
         return MapleLifeFactory.getMonster(mobid);
     }
-    
+
     public void spawnHT() {
         MapleMonster ht = MapleLifeFactory.getMonster(8810026);
         MapleMap map;
@@ -1684,18 +1685,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             MaplePacketCreator.serverNotice(0, "As the cave shakes and rattles, here comes Horntail.")
         );
     }
-    
+
     public String listConsume(char initial) {
         StringBuilder sb = new StringBuilder();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         List<Pair<Integer, String>> consumeList = ii.getAllConsume(initial);
-        
+
         if (consumeList.isEmpty()) {
             return "There are no use items with the selected initial letter.";
         }
-        
+
         consumeList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
-        
+
         for (Pair<Integer, String> itempair : consumeList) {
             sb.append("#L").append(itempair.getLeft()).append("#");
             sb.append("#i").append(itempair.getLeft()).append("# ");
@@ -1703,18 +1704,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return sb.toString();
     }
-    
+
     public String listEqp(char initial) {
         StringBuilder sb = new StringBuilder();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         List<Pair<Integer, String>> eqpList = ii.getAllEqp(initial);
-        
+
         if (eqpList.isEmpty()) {
             return "There are no equipment items with the selected initial letter.";
         }
-        
+
         eqpList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
-        
+
         for (Pair<Integer, String> itempair : eqpList) {
             sb.append("#L").append(itempair.getLeft()).append("#");
             sb.append("#i").append(itempair.getLeft()).append("# ");
@@ -1722,18 +1723,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return sb.toString();
     }
-    
+
     public String listEtc(char initial) {
         StringBuilder sb = new StringBuilder();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         List<Pair<Integer, String>> etcList = ii.getAllEtc(initial);
-        
+
         if (etcList.isEmpty()) {
             return "There are no etc items with the selected initial letter.";
         }
-        
+
         etcList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
-        
+
         for (Pair<Integer, String> itempair : etcList) {
             sb.append("#L").append(itempair.getLeft()).append("#");
             sb.append("#i").append(itempair.getLeft()).append("# ");
@@ -1741,7 +1742,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return sb.toString();
     }
-    
+
     public String whoDrops(int searchid) {
         String dropstring = "";
         try {
@@ -1784,7 +1785,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         return dropstring;
     }
-    
+
     public boolean canGetDailyPrizes() {
         boolean ret = true;
         try {
@@ -1817,10 +1818,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         } catch (SQLException e) {
             System.out.print("cm.canGetDailyPrizes() failed with SQLException: " + e);
         }
-        
+
         return ret;
     }
-    
+
     public int dailyPrizeStatus() {
         Calendar validtime = Calendar.getInstance();
         validtime.setTime(getPlayer().getLastDailyPrize());
@@ -1847,7 +1848,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return 0;
         }
     }
-    
+
     public int timeUntilNextPrize() {
         Calendar validtime = Calendar.getInstance();
         validtime.setTime(getPlayer().getLastDailyPrize());
@@ -1860,13 +1861,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         time = time / (1000 * 60 * 60);
         return (int) time;
     }
-    
+
     public void updateLastDailyPrize() {
         Calendar currenttime = Calendar.getInstance();
         currenttime.setTimeInMillis(System.currentTimeMillis());
         getPlayer().setLastDailyPrize(currenttime.getTime());
     }
-    
+
     public void revive() {
         final MapleCharacter player = getPlayer();
         player.setInvincible(true); // 10 second invincibility
@@ -1880,7 +1881,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         player.updateSingleStat(MapleStat.EXP, 0);
         player.getClient().getSession().write(MaplePacketCreator.getClock(0));
     }
-    
+
     public boolean selfResurrect() {
         MapleCharacter p = getPlayer();
         ISkill resurrection = SkillFactory.getSkill(2321006);
@@ -1931,7 +1932,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         } catch (SQLException ignored) {
         }
     }
-    
+
     public boolean getBetaTester() {
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -1950,7 +1951,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 ps.executeUpdate();
                 ps.close();
             }
-            
+
             return redeemed == 0;
         } catch (SQLException e) {
             System.out.print("cm.getBetaTester() failed with SQLException: " + e);

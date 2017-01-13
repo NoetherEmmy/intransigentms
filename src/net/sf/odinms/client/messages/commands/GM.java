@@ -21,7 +21,6 @@ import net.sf.odinms.server.*;
 import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.*;
 import net.sf.odinms.tools.MaplePacketCreator;
-import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
 
 import java.awt.*;
@@ -43,6 +42,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.regex.Pattern;
 
 import static net.sf.odinms.client.messages.CommandProcessor.*;
 
@@ -133,7 +133,7 @@ public class GM implements Command {
     }
 
     @Override
-    public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
+    public void execute(MapleClient c, final MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
         final ChannelServer cserv = c.getChannelServer();
         final Collection<ChannelServer> cservs = ChannelServer.getAllInstances();
@@ -422,7 +422,7 @@ public class GM implements Command {
                 if (splitted.length == 3) {
                     MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                     String newname = splitted[2];
-                
+
                     if (MapleCharacter.getIdByName(newname, 0) == -1) {
                         if (victim != null) {
                             victim.getClient().disconnect();
@@ -1053,7 +1053,27 @@ public class GM implements Command {
                             }
                         } else {
                             MapleMap target = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
-                            player.changeMap(target, target.getPortal(0));
+                            if (splitted.length == 3) {
+                                Integer portalId;
+                                try {
+                                    portalId = Integer.parseInt(splitted[2]);
+                                } catch (NumberFormatException nfe) {
+                                    portalId = null;
+                                }
+                                MaplePortal to;
+                                if (portalId != null) {
+                                    to = target.getPortal(portalId);
+                                } else {
+                                    to = target.getPortal(splitted[2]);
+                                }
+                                if (to == null) {
+                                    mc.dropMessage("Could not find the portal specified.");
+                                    return;
+                                }
+                                player.changeMap(target, to);
+                            } else {
+                                player.changeMap(target, target.getPortal(0));
+                            }
                         }
                     } catch (Exception ignored) {
                     }
@@ -1524,118 +1544,190 @@ public class GM implements Command {
             }
             case "!search":
                 if (splitted.length > 2) {
-                    String type = splitted[1];
-                    String search = StringUtil.joinStringFrom(splitted, 2);
-                    MapleData data;
-                    MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
-                    mc.dropMessage("<<Type: " + type + " | Search: " + search + ">>");
-                    if (type.equalsIgnoreCase("NPC") || type.equalsIgnoreCase("NPCS")) {
-                        List<String> retNpcs = new ArrayList<>();
-                        data = dataProvider.getData("Npc.img");
-                        List<Pair<Integer, String>> npcPairList = new ArrayList<>();
-                        for (MapleData npcIdData : data.getChildren()) {
-                            int npcIdFromData = Integer.parseInt(npcIdData.getName());
-                            String npcNameFromData = MapleDataTool.getString(npcIdData.getChildByPath("name"), "NO-NAME");
-                            npcPairList.add(new Pair<>(npcIdFromData, npcNameFromData));
-                        }
-                        for (Pair<Integer, String> npcPair : npcPairList) {
-                            if (npcPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                                retNpcs.add(npcPair.getLeft() + " - " + npcPair.getRight());
-                            }
-                        }
-                        if (!retNpcs.isEmpty()) {
-                            for (String singleRetNpc : retNpcs) {
-                                mc.dropMessage(singleRetNpc);
-                            }
-                        } else {
-                            mc.dropMessage("No NPCs found.");
-                        }
-                    } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
-                        List<String> retMaps = new ArrayList<>();
-                        data = dataProvider.getData("Map.img");
-                        List<Pair<Integer, String>> mapPairList = new ArrayList<>();
-                        for (MapleData mapAreaData : data.getChildren()) {
-                            for (MapleData mapIdData : mapAreaData.getChildren()) {
-                                int mapIdFromData = Integer.parseInt(mapIdData.getName());
-                                String mapNameFromData = MapleDataTool.getString(mapIdData.getChildByPath("streetName"), "NO-NAME") + " - " + MapleDataTool.getString(mapIdData.getChildByPath("mapName"), "NO-NAME");
-                                mapPairList.add(new Pair<>(mapIdFromData, mapNameFromData));
-                            }
-                        }
-                        for (Pair<Integer, String> mapPair : mapPairList) {
-                            if (mapPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                                retMaps.add(mapPair.getLeft() + " - " + mapPair.getRight());
-                            }
-                        }
-                        if (!retMaps.isEmpty()) {
-                            for (String singleRetMap : retMaps) {
-                                mc.dropMessage(singleRetMap);
-                            }
-                        } else {
-                            mc.dropMessage("No maps found.");
-                        }
-                    } else if (type.equalsIgnoreCase("MOB") || type.equalsIgnoreCase("MOBS") || type.equalsIgnoreCase("MONSTER") || type.equalsIgnoreCase("MONSTERS")) {
-                        List<String> retMobs = new ArrayList<>();
-                        data = dataProvider.getData("Mob.img");
-                        List<Pair<Integer, String>> mobPairList = new ArrayList<>();
-                        for (MapleData mobIdData : data.getChildren()) {
-                            int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                            String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
-                            mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
-                        }
-                        for (Pair<Integer, String> mobPair : mobPairList) {
-                            if (mobPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                                retMobs.add(mobPair.getLeft() + " - " + mobPair.getRight());
-                            }
-                        }
-                        if (!retMobs.isEmpty()) {
-                            for (String singleRetMob : retMobs) {
-                                mc.dropMessage(singleRetMob);
-                            }
-                        } else {
-                            mc.dropMessage("No mobs found.");
-                        }
-                    } else if (type.equalsIgnoreCase("REACTOR") || type.equalsIgnoreCase("REACTORS")) {
-                        mc.dropMessage("NOT ADDED YET");
-                    } else if (type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
-                        List<String> retItems = new ArrayList<>();
-                        for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
-                            if (itemPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                                retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
-                            }
-                        }
-                        if (!retItems.isEmpty()) {
-                            for (String singleRetItem : retItems) {
-                                mc.dropMessage(singleRetItem);
-                            }
-                        } else {
-                            mc.dropMessage("No items found.");
-                        }
-                    } else if (type.equalsIgnoreCase("SKILL") || type.equalsIgnoreCase("SKILLS")) {
-                        List<String> retSkills = new ArrayList<>();
-                        data = dataProvider.getData("Skill.img");
-                        List<Pair<Integer, String>> skillPairList = new ArrayList<>();
-                        for (MapleData skillIdData : data.getChildren()) {
-                            int skillIdFromData = Integer.parseInt(skillIdData.getName());
-                            String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");
-                            skillPairList.add(new Pair<>(skillIdFromData, skillNameFromData));
-                        }
-                        for (Pair<Integer, String> skillPair : skillPairList) {
-                            if (skillPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                                retSkills.add(skillPair.getLeft() + " - " + skillPair.getRight());
-                            }
-                        }
-                        if (!retSkills.isEmpty()) {
-                            for (String singleRetSkill : retSkills) {
-                                mc.dropMessage(singleRetSkill);
-                            }
-                        } else {
-                            mc.dropMessage("No skills found.");
-                        }
+                    String type = splitted[1].toUpperCase();
+                    String search = null;
+                    Pattern pattern = null;
+                    if (splitted[2].equals("-re")) {
+                        pattern = Pattern.compile(StringUtil.joinStringFrom(splitted, 3));
                     } else {
-                        mc.dropMessage("Sorry, that search type is unavailable.");
+                        search = StringUtil.joinStringFrom(splitted, 2).toLowerCase();
+                    }
+                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    MapleData data;
+                    MapleDataProvider dataProvider =
+                        MapleDataProviderFactory.getDataProvider(
+                            new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
+                        );
+                    mc.dropMessage("<<Type: " + type + " | Search: " + search + ">>");
+                    List<String> retNpcs = new ArrayList<>();
+                    switch (type) {
+                        case "NPC":
+                        case "NPCS":
+                            data = dataProvider.getData("Npc.img");
+                            if (search != null) {
+                                for (MapleData npcIdData : data.getChildren()) {
+                                    String npcNameFromData =
+                                        MapleDataTool.getString(npcIdData.getChildByPath("name"), "NO-NAME");
+                                    if (npcNameFromData.toLowerCase().contains(search)) {
+                                        int npcIdFromData = Integer.parseInt(npcIdData.getName());
+                                        retNpcs.add(npcIdFromData + " - " + npcNameFromData);
+                                    }
+                                }
+                            } else {
+                                for (MapleData npcIdData : data.getChildren()) {
+                                    String npcNameFromData =
+                                        MapleDataTool.getString(npcIdData.getChildByPath("name"), "NO-NAME");
+                                    if (pattern.matcher(npcNameFromData).matches()) {
+                                        int npcIdFromData = Integer.parseInt(npcIdData.getName());
+                                        retNpcs.add(npcIdFromData + " - " + npcNameFromData);
+                                    }
+                                }
+                            }
+                            if (retNpcs.isEmpty()) {
+                                mc.dropMessage("No NPCs found with the provided query.");
+                            } else {
+                                retNpcs.forEach(mc::dropMessage);
+                            }
+                            break;
+                        case "MAP":
+                        case "MAPS":
+                            data = dataProvider.getData("Map.img");
+                            List<String> retMaps = new ArrayList<>();
+                            if (search != null) {
+                                for (MapleData mapAreaData : data.getChildren()) {
+                                    for (MapleData mapIdData : mapAreaData.getChildren()) {
+                                        String mapNameFromData =
+                                            MapleDataTool.getString(
+                                                mapIdData.getChildByPath("streetName"),
+                                                "NO-NAME"
+                                            ) +
+                                            " - " +
+                                            MapleDataTool.getString(
+                                                mapIdData.getChildByPath("mapName"),
+                                                "NO-NAME"
+                                            );
+                                        if (mapNameFromData.toLowerCase().contains(search)) {
+                                            int mapIdFromData = Integer.parseInt(mapIdData.getName());
+                                            retMaps.add(mapIdFromData + " - " + mapNameFromData);
+                                        }
+                                    }
+                                }
+                            } else {
+                                for (MapleData mapAreaData : data.getChildren()) {
+                                    for (MapleData mapIdData : mapAreaData.getChildren()) {
+                                        String mapNameFromData =
+                                            MapleDataTool.getString(
+                                                mapIdData.getChildByPath("streetName"),
+                                                "NO-NAME"
+                                            ) +
+                                            " - " +
+                                            MapleDataTool.getString(
+                                                mapIdData.getChildByPath("mapName"),
+                                                "NO-NAME"
+                                            );
+                                        if (pattern.matcher(mapNameFromData).matches()) {
+                                            int mapIdFromData = Integer.parseInt(mapIdData.getName());
+                                            retMaps.add(mapIdFromData + " - " + mapNameFromData);
+                                        }
+                                    }
+                                }
+                            }
+                            if (retMaps.isEmpty()) {
+                                mc.dropMessage("No maps found with the provided query.");
+                            } else {
+                                retMaps.forEach(mc::dropMessage);
+                            }
+                            break;
+                        case "MOB":
+                        case "MOBS":
+                        case "MONSTER":
+                        case "MONSTERS":
+                            List<String> retMobs = new ArrayList<>();
+                            data = dataProvider.getData("Mob.img");
+                            if (search != null) {
+                                for (MapleData mobIdData : data.getChildren()) {
+                                    String mobNameFromData =
+                                        MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
+                                    if (mobNameFromData.toLowerCase().contains(search)) {
+                                        int mobIdFromData = Integer.parseInt(mobIdData.getName());
+                                        retMobs.add(mobIdFromData + " - " + mobNameFromData);
+                                    }
+                                }
+                            } else {
+                                for (MapleData mobIdData : data.getChildren()) {
+                                    String mobNameFromData =
+                                        MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
+                                    if (pattern.matcher(mobNameFromData).matches()) {
+                                        int mobIdFromData = Integer.parseInt(mobIdData.getName());
+                                        retMobs.add(mobIdFromData + " - " + mobNameFromData);
+                                    }
+                                }
+                            }
+                            if (retMobs.isEmpty()) {
+                                mc.dropMessage("No mobs found with the provided query.");
+                            } else {
+                                retMobs.forEach(mc::dropMessage);
+                            }
+                            break;
+                        case "REACTOR":
+                        case "REACTORS":
+                            mc.dropMessage("Sorry, that search type is unavailable.");
+                            break;
+                        case "ITEM":
+                        case "ITEMS":
+                            List<String> retItems = new ArrayList<>();
+                            if (search != null) {
+                                for (Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
+                                    if (itemEntry.getValue().toLowerCase().contains(search)) {
+                                        retItems.add(itemEntry.getKey() + " - " + itemEntry.getValue());
+                                    }
+                                }
+                            } else {
+                                for (Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
+                                    if (pattern.matcher(itemEntry.getValue()).matches()) {
+                                        retItems.add(itemEntry.getKey() + " - " + itemEntry.getValue());
+                                    }
+                                }
+                            }
+                            if (retItems.isEmpty()) {
+                                mc.dropMessage("No items found with the provided query.");
+                            } else {
+                                retItems.forEach(mc::dropMessage);
+                            }
+                            break;
+                        case "SKILL":
+                        case "SKILLS":
+                            List<String> retSkills = new ArrayList<>();
+                            data = dataProvider.getData("Skill.img");
+                            if (search != null) {
+                                for (MapleData skillIdData : data.getChildren()) {
+                                    String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");
+                                    if (skillNameFromData.toLowerCase().contains(search)) {
+                                        int skillIdFromData = Integer.parseInt(skillIdData.getName());
+                                        retSkills.add(skillIdFromData + " - " + skillNameFromData);
+                                    }
+                                }
+                            } else {
+                                for (MapleData skillIdData : data.getChildren()) {
+                                    String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");
+                                    if (pattern.matcher(skillNameFromData).matches()) {
+                                        int skillIdFromData = Integer.parseInt(skillIdData.getName());
+                                        retSkills.add(skillIdFromData + " - " + skillNameFromData);
+                                    }
+                                }
+                            }
+                            if (retSkills.isEmpty()) {
+                                mc.dropMessage("No skills found with the provided query.");
+                            } else {
+                                retSkills.forEach(mc::dropMessage);
+                            }
+                            break;
+                        default:
+                            mc.dropMessage("Sorry, that search type is unavailable.");
+                            break;
                     }
                 } else {
-                    mc.dropMessage("Invalid search.  Proper usage: '!search <type> <search for>', where <type> is MAP, USE, ETC, CASH, EQUIP, MOB (or MONSTER), or SKILL.");
+                    mc.dropMessage("Invalid search. Proper usage: '!search <type> [-re] <searchFor>', where <type> is MAP, USE, ETC, CASH, EQUIP, MOB (or MONSTER), or SKILL.");
                 }
                 break;
             case "!msearch":
@@ -1886,10 +1978,10 @@ public class GM implements Command {
                 break;
             case "!gmtext": {
                 int text;
-                //RegularChat
+                // RegularChat
                 if (splitted[1].equalsIgnoreCase("normal")) {
                     text = 0;
-                    //MultiChat
+                    // MultiChat
                 } else if (splitted[1].equalsIgnoreCase("orange")) {
                     text = 1;
                 } else if (splitted[1].equalsIgnoreCase("pink")) {
@@ -1898,18 +1990,18 @@ public class GM implements Command {
                     text = 3;
                 } else if (splitted[1].equalsIgnoreCase("green")) {
                     text = 4;
-                    //ServerNotice
+                    // ServerNotice
                 } else if (splitted[1].equalsIgnoreCase("red")) {
                     text = 5;
                 } else if (splitted[1].equalsIgnoreCase("blue")) {
                     text = 6;
-                    //RegularChat
+                    // RegularChat
                 } else if (splitted[1].equalsIgnoreCase("whitebg")) {
                     text = 7;
-                    //Whisper
+                    // Whisper
                 } else if (splitted[1].equalsIgnoreCase("lightinggreen")) {
                     text = 8;
-                    //MapleTip
+                    // MapleTip
                 } else if (splitted[1].equalsIgnoreCase("yellow")) {
                     text = 9;
                 } else {
@@ -1929,7 +2021,7 @@ public class GM implements Command {
             case "!currentdate":
                 Calendar cal = Calendar.getInstance();
                 int day = cal.get(Calendar.DATE);
-                int month = cal.get(Calendar.MONTH) + 1; // its an array of months.
+                int month = cal.get(Calendar.MONTH) + 1; // It's an array of months.
 
                 int year = cal.get(Calendar.YEAR);
                 mc.dropMessage(day + "/" + month + "/" + year);
@@ -1957,7 +2049,6 @@ public class GM implements Command {
                 }
                 break;
             case "!changejob": {
-                //change this command to public if u want.
                 int id = c.getPlayer().getId();
                 int job = Integer.parseInt(splitted[1]);
                 Connection con = DatabaseConnection.getConnection();
@@ -2398,7 +2489,8 @@ public class GM implements Command {
             new CommandDefinition("warpoutofevent", 3),
             new CommandDefinition("resetpreeventmaps", 3),
             new CommandDefinition("giftvp", 3),
-            new CommandDefinition("unregisterallpqmis", 3)
+            new CommandDefinition("unregisterallpqmis", 3),
+            new CommandDefinition("reloadpqmiscript", 3)
         };
     }
 }

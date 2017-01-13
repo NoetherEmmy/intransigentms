@@ -71,7 +71,7 @@ public class PartyQuest {
     }
 
     public void registerMap(MapleMap newMap) {
-        if (newMap.playerCount() > 0 || newMap.getPartyQuestInstance() != null) {
+        if (newMap.getPartyQuestInstance() != null) {
             throw new IllegalStateException("Attempting to register map that is currently in use.");
         }
         newMap.resetReactors();
@@ -194,9 +194,15 @@ public class PartyQuest {
 
     public void dispose() {
         players.forEach(p -> {
-            pqItems.forEach(itemId -> MapleInventoryManipulator.removeAllById(p.getClient(), itemId, true));
+            pqItems.forEach(itemId ->
+                MapleInventoryManipulator.removeAllById(
+                    p.getClient(),
+                    itemId,
+                    true
+                )
+            );
             p.setPartyQuest(null);
-            p.changeMap(exitMapId);
+            if (p.getMapId() != exitMapId) p.changeMap(exitMapId);
         });
         players.clear();
         while (!mapInstances.isEmpty()) {

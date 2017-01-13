@@ -29,15 +29,15 @@ public class MapleTrade {
     private int getFee(int meso) {
         int fee = 0;
         if (meso >= 10000000) {
-            fee = (int) Math.round(0.04 * meso);
+            fee = (int) Math.round(0.04d * meso);
         } else if (meso >= 5000000) {
-            fee = (int) Math.round(0.03 * meso);
+            fee = (int) Math.round(0.03d * meso);
         } else if (meso >= 1000000) {
-            fee = (int) Math.round(0.02 * meso);
+            fee = (int) Math.round(0.02d * meso);
         } else if (meso >= 100000) {
-            fee = (int) Math.round(0.01 * meso);
+            fee = (int) Math.round(0.01d * meso);
         } else if (meso >= 50000) {
-            fee = (int) Math.round(0.005 * meso);
+            fee = (int) Math.round(0.005d * meso);
         }
         return fee;
     }

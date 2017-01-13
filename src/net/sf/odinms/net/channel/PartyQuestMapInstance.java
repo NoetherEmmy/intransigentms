@@ -65,7 +65,6 @@ public class PartyQuestMapInstance {
     }
 
     public void dispose() {
-        enableAllSkills();
         partyQuest.getMapInstances().remove(this);
         map.unregisterPartyQuestInstance();
         playerPropertyMap.clear();
@@ -83,7 +82,7 @@ public class PartyQuestMapInstance {
     public PartyQuest getPartyQuest() {
         return partyQuest;
     }
-    
+
     public List<MapleCharacter> getPlayers() {
         return partyQuest.getPlayers();
     }
@@ -182,7 +181,8 @@ public class PartyQuestMapInstance {
                  .filter(o ->
                      o.isClosed() &&
                      o.getRect().contains(position) &&
-                     (lastPointHeard == null || !o.getRect().contains(lastPointHeard)))
+                     (lastPointHeard == null || !o.getRect().contains(lastPointHeard))
+                 )
                  .findAny()
                  .ifPresent(o -> {
                      if (lastPointHeard == null) {
@@ -190,7 +190,13 @@ public class PartyQuestMapInstance {
                      } else {
                          Direction dir = o.simpleCollision(lastPointHeard, position);
                          if (dir != null) {
-                             MaplePortal to = map.findClosestSpawnpointInDirection(position, dir);
+                             MaplePortal to =
+                                 map.findClosestSpawnpointInDirection(
+                                     position,
+                                     dir,
+                                     o.getRect().y,
+                                     o.getRect().y + o.getRect().height
+                                 );
                              if (to != null) {
                                  player.changeMap(map, to);
                              }
@@ -212,12 +218,12 @@ public class PartyQuestMapInstance {
         obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, open, true));
         return currentObstacleId++;
     }
-    
+
     public int registerObstacle(int reactorId, Point closed, boolean defaultClosed) {
         obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, null, defaultClosed));
         return currentObstacleId++;
     }
-    
+
     public int registerObstacle(int reactorId, Point closed, Point open, boolean defaultClosed) {
         obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, open, defaultClosed));
         return currentObstacleId++;
@@ -231,29 +237,49 @@ public class PartyQuestMapInstance {
     public Obstacle getObstacle(int obsId) {
         return obstacles.get(obsId);
     }
-    
+
     public List<Integer> registeredObstacleIds() {
         return obstacles.keySet().stream().sorted().collect(Collectors.toList());
     }
-    
+
     public Map<Integer, Obstacle> readObstacles() {
         return new HashMap<>(obstacles);
     }
-    
-    public void toggleObstacle(int obsId) {
-        obstacles.get(obsId).toggle();
+
+    public boolean toggleObstacle(int obsId) {
+        Obstacle o = obstacles.get(obsId);
+        if (o != null) {
+            o.toggle();
+            return true;
+        }
+        return false;
     }
-    
-    public void closeObstacle(int obsId) {
-        obstacles.get(obsId).close();
+
+    public boolean closeObstacle(int obsId) {
+        Obstacle o = obstacles.get(obsId);
+        if (o != null) {
+            o.close();
+            return true;
+        }
+        return false;
     }
-    
-    public void openObstacle(int obsId) {
-        obstacles.get(obsId).open();
+
+    public boolean openObstacle(int obsId) {
+        Obstacle o = obstacles.get(obsId);
+        if (o != null) {
+            o.open();
+            return true;
+        }
+        return false;
     }
-    
-    public void resetObstacle(int obsId) {
-        obstacles.get(obsId).reset();
+
+    public boolean resetObstacle(int obsId) {
+        Obstacle o = obstacles.get(obsId);
+        if (o != null) {
+            o.reset();
+            return true;
+        }
+        return false;
     }
 
     public void openAllObstacles() {
@@ -276,8 +302,10 @@ public class PartyQuestMapInstance {
         return obstacles.size();
     }
 
-    /** Returns <code>true</code> if an <code>Obstacle</code> was removed, <code>false</code>
-     ** if no such <code>Obstacle</code> existed and thus no changes were made. */
+    /**
+     * Returns <code>true</code> if an <code>Obstacle</code> was removed, <code>false</code>
+     * if no such <code>Obstacle</code> existed and thus no changes were made.
+     */
     public boolean removeObstacle(int obsId) {
         if (!obstacles.containsKey(obsId)) return false;
         obstacles.get(obsId).dispose();
@@ -294,7 +322,7 @@ public class PartyQuestMapInstance {
         triggers.put(currentTriggerId, new Trigger(currentTriggerId, reactorId, position, obsId));
         return currentTriggerId++;
     }
-    
+
     public int registerTrigger(int reactorId, Point position, Runnable action) {
         triggers.put(currentTriggerId, new Trigger(currentTriggerId, reactorId, position, action));
         return currentTriggerId++;
@@ -304,23 +332,25 @@ public class PartyQuestMapInstance {
         triggers.put(currentTriggerId, new Trigger(currentTriggerId, reactorId, position, obsId, pqmi));
         return currentTriggerId++;
     }
-    
+
     public Trigger getTrigger(int triggerId) {
         return triggers.get(triggerId);
     }
-    
+
     public void trigger(int triggerId) {
         if (triggers.containsKey(triggerId)) {
             triggers.get(triggerId).trigger();
         }
     }
-    
+
     public void triggerByReactorId(final int reactorId) {
         triggers.values().stream().filter(t -> t.getReactorId() == reactorId).forEach(Trigger::trigger);
     }
 
-    /** Returns <code>true</code> if a <code>Trigger</code> was removed, <code>false</code>
-     ** if no such <code>Trigger</code> existed and thus no changes were made. */
+    /**
+     * Returns <code>true</code> if a <code>Trigger</code> was removed, <code>false</code>
+     * if no such <code>Trigger</code> existed and thus no changes were made.
+     */
     public boolean removeTrigger(int triggerId) {
         if (!triggers.containsKey(triggerId)) return false;
         triggers.get(triggerId).dispose();
@@ -332,7 +362,8 @@ public class PartyQuestMapInstance {
         triggers.values().forEach(Trigger::dispose);
         triggers.clear();
     }
-    
+
+    @Deprecated
     public void disableSkill(final int skillId) {
         disabledSkills.add(skillId);
         getPlayers().forEach(p -> {
@@ -340,30 +371,33 @@ public class PartyQuestMapInstance {
             p.giveCoolDowns(skillId, System.currentTimeMillis(), 10000000, true);
         });
     }
-    
+
+    @Deprecated
     public void enableSkill(final int skillId) {
         if (disabledSkills.remove(skillId)) {
             getPlayers().forEach(p -> p.removeCooldown(skillId));
         }
     }
-    
+
+    @Deprecated
     public void enableAllSkills() {
         disabledSkills.forEach(ds -> getPlayers().forEach(p -> p.removeCooldown(ds)));
         disabledSkills.clear();
     }
-    
+
+    @Deprecated
     public Set<Integer> readDisabledSkills() {
         return Collections.unmodifiableSet(disabledSkills);
     }
-    
+
     public void reloadScript() {
         ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
         try {
             FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
             scriptFile.close();
-            scriptEngine.put("mi",  this);
-            scriptEngine.put("pq",  this.partyQuest);
+            scriptEngine.put("mi", this);
+            scriptEngine.put("pq", this.partyQuest);
             scriptEngine.put("map", this.map);
         } catch (FileNotFoundException fnfe) {
             System.out.println("PartyQuestMapInstance could not locate script at path: " + path);
@@ -387,10 +421,12 @@ public class PartyQuestMapInstance {
         private final Set<Direction> directions;
         private boolean defaultClosed;
 
-        /** Pass in <code>open = null</code> to make the reactor destroyed
-         ** instead of moved when opened.
-         **
-         ** <code>closed</code> cannot be null. */
+        /**
+         * Pass in <code>open = null</code> to make the reactor destroyed
+         * instead of moved when opened.
+         *
+         * <code>closed</code> cannot be null.
+         */
         Obstacle(int reactorId, Point closed, Point open, boolean defaultClosed, Collection<Direction> directions) {
             map = PartyQuestMapInstance.this.getMap();
             this.reactorId = reactorId;
@@ -413,13 +449,15 @@ public class PartyQuestMapInstance {
             this.directions = new HashSet<>(directions);
         }
 
-        /** Constructs new <code>Obstacle</code> with a default of all directions
-         ** (<code>UP, DOWN, LEFT, RIGHT</code>). 
-         **
-         ** Pass in <code>open = null</code> to make the reactor destroyed
-         ** instead of moved when opened.
-         **
-         ** <code>closed</code> cannot be null. */
+        /**
+         * Constructs new <code>Obstacle</code> with a default of all directions
+         * (<code>UP, DOWN, LEFT, RIGHT</code>).
+         *
+         * Pass in <code>open = null</code> to make the reactor destroyed
+         * instead of moved when opened.
+         *
+         * <code>closed</code> cannot be null.
+         */
         Obstacle(int reactorId, Point closed, Point open, boolean defaultClosed) {
             map = PartyQuestMapInstance.this.getMap();
             this.reactorId = reactorId;
@@ -535,11 +573,11 @@ public class PartyQuestMapInstance {
         public int getReactorId() {
             return reactorId;
         }
-        
+
         public MapleMap getMap() {
             return map;
         }
-        
+
         public void setDefaultClosed(boolean dc) {
             defaultClosed = dc;
         }
@@ -555,7 +593,7 @@ public class PartyQuestMapInstance {
             }
         }
     }
-    
+
     public class Trigger {
         private final int id;
         private final MapleReactor reactor;
@@ -563,7 +601,7 @@ public class PartyQuestMapInstance {
         private final Point position;
         private final MapleMap map;
         private Runnable action;
-        
+
         public Trigger(int id, int reactorId, Point position, Runnable action) {
             this.id = id;
             map = PartyQuestMapInstance.this.getMap();
@@ -578,11 +616,13 @@ public class PartyQuestMapInstance {
             map.spawnReactor(reactor);
         }
 
-        /** Creates a new <code>Trigger</code> whose <code>action</code> (executed upon being triggered)
-         ** is toggling the <code>Obstacle</code> specified by ID as the last argument.
-         **
-         ** @throws IllegalStateException when there is no such <code>Obstacle</code> with the given ID
-         ** registered with this <code>Trigger</code>'s <code>PartyQuestMapInstance</code> */
+        /**
+         * Creates a new <code>Trigger</code> whose <code>action</code> (executed upon being triggered)
+         * is toggling the <code>Obstacle</code> specified by ID as the last argument.
+         *
+         * @throws IllegalStateException when there is no such <code>Obstacle</code> with the given ID
+         * registered with this <code>Trigger</code>'s <code>PartyQuestMapInstance</code>
+         */
         public Trigger(int id, int reactorId, Point position, int obsId) {
             final Obstacle obs = PartyQuestMapInstance.this.getObstacle(obsId);
             if (obs == null) {
@@ -606,11 +646,13 @@ public class PartyQuestMapInstance {
             map.spawnReactor(reactor);
         }
 
-        /** Creates a new <code>Trigger</code> whose <code>action</code> (executed upon being triggered)
-         ** is toggling the <code>Obstacle</code> specified by its ID and associated PartyQuestMapInstance.
-         **
-         ** @throws IllegalStateException when there is no such <code>Obstacle</code> with the given ID
-         ** registered with the specified <code>PartyQuestMapInstance</code> */
+        /**
+         * Creates a new <code>Trigger</code> whose <code>action</code> (executed upon being triggered)
+         * is toggling the <code>Obstacle</code> specified by its ID and associated PartyQuestMapInstance.
+         *
+         * @throws IllegalStateException when there is no such <code>Obstacle</code> with the given ID
+         * registered with the specified <code>PartyQuestMapInstance</code>
+         */
         public Trigger(int id, int reactorId, Point position, int obsId, PartyQuestMapInstance pqmi) {
             final Obstacle obs = pqmi.getObstacle(obsId);
             if (obs == null) {
@@ -633,11 +675,11 @@ public class PartyQuestMapInstance {
             reactor.setPosition(this.position);
             map.spawnReactor(reactor);
         }
-        
+
         public void trigger() {
             action.run();
         }
-        
+
         public void setAction(Runnable action) {
             this.action = action;
         }
@@ -654,7 +696,7 @@ public class PartyQuestMapInstance {
         public MapleMap getMap() {
             return map;
         }
-        
+
         public int getId() {
             return id;
         }

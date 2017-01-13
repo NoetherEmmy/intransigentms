@@ -13,8 +13,8 @@ public class SpawnPoint {
     private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
 
     /**
-     ** Whether the spawned monster is immobile or not
-     **/
+     * Whether the spawned monster is immobile or not
+     */
     private final boolean immobile;
 
     public SpawnPoint(MapleMonster monster, Point pos, int mobTime) {
@@ -37,15 +37,12 @@ public class SpawnPoint {
         }
         // Regular spawnpoints should spawn a maximum of 3 monsters: these are immobile spawnpoints
         // or spawnpoints with a maximum mobtime of 1
-        if (((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {
-            return false;
-        }
-        return nextPossibleSpawn <= now;
+        return !(((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) && nextPossibleSpawn <= now;
     }
 
     /**
-     ** Spawns the monster for this spawnpoint. Creates a new MapleMonster instance for that and returns it.
-     **/
+     * Spawns the monster for this spawn point. Creates a new MapleMonster instance for that and returns it.
+     */
     public MapleMonster spawnMonster(MapleMap mapleMap) {
         MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(new Point(pos));
@@ -53,7 +50,7 @@ public class SpawnPoint {
         mob.addListener(monster1 -> {
             nextPossibleSpawn = System.currentTimeMillis();
             if (mobTime > 0) {
-                nextPossibleSpawn += mobTime * 1000;
+                nextPossibleSpawn += mobTime * 1000L;
             } else {
                 nextPossibleSpawn += monster1.getAnimationTime("die1");
             }
@@ -61,7 +58,7 @@ public class SpawnPoint {
         });
         mapleMap.spawnMonster(mob);
         if (mobTime == 0) {
-            nextPossibleSpawn = System.currentTimeMillis() + 5000;
+            nextPossibleSpawn = System.currentTimeMillis() + 5000L;
         }
 
         // The conditional below is for events with monsters that spawn on all maps.

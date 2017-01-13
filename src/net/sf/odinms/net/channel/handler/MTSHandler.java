@@ -9,7 +9,6 @@ import net.sf.odinms.server.MTSItemInfo;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.MaplePacketCreator;
-import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 public class MTSHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(MTSHandler.class);
@@ -86,7 +86,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                 }
                 MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(itemid);
                 IItem i = c.getPlayer().getInventory(type).getItem(slot).copy();
-                if (i.getQuantity() > 0 && i != null && c.getPlayer().getMeso() >= 1337) {
+                if (i.getQuantity() > 0 && c.getPlayer().getMeso() >= 1337) {
                     Connection con = DatabaseConnection.getConnection();
                     try {
                         PreparedStatement ps;
@@ -402,7 +402,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
 
                     rs = ps.executeQuery();
                     if (rs.next()) {
-                        int price = rs.getInt("price") + 100 + (int) (rs.getInt("price") * 0.1); //taxes
+                        int price = rs.getInt("price") + 100 + (int) (rs.getInt("price") * 0.1d); // Taxes
                         if (c.getPlayer().getCSPoints(1) >= price) {
                             boolean alwaysnull = true;
                             for (ChannelServer cserv : ChannelServer.getAllInstances()) {
@@ -467,7 +467,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
 
                     rs = ps.executeQuery();
                     if (rs.next()) {
-                        int price = rs.getInt("price") + 100 + (int) (rs.getInt("price") * 0.1);
+                        int price = rs.getInt("price") + 100 + (int) (rs.getInt("price") * 0.1d);
                         if (c.getPlayer().getCSPoints(1) >= price) {
                             for (ChannelServer cserv : ChannelServer.getAllInstances()) {
                                 MapleCharacter victim = cserv.getPlayerStorage().getCharacterById(rs.getInt("seller"));
@@ -775,13 +775,13 @@ public class MTSHandler extends AbstractMaplePacketHandler {
         if (cOi != 0) {
             List<String> retItems = new ArrayList<>();
 
-            for (Pair<Integer, String> itemPair : ii.getAllItems()) {
-                if (itemPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                    retItems.add(" itemid=" + itemPair.getLeft() + " OR ");
+            for (Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
+                if (itemEntry.getValue().toLowerCase().contains(search.toLowerCase())) {
+                    retItems.add(" itemid=" + itemEntry.getKey() + " OR ");
                 }
             }
             listaitems += " AND (";
-            if (retItems != null && !retItems.isEmpty()) {
+            if (!retItems.isEmpty()) {
                 for (String singleRetItem : retItems) {
                     listaitems += singleRetItem;
                 }

@@ -259,7 +259,7 @@ public class CPUSampler {
         }
 
         private double getPercentage(int total) {
-            return Math.round((((double) count) / total) * 10000.0) / 100.0;
+            return Math.round((((double) count) / total) * 10000.0d) / 100.0d;
         }
 
         public String toString(int totalInvoations, int traceLength) {

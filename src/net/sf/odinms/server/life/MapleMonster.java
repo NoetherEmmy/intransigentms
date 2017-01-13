@@ -30,7 +30,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private boolean controllerHasAggro, controllerKnowsAboutAggro;
     private final Collection<AttackerEntry> attackers = new ArrayList<>();
     private EventInstanceManager eventInstance = null;
-    private final Collection<MonsterListener> listeners = new ArrayList<>();
+    private final List<MonsterListener> listeners = new ArrayList<>();
     private MapleCharacter highestDamageChar;
     private final Map<MonsterStatus, MonsterStatusEffect> stati = new LinkedHashMap<>();
     private final List<MonsterStatusEffect> activeEffects = new ArrayList<>();
@@ -409,8 +409,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (eventInstance != null) {
             eventInstance.unregisterMonster(this);
         }
-        for (MonsterListener listener : listeners.toArray(new MonsterListener[listeners.size()])) {
-            listener.monsterKilled(this);
+        synchronized (listeners) {
+            for (MonsterListener listener : listeners) { //.toArray(new MonsterListener[listeners.size()])
+                listener.monsterKilled(this);
+            }
         }
         MapleCharacter ret = highestDamageChar;
         highestDamageChar = null;
@@ -1316,12 +1318,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             MapleCharacter highest = null;
             int highestDamage = 0;
             Map<MapleCharacter, Integer> expMap = new ArrayMap<>(6);
-            for (Entry<MapleCharacter, OnePartyAttacker> attacker : attackers_.entrySet()) {
+            for (Map.Entry<MapleCharacter, OnePartyAttacker> attacker : attackers_.entrySet()) {
                 MapleParty party = attacker.getValue().lastKnownParty;
                 double averagePartyLevel = 0.0d;
                 List<MapleCharacter> expApplicable = new ArrayList<>();
                 for (MaplePartyCharacter partychar : party.getMembers()) {
-                    if (attacker.getKey().getLevel() - partychar.getLevel() <= 5 || getLevel() - partychar.getLevel() <= 5) {
+                    //if (attacker.getKey().getLevel() - partychar.getLevel() <= 15 || getLevel() - partychar.getLevel() <= 15) {
                         MapleCharacter pchr = cserv.getPlayerStorage().getCharacterByName(partychar.getName());
                         if (pchr != null) {
                             if (pchr.isAlive() && pchr.getMap() == map) {
@@ -1329,7 +1331,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                                 averagePartyLevel += pchr.getLevel();
                             }
                         }
-                    }
+                    //}
                 }
                 double expBonus = 1.0d;
                 if (expApplicable.size() > 1) {
@@ -1353,7 +1355,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     }
                     double expWeight = (expReceiver == attacker.getKey() ? 2.0d : 1.0d);
                     double levelMod = expReceiver.getLevel() / averagePartyLevel;
-                    if (levelMod > 1.0d || this.attackers.containsKey(expReceiver.getId())) {
+                    if (levelMod > 1.0d || attackers.containsKey(expReceiver.getId())) {
                         levelMod = 1.0d;
                     }
                     iexp += (int) Math.round(expFraction * expWeight * levelMod);

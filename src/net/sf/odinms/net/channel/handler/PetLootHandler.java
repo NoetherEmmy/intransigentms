@@ -37,9 +37,9 @@ public class PetLootHandler extends AbstractMaplePacketHandler {
                 }
                 double distance = pet.getPos().distanceSq(mapitem.getPosition());
                 c.getPlayer().getCheatTracker().checkPickupAgain();
-                if (distance > 90000.0) { // 300^2, 550 is approximately the range of ultimates
+                if (distance > 90000.0d) { // 300^2, 550 is approximately the range of ultimates
                     c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.ITEMVAC);
-                } else if (distance > 22500.0) {
+                } else if (distance > 22500.0d) {
                     c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.SHORT_ITEMVAC);
                 }
                 if (mapitem.getMeso() > 0) {

@@ -162,11 +162,11 @@ public class MobSkill {
                         ypos = (int) monster.getPosition().getY();
                         switch (mobId) {
                             case 8500003: // Pap bomb high
-                                toSpawn.setFh((int) Math.ceil(Math.random() * 19.0));
+                                toSpawn.setFh((int) Math.ceil(Math.random() * 19.0d));
                                 ypos = -590;
                             case 8500004: // Pap bomb
                                 //Spawn between -500 and 500 from the monsters X position
-                                xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0) - 500);
+                                xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0d) - 500);
                                 if (ypos != -590) {
                                     ypos = (int) monster.getPosition().getY();
                                 }
@@ -176,7 +176,7 @@ public class MobSkill {
                                     ypos = 78;
                                     xpos = (int) (0 + Math.ceil(Math.random() * 5)) + ((Math.ceil(Math.random() * 2) == 1) ? 180 : 0);
                                 } else {
-                                    xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0) - 500);
+                                    xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0d) - 500);
                                 }
                                 break;
                         }
@@ -313,7 +313,7 @@ public class MobSkill {
     }
 
     public boolean makeChanceResult() {
-        return prop == 1.0 || Math.random() < prop;
+        return prop == 1.0d || Math.random() < prop;
     }
 
     private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {

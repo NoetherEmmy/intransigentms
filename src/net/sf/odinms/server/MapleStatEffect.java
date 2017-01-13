@@ -52,7 +52,7 @@ public class MapleStatEffect implements Serializable {
 
     public MapleStatEffect() {
     }
-    
+
     private MapleStatEffect(MapleStatEffect mse) {
         this.watk = mse.getWatk();
         this.matk = mse.getMatk();
@@ -131,13 +131,13 @@ public class MapleStatEffect implements Serializable {
 
         ret.sourceid = sourceid;
         ret.skill = skill;
-        
+
         //
         if (ret.skill && ret.sourceid == 1201006) {
             ret.mobCount *= 2; // Doubling the number of mobs potentially affected by Threaten
         }
         //
-        
+
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
@@ -184,7 +184,7 @@ public class MapleStatEffect implements Serializable {
         ret.itemCon = MapleDataTool.getInt("itemCon", source, 0);
         ret.itemConNo = MapleDataTool.getInt("itemConNo", source, 0);
         ret.moveTo = MapleDataTool.getInt("moveTo", source, -1);
-        
+
         if (ret.sourceid == 2321006) { // Making Resurrection consume 1 Elan Vital
             ret.itemCon = 4031485;
             ret.itemConNo = 1;
@@ -343,7 +343,7 @@ public class MapleStatEffect implements Serializable {
                     statups.add(new Pair<>(MapleBuffStat.MDEF, (int) ret.mdef));
                     break;
                 case 1311006: // Dragon Roar
-                    ret.hpR = -x / 100.0;
+                    ret.hpR = -x / 100.0d;
                     break;
                 case 1311008: // Dragon Blood
                     statups.add(new Pair<>(MapleBuffStat.DRAGONBLOOD, ret.x));
@@ -510,7 +510,7 @@ public class MapleStatEffect implements Serializable {
 
         return ret;
     }
-    
+
     public void applyPassive(MapleCharacter applyto, MapleMapObject obj) {
         if (makeChanceResult()) {
             switch (sourceid) {
@@ -602,7 +602,7 @@ public class MapleStatEffect implements Serializable {
                 final MapleCharacter attacker = applyFrom;
                 final Random rand = new Random();
                 final double multiplier = (double) getDamage() / 100.0d;
-                
+
                 TimerManager tMan = TimerManager.getInstance();
                 final ScheduledFuture<?> ninjaTask = tMan.register(() -> {
                     final int min = attacker.calculateMinBaseDamage(attacker);
@@ -620,7 +620,7 @@ public class MapleStatEffect implements Serializable {
                            }
                        });
                 }, 800);
-                
+
                 tMan.schedule(() -> ninjaTask.cancel(false), getDuration());
             }
         }
@@ -822,14 +822,8 @@ public class MapleStatEffect implements Serializable {
         }
         // Time Leap
         if (isTimeLeap()) {
-            Set<Integer> disabledSkills = null;
-            if (applyTo.getPartyQuest() != null) {
-                if (applyTo.getPartyQuest().getMapInstance(applyTo.getMap()) != null) {
-                    disabledSkills = applyTo.getPartyQuest().getMapInstance(applyTo.getMap()).readDisabledSkills();
-                }
-            }
             for (PlayerCoolDownValueHolder i : applyTo.getAllCooldowns()) {
-                if (i.skillId != 5121010 && (disabledSkills == null || !disabledSkills.contains(i.skillId))) {
+                if (i.skillId != 5121010) {
                     applyTo.removeCooldown(i.skillId);
                 }
             }
@@ -1134,7 +1128,7 @@ public class MapleStatEffect implements Serializable {
                     Pair<MapleBuffStat, Integer> statup = localStatups.get(i);
                     if (statup.getLeft() == MapleBuffStat.WATK) {
                         alreadyHasWatk = true;
-                        // 3 * skillLevel + casterLevel / 1.3
+                        // 3 * skillLevel + casterLevel / 1.3d
                         int watt = (int) ((3.0d * applyFrom.getSkillLevel(SkillFactory.getSkill(localSourceId))) + (applyFrom.getLevel() / 1.3d));
                         localStatups.set(i, new Pair<>(MapleBuffStat.WATK, watt));
                         break;
@@ -1306,7 +1300,7 @@ public class MapleStatEffect implements Serializable {
             final CancelEffectAction cancelAction = new CancelEffectAction(applyTo, this, startTime);
             final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
             applyTo.registerEffect(this, startTime, schedule);
-            
+
             if (manaReflectionDef != null) {
                 localStatups.addAll(manaReflectionDef);
             }
@@ -1350,7 +1344,7 @@ public class MapleStatEffect implements Serializable {
                     hpchange += hp;
                 }
             } else { // Assumption: this is heal.
-                hpchange += makeHealHP((double) hp / 100.0, (double) applyfrom.getTotalMagic(), 3.0, 5.0);
+                hpchange += makeHealHP((double) hp / 100.0d, (double) applyfrom.getTotalMagic(), 3.0d, 5.0d);
             }
         }
         if (hpR != 0) {
@@ -1363,7 +1357,7 @@ public class MapleStatEffect implements Serializable {
             }
         }
         if (isChakra()) {
-            hpchange += makeHealHP(getY() / 100.0, applyfrom.getTotalLuk(), 2.3, 3.5);
+            hpchange += makeHealHP(getY() / 100.0d, applyfrom.getTotalLuk(), 2.3d, 3.5d);
         }
         return hpchange;
     }
@@ -1388,7 +1382,7 @@ public class MapleStatEffect implements Serializable {
         }
         if (primary) {
             if (mpCon != 0) {
-                double mod = 1.0;
+                double mod = 1.0d;
                 boolean isAFpMage = applyfrom.getJob().isA(MapleJob.FP_MAGE);
                 if (isAFpMage || applyfrom.getJob().isA(MapleJob.IL_MAGE)) {
                     ISkill amp;
@@ -1400,7 +1394,7 @@ public class MapleStatEffect implements Serializable {
                     int ampLevel = applyfrom.getSkillLevel(amp);
                     if (ampLevel > 0) {
                         MapleStatEffect ampStat = amp.getEffect(ampLevel);
-                        mod = ampStat.getX() / 100.0;
+                        mod = ampStat.getX() / 100.0d;
                     }
                 }
                 mpchange -= mpCon * mod;
@@ -1416,7 +1410,7 @@ public class MapleStatEffect implements Serializable {
         if (!skill && chr.getJob().isA(MapleJob.HERMIT)) {
             MapleStatEffect alchemistEffect = getAlchemistEffect(chr);
             if (alchemistEffect != null) {
-                return (int) (val * ((withX ? alchemistEffect.getX() : alchemistEffect.getY()) / 100.0));
+                return (int) (val * ((withX ? alchemistEffect.getX() : alchemistEffect.getY()) / 100.0d));
             }
         }
         return val;
@@ -1490,7 +1484,7 @@ public class MapleStatEffect implements Serializable {
     public short getMp() {
         return mp;
     }
-    
+
     public double getHpR() {
         return this.hpR;
     }
@@ -1498,7 +1492,7 @@ public class MapleStatEffect implements Serializable {
     public double getMpR() {
         return this.mpR;
     }
-    
+
     public short getHpCon() {
         return this.hpCon;
     }
@@ -1506,23 +1500,23 @@ public class MapleStatEffect implements Serializable {
     public short getMpCon() {
         return this.mpCon;
     }
-    
+
     public int getMoveTo() {
         return this.moveTo;
     }
-    
+
     public int getIProp() {
         return this.iProp;
     }
-    
+
     public int getItemCon() {
         return this.itemCon;
     }
-    
+
     public int getItemConNo() {
         return this.itemConNo;
     }
-    
+
     public Point getLt() {
         return this.lt;
     }
@@ -1534,11 +1528,11 @@ public class MapleStatEffect implements Serializable {
     public int getMobCount() {
         return this.mobCount;
     }
-    
+
     public List<MapleDisease> getCureDebuffs() {
         return this.cureDebuffs;
     }
-    
+
     public short getWatk() {
         return watk;
     }
@@ -1706,7 +1700,7 @@ public class MapleStatEffect implements Serializable {
     private boolean isHeroWill() {
         return skill && (sourceid == 1121011 || sourceid == 1221012 || sourceid == 1321010 || sourceid == 2121008 || sourceid == 2221008 || sourceid == 2321009 || sourceid == 3121009 || sourceid == 3221008 || sourceid == 4121009 || sourceid == 4221008 || sourceid == 5121008 || sourceid == 5221010);
     }
-    
+
     private boolean isHolySymbol() {
         return skill && sourceid == 2311003;
     }
@@ -1722,12 +1716,12 @@ public class MapleStatEffect implements Serializable {
     public boolean removeStatup(final MapleBuffStat mbs) {
         return statups.removeIf(s -> s.getLeft().equals(mbs));
     }
-    
+
     //
     public boolean isRecovery() {
         return skill && sourceid == 1001;
     }
-    
+
     public boolean isMagicArmor() {
         return skill && sourceid == 2001003;
     }
@@ -1838,7 +1832,7 @@ public class MapleStatEffect implements Serializable {
     public double getProp() {
         return iProp;
     }
-    
+
     public void doubleDuration() {
         this.duration *= 2;
     }

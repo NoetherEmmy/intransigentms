@@ -47,13 +47,13 @@ public class PvPLibrary {
                 break;
             case 1001004:    // Power Strike
                 skil = SkillFactory.getSkill(1001004);
-                multi = skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0;
+                multi = skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0d;
                 maxHeight = 35;
                 isAoe = false;
                 break;
             case 1001005:    // Slash Blast
                 skil = SkillFactory.getSkill(1001005);
-                multi = skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0;
+                multi = skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0d;
                 maxHeight = 35;
                 isAoe = false;
                 break;
@@ -61,8 +61,8 @@ public class PvPLibrary {
                 skil = SkillFactory.getSkill(2001004);
                 multi = skil.getEffect(player.getSkillLevel(skil)).getMatk();
                 double mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
-                pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
-                int min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
+                pvpDamage = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d);
+                int min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
                 maxDis = 200;
                 maxHeight = 35;
@@ -73,8 +73,8 @@ public class PvPLibrary {
                 skil = SkillFactory.getSkill(2001005);
                 multi = (skil.getEffect(player.getSkillLevel(skil)).getMatk());
                 mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
-                pvpDamage = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8);
-                min = (int) ((matk * 0.8) + (luk / 4) / 18 * multi * 0.8 * mastery);
+                pvpDamage = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d);
+                min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
                 maxHeight = 35;
                 isAoe = false;
@@ -88,13 +88,13 @@ public class PvPLibrary {
                 break;
             case 3001005:    // Double Shot
                 skil = SkillFactory.getSkill(3001005);
-                multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0);
+                multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0d);
                 maxHeight = 35;
                 isAoe = false;
                 break;
             case 4001334:    // Double Stab
                 skil = SkillFactory.getSkill(4001334);
-                multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0);
+                multi = (skil.getEffect(player.getSkillLevel(skil)).getDamage() / 100.0d);
                 maxHeight = 35;
                 isAoe = false;
                 break;

@@ -15,6 +15,7 @@ import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.life.MapleNPC;
 import net.sf.odinms.tools.MockIOSession;
 import net.sf.odinms.tools.StringUtil;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -61,7 +62,13 @@ public class MapleMapFactory {
                 String mapName = getMapName(mapid);
 
                 MapleData mapData = source.getData(mapName);
-                if (mapData == null) System.err.println(mapName);
+                if (mapData == null) {
+                    throw new NullPointerException(
+                        "No mapData available for mapName: " +
+                            mapName +
+                            ", source.getData(mapName) == null"
+                    );
+                }
                 float monsterRate = 0.0f;
                 if (respawns) {
                     MapleData mobRate = mapData.getChildByPath("info/mobRate");
@@ -177,7 +184,7 @@ public class MapleMapFactory {
                             }
                             int mobTime = MapleDataTool.getInt("mobTime", life, 0);
                             if (monster.isBoss()) {
-                                mobTime += mobTime / 10 * (2.5d + 10 * Math.random());
+                                mobTime += (mobTime / 10) * (2.5d + 10.0d * Math.random());
                             }
                             if (mobTime == -1 && respawns) { // Does not respawn, force spawn once
                                 map.spawnMonster(monster);

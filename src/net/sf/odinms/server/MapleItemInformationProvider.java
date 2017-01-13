@@ -35,9 +35,9 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, String> msgCache = new HashMap<>();
     protected final Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
     protected final Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
-    protected final List<Pair<Integer, String>> itemNameCache = new ArrayList<>();
     protected final Map<Integer, Integer> getMesoCache = new HashMap<>();
     protected final Map<Integer, Integer> getExpCache = new HashMap<>();
+    protected final Map<Integer, Boolean> isQuestItemCache = new HashMap<>();
     private static final Random rand = new Random();
     private static final List<List<Integer>> maleFaceCache = new ArrayList<>();
     private static final List<List<Integer>> femaleFaceCache = new ArrayList<>();
@@ -49,6 +49,7 @@ public class MapleItemInformationProvider {
     private static boolean hairsCached = false;
     private static final Map<String, Integer> cashEquips = new HashMap<>();
     private static boolean cashEquipsCached = false;
+    private boolean namesCached = false;
 
     /** Creates a new instance of MapleItemInformationProvider */
     protected MapleItemInformationProvider() {
@@ -70,17 +71,17 @@ public class MapleItemInformationProvider {
         return instance;
     }
 
-    /* returns the inventory type for the specified item id */
+    /** Returns the inventory type for the specified item ID. */
     public MapleInventoryType getInventoryType(int itemId) {
         if (inventoryTypeCache.containsKey(itemId)) {
             return inventoryTypeCache.get(itemId);
         }
         MapleInventoryType ret;
         String idStr = "0" + String.valueOf(itemId);
-        // first look in items...
+        // First look in items
         MapleDataDirectoryEntry root = itemData.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            // we should have .img files here beginning with the first 4 IID
+            // We should have .img files here beginning with the first 4 IID
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
                     ret = MapleInventoryType.getByWZName(topDir.getName());
@@ -93,7 +94,7 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        // not found? maybe its equip...
+        // Not found? maybe it's an equip
         root = equipData.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
@@ -108,17 +109,17 @@ public class MapleItemInformationProvider {
         inventoryTypeCache.put(itemId, ret);
         return ret;
     }
-    
+
     public List<Pair<Integer, String>> getAllConsume() {
         return getAllConsume('\0');
     }
-    
+
     public List<Pair<Integer, String>> getAllConsume(char initial) {
         List<Pair<Integer, String>> itemPairs = new ArrayList<>();
         MapleData itemsData;
-        
+
         itemsData = stringData.getData("Consume.img");
-        
+
         if (Character.isLetter(initial)) {
             initial = Character.toUpperCase(initial);
             for (MapleData itemFolder : itemsData.getChildren()) {
@@ -196,15 +197,15 @@ public class MapleItemInformationProvider {
         }
         return itemPairs;
     }
-    
+
     public Pair<Integer, String> getConsumeByName(String searchstring) {
         Pair<Integer, String> ret = null;
         MapleData itemsData;
-        
+
         itemsData = stringData.getData("Consume.img");
-        
+
         if (searchstring.isEmpty()) {
-            return ret;
+            return null;
         }
         searchstring = searchstring.toUpperCase();
         for (MapleData itemFolder : itemsData.getChildren()) {
@@ -235,18 +236,18 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        
+
         return ret;
     }
-    
+
     public List<Pair<Integer, String>> getAllEqp() {
         return getAllEqp('\0');
     }
-    
+
     public List<Pair<Integer, String>> getAllEqp(char initial) {
         List<Pair<Integer, String>> itemPairs = new ArrayList<>();
         MapleData itemsData;
-        
+
         itemsData = stringData.getData("Eqp.img").getChildByPath("Eqp");
         if (Character.isLetter(initial)) {
             initial = Character.toUpperCase(initial);
@@ -331,15 +332,15 @@ public class MapleItemInformationProvider {
         }
         return itemPairs;
     }
-    
+
     public Pair<Integer, String> getEqpByName(String searchstring) {
         Pair<Integer, String> ret = null;
         MapleData itemsData;
-        
+
         itemsData = stringData.getData("Eqp.img").getChildByPath("Eqp");
-        
+
         if (searchstring.isEmpty()) {
-            return ret;
+            return null;
         }
         searchstring = searchstring.toUpperCase();
         for (MapleData eqpType : itemsData.getChildren()) {
@@ -372,18 +373,18 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        
+
         return ret;
     }
-    
+
     public List<Pair<Integer, String>> getAllEtc() {
         return getAllEtc('\0');
     }
-    
+
     public List<Pair<Integer, String>> getAllEtc(char initial) {
         List<Pair<Integer, String>> itemPairs = new ArrayList<>();
         MapleData itemsData;
-        
+
         itemsData = stringData.getData("Etc.img").getChildByPath("Etc");
         if (Character.isLetter(initial)) {
             initial = Character.toUpperCase(initial);
@@ -462,19 +463,19 @@ public class MapleItemInformationProvider {
         }
         return itemPairs;
     }
-    
+
     public Pair<Integer, String> getEtcByName(String searchstring) {
         Pair<Integer, String> ret = null;
         MapleData itemsData;
-        
+
         itemsData = stringData.getData("Etc.img").getChildByPath("Etc");
-        
+
         if (searchstring.isEmpty()) {
-            return ret;
+            return null;
         }
         searchstring = searchstring.toUpperCase();
         for (MapleData itemFolder : itemsData.getChildren()) {
-            boolean hasicon = false;
+            boolean hasIcon = false;
             String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
             if (itemName.toUpperCase().startsWith(searchstring)) {
                 int itemId = Integer.parseInt(itemFolder.getName());
@@ -488,11 +489,11 @@ public class MapleItemInformationProvider {
                 }
                 for (MapleData data : info.getChildren()) {
                     if (data.getName().equalsIgnoreCase("icon")) {
-                        hasicon = true;
+                        hasIcon = true;
                         break;
                     }
                 }
-                if (hasicon) {
+                if (hasIcon) {
                     if (ret == null) {
                         ret = new Pair<>(itemId, itemName);
                     } else if (ret.getRight().length() > itemName.length()) {
@@ -501,29 +502,29 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        
+
         return ret;
     }
 
-    public List<Pair<Integer, String>> getAllItems() {
-        if (!itemNameCache.isEmpty()) {
-            return itemNameCache;
+    public Map<Integer, String> getAllItems() {
+        if (namesCached) {
+            return nameCache;
         }
-        List<Pair<Integer, String>> itemPairs = new ArrayList<>();
+
         MapleData itemsData;
 
         itemsData = stringData.getData("Cash.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             int itemId = Integer.parseInt(itemFolder.getName());
             String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
-            itemPairs.add(new Pair<>(itemId, itemName));
+            nameCache.put(itemId, itemName);
         }
 
         itemsData = stringData.getData("Consume.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             int itemId = Integer.parseInt(itemFolder.getName());
             String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
-            itemPairs.add(new Pair<>(itemId, itemName));
+            nameCache.put(itemId, itemName);
         }
 
         itemsData = stringData.getData("Eqp.img").getChildByPath("Eqp");
@@ -531,7 +532,7 @@ public class MapleItemInformationProvider {
             for (MapleData itemFolder : eqpType.getChildren()) {
                 int itemId = Integer.parseInt(itemFolder.getName());
                 String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
-                itemPairs.add(new Pair<>(itemId, itemName));
+                nameCache.put(itemId, itemName);
             }
         }
 
@@ -539,23 +540,25 @@ public class MapleItemInformationProvider {
         for (MapleData itemFolder : itemsData.getChildren()) {
             int itemId = Integer.parseInt(itemFolder.getName());
             String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
-            itemPairs.add(new Pair<>(itemId, itemName));
+            nameCache.put(itemId, itemName);
         }
 
         itemsData = stringData.getData("Ins.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             int itemId = Integer.parseInt(itemFolder.getName());
             String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
-            itemPairs.add(new Pair<>(itemId, itemName));
+            nameCache.put(itemId, itemName);
         }
 
         itemsData = stringData.getData("Pet.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             int itemId = Integer.parseInt(itemFolder.getName());
             String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
-            itemPairs.add(new Pair<>(itemId, itemName));
+            nameCache.put(itemId, itemName);
         }
-        return itemPairs;
+
+        namesCached = true;
+        return nameCache;
     }
 
     protected MapleData getStringData(int itemId) {
@@ -629,11 +632,11 @@ public class MapleItemInformationProvider {
     }
 
     protected MapleData getItemData(int itemId) {
-        MapleData ret = null;
+        MapleData ret;
         String idStr = "0" + String.valueOf(itemId);
         MapleDataDirectoryEntry root = itemData.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            // we should have .img files here beginning with the first 4 IID
+            // We should have .img files here beginning with the first 4 IID
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
                     ret = itemData.getData(topDir.getName() + "/" + iFile.getName());
@@ -655,7 +658,7 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        return ret;
+        return null;
     }
 
     /** Called by Coco NPC the first time someone starts a conversation with them. */
@@ -665,7 +668,7 @@ public class MapleItemInformationProvider {
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Face")) {
                     topDir.getFiles().stream().map(MapleDataEntry::getName).sorted().forEachOrdered((iFile) -> {
-                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID without leading zeroes.
+                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID w/o leading zeroes.
                         List<List<Integer>> faceLists;
                         if (id >= 20000 && id < 30000) { // Just in case.
                             if ((id / 1000) % 10 == 0) {
@@ -679,8 +682,16 @@ public class MapleItemInformationProvider {
                             if (!faceLists.isEmpty()) {
                                 faceList = faceLists.get(faceLists.size() - 1);
                             }
-                            // Match condition is that all decimal places EXCEPT for the hundreds place match. Simpler than it looks.
-                            if (faceList != null && (faceList.size() < 300 || faceList.stream().anyMatch(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(id - (id % 1000 / 100 * 100))))) {
+                            // Match condition is that all decimal places EXCEPT for the hundreds place match.
+                            if (
+                                faceList != null &&
+                                (faceList.size() < 300 ||
+                                    faceList.stream().anyMatch(x ->
+                                        Integer.valueOf(x - (x % 1000 / 100 * 100))
+                                               .equals(id - (id % 1000 / 100 * 100))
+                                    )
+                                )
+                            ) {
                                 faceList.add(id);
                             } else {
                                 List<Integer> newFaceList = new ArrayList<>();
@@ -703,7 +714,7 @@ public class MapleItemInformationProvider {
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Hair")) {
                     topDir.getFiles().stream().map(MapleDataEntry::getName).sorted().forEachOrdered((iFile) -> {
-                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID without leading zeroes.
+                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID w/o leading zeroes.
                         List<List<Integer>> hairLists;
                         if (id >= 30000 && id < 40000) { // Filtering out IDs that cannot be rendered by the client.
                             if ((id / 1000) % 10 == 0) {
@@ -717,7 +728,11 @@ public class MapleItemInformationProvider {
                             if (!hairLists.isEmpty()) {
                                 hairList = hairLists.get(hairLists.size() - 1);
                             }
-                            if (hairList != null && (hairList.size() < 300 || hairList.stream().anyMatch(x -> Integer.valueOf(x / 10).equals(id / 10)))) {
+                            if (
+                                hairList != null &&
+                                (hairList.size() < 300 ||
+                                    hairList.stream().anyMatch(x -> Integer.valueOf(x / 10).equals(id / 10)))
+                            ) {
                                 hairList.add(id);
                             } else {
                                 List<Integer> newHairList = new ArrayList<>();
@@ -816,7 +831,13 @@ public class MapleItemInformationProvider {
             }
             for (List<Integer> faceList : cache) {
                 if (faceList.contains(id)) {
-                    ret.addAll(faceList.stream().filter(x -> Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)).collect(Collectors.toList()));
+                    ret.addAll(
+                        faceList.stream()
+                                .filter(x ->
+                                    Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)
+                                )
+                                .collect(Collectors.toList())
+                    );
                     break;
                 }
             }
@@ -834,7 +855,13 @@ public class MapleItemInformationProvider {
             }
             for (List<Integer> hairList : cache) {
                 if (hairList.contains(id)) {
-                    ret.addAll(hairList.stream().filter(x -> Integer.valueOf(x / 10).equals(match)).collect(Collectors.toList()));
+                    ret.addAll(
+                        hairList.stream()
+                                .filter(x ->
+                                    Integer.valueOf(x / 10).equals(match)
+                                )
+                                .collect(Collectors.toList())
+                    );
                     break;
                 }
             }
@@ -842,10 +869,7 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    /** returns the maximum of items in one slot
-     * @param c
-     * @param itemId
-     * @return short */
+    /** Returns the maximum of items in one slot. */
     public short getSlotMax(MapleClient c, int itemId) {
         if (slotMaxCache.containsKey(itemId)) {
             return slotMaxCache.get(itemId);
@@ -861,9 +885,11 @@ public class MapleItemInformationProvider {
                     ret = 100;
                 }
             } else {
+                /*
                 if (isThrowingStar(itemId) || isBullet(itemId) || (MapleDataTool.getInt(smEntry) == 0)) {
                     ret = 1;
                 }
+                */
                 ret = (short) MapleDataTool.getInt(smEntry);
                 if (isThrowingStar(itemId)) {
                     ret += c.getPlayer().getSkillLevel(SkillFactory.getSkill(4100000)) * 10;
@@ -992,7 +1018,7 @@ public class MapleItemInformationProvider {
         equipStatsCache.put(itemId, ret);
         return ret;
     }
-    
+
     public boolean isCash(int itemId) {
         if (cashCache.containsKey(itemId)) {
             return cashCache.get(itemId);
@@ -1218,7 +1244,12 @@ public class MapleItemInformationProvider {
             Equip nEquip = (Equip) equip;
             Map<String, Integer> stats = this.getEquipStats(scrollId);
             Map<String, Integer> eqstats = this.getEquipStats(equip.getItemId());
-            if ((nEquip.getUpgradeSlots() > 0 || isCleanSlate(scrollId) || scrollId == 2049004) && Math.ceil(Math.random() * 100.0d) <= stats.get("success") || isGM || noFail) {
+            if (
+                (nEquip.getUpgradeSlots() > 0 || isCleanSlate(scrollId) || scrollId == 2049004) &&
+                Math.ceil(Math.random() * 100.0d) <= stats.get("success") ||
+                isGM ||
+                noFail
+            ) {
                 switch (scrollId) {
                     case 2049000:
                     case 2049001:
@@ -1362,7 +1393,7 @@ public class MapleItemInformationProvider {
                 if (!usingWhiteScroll && !isCleanSlate(scrollId) && nEquip.getUpgradeSlots() > 0) {
                     nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
                 }
-                if (Math.ceil(1.0 + Math.random() * 100.0d) < stats.get("cursed")) {
+                if (Math.ceil(1.0d + Math.random() * 100.0d) < stats.get("cursed")) {
                     return null;
                 }
             }
@@ -1411,8 +1442,8 @@ public class MapleItemInformationProvider {
                     nEquip.setMp((short) stat.getValue().intValue());
                 } else if (stat.getKey().equals("tuc")) {
                     nEquip.setUpgradeSlots((byte) stat.getValue().intValue());
-                } else if (stat.getKey().equals("afterImage")) {
-                }
+                }/* else if (stat.getKey().equals("afterImage")) {
+                }*/
             }
         }
         equipCache.put(equipId, nEquip);
@@ -1424,14 +1455,14 @@ public class MapleItemInformationProvider {
             return 0;
         }
         // vary no more than ceil of 10% of stat
-        int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
+        int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1d), maxRange);
         return (short) ((defaultValue - lMaxRange) + Math.floor(rand.nextDouble() * (lMaxRange * 2 + additionalStats)));
     }
 
     public Equip randomizeStats(MapleClient c, Equip equip) {
         short x = 1;
         ChannelServer cserv = c.getChannelServer();
-        if (cserv.isGodlyItems() && Math.ceil(Math.random() * 100.0) <= cserv.getGodlyItemRate()) {
+        if (cserv.isGodlyItems() && Math.ceil(Math.random() * 100.0d) <= cserv.getGodlyItemRate()) {
             x = cserv.getItemMultiplier();
         }
 
@@ -1655,7 +1686,7 @@ public class MapleItemInformationProvider {
         ret.put("success", MapleDataTool.getInt("success", info, 0));
 
         MapleData skill = info.getChildByPath("skill");
-        int curskill = 1;
+        int curskill;
         int size = skill.getChildren().size();
         for (int i = 0; i < size; ++i) {
             curskill = MapleDataTool.getInt(Integer.toString(i), skill, 0);
@@ -1677,7 +1708,7 @@ public class MapleItemInformationProvider {
     public List<Integer> petsCanConsume(int itemId) {
         List<Integer> ret = new ArrayList<>();
         MapleData data = getItemData(itemId);
-        int curPetId = 0;
+        int curPetId;
         int size = data.getChildren().size();
         for (int i = 0; i < size; ++i) {
             curPetId = MapleDataTool.getInt("spec/" + Integer.toString(i), data, 0);
@@ -1688,7 +1719,6 @@ public class MapleItemInformationProvider {
         }
         return ret;
     }
-    protected final Map<Integer, Boolean> isQuestItemCache = new HashMap<>();
 
     public boolean isQuestItem(int itemId) {
         if (isQuestItemCache.containsKey(itemId)) {

@@ -32,7 +32,7 @@ private static final long FT_UT_OFFSET2 = 116444448000000000L; // PST
      */
     public static int getItemTimestamp(long realTimestamp) {
         int time = (int) ((realTimestamp - REAL_YEAR2000) / 1000 / 60); // convert to minutes
-        return (int) (time * 35.762787) + ITEM_YEAR2000;
+        return (int) (time * 35.762787d) + ITEM_YEAR2000;
     }
 
     /**

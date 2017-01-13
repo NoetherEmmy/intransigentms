@@ -39,7 +39,7 @@ public class MTSItemInfo {
     }
 
     public int getTaxes() {
-        return 110 + (int) (price * 0.1);
+        return 110 + (int) (price * 0.1d);
     }
 
     public int getID() {

@@ -15,15 +15,16 @@ public class NPCScriptManager extends AbstractScriptManager {
     private final Map<MapleClient, NPCConversationManager> cms = new HashMap<>();
     private final Map<MapleClient, NPCScript> scripts = new HashMap<>();
     private static final NPCScriptManager instance = new NPCScriptManager();
-    
+    private final Map<Pair<Integer, Integer>, Integer> npcTalk = new HashMap<>();
+
     public static synchronized NPCScriptManager getInstance() {
         return instance;
     }
-    
+
     public void start(MapleClient c, int npc) {
         start(c, npc, null, null);
     }
-    
+
     public void start(MapleClient c, int npc, String filename, MapleCharacter chr) {
         try {
             NPCConversationManager cm = new NPCConversationManager(c, npc, chr, filename);
@@ -49,24 +50,24 @@ public class NPCScriptManager extends AbstractScriptManager {
             scripts.put(c, ns);
             iv.invokeFunction("start");
         } catch (Exception e) {
-            log.error("Error executing NPC script: " + getCM(c).getFileName(), e);
+            log.error("Error executing NPC script: " + (cms.containsKey(c) ? cms.get(c).getFileName() : "null"), e);
             dispose(c);
             cms.remove(c);
         }
     }
-    
+
     public void action(MapleClient c, byte mode, byte type, int selection) {
         NPCScript ns = scripts.get(c);
         if (ns != null) {
             try {
                 ns.action(mode, type, selection);
             } catch (Exception e) {
-                log.error("Error executing NPC script: " + getCM(c).getFileName(), e);
+                log.error("Error executing NPC script: " + (cms.containsKey(c) ? cms.get(c).getFileName() : "null"), e);
                 dispose(c);
             }
         }
     }
-    
+
     public void dispose(NPCConversationManager cm) {
         cms.remove(cm.getC());
         scripts.remove(cm.getC());
@@ -76,28 +77,26 @@ public class NPCScriptManager extends AbstractScriptManager {
             resetContext("npc/" + cm.getNpc() + ".js", cm.getC());
         }
     }
-    
+
     public void dispose(MapleClient c) {
         NPCConversationManager npccm = cms.get(c);
         if (npccm != null) {
             dispose(npccm);
         }
     }
-    
+
     public NPCConversationManager getCM(MapleClient c) {
         return cms.get(c);
     }
-    
-    private final Map<Pair<Integer, Integer>, Integer> npcTalk = new HashMap<>();
-    
+
     public int getNpcTalkTimes(int chrid, int npc) {
-        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc); // first time <3 looks wrong.
+        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc); // First time looks wrong.
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }
         return npcTalk.get(pplayer);
     }
-    
+
     public void addNpcTalkTimes(int chrid, int npc) {
         Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
         if (!npcTalk.containsKey(pplayer)) {
@@ -107,7 +106,7 @@ public class NPCScriptManager extends AbstractScriptManager {
         npcTalk.remove(pplayer);
         npcTalk.put(pplayer, talk);
     }
-    
+
     public void setNpcTalkTimes(int chrid, int npc, int amount) {
         Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
         if (!npcTalk.containsKey(pplayer)) {
@@ -116,7 +115,7 @@ public class NPCScriptManager extends AbstractScriptManager {
         npcTalk.remove(pplayer);
         npcTalk.put(pplayer, amount);
     }
-    
+
     public List<Integer> listTalkedNpcsByID(int chrid) {
         List<Integer> npcs = new ArrayList<>();
         for (Pair<Integer, Integer> p : npcTalk.keySet()) {
@@ -126,7 +125,7 @@ public class NPCScriptManager extends AbstractScriptManager {
         }
         return npcs;
     }
-    
+
     public List<Integer> listAllTalkedNpcs() {
         List<Integer> npcs = new ArrayList<>();
         for (Pair<Integer, Integer> p : npcTalk.keySet()) {
@@ -134,7 +133,7 @@ public class NPCScriptManager extends AbstractScriptManager {
         }
         return npcs;
     }
-    
+
     public int talkedTimesByNpc(int npc) {
         int i = 0;
         for (Pair<Integer, Integer> p : npcTalk.keySet()) {
@@ -144,4 +143,4 @@ public class NPCScriptManager extends AbstractScriptManager {
         }
         return i;
     }
-}  
+}
