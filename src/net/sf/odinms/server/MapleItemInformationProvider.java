@@ -1401,6 +1401,10 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
+    public Equip getEquipByIdAsEquip(int itemId) {
+        return (Equip) getEquipById(itemId);
+    }
+
     public IItem getEquipById(int equipId) {
         return getEquipById(equipId, -1);
     }
