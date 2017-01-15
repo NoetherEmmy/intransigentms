@@ -20,6 +20,7 @@ import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.*;
 import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.*;
+import net.sf.odinms.tools.DeathLogReader;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.StringUtil;
 
@@ -1111,7 +1112,7 @@ public class GM implements Command {
                 if (victim != null) {
                     victim.changeMap(980000404, 0);
                     mc.dropMessage(victim.getName() + " was jailed!");
-                    victim.dropMessage("You've been jailed bitch.");
+                    victim.dropMessage("You've been jailed.");
                 } else {
                     mc.dropMessage(splitted[1] + " not found!");
                 }
@@ -2336,6 +2337,56 @@ public class GM implements Command {
                 }
                 break;
             }
+            case "!givedeathitems":
+                if (splitted.length < 3) {
+                    mc.dropMessage(
+                        "Syntax: !givedeathitems <deceasedPlayer> <playerToGiveTo> [offset=0] [useCache=false]"
+                    );
+                    return;
+                }
+
+                String deceasedName = splitted[1];
+
+                final MapleCharacter target = cserv.getPlayerStorage().getCharacterByName(splitted[2]);
+                if (target == null) {
+                    mc.dropMessage(
+                        "Could not find the player " +
+                            MapleCharacterUtil.makeMapleReadable(splitted[2]) +
+                            " on your channel"
+                    );
+                    return;
+                }
+
+                int offset = 0;
+                boolean useCache = false;
+                if (splitted.length > 3) {
+                    try {
+                        offset = Integer.parseInt(splitted[3]);
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage("Could not parse integer for optional argument [offset]");
+                        return;
+                    }
+                    if (splitted.length > 4) {
+                        switch (splitted[4].toLowerCase()) {
+                            case "true":
+                            case "yes":
+                                useCache = true;
+                                break;
+                        }
+                    }
+                }
+
+                List<IItem> items;
+                try {
+                    items = DeathLogReader.getInstance().readDeathItems(deceasedName, offset, useCache);
+                } catch (Exception e) {
+                    mc.dropMessage("Retrieving death items failed:");
+                    mc.dropMessage(e.toString());
+                    return;
+                }
+
+                items.forEach(i -> gainItem(target.getClient(), i));
+                break;
         }
     }
 
@@ -2490,7 +2541,56 @@ public class GM implements Command {
             new CommandDefinition("resetpreeventmaps", 3),
             new CommandDefinition("giftvp", 3),
             new CommandDefinition("unregisterallpqmis", 3),
-            new CommandDefinition("reloadpqmiscript", 3)
+            new CommandDefinition("reloadpqmiscript", 3),
+            new CommandDefinition("givedeathitems", 3)
         };
+    }
+
+    private boolean gainItem(MapleClient c, IItem item) {
+        if (item.getQuantity() >= 0) {
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            MapleInventoryType type = ii.getInventoryType(item.getItemId());
+            if (type.equals(MapleInventoryType.EQUIP) && !ii.isThrowingStar(item.getItemId()) && !ii.isBullet(item.getItemId())) {
+                if (!c.getPlayer().getInventory(type).isFull()) {
+                    MapleInventoryManipulator.addFromDrop(c, item, false);
+                } else {
+                    c.getPlayer().dropMessage(
+                        "Your " +
+                            type.name().toLowerCase() +
+                            " inventory is full. " +
+                            ii.getName(item.getItemId()) +
+                            "(s) have been added to your unclaimed items list. Please make room in your " +
+                            type.name().toLowerCase() +
+                            " inventory, and then type @mapleadmin into chat to claim your items."
+                    );
+                    c.getPlayer().addUnclaimedItem(item);
+                    return false;
+                }
+            } else if (MapleInventoryManipulator.checkSpace(c, item.getItemId(), item.getQuantity(), "")) {
+                if (item.getItemId() >= 5000000 && item.getItemId() <= 5000100) {
+                    if (item.getQuantity() > 1) {
+                        item.setQuantity((short) 1);
+                    }
+                    int petId = MaplePet.createPet(item.getItemId());
+                    MapleInventoryManipulator.addById(c, item.getItemId(), (short) 1, null, petId);
+                } else {
+                    MapleInventoryManipulator.addById(c, item.getItemId(), item.getQuantity());
+                }
+            } else {
+                c.getPlayer().dropMessage(
+                    "Your " +
+                        type.name().toLowerCase() +
+                        " inventory is full. " +
+                        ii.getName(item.getItemId()) +
+                        "(s) have been added to your unclaimed items list. Please make room in your " +
+                        type.name().toLowerCase() +
+                        " inventory, and then type @mapleadmin into chat to claim your items."
+                );
+                c.getPlayer().addUnclaimedItem(item);
+                return false;
+            }
+        }
+
+        return true;
     }
 }

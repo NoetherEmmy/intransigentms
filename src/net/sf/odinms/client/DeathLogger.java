@@ -61,6 +61,28 @@ public final class DeathLogger {
         });
         toWrite.add("Mesos: " + p.getMeso() + ", new paragon level: " + p.getTotalParagonLevel());
         toWrite.add("Cheat summary: " + p.getCheatTracker().getSummary());
+        toWrite.add(
+            "story: " +
+            p.getStory() +
+            " storypoints: " +
+            p.getStoryPoints() +
+            " offensestory: " +
+            p.getOffenseStory() +
+            " buffstory: " +
+            p.getBuffStory()
+        );
+        final StringBuilder fourthJobSkills = new StringBuilder();
+        if (p.getJob().getId() % 10 == 2) { // Fourth job
+            for (int skillId : MapleCharacter.SKILL_IDS) {
+                if (skillId / 10000 == p.getJob().getId()) {
+                    fourthJobSkills.append(skillId)
+                                   .append(", ")
+                                   .append(p.getMasterLevelById(skillId))
+                                   .append("; ");
+                }
+            }
+        }
+        toWrite.add("Fourth job skills: " + fourthJobSkills.toString());
         toWrite.add("");
 
         return LOGGER.write(toWrite);
@@ -165,7 +187,7 @@ public final class DeathLogger {
             .forEach(toWrite::add);
 
         toWrite.add("");
-        
+
         return LOGGER.write(toWrite);
     }
 }

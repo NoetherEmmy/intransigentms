@@ -97,28 +97,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int remainingAp, remainingSp;
     private final int[] savedLocations;
     private int fame;
-    private long lastfametime;
-    private List<Integer> lastmonthfameids;
-    private transient int localmaxhp, localmaxmp;
-    private transient int localstr, localdex, localluk, localint;
+    private long lastFameTime;
+    private List<Integer> lastMonthFameIds;
+    private transient int localMaxHp, localMaxMp;
+    private transient int localStr, localDex, localLuk, localInt;
     private transient int magic, watk;
     private transient int accuracy, avoidability;
     private transient double speedMod, jumpMod;
-    private transient int localmaxbasedamage;
+    private transient int localMaxBaseDamage;
     private int id;
     private MapleClient client;
     private MapleMap map;
     private int initialSpawnPoint;
     private int mapid;
-    private MapleShop shop = null;
-    private IPlayerInteractionManager interaction = null;
-    private MapleStorage storage = null;
+    private MapleShop shop;
+    private IPlayerInteractionManager interaction;
+    private MapleStorage storage;
     private final MaplePet[] pets = new MaplePet[3];
     private ScheduledFuture<?> fullnessSchedule;
     private ScheduledFuture<?> fullnessSchedule_1;
     private ScheduledFuture<?> fullnessSchedule_2;
     private final SkillMacro[] skillMacros = new SkillMacro[5];
-    private MapleTrade trade = null;
+    private MapleTrade trade;
     private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
     private MapleJob job = MapleJob.BEGINNER;
     private int gender;
@@ -129,8 +129,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int itemEffect;
     private int APQScore;
     private MapleParty party;
-    private EventInstanceManager eventInstance = null;
-    private PartyQuest partyQuest = null;
+    private EventInstanceManager eventInstance;
+    private PartyQuest partyQuest;
     private final MapleInventory[] inventory;
     private final Map<MapleQuest, MapleQuestStatus> quests;
     private final Set<MapleMonster> controlled = new LinkedHashSet<>();
@@ -139,30 +139,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 new LinkedHashSet<MapleMapObject>()
             );
     private final Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
-    private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects =
-            new ConcurrentHashMap<>(
-                8,
-                0.8f,
-                2
-            );
+    private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentHashMap<>(8, 0.8f, 2);
     private final HashMap<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
     private final List<MapleDoor> doors = new ArrayList<>();
-    private final Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
+    private final Map<Integer, MapleSummon> summons = new LinkedHashMap<>(5, 0.7f);
     private BuddyList buddylist;
     private final Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>();
     private final CheatTracker anticheat;
     private ScheduledFuture<?> dragonBloodSchedule;
-    private ScheduledFuture<?> mapTimeLimitTask = null;
+    private ScheduledFuture<?> mapTimeLimitTask;
     private int guildid;
     private int guildrank, allianceRank;
-    private MapleGuildCharacter mgc = null;
-    private int paypalnx = 0, maplepoints = 0, cardnx = 0;
+    private MapleGuildCharacter mgc;
+    private int paypalnx, maplepoints, cardnx;
     private boolean incs, inmts;
     private int currentPage = 0, currentType = 0, currentTab = 1;
-    private MapleMessenger messenger = null;
+    private MapleMessenger messenger;
     private int messengerposition = 4;
     private ScheduledFuture<?> hpDecreaseTask;
-    private final List<MapleDisease> diseases = new ArrayList<>();
+    private final List<MapleDisease> diseases = new ArrayList<>(3);
     private ScheduledFuture<?> beholderHealingSchedule;
     private ScheduledFuture<?> beholderBuffSchedule;
     private ScheduledFuture<?> BerserkSchedule;
@@ -179,29 +174,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private boolean smegaEnabled = true;
     private boolean canTalk = true;
     private int zakumLvl;
-    private final List<FakeCharacter> fakes = new ArrayList<>();
+    private final List<FakeCharacter> fakes = new ArrayList<>(2);
     private boolean isfake = false;
     private int clan;
     private int bombpoints;
     private int pvpkills;
     private int pvpdeaths;
-    private int donatePoints = 0;
+    private int donatePoints;
     private MapleMount maplemount;
-    private int gmtext = 0;
-    private int skill = 0;
+    private int gmtext;
+    private int skill;
     private ISkill skil;
     private int maxDis;
-    public int mpoints = 0;
+    public int mpoints;
     private transient int wdef, mdef;
-    private int energybar = 0;
+    private int energybar;
     private long afkTime;
-    private long lastLogin = 0;
+    private long lastLogin;
     private int ringRequest;
     private boolean hasMerchant;
     //
     private final MapleCQuests quest = new MapleCQuests();
     private int story, storypoints, offensestory, buffstory;
-    private Map<Integer, Integer> questkills = new HashMap<>(4, 0.8f);
+    private final Map<Integer, Integer> questKills = new HashMap<>(4, 0.8f);
     private int questidd, queststatus;
     private int returnmap;
     private int trialreturnmap;
@@ -211,14 +206,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private Date lastdailyprize;
     private int votepoints;
 
-    private List<List<Integer>> pastlives = new ArrayList<>();
-    private final List<List<Integer>> newpastlives = new ArrayList<>();
+    private List<List<Integer>> pastlives = new ArrayList<>(5);
+    private final List<List<Integer>> newpastlives = new ArrayList<>(5);
     private int deathcount;
     private MapleMapObject lastdamagesource;
     private int highestlevelachieved = 1;
     private int suicides;
-    private int paragonlevel = 0;
-    private int totalparagonlevel = 0;
+    private int paragonlevel;
+    private int totalparagonlevel;
 
     private int bossreturnmap;
 
@@ -228,46 +223,45 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int eventpoints;
 
     private long lastelanrecharge;
-    private long lastkillonmap = 0L;
+    private long lastkillonmap;
 
     private long laststrengthening;
-    private int deathpenalty = 0;
-    private int deathfactor = 0;
+    private int deathpenalty;
+    private int deathfactor;
     private boolean truedamage;
 
-    private int battleshiphp = 0;
+    private int battleshiphp;
 
-    private int unclaimeditem = 0;
-    private short unclaimeditemquantity = 0;
+    private final List<IItem> unclaimedItems = new ArrayList<>(4);
 
     private boolean hasMagicGuard = false;
-    private ScheduledFuture<?> magicGuardCancelTask = null;
+    private ScheduledFuture<?> magicGuardCancelTask;
 
     private boolean completedallquests = false;
 
     private boolean scpqflag = false;
     private boolean showPqPoints = true;
 
-    private int readingTime = 0;
-    ScheduledFuture<?> readingTask = null;
+    private int readingTime;
+    ScheduledFuture<?> readingTask;
     private int pastLifeExp = 1;
 
     private boolean genderFilter = true;
 
-    private ScheduledFuture<?> forcedWarp = null;
-    private long overflowExp = 0L;
-    private int questCompletion = 0;
+    private ScheduledFuture<?> forcedWarp;
+    private long overflowExp;
+    private int questCompletion;
     private boolean invincible = false;
 
-    private ScheduledFuture<?> bossHpTask = null;
-    private ScheduledFuture<?> bossHpCancelTask = null;
+    private ScheduledFuture<?> bossHpTask;
+    private ScheduledFuture<?> bossHpCancelTask;
     private int initialVotePoints, initialNx;
     private boolean zakDc = false;
 
     private final Map<IItem, Short> buyBacks = new LinkedHashMap<>();
     private boolean showDpm = false;
     private boolean showSnipeDmg = false;
-    private int preEventMap = 0;
+    private int preEventMap;
 
     private long lastSamsara;
     public static final long SAMSARA_COOLDOWN = 3L * 60L * 60L * 1000L;
@@ -518,7 +512,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         rs.close();
         ps.close();
-        ps = con.prepareStatement("SELECT * FROM questkills WHERE characterid = ?");
+        ps = con.prepareStatement("SELECT * FROM questKills WHERE characterid = ?");
         ps.setInt(1, charid);
         rs = ps.executeQuery();
         while (rs.next()) {
@@ -603,11 +597,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps = con.prepareStatement("SELECT `characterid_to`,`when` FROM famelog WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30");
             ps.setInt(1, charid);
             rs = ps.executeQuery();
-            ret.lastfametime = 0;
-            ret.lastmonthfameids = new ArrayList<>(31);
+            ret.lastFameTime = 0;
+            ret.lastMonthFameIds = new ArrayList<>(31);
             while (rs.next()) {
-                ret.lastfametime = Math.max(ret.lastfametime, rs.getTimestamp("when").getTime());
-                ret.lastmonthfameids.add(rs.getInt("characterid_to"));
+                ret.lastFameTime = Math.max(ret.lastFameTime, rs.getTimestamp("when").getTime());
+                ret.lastMonthFameIds.add(rs.getInt("characterid_to"));
             }
             rs.close();
             ps.close();
@@ -650,8 +644,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ret.maplemount.setActive(false);
         }
         ret.lastkillonmap = 0L;
-        ret.unclaimeditem = 0;
-        ret.unclaimeditemquantity = (short) 0;
         ret.preEventMap = 0;
         ret.recalcLocalStats();
         ret.silentEnforceMaxHpMp();
@@ -693,7 +685,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             PreparedStatement ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
             ps.setInt(1, ret.accountid);
             ResultSet rs = ps.executeQuery();
-            rs = ps.executeQuery();
+            //rs = ps.executeQuery();
             if (rs.next()) {
                 ret.getClient().setAccountName(rs.getString("name"));
                 ret.getClient().setAccountPass(rs.getString("password"));
@@ -733,9 +725,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             con.setAutoCommit(false);
             PreparedStatement ps;
             if (update) {
-                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ?, questcompletion = ?, zakdc = ?, lastsamsara = ? WHERE id = ?");
+                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questKills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ?, questcompletion = ?, zakdc = ?, lastsamsara = ? WHERE id = ?");
             } else {
-                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, questcompletion, zakdc, lastsamsara, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questKills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, questcompletion, zakdc, lastsamsara, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -1057,10 +1049,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     ps.executeUpdate();
                 }
                 ps.close();
-                deleteWhereCharacterId(con, "DELETE FROM questkills WHERE characterid = ?");
-                ps = con.prepareStatement("INSERT INTO questkills (`characterid`, `monsterid`, `killcount`) VALUES (?, ?, ?)");
+                deleteWhereCharacterId(con, "DELETE FROM questKills WHERE characterid = ?");
+                ps = con.prepareStatement("INSERT INTO questKills (`characterid`, `monsterid`, `killcount`) VALUES (?, ?, ?)");
                 ps.setInt(1, id);
-                for (Map.Entry<Integer, Integer> e : questkills.entrySet()) {
+                for (Map.Entry<Integer, Integer> e : questKills.entrySet()) {
                     ps.setInt(2, e.getKey());
                     ps.setInt(3, e.getValue());
                     ps.executeUpdate();
@@ -1731,10 +1723,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getQuestKills(int monsterId) {
-        if (!questkills.containsKey(monsterId)) {
+        if (!questKills.containsKey(monsterId)) {
             return -1;
         }
-        return questkills.get(monsterId);
+        return questKills.get(monsterId);
     }
 
     public int getQuestCollected(int itemId) {
@@ -1742,11 +1734,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setQuestKills(int monsterId, int kills) {
-        questkills.put(monsterId, kills);
+        questKills.put(monsterId, kills);
     }
 
     public void doQuestKill(int monsterId) {
-        questkills.computeIfPresent(monsterId, (mid, n) -> n + 1);
+        questKills.computeIfPresent(monsterId, (mid, n) -> n + 1);
     }
 
     public int getQuestId() {
@@ -3022,8 +3014,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         int oldHp = hp;
         if (newhp < 0) {
             newhp = 0;
-        } else if (newhp > localmaxhp) {
-            newhp = localmaxhp;
+        } else if (newhp > localMaxHp) {
+            newhp = localMaxHp;
         }
         this.hp = newhp;
 
@@ -3282,7 +3274,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
                     MapleCharacter other = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterByName(partychar.getName());
                     if (other != null) {
-                        other.getClient().getSession().write(MaplePacketCreator.updatePartyMemberHP(getId(), this.hp, localmaxhp));
+                        other.getClient().getSession().write(MaplePacketCreator.updatePartyMemberHP(getId(), this.hp, localMaxHp));
                     }
                 }
             }
@@ -3307,8 +3299,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setMp(int newmp) {
         if (newmp < 0) {
             newmp = 0;
-        } else if (newmp > localmaxmp) {
-            newmp = localmaxmp;
+        } else if (newmp > localMaxMp) {
+            newmp = localMaxMp;
         }
         this.mp = newmp;
     }
@@ -3660,19 +3652,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getTotalDex() {
-        return localdex;
+        return localDex;
     }
 
     public int getTotalInt() {
-        return localint;
+        return localInt;
     }
 
     public int getTotalStr() {
-        return localstr;
+        return localStr;
     }
 
     public int getTotalLuk() {
-        return localluk;
+        return localLuk;
     }
 
     public int getTotalMagic() {
@@ -3744,14 +3736,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 int mainstat;
                 int secondarystat;
                 if (weapon == MapleWeaponType.BOW || weapon == MapleWeaponType.CROSSBOW) {
-                    mainstat = localdex;
-                    secondarystat = localstr;
+                    mainstat = localDex;
+                    secondarystat = localStr;
                 } else if (getJob().isA(MapleJob.THIEF) && (weapon == MapleWeaponType.CLAW || weapon == MapleWeaponType.DAGGER)) {
-                    mainstat = localluk;
-                    secondarystat = localdex + localstr;
+                    mainstat = localLuk;
+                    secondarystat = localDex + localStr;
                 } else {
-                    mainstat = localstr;
-                    secondarystat = localdex;
+                    mainstat = localStr;
+                    secondarystat = localDex;
                 }
                 maxbasedamage = (int) (((weapon.getMaxDamageMultiplier() * (double) mainstat + (double) secondarystat) / 100.0d) * (double) watk);
                 maxbasedamage += 10;
@@ -3866,47 +3858,47 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     dagger = 0.1d;
                 }
                 if (weapon == MapleWeaponType.CROSSBOW) {
-                    minbasedamage = (int) ((localdex * 0.9d * 3.6d * crossbow + localstr) / 100.0d * (atk + 15.0d));
+                    minbasedamage = (int) ((localDex * 0.9d * 3.6d * crossbow + localStr) / 100.0d * (atk + 15.0d));
                 }
                 if (weapon == MapleWeaponType.BOW) {
-                    minbasedamage = (int) ((localdex * 0.9d * 3.4d * bow + localstr) / 100.0d * (atk + 15.0d));
+                    minbasedamage = (int) ((localDex * 0.9d * 3.4d * bow + localStr) / 100.0d * (atk + 15.0d));
                 }
                 if (getJob().isA(MapleJob.THIEF) && (weapon == MapleWeaponType.DAGGER)) {
-                    minbasedamage = (int) ((localluk * 0.9d * 3.6d * dagger + localstr + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localLuk * 0.9d * 3.6d * dagger + localStr + localDex) / 100.0d * atk);
                 }
                 if (!getJob().isA(MapleJob.THIEF) && (weapon == MapleWeaponType.DAGGER)) {
-                    minbasedamage = (int) ((localstr * 0.9d * 4.0d * dagger + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 4.0d * dagger + localDex) / 100.0d * atk);
                 }
                 if (getJob().isA(MapleJob.THIEF) && (weapon == MapleWeaponType.CLAW)) {
-                    minbasedamage = (int) ((localluk * 0.9d * 3.6d * claw + localstr + localdex) / 100.0d * (atk + 15.0d));
+                    minbasedamage = (int) ((localLuk * 0.9d * 3.6d * claw + localStr + localDex) / 100.0d * (atk + 15.0d));
                 }
                 if (weapon == MapleWeaponType.SPEAR) {
-                    minbasedamage = (int) ((localstr * 0.9d * 3.0d * spear + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 3.0d * spear + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.POLE_ARM) {
-                    minbasedamage = (int) ((localstr * 0.9d * 3.0d * polearm + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 3.0d * polearm + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.SWORD1H) {
-                    minbasedamage = (int) ((localstr * 0.9d * 4.0d * sword + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 4.0d * sword + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.SWORD2H) {
-                    minbasedamage = (int) ((localstr * 0.9d * 4.6d * sword + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 4.6d * sword + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.AXE1H) {
-                    minbasedamage = (int) ((localstr * 0.9d * 3.2d * axe + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 3.2d * axe + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.BLUNT1H) {
-                    minbasedamage = (int) ((localstr * 0.9d * 3.2d * blunt + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 3.2d * blunt + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.AXE2H) {
-                    minbasedamage = (int) ((localstr * 0.9d * 3.4d * axe + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 3.4d * axe + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.BLUNT2H) {
-                    minbasedamage = (int) ((localstr * 0.9d * 3.4d * blunt + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 3.4d * blunt + localDex) / 100.0d * atk);
                 }
                 if (weapon == MapleWeaponType.STAFF || weapon == MapleWeaponType.WAND) {
                     double staffwand = 0.1d;
-                    minbasedamage = (int) ((localstr * 0.9d * 3.0d * staffwand + localdex) / 100.0d * atk);
+                    minbasedamage = (int) ((localStr * 0.9d * 3.0d * staffwand + localDex) / 100.0d * atk);
                 }
             }
         }
@@ -4154,15 +4146,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getCurrentMaxHp() {
-        return localmaxhp;
+        return localMaxHp;
     }
 
     public int getCurrentMaxMp() {
-        return localmaxmp;
+        return localMaxMp;
     }
 
     public int getCurrentMaxBaseDamage() {
-        return localmaxbasedamage;
+        return localMaxBaseDamage;
     }
 
     public int getTotalMdef() {
@@ -4240,16 +4232,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     private void recalcLocalStats() {
-        int oldmaxhp = localmaxhp;
-        localmaxhp = getMaxHp();
-        localmaxmp = getMaxMp();
-        localdex = getDex();
-        localint = getInt();
-        localstr = getStr();
-        localluk = getLuk();
+        int oldmaxhp = localMaxHp;
+        localMaxHp = getMaxHp();
+        localMaxMp = getMaxMp();
+        localDex = getDex();
+        localInt = getInt();
+        localStr = getStr();
+        localLuk = getLuk();
         int speed = 100;
         int jump = 100;
-        magic = localint;
+        magic = localInt;
         watk = 0;
         wdef = 0;
         mdef = 0;
@@ -4281,12 +4273,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         for (IItem item : getInventory(MapleInventoryType.EQUIPPED)) {
             IEquip equip = (IEquip) item;
-            localmaxhp += equip.getHp();
-            localmaxmp += equip.getMp();
-            localdex += equip.getDex();
-            localint += equip.getInt();
-            localstr += equip.getStr();
-            localluk += equip.getLuk();
+            localMaxHp += equip.getHp();
+            localMaxMp += equip.getMp();
+            localDex += equip.getDex();
+            localInt += equip.getInt();
+            localStr += equip.getStr();
+            localLuk += equip.getLuk();
             magic += equip.getMatk() + equip.getInt();
             watk += equip.getWatk();
             speed += equip.getSpeed();
@@ -4301,22 +4293,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             avoidability += equip.getAvoid();
         }
         if (mapleWarriorMultiplier > 1.0d) {
-            magic += localint * (mapleWarriorMultiplier - 1.0d);
-            localdex *= mapleWarriorMultiplier;
-            localint *= mapleWarriorMultiplier;
-            localstr *= mapleWarriorMultiplier;
-            localluk *= mapleWarriorMultiplier;
+            magic += localInt * (mapleWarriorMultiplier - 1.0d);
+            localDex *= mapleWarriorMultiplier;
+            localInt *= mapleWarriorMultiplier;
+            localStr *= mapleWarriorMultiplier;
+            localLuk *= mapleWarriorMultiplier;
         }
         Integer hbhp = getBuffedValue(MapleBuffStat.HYPERBODYHP);
         if (hbhp != null) {
-            localmaxhp += (int) ((hbhp.doubleValue() / 100.0d) * (double) localmaxhp);
+            localMaxHp += (int) ((hbhp.doubleValue() / 100.0d) * (double) localMaxHp);
         }
         Integer hbmp = getBuffedValue(MapleBuffStat.HYPERBODYMP);
         if (hbmp != null) {
-            localmaxmp += (int) ((hbmp.doubleValue() / 100.0d) * (double) localmaxmp);
+            localMaxMp += (int) ((hbmp.doubleValue() / 100.0d) * (double) localMaxMp);
         }
-        localmaxhp = Math.min(30000, localmaxhp);
-        localmaxmp = Math.min(30000, localmaxmp);
+        localMaxHp = Math.min(30000, localMaxHp);
+        localMaxMp = Math.min(30000, localMaxMp);
         Integer watkbuff = getBuffedValue(MapleBuffStat.WATK);
         if (watkbuff != null) {
             watk += watkbuff;
@@ -4346,11 +4338,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
 
         if (getJob().isA(MapleJob.BRAWLER)) {
-            avoidability += (int) (localdex * 1.5d + localluk * 0.5d);
+            avoidability += (int) (localDex * 1.5d + localLuk * 0.5d);
         } else if (getJob().isA(MapleJob.GUNSLINGER)) {
-            avoidability += (int) (localdex * 0.125d + localluk * 0.5d);
+            avoidability += (int) (localDex * 0.125d + localLuk * 0.5d);
         } else {
-            avoidability += (int) (localdex * 0.25d + localluk * 0.5d);
+            avoidability += (int) (localDex * 0.25d + localLuk * 0.5d);
         }
 
         Integer matkbuff = getBuffedValue(MapleBuffStat.MATK);
@@ -4396,11 +4388,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         //
         if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BEGINNER)) {
-            accuracy += (int) (localdex * 0.8d + localluk * 0.5d);
+            accuracy += (int) (localDex * 0.8d + localLuk * 0.5d);
         } else if (job.equals(MapleJob.BRAWLER) || job.equals(MapleJob.MARAUDER) || job.equals(MapleJob.BUCCANEER)) {
-            accuracy += (int) (localdex * 0.9d + localluk * 0.3d);
+            accuracy += (int) (localDex * 0.9d + localLuk * 0.3d);
         } else {
-            accuracy += (int) (localdex * 0.6d + localluk * 0.3d);
+            accuracy += (int) (localDex * 0.6d + localLuk * 0.3d);
         }
 
         Integer accbuff = getBuffedValue(MapleBuffStat.ACC);
@@ -4423,7 +4415,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             mdef += mdefbuff;
         }
 
-        mdef += localint;
+        mdef += localInt;
 
         // What follows is code for getting accuracy from passives
         IItem weapon_item = getInventory(MapleInventoryType.EQUIPPED).getItem((byte) - 11);
@@ -4573,61 +4565,81 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     break;
             }
         }
-        //
-        localmaxbasedamage = calculateMaxBaseDamage(watk);
-        if (oldmaxhp != 0 && oldmaxhp != localmaxhp) {
+
+        localMaxBaseDamage = calculateMaxBaseDamage(watk);
+        if (oldmaxhp != 0 && oldmaxhp != localMaxHp) {
             updatePartyMemberHP();
         }
     }
 
-    public void setUnclaimedItem(int itemid, short quantity) {
-        this.unclaimeditem = itemid;
-        this.unclaimeditemquantity = quantity;
+    public void addUnclaimedItem(int itemId) {
+        addUnclaimedItem(itemId, (short) 1);
+    }
+
+    public void addUnclaimedItem(int itemId, short quantity) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleInventoryType type = ii.getInventoryType(itemId);
+
+        IItem newItem;
+        if (type.equals(MapleInventoryType.EQUIP)) {
+            newItem = ii.getEquipById(itemId);
+            for (short i = 0; i < quantity; ++i) {
+                unclaimedItems.add(newItem);
+            }
+        } else {
+            newItem = new Item(itemId, (byte) 0, quantity, -1);
+            unclaimedItems.add(newItem);
+        }
+    }
+
+    public void addUnclaimedItem(IItem item) {
+        unclaimedItems.add(item);
     }
 
     public boolean claimUnclaimedItem() {
-        if (this.unclaimeditemquantity >= 0) {
+        if (!unclaimedItems.isEmpty()) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            IItem item = ii.getEquipById(this.unclaimeditem);
-            MapleInventoryType type = ii.getInventoryType(this.unclaimeditem);
+            IItem item = unclaimedItems.get(unclaimedItems.size() - 1);
+            MapleInventoryType type = ii.getInventoryType(item.getItemId());
             if (type.equals(MapleInventoryType.EQUIP) && !ii.isThrowingStar(item.getItemId()) && !ii.isBullet(item.getItemId())) {
                 if (!getInventory(type).isFull()) {
                     MapleInventoryManipulator.addFromDrop(getClient(), item, false);
                 } else {
-                    dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
-                    setUnclaimedItem(this.unclaimeditem, this.unclaimeditemquantity);
                     return false;
                 }
-            } else if (MapleInventoryManipulator.checkSpace(getClient(), this.unclaimeditem, this.unclaimeditemquantity, "")) {
-                if (this.unclaimeditem >= 5000000 && this.unclaimeditem <= 5000100) {
-                    if (this.unclaimeditemquantity > 1) {
-                        this.unclaimeditemquantity = 1;
+            } else if (MapleInventoryManipulator.checkSpace(getClient(), item.getItemId(), item.getQuantity(), "")) {
+                if (item.getItemId() >= 5000000 && item.getItemId() <= 5000100) {
+                    if (item.getQuantity() > 1) {
+                        item.setQuantity((short) 1);
                     }
-                    int petId = MaplePet.createPet(this.unclaimeditem);
-                    MapleInventoryManipulator.addById(getClient(), this.unclaimeditem, (short) 1, null, petId);
-                    getClient().getSession().write(MaplePacketCreator.getShowItemGain(this.unclaimeditem, this.unclaimeditemquantity));
+                    int petId = MaplePet.createPet(item.getItemId());
+                    MapleInventoryManipulator.addById(getClient(), item.getItemId(), (short) 1, null, petId);
+                    getClient().getSession().write(MaplePacketCreator.getShowItemGain(item.getItemId(), item.getQuantity()));
                 } else {
-                    MapleInventoryManipulator.addById(getClient(), this.unclaimeditem, this.unclaimeditemquantity);
+                    MapleInventoryManipulator.addById(getClient(), item.getItemId(), item.getQuantity());
                 }
             } else {
-                getClient().getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
-                setUnclaimedItem(this.unclaimeditem, this.unclaimeditemquantity);
                 return false;
             }
-            getClient().getSession().write(MaplePacketCreator.getShowItemGain(this.unclaimeditem, this.unclaimeditemquantity, true));
+            getClient().getSession().write(MaplePacketCreator.getShowItemGain(item.getItemId(), item.getQuantity(), true));
         } else {
-            MapleInventoryManipulator.removeById(getClient(), MapleItemInformationProvider.getInstance().getInventoryType(this.unclaimeditem), this.unclaimeditem, -this.unclaimeditemquantity, true, false);
+            return false;
         }
-        setUnclaimedItem(0, (short) 0);
+
+        unclaimedItems.remove(unclaimedItems.size() - 1);
         return true;
     }
 
-    public int getUnclaimedItemId() {
-        return this.unclaimeditem;
+    public List<IItem> getUnclaimedItems() {
+        return unclaimedItems;
     }
 
-    public short getUnclaimedItemQuantity() {
-        return this.unclaimeditemquantity;
+    public IItem getLastUnclaimedItem() {
+        return unclaimedItems.get(unclaimedItems.size() - 1);
+    }
+
+    public boolean hasUnclaimedItems() {
+        return !unclaimedItems.isEmpty();
     }
 
     public void Mount(int id, int skillid) {
@@ -4778,9 +4790,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public FameStatus canGiveFame(MapleCharacter from) {
-        if (lastfametime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
+        if (lastFameTime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
             return FameStatus.NOT_TODAY;
-        } else if (lastmonthfameids.contains(from.getId())) {
+        } else if (lastMonthFameIds.contains(from.getId())) {
             return FameStatus.NOT_THIS_MONTH;
         } else {
             return FameStatus.OK;
@@ -4788,8 +4800,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void hasGivenFame(MapleCharacter to) {
-        lastfametime = System.currentTimeMillis();
-        lastmonthfameids.add(to.getId());
+        lastFameTime = System.currentTimeMillis();
+        lastMonthFameIds.add(to.getId());
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)");
@@ -4925,7 +4937,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                                         type.name().toLowerCase() +
                                         " inventory, and then type @mapleadmin into chat to claim the item."
                                 );
-                                setUnclaimedItem(rewardId, (short) 1);
+                                addUnclaimedItem(rewardId, (short) 1);
                             }
                         }
                     }
@@ -5290,8 +5302,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void resetQuestKills() {
-        questkills.clear();
-        getCQuest().readMonsterTargets().keySet().forEach(monsterId -> questkills.put(monsterId, 0));
+        questKills.clear();
+        getCQuest().readMonsterTargets().keySet().forEach(monsterId -> questKills.put(monsterId, 0));
     }
 
     public void toggleDpm() {

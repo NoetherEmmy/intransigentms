@@ -33,6 +33,7 @@ public class CheatTracker {
     private int monsterMoveCount;
     private int attacksWithoutHit = 0;
     private int numGotMissed = 0;
+    private int vac = 0;
     private Boolean pickupComplete = Boolean.TRUE;
     private final long[] lastTime = new long[6];
     private final ScheduledFuture<?> invalidationTask;
@@ -55,7 +56,7 @@ public class CheatTracker {
      * Type 5 - Change map.
      * Type 6 - N/A.
      * Type 7 - Commands.
-     * 
+     *
      * @param limit
      * @param type
      * @return whether or not it's spam
@@ -296,6 +297,14 @@ public class CheatTracker {
 
     public void dispose() {
         invalidationTask.cancel(false);
+    }
+
+    public void incrementVac() {
+        vac++;
+    }
+
+    public int getVac() {
+        return vac;
     }
 
     private class InvalidationTask implements Runnable {

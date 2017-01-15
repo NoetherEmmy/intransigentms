@@ -31,7 +31,7 @@ public class QuestScriptManager extends AbstractScriptManager {
             engine.put("qm", qm);
             QuestScript qs = iv.getInterface(QuestScript.class);
             scripts.put(c, qs);
-            qs.start((byte)1, (byte)0, 0);
+            qs.start((byte) 1, (byte) 0, 0);
         } catch (Exception e) {
             log.error("Error executing quest script. (" + quest + ")", e);
             dispose(c);

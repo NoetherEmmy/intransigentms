@@ -490,17 +490,23 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     public void unregisterPartyQuest(String name) {
         partyQuests.remove(name);
     }
-    
+
     public void disposePartyQuests() {
         while (!partyQuests.isEmpty()) {
             partyQuests.values().stream().findAny().ifPresent(PartyQuest::dispose);
         }
     }
-    
+
+    public List<PartyQuest> readPartyQuests() {
+        synchronized (partyQuests) {
+            return new ArrayList<>(partyQuests.values());
+        }
+    }
+
     public void addPqItem(PartyQuest pq, int id) {
         addPqItem(pq.getName(), id);
     }
-    
+
     public void addPqItem(String pqName, int id) {
         if (partyQuestItems.containsKey(pqName)) {
             partyQuestItems.get(pqName).add(id);
@@ -510,7 +516,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             partyQuestItems.put(pqName, items);
         }
     }
-    
+
     public Set<Integer> readPqItems(String pqName) {
         if (partyQuestItems.containsKey(pqName)) {
             return new HashSet<>(partyQuestItems.get(pqName));
@@ -518,7 +524,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             return Collections.emptySet();
         }
     }
-    
+
     public Set<Integer> readAllPqItems() {
         return partyQuestItems.values().stream().reduce((union, s) -> {
             union.addAll(s);
@@ -790,7 +796,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     public boolean CanGMItem() {
         return GMItems;
     }
-    
+
     public boolean extraCommands() {
         return extraCommands;
     }

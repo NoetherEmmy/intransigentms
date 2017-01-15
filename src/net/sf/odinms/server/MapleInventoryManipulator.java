@@ -319,7 +319,7 @@ public class MapleInventoryManipulator {
     public static void equip(MapleClient c, byte src, byte dst) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         Equip source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(src);
-        Equip target = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
+        Equip target;
         if (source == null) return;
         if (!c.getPlayer().isGM() && !c.getChannelServer().CanGMItem()) {
             switch (source.getItemId()) {
@@ -328,17 +328,17 @@ public class MapleInventoryManipulator {
                 case 1062007: // Wizet Plain Suit Pants
                 case 1322013: // Wizet Secret Agent Suitcase
                     removeAllById(c, source.getItemId(), false);
-                    c.getPlayer().dropMessage(1, "You're not a GM");
+                    c.getPlayer().dropMessage(1, "You're not a GM.");
                     return;
             }
         }
         if (source.getItemId() == 1812006) {
             removeAllById(c, source.getItemId(), false);
-            c.getPlayer().dropMessage(1, "Magic Scale Has Been Blocked");
+            c.getPlayer().dropMessage(1, "Magic Scales have been blocked.");
             return;
         }
         if (dst == -6) {
-            // unequip the overall
+            // Unequip the overall
             IItem top = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
             if (top != null && ii.isOverall(top.getItemId())) {
                 if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).isFull()) {
@@ -349,7 +349,7 @@ public class MapleInventoryManipulator {
                 unequip(c, (byte) -5, c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
             }
         } else if (dst == -5) {
-            // unequip the bottom and top
+            // Unequip the bottom and top
             IItem top = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
             IItem bottom = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -6);
             if (top != null && ii.isOverall(source.getItemId())) {
@@ -369,7 +369,7 @@ public class MapleInventoryManipulator {
                 unequip(c, (byte) -6, c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
             }
         } else if (dst == -10) {
-            // check if weapon is two-handed
+            // Check if weapon is two-handed
             IItem weapon = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
             if (weapon != null && ii.isTwoHanded(weapon.getItemId())) {
                 if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).isFull()) {

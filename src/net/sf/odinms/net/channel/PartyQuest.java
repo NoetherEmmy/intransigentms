@@ -1,6 +1,7 @@
 package net.sf.odinms.net.channel;
 
 import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
 import net.sf.odinms.net.world.MapleParty;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.TimerManager;
@@ -8,10 +9,12 @@ import net.sf.odinms.server.maps.MapleMap;
 
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class PartyQuest {
     private final List<MapleCharacter> players = new ArrayList<>(6);
+    private final Set<Integer> registeredPlayerIds = new HashSet<>(8, 0.8f);
     private final List<PartyQuestMapInstance> mapInstances = new ArrayList<>(3);
     private final String name;
     private long timeStarted = 0;
@@ -19,7 +22,7 @@ public class PartyQuest {
     private final int minPlayers;
     private final int exitMapId;
     private final int channel;
-    private int points;
+    private final AtomicInteger points = new AtomicInteger();
     private final Set<Integer> pqItems = new HashSet<>(4, 0.8f);
     private ScheduledFuture<?> disposeTask = null;
 
@@ -28,7 +31,6 @@ public class PartyQuest {
         this.name = name;
         this.minPlayers = minPlayers;
         this.exitMapId = exitMapId;
-        points = 0;
         ChannelServer.getInstance(this.channel).registerPartyQuest(this);
     }
 
@@ -39,15 +41,28 @@ public class PartyQuest {
     public List<MapleCharacter> getPlayers() {
         return players;
     }
-    
+
     public int playerCount() {
         return players.size();
     }
 
+    public Set<Integer> readRegisteredIds() {
+        return new HashSet<>(registeredPlayerIds);
+    }
+
+    public boolean hasIdRegistered(int playerId) {
+        return registeredPlayerIds.contains(playerId);
+    }
+
+    /**
+     * Intentionally package private;
+     * use {@link #readMapInstances()} instead to get a copy
+     * of the list publicly.
+     */
     List<PartyQuestMapInstance> getMapInstances() {
         return mapInstances;
     }
-    
+
     public List<PartyQuestMapInstance> readMapInstances() {
         return new ArrayList<>(mapInstances);
     }
@@ -72,7 +87,8 @@ public class PartyQuest {
 
     public void registerMap(MapleMap newMap) {
         if (newMap.getPartyQuestInstance() != null) {
-            throw new IllegalStateException("Attempting to register map that is currently in use.");
+            //throw new IllegalStateException("Attempting to register map that is currently in use.");
+            System.err.println("Attempting to register map that is currently in use.");
         }
         newMap.resetReactors();
         final PartyQuestMapInstance newInstance = new PartyQuestMapInstance(this, newMap);
@@ -90,9 +106,12 @@ public class PartyQuest {
 
     public void unregisterMap(MapleMap oldMap) {
         if (!this.mapInstances.contains(oldMap.getPartyQuestInstance())) {
-            throw new IllegalStateException("Attempting to deregister map that is not owned by the PartyQuest.");
+            //throw new IllegalStateException("Attempting to deregister map that is not owned by the PartyQuest.");
+            System.err.println("Attempting to deregister map that is not owned by the PartyQuest.");
         }
-        oldMap.getPartyQuestInstance().dispose();
+        if (oldMap.getPartyQuestInstance() != null) {
+            oldMap.getPartyQuestInstance().dispose();
+        }
     }
 
     public int getExitMapId() {
@@ -100,12 +119,12 @@ public class PartyQuest {
     }
 
     public int getPoints() {
-        return points;
+        return points.get();
     }
 
     public void setPoints(int points) {
-        final int pointChange = points - this.points;
-        this.points = points;
+        final int pointChange = points - this.points.get();
+        this.points.set(points);
         final String color;
         if (pointChange > 0) {
             color = "#b(+";
@@ -120,7 +139,7 @@ public class PartyQuest {
     }
 
     public void addPoints(final int increment) {
-        this.points += increment;
+        points.addAndGet(increment);
         final String color;
         if (increment > 0) {
             color = "#b(+";
@@ -131,7 +150,7 @@ public class PartyQuest {
         }
         players.stream()
                .filter(MapleCharacter::showPqPoints)
-               .forEach(p -> p.sendHint("PQ points: #e" + this.points + "#n " + color + increment + ")#k"));
+               .forEach(p -> p.sendHint("PQ points: #e" + points + "#n " + color + increment + ")#k"));
     }
 
     public void addPqItem(int id) {
@@ -146,12 +165,14 @@ public class PartyQuest {
     public void registerPlayer(MapleCharacter player) {
         players.add(player);
         player.setPartyQuest(this);
+        registeredPlayerIds.add(player.getId());
     }
 
     private void unregisterPlayer(final MapleCharacter player) {
         pqItems.forEach(itemId -> MapleInventoryManipulator.removeAllById(player.getClient(), itemId, true));
         players.remove(player);
         player.setPartyQuest(null);
+        registeredPlayerIds.remove(player.getId());
     }
 
     public void removePlayer(MapleCharacter player, boolean autoDispose) {
@@ -205,6 +226,7 @@ public class PartyQuest {
             if (p.getMapId() != exitMapId) p.changeMap(exitMapId);
         });
         players.clear();
+        registeredPlayerIds.clear();
         while (!mapInstances.isEmpty()) {
             mapInstances.get(0).dispose();
         }
@@ -218,11 +240,11 @@ public class PartyQuest {
         timeStarted = System.currentTimeMillis();
         eventTime = time;
         if (disposeTask != null) disposeTask.cancel(false);
-        disposeTask = TimerManager.getInstance().schedule(this::dispose, eventTime + 500);
+        disposeTask = TimerManager.getInstance().schedule(this::dispose, eventTime + 500L);
     }
 
     public boolean isTimerStarted() {
-        return eventTime > 0 && timeStarted > 0;
+        return eventTime > 0L && timeStarted > 0L;
     }
 
     public long getTimeLeft() {
@@ -237,7 +259,7 @@ public class PartyQuest {
     }
 
     public boolean isLeader(MapleCharacter player) {
-        return player.getParty().getLeader().getId() == player.getId();
+        return player.getParty() != null && player.getParty().getLeader().getId() == player.getId();
     }
 
     /** Returns <code>null</code> if no party leader is registered with this <code>PartyQuest</code> */
@@ -246,6 +268,10 @@ public class PartyQuest {
     }
 
     public void playerReconnected(MapleCharacter player) {
+        if (player.getClient().getChannel() != channel) {
+            ChangeChannelHandler.changeChannel(channel, player.getClient());
+        }
+
         if (!players.contains(player)) {
             registerPlayer(player);
         } else if (player.getPartyQuest() == null) {
@@ -264,6 +290,7 @@ public class PartyQuest {
             }
             return min;
         });
+
         if (pqmiMinPlayers == null || pqmiMinPlayers.getMap().playerCount() == 0) {
             dispose();
         } else {

@@ -116,9 +116,12 @@ public class AbstractPlayerInteraction {
         return gainItem(id, quantity, false, show);
     }
 
-    /** Gives item with the specified id or takes it if the quantity is negative.
-     ** Note that this does NOT take items from the equipped inventory.
-     ** randomStats for generating random stats on the generated equip. */
+    /**
+     * Gives item with the specified ID, or takes it if the quantity is negative.
+     * Note that this does NOT take items from the equipped inventory.
+     *
+     * @param randomStats Give random stats to the generated equip.
+     */
     public boolean gainItem(int id, short quantity, boolean randomStats, boolean show) {
         if (quantity >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -132,8 +135,13 @@ public class AbstractPlayerInteraction {
                         MapleInventoryManipulator.addFromDrop(c, item, false);
                     }
                 } else {
-                    c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
-                    c.getPlayer().setUnclaimedItem(id, quantity);
+                    c.getPlayer().dropMessage(
+                        1,
+                        "Your inventory is full. Please remove an item from your " +
+                            type.name().toLowerCase() +
+                            " inventory, and then type @mapleadmin into chat to claim the item."
+                    );
+                    c.getPlayer().addUnclaimedItem(id, quantity);
                     return false;
                 }
             } else if (MapleInventoryManipulator.checkSpace(c, id, quantity, "")) {
@@ -151,7 +159,7 @@ public class AbstractPlayerInteraction {
                 }
             } else {
                 c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
-                c.getPlayer().setUnclaimedItem(id, quantity);
+                c.getPlayer().addUnclaimedItem(id, quantity);
                 return false;
             }
             if (show) {

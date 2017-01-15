@@ -3,6 +3,7 @@ package net.sf.odinms.net.channel.handler;
 import net.sf.odinms.client.MapleCharacterUtil;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.MaplePacket;
+import net.sf.odinms.server.AutobanManager;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.life.MobSkill;
 import net.sf.odinms.server.life.MobSkillFactory;
@@ -98,6 +99,11 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
                 map.removePlayer(c.getPlayer());
                 map.addPlayer(c.getPlayer());
                 log.warn("slea.available != 9 (movement parsing error)");
+                c.getPlayer().getCheatTracker().incrementVac();
+                if (c.getPlayer().getCheatTracker().getVac() >= 5) {
+                    AutobanManager.getInstance().autoban(c, "Monster vac.");
+                    return;
+                }
                 try {
                     c.getChannelServer()
                      .getWorldInterface()

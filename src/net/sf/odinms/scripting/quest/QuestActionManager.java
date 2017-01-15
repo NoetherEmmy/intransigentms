@@ -6,7 +6,6 @@ import net.sf.odinms.scripting.npc.NPCConversationManager;
 import net.sf.odinms.server.quest.MapleQuest;
 
 public class QuestActionManager extends NPCConversationManager {
-
     private final boolean start;
     private final int quest;
 

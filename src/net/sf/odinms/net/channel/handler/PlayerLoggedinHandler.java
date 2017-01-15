@@ -4,6 +4,7 @@ import net.sf.odinms.client.*;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.channel.PartyQuest;
 import net.sf.odinms.net.world.*;
 import net.sf.odinms.net.world.guild.MapleAlliance;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
@@ -188,10 +189,40 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         } else if (player.getMapId() == 3000) {
             player.changeMap(player.getBossReturnMap(), 0);
         }
+
         if (player.getMap() != null) {
-            if (player.getMap().getPartyQuestInstance() != null) {
-                player.getMap().getPartyQuestInstance().getPartyQuest().playerReconnected(player);
-            } else {
+            boolean reconnect = false;
+            if (player.getParty() != null && player.getMap().isPQMap()) {
+                ChannelServer pqChannel =
+                    ChannelServer
+                        .getAllInstances()
+                        .stream()
+                        .filter(cs ->
+                            cs.readPartyQuests()
+                              .stream()
+                              .anyMatch(pq ->
+                                  pq.hasIdRegistered(player.getId())
+                              )
+                        )
+                        .findAny()
+                        .orElse(null);
+                if (pqChannel != null) {
+                    PartyQuest thePq =
+                        pqChannel
+                            .readPartyQuests()
+                            .stream()
+                            .filter(pq ->
+                                pq.hasIdRegistered(player.getId())
+                            )
+                            .findAny()
+                            .orElse(null);
+                    if (thePq != null) {
+                        thePq.playerReconnected(player);
+                        reconnect = true;
+                    }
+                }
+            }
+            if (!reconnect && player.getMap().getPartyQuestInstance() != null) {
                 if (player.getMap().isPQMap() && player.getParty() != null) {
                     if (player.getMapId() / 100 == player.getParty().getLeader().getMapid() / 100 && player.getMapId() != player.getParty().getLeader().getMapid()) {
                         player.changeMap(player.getParty().getLeader().getMapid(), 0);
