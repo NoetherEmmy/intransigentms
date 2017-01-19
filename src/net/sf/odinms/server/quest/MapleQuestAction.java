@@ -14,17 +14,12 @@ import java.util.Map;
 import java.util.Random;
 
 public class MapleQuestAction {
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleQuestAction.class);
     private final MapleQuestActionType type;
     private final MapleData data;
     private final MapleQuest quest;
 
-    /** Creates a new instance of MapleQuestAction
-     * @param type
-     * @param data
-     * @param quest
-     */
+    /** Creates a new instance of MapleQuestAction */
     public MapleQuestAction(MapleQuestActionType type, MapleData data, MapleQuest quest) {
         this.type = type;
         this.data = data;
@@ -74,7 +69,7 @@ public class MapleQuestAction {
                 if (status.getStatus() == MapleQuestStatus.Status.NOT_STARTED && status.getForfeited() > 0) {
                     break;
                 }
-                c.gainExp(MapleDataTool.getInt(data) * ChannelServer.getInstance(c.getClient().getChannel()).getExpRate(), true, true);
+                c.gainExp(MapleDataTool.getInt(data) * ChannelServer.getInstance(c.getClient().getChannel()).getExpRate() * c.getAbsoluteXp(), true, true);
                 break;
             case ITEM:
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -112,7 +107,7 @@ public class MapleQuestAction {
                         try {
                             MapleInventoryManipulator.removeById(c.getClient(), iType, itemId, quantity, true, false);
                         } catch (InventoryException ie) {
-                            // it's better to catch this here so we'll atleast try to remove the other items
+                            // It's better to catch this here so we'll at least try to remove the other items
                             log.warn("[h4x] Completing a quest without meeting the requirements", ie);
                         }
                         c.getClient().getSession().write(MaplePacketCreator.getShowItemGain(itemId, (short) MapleDataTool.getInt(iEntry.getChildByPath("count")), true));
@@ -133,7 +128,7 @@ public class MapleQuestAction {
                 if (status.getStatus() == MapleQuestStatus.Status.NOT_STARTED && status.getForfeited() > 0) {
                     break;
                 }
-                c.gainMeso(MapleDataTool.getInt(data), true, false, true);
+                c.gainMeso(MapleDataTool.getInt(data) * ChannelServer.getInstance(c.getClient().getChannel()).getMesoRate(), true, false, true);
                 break;
             case QUEST:
                 for (MapleData qEntry : data) {

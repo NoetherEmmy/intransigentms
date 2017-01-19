@@ -71,7 +71,7 @@ public class Skill implements ISkill {
                     isBuff = false;
                     break;
                 case 1001: // recovery
-                case 1002: // nimble feet 
+                case 1002: // nimble feet
                 case 1004: // monster riding
                 case 1005: // echo of hero
                 case 1001003: // iron body
@@ -80,7 +80,7 @@ public class Skill implements ISkill {
                 case 1101005: // axe booster
                 case 1201005: // bw booster
                 case 1301004: // spear booster
-                case 1301005: // polearm booster 
+                case 1301005: // polearm booster
                 case 3101002: // bow booster
                 case 3201002: // crossbow booster
                 case 4101003: // claw booster
@@ -184,12 +184,12 @@ public class Skill implements ISkill {
                 case 1111007: // armor crash
                 case 1211009: // magic crash
                 case 1311007: // power crash
-                case 2311005: // doom 
+                case 2311005: // doom
                 case 2121002: // mana reflection
                 case 2221002: // mana reflection
                 case 2321002: // mana reflection
                 case 2311001: // dispel
-                case 1201006: // threaten 
+                case 1201006: // threaten
                 case 4121004: // ninja ambush
                 case 4221004: // ninja ambush
                 case 4121003: // taunt

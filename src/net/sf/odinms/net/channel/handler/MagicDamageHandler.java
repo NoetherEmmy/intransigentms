@@ -118,13 +118,13 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 if (ee != null) {
                     switch (ee) {
                         case WEAK:
-                            multiplier = 1.5d;
+                            multiplier *= 1.5d;
                             break;
                         case STRONG:
-                            multiplier = 0.5d;
+                            multiplier *= 0.5d;
                             break;
                         case IMMUNE:
-                            multiplier = 0.0d;
+                            multiplier *= 0.0d;
                             break;
                     }
                 }

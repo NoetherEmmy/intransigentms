@@ -142,7 +142,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentHashMap<>(8, 0.8f, 2);
     private final HashMap<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
     private final List<MapleDoor> doors = new ArrayList<>();
-    private final Map<Integer, MapleSummon> summons = new LinkedHashMap<>(5, 0.7f);
+    private final Map<Integer, MapleSummon> summons = Collections.synchronizedMap(new LinkedHashMap<>(6, 0.7f));
     private BuddyList buddylist;
     private final Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>();
     private final CheatTracker anticheat;
@@ -2890,49 +2890,51 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     private void setDefaultCoreSkillMasterLevels() {
-        int[] skilllist;
+        int[] skillList;
         switch (getJob()) {
             case HERO:
-                skilllist = new int[] {1120003, 1120004, 1120005, 1121000, 1121001, 1121002, 1121006, 1121008, 1121010, 1121011};
+                skillList = new int[] {1120003, 1120004, 1120005, 1121000, 1121001, 1121002, 1121006, 1121008, 1121010, 1121011};
                 break;
             case PALADIN:
-                skilllist = new int[] {1220005, 1220006, 1220010, 1221000, 1221001, 1221002, 1221003, 1221004, 1221007, 1221009, 1221011, 1221012};
+                skillList = new int[] {1220005, 1220006, 1220010, 1221000, 1221001, 1221002, 1221003, 1221004, 1221007, 1221009, 1221011, 1221012};
                 break;
             case DARKKNIGHT:
-                skilllist = new int[] {1320005, 1320006, 1320008, 1320009, 1321000, 1321001, 1321002, 1321003, 1321007, 1321010};
+                skillList = new int[] {1320005, 1320006, 1320008, 1320009, 1321000, 1321001, 1321002, 1321003, 1321007, 1321010};
                 break;
             case FP_ARCHMAGE:
-                skilllist = new int[] {2121000, 2121001, 2121002, 2121003, 2121004, 2121005, 2121006, 2121007, 2121008};
+                skillList = new int[] {2121000, 2121001, 2121002, 2121003, 2121004, 2121005, 2121006, 2121007, 2121008};
                 break;
             case IL_ARCHMAGE:
-                skilllist = new int[] {2221000, 2221001, 2221002, 2221003, 2221004, 2221005, 2221006, 2221007, 2221008};
+                skillList = new int[] {2221000, 2221001, 2221002, 2221003, 2221004, 2221005, 2221006, 2221007, 2221008};
                 break;
             case BISHOP:
-                skilllist = new int[] {2321000, 2321001, 2321002, 2321003, 2321004, 2321005, 2321007, 2321009}; // Does not include Resurrection or Genesis
+                // Does not include Resurrection or Genesis
+                skillList = new int[] {2321000, 2321001, 2321002, 2321003, 2321004, 2321005, 2321007, 2321009};
                 break;
             case BOWMASTER:
-                skilllist = new int[] {3120005, 3121000, 3121002, 3121003, 3121004, 3121006, 3121007, 3121008, 3121009};
+                skillList = new int[] {3120005, 3121000, 3121002, 3121003, 3121004, 3121006, 3121007, 3121008, 3121009};
                 break;
             case CROSSBOWMASTER:
-                skilllist = new int[] {3220004, 3221000, 3221001, 3221002, 3221003, 3221005, 3221006, 3221007, 3221008};
+                skillList = new int[] {3220004, 3221000, 3221001, 3221002, 3221003, 3221005, 3221006, 3221007, 3221008};
                 break;
             case NIGHTLORD:
-                skilllist = new int[] {4120002, 4120005, 4121000, 4121003, 4121004, 4121006, 4121007, 4121008, 4121009};
+                skillList = new int[] {4120002, 4120005, 4121000, 4121003, 4121004, 4121006, 4121007, 4121008, 4121009};
                 break;
             case SHADOWER:
-                skilllist = new int[] {4220002, 4220005, 4221000, 4221001, 4221003, 4221004, 4221006, 4221007, 4221008};
+                skillList = new int[] {4220002, 4220005, 4221000, 4221001, 4221003, 4221004, 4221006, 4221007, 4221008};
                 break;
             case BUCCANEER:
-                skilllist = new int[] {5121000, 5121001, 5121002, 5121003, 5121004, 5121005, 5121007, 5121008, 5121009, 5121010};
+                skillList = new int[] {5121000, 5121001, 5121002, 5121003, 5121004, 5121005, 5121007, 5121008, 5121009, 5121010};
                 break;
             case CORSAIR:
-                skilllist = new int[] {5220001, 5220002, 5220011, 5221000, 5221003, 5221004, 5221006, 5221007, 5221008, 5221009, 5221010};
+                skillList = new int[] {5220001, 5220002, 5220011, 5221000, 5221003, 5221004, 5221006, 5221007, 5221008, 5221009, 5221010};
                 break;
             default:
                 return;
         }
-        for (int skillid : skilllist) {
-            changeSkillLevel(SkillFactory.getSkill(skillid), 0, 10);
+        for (int skillId : skillList) {
+            ISkill theSkill = SkillFactory.getSkill(skillId);
+            changeSkillLevel(theSkill, 0, Math.min(10, theSkill.getMaxLevel()));
         }
     }
 
@@ -5701,7 +5703,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public List<Integer> getQuestItemsToShow() {
         Set<Integer> delta = new HashSet<>();
-        for (Map.Entry<MapleQuest, MapleQuestStatus> questEntry : this.quests.entrySet()) {
+        for (Map.Entry<MapleQuest, MapleQuestStatus> questEntry : quests.entrySet()) {
             if (questEntry.getValue().getStatus() != MapleQuestStatus.Status.STARTED) {
                 delta.addAll(questEntry.getKey().getQuestItemsToShowOnlyIfQuestIsActivated());
             }

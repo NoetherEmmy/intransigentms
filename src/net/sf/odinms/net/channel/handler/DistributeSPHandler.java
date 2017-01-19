@@ -43,7 +43,8 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
                 int nimbleFeetLevel = player.getSkillLevel(SkillFactory.getSkill(1002));
                 remainingSp = Math.min((player.getLevel() - 1), 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
         }
-        int maxlevel = skill.isFourthJob() ? player.getMasterLevel(skill) : skill.getMaxLevel();
+
+        int maxlevel = skill.isFourthJob() ? Math.min(player.getMasterLevel(skill), skill.getMaxLevel()) : skill.getMaxLevel();
         int curLevel = player.getSkillLevel(skill);
         if (remainingSp > 0 && curLevel + 1 <= maxlevel && skill.canBeLearnedBy(player.getJob())) {
             if (!skill.isBeginnerSkill()) {

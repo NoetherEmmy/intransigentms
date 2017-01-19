@@ -611,10 +611,10 @@ public class MapleStatEffect implements Serializable {
                        .stream()
                        .map(mmo -> (MapleMonster) mmo)
                        .forEach(mob -> {
-                           double chanceToHit = attacker.getAccuracy() /
-                                                ((1.84d + 0.07d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) * (double) mob.getAvoid()) - 1.0d;
+                           double chanceToHit =
+                               attacker.getAccuracy() / ((1.84d + 0.07d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) * (double) mob.getAvoid()) - 1.0d;
                            if (Math.random() < chanceToHit) {
-                               int dmg = (int) (multiplier * (rand.nextInt(max - min) + min));
+                               int dmg = (int) (multiplier * (rand.nextInt(max - min) + min) * mob.getVulnerability());
                                map.damageMonster(attacker, mob, dmg);
                                map.broadcastMessage(attacker, MaplePacketCreator.damageMonster(mob.getObjectId(), dmg), true);
                            }
@@ -846,11 +846,13 @@ public class MapleStatEffect implements Serializable {
                 return;
             }
             Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
-            List<MapleMapObject> affecteds = applyFrom.getMap()
-                                                      .getMapObjectsInRect(
-                                                          bounds,
-                                                          Collections.singletonList(MapleMapObjectType.PLAYER)
-                                                      );
+            List<MapleMapObject> affecteds =
+                applyFrom
+                    .getMap()
+                    .getMapObjectsInRect(
+                        bounds,
+                        Collections.singletonList(MapleMapObjectType.PLAYER)
+                    );
             List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
             MapleCharacter closestPlayer = null;
             double closestDistance = Double.MAX_VALUE;
@@ -1013,11 +1015,13 @@ public class MapleStatEffect implements Serializable {
 
     private void applyMonsterBuff(MapleCharacter applyFrom) {
         Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
-        List<MapleMapObject> affected = applyFrom.getMap()
-                                                 .getMapObjectsInRect(
-                                                     bounds,
-                                                     Collections.singletonList(MapleMapObjectType.MONSTER)
-                                                 );
+        List<MapleMapObject> affected =
+            applyFrom
+                .getMap()
+                .getMapObjectsInRect(
+                    bounds,
+                    Collections.singletonList(MapleMapObjectType.MONSTER)
+                );
         final ISkill skill_ = SkillFactory.getSkill(sourceid);
         Map<MonsterStatus, Integer> localMonsterStatus = getMonsterStati();
         if (skill_.getId() == 1201006) { // Handing Threaten's scaling with level

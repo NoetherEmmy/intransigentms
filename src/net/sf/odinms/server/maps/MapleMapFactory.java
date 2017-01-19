@@ -271,6 +271,7 @@ public class MapleMapFactory {
 
     private AbstractLoadedMapleLife loadLife(MapleData life, String id, String type) {
         AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(Integer.parseInt(id), type);
+        if (myLife == null) System.err.println("Missing mob data: " + id);
         myLife.setCy(MapleDataTool.getInt(life.getChildByPath("cy")));
         MapleData dF = life.getChildByPath("f");
         if (dF != null) {

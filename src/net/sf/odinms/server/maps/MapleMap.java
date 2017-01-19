@@ -357,7 +357,7 @@ public class MapleMap {
         int maxDrops;
         final boolean explosive = monster.isExplosive();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        ChannelServer cserv = ChannelServer.getInstance(this.channel);
+        ChannelServer cserv = ChannelServer.getInstance(channel);
         if (explosive) {
             maxDrops = 10 * cserv.getBossDropRate();
         } else {
@@ -405,12 +405,17 @@ public class MapleMap {
                 }
             }
             if (dropOwner.getMapId() >= 1000 && dropOwner.getMapId() <= 1006 && monster.isBoss()) {
-                int timelessItems[] = {1302081, 1312037, 1322060, 1332073, 1332074, 1372044, 1382057, 1402046,
-                                       1412033, 1422037, 1432047, 1442063, 1452057, 1462050, 1472068, 1482023,
-                                       1492023};
+                int timelessItems[] =
+                {
+                    1302081, 1312037, 1322060, 1332073, 1332074, 1372044, 1382057, 1402046,
+                    1412033, 1422037, 1432047, 1442063, 1452057, 1462050, 1472068, 1482023,
+                    1492023
+                };
                 if (Math.random() < 0.15d) {
                     toDrop.add(timelessItems[(int) (Math.random() * timelessItems.length)]);
                 }
+            } else if (dropOwner.getMapId() >= 5000 && monster.getId() == 8200000) {
+                toDrop.removeIf(i -> i.equals(4031303));
             }
             if (partyevent && dropOwner.getParty() != null) {
                 chance = (int) (Math.random() * 112.0d); // 1/112 droprate
@@ -452,7 +457,7 @@ public class MapleMap {
         byte htpendants = 0, htstones = 0, mesos = 0;
         for (int i = 0; i < toDrop.size(); ++i) {
             if (toDrop.get(i) == -1) {
-                if (!this.isPQMap()) {
+                if (!isPQMap()) {
                     if (alreadyDropped.contains(-1)) {
                         if (!explosive) {
                             toDrop.remove(i);
@@ -987,6 +992,7 @@ public class MapleMap {
     public void destroyReactor(int oid) {
         synchronized (mapObjects) {
             final MapleReactor reactor = getReactorByOid(oid);
+            if (reactor == null) return;
             TimerManager tMan = TimerManager.getInstance();
             broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
             reactor.setAlive(false);
@@ -1049,6 +1055,7 @@ public class MapleMap {
             if (!monster.isAlive()) {
                 return;
             }
+
             if (monster.getController() != null) {
                 if (monster.getController().getMap() != this) {
                     log.warn("Monstercontroller wasn't on same map");
@@ -1057,6 +1064,7 @@ public class MapleMap {
                     return;
                 }
             }
+
             int mincontrolled = -1;
             MapleCharacter newController = null;
             synchronized (characters) {
@@ -1067,6 +1075,7 @@ public class MapleMap {
                     }
                 }
             }
+
             if (newController != null) {
                 if (monster.isFirstAttack()) {
                     newController.controlMonster(monster, true);

@@ -23,12 +23,26 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         slea.readShort();
         slea.readShort();
-        int skillid = slea.readInt();
+        int skillId = slea.readInt();
         Point pos = null;
         int __skillLevel = slea.readByte();
-        ISkill skill = SkillFactory.getSkill(skillid);
+        ISkill skill = SkillFactory.getSkill(skillId);
         int skillLevel = c.getPlayer().getSkillLevel(skill);
-        MapleStatEffect effect = skill.getEffect(skillLevel);
+        MapleStatEffect effect;
+        try {
+            effect = skill.getEffect(skillLevel);
+        } catch (IndexOutOfBoundsException ioobe) {
+            System.err.println(
+                "Player " +
+                    c.getPlayer().getName() +
+                    " tried to use level " +
+                    skillLevel +
+                    " of skill " +
+                    skillId
+            );
+            c.getSession().write(MaplePacketCreator.enableActions());
+            return;
+        }
 
         if (skill.isGMSkill() && !c.getPlayer().isGM()) {
             c.disconnect();
@@ -36,19 +50,34 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
             return;
         }
         if (effect.getCooldown() > 0) {
-            if (c.getPlayer().skillIsCooling(skillid)) {
+            if (c.getPlayer().skillIsCooling(skillId)) {
                 c.getSession().write(MaplePacketCreator.enableActions());
                 //c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                 return;
             } else {
-                c.getSession().write(MaplePacketCreator.skillCooldown(skillid, effect.getCooldown()));
-                ScheduledFuture<?> timer = TimerManager.getInstance().schedule(new CancelCooldownAction(c.getPlayer(), skillid), effect.getCooldown() * 1000);
-                c.getPlayer().addCooldown(skillid, System.currentTimeMillis(), effect.getCooldown() * 1000, timer);
+                c.getSession().write(MaplePacketCreator.skillCooldown(skillId, effect.getCooldown()));
+                ScheduledFuture<?> timer =
+                    TimerManager
+                        .getInstance()
+                        .schedule(
+                            new CancelCooldownAction(
+                                c.getPlayer(),
+                                skillId
+                            ),
+                            effect.getCooldown() * 1000
+                        );
+                c.getPlayer()
+                 .addCooldown(
+                     skillId,
+                     System.currentTimeMillis(),
+                     effect.getCooldown() * 1000,
+                     timer
+                 );
             }
         }
         // Monster Magnet
         try {
-            switch (skillid) {
+            switch (skillId) {
                 case 1121001:
                 case 1221001:
                 case 1321001:
@@ -58,16 +87,39 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                     for (int i = 0; i < num; ++i) {
                         mobId = slea.readInt();
                         success = slea.readByte();
-                        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showMagnet(mobId, success), false);
+                        c.getPlayer()
+                         .getMap()
+                         .broadcastMessage(
+                             c.getPlayer(),
+                             MaplePacketCreator.showMagnet(mobId, success),
+                             false
+                         );
                         MapleMonster monster = c.getPlayer().getMap().getMonsterByOid(mobId);
                         if (monster != null) {
                             monster.switchController(c.getPlayer(), monster.isControllerHasAggro());
                         }
                     }
                     byte direction = slea.readByte();
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showBuffeffect(c.getPlayer().getId(), skillid, 1, direction), false);
+                    c.getPlayer()
+                     .getMap()
+                     .broadcastMessage(
+                         c.getPlayer(),
+                         MaplePacketCreator.showBuffeffect(c.getPlayer().getId(), skillId, 1, direction),
+                         false
+                     );
                     for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
-                        ch.getFakeChar().getMap().broadcastMessage(ch.getFakeChar(), MaplePacketCreator.showBuffeffect(ch.getFakeChar().getId(), skillid, 1, direction), false);
+                        ch.getFakeChar()
+                          .getMap()
+                          .broadcastMessage(
+                              ch.getFakeChar(),
+                              MaplePacketCreator.showBuffeffect(
+                                  ch.getFakeChar().getId(),
+                                  skillId,
+                                  1,
+                                  direction
+                              ),
+                              false
+                          );
                     }
                     c.getSession().write(MaplePacketCreator.enableActions());
                     break;
@@ -80,7 +132,11 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
         }
         try {
             if (skillLevel == 0 || skillLevel != __skillLevel) {
-                log.warn(c.getPlayer().getName() + " is using a move skill they don't have. ID: " + skill.getId());
+                log.warn(
+                    c.getPlayer().getName() +
+                        " is using a move skill they don't have. ID: " +
+                        skill.getId()
+                );
                 c.disconnect();
             } else {
                 if (c.getPlayer().isAlive()) {

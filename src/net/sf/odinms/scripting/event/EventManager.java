@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EventManager {
-
     private final Invocable iv;
     private final ChannelServer cserv;
     private final Map<String, EventInstanceManager> instances = new HashMap<>();
@@ -111,7 +110,7 @@ public class EventManager {
         return name;
     }
 
-    //PQ method: starts a PQ
+    // PQ method: starts a PQ
     public void startInstance(MapleParty party, MapleMap map) {
         try {
             EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
@@ -121,7 +120,7 @@ public class EventManager {
         }
     }
 
-    //non-PQ method for starting instance
+    // non-PQ method for starting instance
     public void startInstance(EventInstanceManager eim) {
         try {
             iv.invokeFunction("setup", eim);

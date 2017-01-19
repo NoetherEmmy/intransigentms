@@ -129,11 +129,6 @@ public class EventInstanceManager {
         }
     }
 
-    /**
-     *
-     * @param chr
-     * @param mob
-     */
     public void monsterKilled(MapleCharacter chr, MapleMonster mob) {
         try {
             Integer kc = killCount.get(chr);

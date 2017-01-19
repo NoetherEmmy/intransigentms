@@ -359,9 +359,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 itemQuantity(3992027) < 1) {
             MapleInventoryManipulator.addById(c, 3992027, (short) 1);
             getPlayer().dropMessage(6,
-                  "Congratulations on finishing all of the IntransigentQuests! " +
-                  "For completing them all, you have been awarded with a single Red Candle. " +
-                  "At level 110+ you may use this candle to revive yourself once, and avoid permanent death."
+                "Congratulations on finishing all of the IntransigentQuests! " +
+                "For completing them all, you have been awarded with a single Red Candle. " +
+                "At level 110+ you may use this candle to revive yourself once, and avoid permanent death."
             );
             getPlayer().setCompletedAllQuests(true);
         }
@@ -398,7 +398,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
               .append(": ")
               .append(getPlayer().getQuestKills(target.getKey()) >= target.getValue().getLeft() ? "#g" : "#r")
               .append(getPlayer().getQuestKills(target.getKey()))
-              .append(" #k/ ")
+              .append("#k / ")
               .append(target.getValue().getLeft())
               .append("\r\n")
         );
@@ -408,9 +408,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         q.readItemsToCollect().entrySet().forEach(toCollect ->
             sb.append(toCollect.getValue().getRight())
               .append(": ")
-              .append(getPlayer().getQuestKills(toCollect.getKey()) >= toCollect.getValue().getLeft() ? "#g" : "#r")
-              .append(getPlayer().getQuestKills(toCollect.getKey()))
-              .append(" #k/ ")
+              .append(getPlayer().getQuestCollected(toCollect.getKey()) >= toCollect.getValue().getLeft() ? "#g" : "#r")
+              .append(getPlayer().getQuestCollected(toCollect.getKey()))
+              .append("#k / ")
               .append(toCollect.getValue().getLeft())
               .append("\r\n")
         );

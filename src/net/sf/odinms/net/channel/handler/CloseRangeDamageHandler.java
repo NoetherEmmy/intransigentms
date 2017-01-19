@@ -115,7 +115,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     if (m == null) return Integer.MAX_VALUE;
                     return (int) m.getPosition().distanceSq(player.getPosition());
                 }));
-                
+
                 List<Pair<Integer, List<Integer>>> removedDmg = new ArrayList<>(attack.allDamage.size());
                 if (attack.allDamage.size() > mobsHit) {
                     for (int i = mobsHit; i < attack.allDamage.size(); ++i) {
@@ -404,13 +404,13 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 if (ee != null) {
                     switch (ee) {
                         case WEAK:
-                            multiplier = 1.5d;
+                            multiplier *= 1.5d;
                             break;
                         case STRONG:
-                            multiplier = 0.5d;
+                            multiplier *= 0.5d;
                             break;
                         case IMMUNE:
-                            multiplier = 0.0d;
+                            multiplier *= 0.0d;
                             break;
                     }
                 }
@@ -498,7 +498,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 }
             }
         }
-            
+
         if (player.getDeathPenalty() > 0) {
             double dpmultiplier = Math.max(1.0d - (double) player.getDeathPenalty() * 0.03d, 0.0d);
             for (int i = 0; i < attack.allDamage.size(); ++i) {

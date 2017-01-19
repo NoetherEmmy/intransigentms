@@ -202,7 +202,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
                         int upperRange = player.getCurrentMaxBaseDamage();
                         int lowerRange = player.calculateMinBaseDamage(player);
-                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 100.0d);
+                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 100.0d * monster.getVulnerability());
                         String rawDmgString = "" + totDamageToOneMonster;
                         List<String> digitGroupings = new ArrayList<>(5);
                         digitGroupings.add(rawDmgString.substring(0, rawDmgString.length() % 3));
@@ -212,9 +212,10 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         if (player.showSnipeDmg()) {
                             player.sendHint(
                                 "Snipe damage: #r" +
-                                    digitGroupings.stream()
-                                                  .reduce((accu, grouping) -> accu + "," + grouping)
-                                                  .orElse("0") +
+                                    digitGroupings
+                                        .stream()
+                                        .reduce((accu, grouping) -> accu + "," + grouping)
+                                        .orElse("0") +
                                     "#k"
                             );
                         }
