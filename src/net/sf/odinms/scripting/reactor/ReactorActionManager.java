@@ -49,7 +49,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         // for (DropEntry d : chances){
         while (iter.hasNext()) {
             DropEntry d = iter.next();
-            if (Math.random() < (1 / (double) d.chance)) {
+            if (Math.random() < (1.0d / (double) d.chance)) {
                 numItems++;
                 items.add(d);
             }

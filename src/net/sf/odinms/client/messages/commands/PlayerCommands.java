@@ -13,7 +13,6 @@ import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleItemInformationProvider;
-import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.life.MapleLifeFactory;
 import net.sf.odinms.server.life.MapleMonster;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class PlayerCommands implements Command {
     @Override
@@ -66,6 +66,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@online - | - Lists all online players.");
             mc.dropMessage("@event - | - Teleports you to the currectly active event, if there is one.");
             mc.dropMessage("@monstertrialtime - | - Shows how much longer you must wait to enter another Monster Trial.");
+            mc.dropMessage("@dailyprize - | - Displays the amount of time you have until you can get another prize from T-1337.");
             mc.dropMessage("@mapleadmin - | - Opens up chat with Maple Adminstrator NPC.");
             mc.dropMessage("@monsterlevels - | - Displays levels and relative XP multipliers for all monsters on the map.");
             mc.dropMessage("@absolutexprate - | - Displays your current XP multiplier before relative multipliers.");
@@ -97,14 +98,6 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@donated - | - Allows access to donator benefits.");
             mc.dropMessage("@voteupdate - | - Updates your total vote point and NX count, for when you vote while still in-game.");
             mc.dropMessage("@vote - | - Displays the amount of time left until you may vote again.");
-            if (player.getClient().getChannelServer().extraCommands()) {
-                mc.dropMessage("@cody/@storage/@news/@kin/@nimakin/@reward/@reward1/@fredrick/@spinel/@clan");
-                mc.dropMessage("@banme - | - This command will ban you. GMs will not unban you from this.");
-                mc.dropMessage("@goafk - | - Uses a chalkboard to say that you are AFK.");
-                mc.dropMessage("@slime - | - Summons slimes for you for a small cost.");
-                mc.dropMessage("@go - | - Takes you to many towns and fighting areas.");
-                mc.dropMessage("@buynx - | - You can purchase NX with this command.");
-            }
         } else if (splitted[0].equals("@checkstats")) {
             mc.dropMessage("Your stats are:");
             mc.dropMessage("Str: " + player.getStr());
@@ -126,14 +119,19 @@ public class PlayerCommands implements Command {
             NPCScriptManager.getInstance().dispose(c);
             mc.dropMessage("You have been disposed.");
         } else if (splitted[0].equals("@mapfix")) {
-            MapleMap curmap = player.getMap();
+            final MapleMap curMap = player.getMap();
             try {
-                if (curmap.getGroundBelow(player.getPosition()) == null) {
-                    MapleMap target = c.getChannelServer().getMapFactory().getMap(player.getMapId());
-                    MaplePortal portal = target.getPortal(0);
-                    player.changeMap(target, portal);
+                if (curMap.getGroundBelow(player.getPosition()) == null) {
+                    player.changeMap(player.getMapId(), 0);
                 } else {
-                    player.dropMessage(6, "You are not currently stuck. Ground below: (" + curmap.getGroundBelow(player.getPosition()).x + ", " + curmap.getGroundBelow(player.getPosition()).y + ")");
+                    player.dropMessage(
+                        6,
+                        "You are not currently stuck. Ground below: (" +
+                            curMap.getGroundBelow(player.getPosition()).x +
+                            ", " +
+                            curMap.getGroundBelow(player.getPosition()).y +
+                            ")"
+                    );
                 }
             } catch (Exception e) {
                 mc.dropMessage("@mapfix failed: " + e);
@@ -150,7 +148,7 @@ public class PlayerCommands implements Command {
                 }
                 mc.dropMessage("Quest: " + q.getTitle());
                 mc.dropMessage("-----------------------------");
-                q.readMonsterTargets().entrySet().forEach(e -> 
+                q.readMonsterTargets().entrySet().forEach(e ->
                     mc.dropMessage(
                           e.getValue().getRight()
                         + "s killed: "
@@ -379,7 +377,7 @@ public class PlayerCommands implements Command {
                         if (eqpcandidate != null && (candidate == null || eqpcandidate.getRight().length() < candidate.getRight().length())) {
                             candidate = eqpcandidate;
                         }
-                    
+
                         try {
                             int searchid;
                             if (candidate != null) {
@@ -751,7 +749,7 @@ public class PlayerCommands implements Command {
                             return Double.valueOf(xphpratio1).compareTo(xphpratio2);
                         });
                     }
-                    
+
                     for (MapleMonster mob : mobList) {
                         double xphpratio = ((double) mob.getExp() * player.getTotalMonsterXp(mob.getLevel())) / (double) mob.getHp();
                         BigDecimal xhrbd = BigDecimal.valueOf(xphpratio);
@@ -990,12 +988,49 @@ public class PlayerCommands implements Command {
             }
             mc.dropMessage("Current PQ point total: " + player.getPartyQuest().getPoints());
         } else if (splitted[0].equals("@overflowexp")) {
-            if (splitted.length != 2) {
+            if (splitted.length != 2 || !Pattern.matches("[A-Za-z][A-Za-z0-9]+", splitted[1])) {
                 mc.dropMessage("Incorrect syntax. Use: @overflowexp <playername>");
                 return;
             }
             String name = splitted[1];
+            String nameLower = name.toLowerCase();
             MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+            if (victim == null) {
+                // Not on this channel
+                for (ChannelServer cs : ChannelServer.getAllInstances()) {
+                    if (!cs.getPlayerStorage().getAllCharacters().isEmpty()) {
+                        for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
+                            if (nameLower.equals(chr.getName().toLowerCase()) && !chr.isGM()) {
+                                victim = chr;
+                                break;
+                            }
+                        }
+                    }
+                    if (victim != null) break;
+                }
+            }
+            Integer overflowExp = null;
+            if (victim == null) {
+                // Not online
+                Connection con = DatabaseConnection.getConnection();
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+                try {
+                    ps = con.prepareStatement("SELECT overflowexp FROM characters WHERE name LIKE ?");
+                    ps.setString(1, name);
+                    rs = ps.executeQuery();
+                    if (rs.next()) {
+                        overflowExp = rs.getInt("overflowexp");
+                    }
+                } catch (SQLException sqle) {
+                    mc.dropMessage("There was an exception finding the player specified.");
+                    sqle.printStackTrace();
+                    return;
+                } finally {
+                    if (rs != null) rs.close();
+                    if (ps != null) ps.close();
+                }
+            }
             if (victim != null) {
                 String rawOverflow = "" + victim.getOverflowExp();
                 List<String> digitGroupings = new ArrayList<>(5);
@@ -1005,13 +1040,27 @@ public class PlayerCommands implements Command {
                 }
                 mc.dropMessage(
                     victim.getName() +
-                    "'s total overflow EXP: " +
-                    digitGroupings.stream()
-                                  .reduce((accu, grouping) -> accu + "," + grouping)
-                                  .orElse("0")
+                        "'s total overflow EXP: " +
+                        digitGroupings.stream()
+                                      .reduce((accu, grouping) -> accu + "," + grouping)
+                                      .orElse("0")
+                );
+            } else if (overflowExp != null) {
+                String rawOverflow = "" + overflowExp;
+                List<String> digitGroupings = new ArrayList<>(5);
+                digitGroupings.add(rawOverflow.substring(0, rawOverflow.length() % 3));
+                for (int i = rawOverflow.length() % 3; i < rawOverflow.length(); i += 3) {
+                    digitGroupings.add(rawOverflow.substring(i, i + 3));
+                }
+                mc.dropMessage(
+                    name +
+                        "'s total overflow EXP: " +
+                        digitGroupings.stream()
+                                      .reduce((accu, grouping) -> accu + "," + grouping)
+                                      .orElse("0")
                 );
             } else {
-                mc.dropMessage("There exists no such player on your channel.");
+                mc.dropMessage("There exists no such player.");
             }
         } else if (splitted[0].equals("@vskills")) {
             NPCScriptManager.getInstance().start(c, 9201095);
@@ -1051,6 +1100,8 @@ public class PlayerCommands implements Command {
             } else {
                 mc.dropMessage("You do not have access to the Samsara ability.");
             }
+        } else if (splitted[0].equals("@dailyprize")) {
+            player.dropDailyPrizeTime(true);
         }
     }
 
@@ -1150,7 +1201,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("snipedisplay", 0),
             new CommandDefinition("event", 0),
             new CommandDefinition("magic", 0),
-            new CommandDefinition("samsara", 0)
+            new CommandDefinition("samsara", 0),
+            new CommandDefinition("dailyprize", 0)
         };
     }
 }

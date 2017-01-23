@@ -251,6 +251,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
           });
         player.updatePastLifeExp();
         player.reactivateExpBonus();
+        player.dropDailyPrizeTime(false);
         player.dropVoteTime();
         player.setInvincible(false);
         if (player.getZakDc()) {

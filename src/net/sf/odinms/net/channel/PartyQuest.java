@@ -293,6 +293,9 @@ public class PartyQuest {
 
         if (pqmiMinPlayers == null || pqmiMinPlayers.getMap().playerCount() == 0) {
             dispose();
+            if (player.getMapId() != exitMapId) {
+                player.changeMap(exitMapId, 0);
+            }
         } else {
             player.changeMap(pqmiMinPlayers.getMap().getId());
         }

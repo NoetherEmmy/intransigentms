@@ -113,7 +113,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         boolean undo = false;
                         switch (APTo) {
                             case 64: // str
-                                if (player.getStr() >= 999) {
+                                if (player.getStr() >= 30000) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
                                     undo = true;
                                     break;
@@ -122,7 +122,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 statupdate.add(new Pair<>(MapleStat.STR, player.getStr()));
                                 break;
                             case 128: // dex
-                                if (player.getDex() >= 999) {
+                                if (player.getDex() >= 30000) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
                                     undo = true;
                                     break;
@@ -131,7 +131,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 statupdate.add(new Pair<>(MapleStat.DEX, player.getDex()));
                                 break;
                             case 256: // int
-                                if (player.getInt() >= 999) {
+                                if (player.getInt() >= 30000) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
                                     undo = true;
                                     break;
@@ -140,7 +140,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 statupdate.add(new Pair<>(MapleStat.INT, player.getInt()));
                                 break;
                             case 512: // luk
-                                if (player.getLuk() >= 999) {
+                                if (player.getLuk() >= 30000) {
                                     c.getSession().write(MaplePacketCreator.enableActions());
                                     undo = true;
                                     break;
@@ -424,8 +424,15 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             System.out.print("Changed map, Map ID: " + mapId);
                         }
                         */
-                        if (mapId < 2000000 || map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) || map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT)) {
+                        if (
+                            mapId < 2000000 ||
+                            map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) ||
+                            map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT)
+                        ) {
                             player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
+                            break;
+                        }
+                        if (mapId / 10000000 == 27 && !canGoToTimeLaneMap(player, mapId)) {
                             break;
                         }
                         if (player.getPartyQuest() != null) {
@@ -453,8 +460,16 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 player.dropMessage(1, "You cannot use VIP teleport rocks to teleport to GM maps.");
                                 break;
                             }
-                            if (map.getId() < 2000000 || map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) || map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT) || map.isPQMap()) {
+                            if (
+                                map.getId() < 2000000 ||
+                                map.hasFieldLimit(MapleMap.FieldLimit.MYSTIC_DOOR_LIMIT) ||
+                                map.hasFieldLimit(MapleMap.FieldLimit.MIGRATE_LIMIT) ||
+                                map.isPQMap()
+                            ) {
                                 player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
+                                break;
+                            }
+                            if (map.getId() / 10000000 == 27 && !canGoToTimeLaneMap(player, map.getId())) {
                                 break;
                             }
                             if (!victim.isGM() || player.isGM()) { // Should really handle this before the switch
@@ -489,5 +504,74 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
 
     private int rand(int lbound, int ubound) {
         return MapleCharacter.rand(lbound, ubound);
+    }
+
+    public boolean canGoToTimeLaneMap(MapleCharacter player, int mapId) {
+        int questNums[] = {6, 7, 8};
+        boolean canGo = false;
+        switch (mapId) {
+            case 270010000:
+                if (player.getQuestCompletion(questNums[0])) {
+                    canGo = true;
+                    break;
+                }
+                player.dropMessage(1, "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane.");
+                break;
+            case 270010500:
+                if (player.getQuestCompletion(questNums[1])) {
+                    canGo = true;
+                    break;
+                }
+                player.dropMessage(1, "You may not go to that map prior to completing Regrets Run Rampant.");
+                break;
+            case 270020500:
+                if (player.getQuestCompletion(questNums[2])) {
+                    canGo = true;
+                    break;
+                }
+                player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
+                break;
+            case 270030500:
+                if (player.getQuestCompletion(questNums[2])) {
+                    canGo = true;
+                    break;
+                }
+                player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
+                break;
+            case 270040000:
+                if (player.getQuestCompletion(questNums[2])) {
+                    canGo = true;
+                    break;
+                }
+                player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
+                break;
+            default:
+                int mapStage = (mapId / 10000) % 10;
+                if (mapStage == 1) {
+                    if (player.getQuestCompletion(questNums[0])) {
+                        canGo = true;
+                        break;
+                    }
+                    player.dropMessage(1, "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane.");
+                    break;
+                } else if (mapStage == 2) {
+                    if (player.getQuestCompletion(questNums[1])) {
+                        canGo = true;
+                        break;
+                    }
+                    player.dropMessage(1, "You may not go to that map prior to completing Regrets Run Rampant.");
+                    break;
+                } else if (mapStage > 2) {
+                    if (player.getQuestCompletion(questNums[2])) {
+                        canGo = true;
+                        break;
+                    }
+                    player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
+                    break;
+                }
+                canGo = true;
+                break;
+        }
+        return canGo;
     }
 }

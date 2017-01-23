@@ -5,7 +5,6 @@ import net.sf.odinms.net.IntValueHolder;
 import java.io.Serializable;
 
 public enum MonsterStatus implements IntValueHolder, Serializable {
-
     WATK(0x1),
     WDEF(0x2),
     MATK(0x4),

@@ -135,9 +135,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private final Map<MapleQuest, MapleQuestStatus> quests;
     private final Set<MapleMonster> controlled = new LinkedHashSet<>();
     private final Set<MapleMapObject> visibleMapObjects =
-            Collections.synchronizedSet(
-                new LinkedHashSet<MapleMapObject>()
-            );
+        Collections.synchronizedSet(
+            new LinkedHashSet<MapleMapObject>()
+        );
     private final Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
     private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentHashMap<>(8, 0.8f, 2);
     private final HashMap<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
@@ -1016,12 +1016,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 ps.close();
 
                 ps = con.prepareStatement("UPDATE accounts SET `paypalNX` = ?, `mPoints` = ?, `cardNX` = ?, `donorPoints` = ?, `lastdailyprize` = ?, `votepoints` = ? WHERE id = ?");
+                int newDbNx = paypalnx + (dbNx - initialNx);
                 ps.setInt(1, paypalnx + (dbNx - initialNx));
+                initialNx = newDbNx;
+
                 ps.setInt(2, maplepoints);
                 ps.setInt(3, cardnx);
                 ps.setInt(4, donatePoints);
                 ps.setLong(5, lastdailyprize.getTime());
-                ps.setInt(6, votepoints + (dbVotepoints - initialVotePoints));
+
+                int newDbVotePoints = votepoints + (dbVotepoints - initialVotePoints);
+                ps.setInt(6, newDbVotePoints);
+                initialVotePoints = newDbVotePoints;
+
                 ps.setInt(7, client.getAccID());
                 ps.executeUpdate();
                 ps.close();
@@ -1554,7 +1561,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public boolean getQuestCompletion(int quest) {
-        int mask = (int) Math.pow(2, quest);
+        int mask = 1 << quest;
         return (questCompletion & mask) > 0;
     }
 
@@ -1867,9 +1874,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             setInitialVotePoints(dbVotePoints);
             dropMessage(
                 "Your vote points and NX have been updated. New vote point total: " +
-                getVotePoints() +
-                ", NX: " +
-                getCSPoints(1)
+                    getVotePoints() +
+                    ", NX: " +
+                    getCSPoints(1)
             );
         } catch (SQLException sqle) {
             sqle.printStackTrace();
@@ -5418,6 +5425,106 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public boolean canSamsara() {
         return System.currentTimeMillis() - getLastSamsara() >= SAMSARA_COOLDOWN;
+    }
+
+    public void dropDailyPrizeTime(boolean checkOtherChars) {
+        if (getLastDailyPrize() == null || getLastDailyPrize().getTime() <= 1) {
+            dropMessage("IT LOOKS LIKE YOU HAVEN'T STARTED YOUR DAILY PRIZES. TALK TO T-1337 IN THE FM!");
+            return;
+        }
+
+        boolean canGetDailyPrizes = true;
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement charps = con.prepareStatement("SELECT id FROM characters WHERE accountid = ?");
+            charps.setInt(1, getAccountID());
+            ResultSet charrs = charps.executeQuery();
+            while (charrs.next()) {
+                int charid = charrs.getInt("id");
+                if (charid == getId()) {
+                    continue;
+                }
+                PreparedStatement invps = con.prepareStatement(
+                    "SELECT itemid FROM inventoryitems WHERE characterid = ?"
+                );
+                invps.setInt(1, charid);
+                ResultSet invrs = invps.executeQuery();
+                while (invrs.next()) {
+                    int itemid = invrs.getInt("itemid");
+                    if (itemid >= 3990010 && itemid <= 3990016) {
+                        canGetDailyPrizes = false;
+                        break;
+                    }
+                }
+                invrs.close();
+                invps.close();
+            }
+            charrs.close();
+            charps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            dropMessage("THERE WAS AN ERROR GETTING YOUR DAILY PRIZE INFO.");
+            return;
+        }
+        if (!canGetDailyPrizes) {
+            if (checkOtherChars) {
+                dropMessage("YOU MAY ONLY PARTICIPATE IN DAILY PRIZES WITH ONE CHARACTER AT A TIME.");
+            }
+            return;
+        }
+
+        int dailyPrizeStatus;
+        Calendar validTime = Calendar.getInstance();
+        validTime.setTime(getLastDailyPrize());
+        validTime.add(Calendar.DATE, 1);
+        Calendar currenttime = Calendar.getInstance();
+        currenttime.setTimeInMillis(System.currentTimeMillis());
+        if (validTime.compareTo(currenttime) > 0) {
+            // Valid time is in the future
+            if (
+                validTime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
+                validTime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)
+            ) {
+                dailyPrizeStatus = 0;
+            } else {
+                dailyPrizeStatus = 1;
+            }
+        } else if (validTime.compareTo(currenttime) < 0) {
+            // Valid time is in the past
+            if (
+                validTime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
+                validTime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)
+            ) {
+                dailyPrizeStatus = 0;
+            } else {
+                dailyPrizeStatus = -1;
+            }
+        } else {
+            dailyPrizeStatus = 0;
+        }
+
+        if (dailyPrizeStatus == 1) {
+            Calendar validtime = Calendar.getInstance();
+            validtime.setTime(getLastDailyPrize());
+            validtime.add(Calendar.DATE, 1);
+            validtime.set(Calendar.HOUR_OF_DAY, 0);
+            validtime.set(Calendar.MINUTE, 0);
+            validtime.set(Calendar.SECOND, 0);
+            validtime.set(Calendar.MILLISECOND, 0);
+            long time = validtime.getTimeInMillis() - System.currentTimeMillis();
+
+            long hours = time / 3600000L;
+            time %= 3600000L;
+            long minutes = time / 60000L;
+            time %= 60000L;
+            long seconds = time / 1000L;
+
+            dropMessage("YOU MUST WAIT ANOTHER " + hours + " HOURS, " + minutes + " MINUTES, AND " + seconds + " SECONDS TO GET YOUR NEXT PRIZE.");
+        } else if (dailyPrizeStatus == -1) {
+            dropMessage("BUMMER. LOOKS LIKE YOU WAITED TOO LONG TO GET YOUR NEXT PRIZE, HUMAN! GO BACK TO T-1337!");
+        } else {
+            dropMessage("LOOKS LIKE YOU'RE READY TO GET YOUR NEXT PRIZE FROM T-1337!");
+        }
     }
 
     private static class MapleBuffStatValueHolder {

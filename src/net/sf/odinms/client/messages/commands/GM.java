@@ -1559,7 +1559,7 @@ public class GM implements Command {
                         MapleDataProviderFactory.getDataProvider(
                             new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
                         );
-                    mc.dropMessage("<<Type: " + type + " | Search: " + search + ">>");
+                    mc.dropMessage("<< Type: " + type + " | Search: " + (search != null ? search : pattern) + " >>");
                     List<String> retNpcs = new ArrayList<>();
                     switch (type) {
                         case "NPC":
@@ -1729,41 +1729,6 @@ public class GM implements Command {
                     }
                 } else {
                     mc.dropMessage("Invalid search. Proper usage: '!search <type> [-re] <searchFor>', where <type> is MAP, USE, ETC, CASH, EQUIP, MOB (or MONSTER), or SKILL.");
-                }
-                break;
-            case "!msearch":
-                try {
-                    URL url;
-                    URLConnection urlConn;
-
-                    BufferedReader dis;
-
-                    String replaced;
-                    if (splitted.length > 1) {
-                        replaced = StringUtil.joinStringFrom(splitted, 1).replace(' ', '%');
-                    } else {
-                        mc.dropMessage("Syntax: !search item name/map name/monster name");
-                        return;
-                    }
-
-                    url = new URL("http://www.mapletip.com/search_java.php?search_value=" + replaced + "&check=true");
-                    urlConn = url.openConnection();
-                    urlConn.setDoInput(true);
-                    urlConn.setUseCaches(false);
-                    dis = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-                    String s;
-
-                    while ((s = dis.readLine()) != null) {
-                        mc.dropMessage(s);
-                    }
-                    mc.dropMessage("Search for " + '"' + replaced.replace('%', ' ') + '"' + " was completed.");
-                    dis.close();
-                } catch (MalformedURLException mue) {
-                    mc.dropMessage("Malformed URL Exception: " + mue.toString());
-                } catch (IOException ioe) {
-                    mc.dropMessage("IO Exception: " + ioe.toString());
-                } catch (Exception e) {
-                    mc.dropMessage("General Exception: " + e.toString());
                 }
                 break;
             case "!npc": {
@@ -2496,7 +2461,6 @@ public class GM implements Command {
             new CommandDefinition("ban", 3),
             new CommandDefinition("tempban", 3),
             new CommandDefinition("search", 3),
-            new CommandDefinition("msearch", 3),
             new CommandDefinition("npc", 3),
             new CommandDefinition("removenpcs", 3),
             new CommandDefinition("mynpcpos", 3),

@@ -838,8 +838,8 @@ public class MapleMap {
             broadcastMessage(MaplePacketCreator.showOwnBuffEffect(monster.getBuffToGive(), 11));
             MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
             MapleStatEffect statEffect = mii.getItemEffect(monster.getBuffToGive());
-            synchronized (this.characters) {
-                for (MapleCharacter character : this.characters) {
+            synchronized (characters) {
+                for (MapleCharacter character : characters) {
                     if (character.isAlive()) {
                         statEffect.applyTo(character);
                         broadcastMessage(MaplePacketCreator.showBuffeffect(character.getId(), monster.getBuffToGive(), 11, (byte) 1));
@@ -951,7 +951,7 @@ public class MapleMap {
         )
         .stream()
         .map(mmo -> (MapleMonster) mmo)
-        .collect(Collectors.toList());
+        .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<MapleReactor> getAllReactors() {
@@ -962,7 +962,7 @@ public class MapleMap {
         )
         .stream()
         .map(mmo -> (MapleReactor) mmo)
-        .collect(Collectors.toList());
+        .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<MapleNPC> getAllNPCs() {
@@ -973,7 +973,7 @@ public class MapleMap {
         )
         .stream()
         .map(mmo -> (MapleNPC) mmo)
-        .collect(Collectors.toList());
+        .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public MapleNPC getNPCById(int npcId) {
@@ -984,9 +984,9 @@ public class MapleMap {
         )
         .stream()
         .map(mmo -> (MapleNPC) mmo)
-                .filter(npc -> npc.getId() == npcId)
-                .findAny()
-                .orElse(null);
+        .filter(npc -> npc.getId() == npcId)
+        .findAny()
+        .orElse(null);
     }
 
     public void destroyReactor(int oid) {

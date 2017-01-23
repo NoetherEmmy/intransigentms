@@ -79,7 +79,7 @@ public class MapleStatEffect implements Serializable {
         this.x = mse.getX();
         this.y = mse.getY();
         this.z = mse.getZ();
-        this.prop = mse.getProp();
+        this.prop = mse.getProp() / 100.0d;
         this.iProp = mse.getIProp();
         this.itemCon = mse.getItemCon();
         this.itemConNo = mse.getItemConNo();
@@ -1510,7 +1510,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     public int getIProp() {
-        return this.iProp;
+        return iProp;
     }
 
     public int getItemCon() {

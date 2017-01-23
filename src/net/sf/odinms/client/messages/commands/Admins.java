@@ -363,16 +363,27 @@ public class Admins implements Command {
                 break;
             case "!lreactor": {
                 MapleMap map = player.getMap();
-                List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.REACTOR));
+                List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, MapleMapObjectType.REACTOR);
                 for (MapleMapObject reactorL : reactors) {
                     MapleReactor reactor2l = (MapleReactor) reactorL;
-                    mc.dropMessage("Reactor: oID: " + reactor2l.getObjectId() + " reactorID: " + reactor2l.getId() + " Position: " + reactor2l.getPosition().toString() + " State: " + reactor2l.getState());
+                    mc.dropMessage(
+                        "Reactor: oid: " +
+                            reactor2l.getObjectId() +
+                            " reactor ID: " +
+                            reactor2l.getId() +
+                            " Position: " +
+                            reactor2l.getPosition().x +
+                            ", " +
+                            reactor2l.getPosition().y +
+                            " State: " +
+                            reactor2l.getState()
+                    );
                 }
                 break;
             }
             case "!dreactor": {
                 MapleMap map = player.getMap();
-                List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.REACTOR));
+                List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, MapleMapObjectType.REACTOR);
                 if (splitted[1].equalsIgnoreCase("all")) {
                     for (MapleMapObject reactorL : reactors) {
                         MapleReactor reactor2l = (MapleReactor) reactorL;

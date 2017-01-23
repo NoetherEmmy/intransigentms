@@ -35,14 +35,6 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         final AttackInfo attack = parseDamage(slea, false);
         final MapleCharacter player = c.getPlayer();
         player.resetAfkTime();
-        MaplePacket packet = MaplePacketCreator.closeRangeAttack(
-            player.getId(),
-            attack.skill,
-            attack.stance,
-            attack.numAttackedAndDamage,
-            attack.allDamage,
-            attack.speed
-        );
 
         if (player.getMap().isDamageMuted()) {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
@@ -63,6 +55,15 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             }
             return;
         }
+
+        MaplePacket packet = MaplePacketCreator.closeRangeAttack(
+            player.getId(),
+            attack.skill,
+            attack.stance,
+            attack.numAttackedAndDamage,
+            attack.allDamage,
+            attack.speed
+        );
 
         player.getMap().broadcastMessage(player, packet, false, true);
         int numFinisherOrbs = 0;
@@ -124,6 +125,16 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     attack.allDamage.subList(mobsHit, attack.allDamage.size()).clear();
                 }
 
+                double critRate = 0.0d;
+                double critDamage = 0.0d;
+                Integer sharpEyesBuff_ = player.getBuffedValue(MapleBuffStat.SHARP_EYES);
+                if (sharpEyesBuff_ != null) {
+                    int sharpEyesBuff = sharpEyesBuff_;
+                    int x = (sharpEyesBuff & ~0xFF) >> 8;
+                    int y = sharpEyesBuff & 0xFF;
+                    critRate = (double) x / 100.0d;
+                    critDamage = ((double) y - 100.0d) / 100.0d;
+                }
                 double effectiveMagic = (double) (perfectStrikeLevel * player.getTotalMagic()) * 0.05d;
                 double mastery = fistMasteryLevel > 0 ? ((double) fistMastery.getEffect(fistMasteryLevel).getMastery() * 5.0d + 10.0d) / 100.0d : 0.1d;
                 double skillDamage;
@@ -144,21 +155,34 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 final Random rand = new Random();
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    List<Integer> additionalDmg = new ArrayList<>();
-                    List<Integer> newDmg = new ArrayList<>();
+                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                    List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
                     double critMulti = 1.0d;
                     if (stunMasteryLevel > 0) {
                         MapleMonster m = map.getMonsterByOid(dmg.getLeft());
                         if (m != null) {
                             boolean stunned = m.isBuffed(MonsterStatus.STUN);
                             if (stunned) {
-                                MapleStatEffect stunMasteryEffect = SkillFactory.getSkill(5110000)
-                                                                                .getEffect(stunMasteryLevel);
-                                if (stunMasteryEffect.makeChanceResult()) {
-                                    critMulti = (double) stunMasteryEffect.getDamage() / 100.0d;
+                                MapleStatEffect stunMasteryEffect =
+                                    SkillFactory
+                                        .getSkill(5110000)
+                                        .getEffect(stunMasteryLevel);
+                                double stunCritChance = stunMasteryEffect.getProp() / 100.0d + critRate;
+                                if (stunCritChance > Math.random()) {
+                                    critMulti = (double) stunMasteryEffect.getDamage() / 100.0d + critDamage;
+                                }
+                            } else if (critRate > 0.0d) {
+                                MapleStatEffect stunMasteryEffect =
+                                    SkillFactory
+                                        .getSkill(5110000)
+                                        .getEffect(stunMasteryLevel);
+                                if (critRate > Math.random()) {
+                                    critMulti = (double) stunMasteryEffect.getDamage() / 100.0d + critDamage;
                                 }
                             }
                         }
+                    } else if (critRate > 0.0d && critRate > Math.random()) {
+                        critMulti = 1.0d + critDamage;
                     }
                     int hitIndex = 0;
                     for (Integer dmgNumber : dmg.getRight()) {
@@ -175,8 +199,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         hitIndex++;
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
-                    if (attack.skill == 5121004 || attack.skill == 5121007) {
-                        // Demolition, Barrage
+                    if (attack.skill == 5121004 || attack.skill == 5121007 || attack.skill == 5101003) {
+                        // Demolition, Barrage, Double Uppercut
                         // Skills that hit multiple numbers per mob.
                         int delay = 0;
                         for (Integer additionald : additionalDmg) {
@@ -187,7 +211,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                     MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
                                     true
                                 ), delay);
-                            delay += 250;
+                            delay += 300;
                         }
                     } else {
                         for (Integer additionald : additionalDmg) {
@@ -214,7 +238,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 final double radiusSq = 500000.0d;
 
                 boolean someHit =
-                    attack.allDamage.size() > 0 &&
+                    !attack.allDamage.isEmpty() &&
                     attack.allDamage
                           .stream()
                           .allMatch(dmg ->
@@ -512,7 +536,16 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
                     for (Integer additionald : additionaldmg) {
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
+                        player
+                            .getMap()
+                            .broadcastMessage(
+                                player,
+                                MaplePacketCreator.damageMonster(
+                                    dmg.getLeft(),
+                                    additionald
+                                ),
+                                true
+                            );
                     }
                 }
             }
@@ -520,7 +553,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
         // Handle Sacrifice HP loss.
         if (attack.numAttacked > 0 && attack.skill == 1311005) {
-            int totDamageToOneMonster = attack.allDamage.get(0).getRight().get(0); // Sacrifice attacks only 1 mob with 1 attack.
+            // Sacrifice attacks only 1 mob with 1 attack.
+            int totDamageToOneMonster = attack.allDamage.get(0).getRight().get(0);
             int remainingHP = player.getHp() - totDamageToOneMonster * attack.getAttackEffect(player).getX() / 100;
             if (remainingHP > 1) {
                 player.setHp(remainingHP);
@@ -583,7 +617,16 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     return;
                 } else {
                     c.getSession().write(MaplePacketCreator.skillCooldown(attack.skill, effect_.getCooldown()));
-                    ScheduledFuture<?> timer = TimerManager.getInstance().schedule(new CancelCooldownAction(c.getPlayer(), attack.skill), effect_.getCooldown() * 1000);
+                    ScheduledFuture<?> timer =
+                        TimerManager
+                            .getInstance()
+                            .schedule(
+                                new CancelCooldownAction(
+                                    c.getPlayer(),
+                                    attack.skill
+                                ),
+                                effect_.getCooldown() * 1000
+                            );
                     player.addCooldown(attack.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, timer);
                 }
             }
@@ -591,7 +634,21 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         applyAttack(attack, player, attackCount);
         if (c.getPlayer().hasFakeChar()) {
             for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
-                player.getMap().broadcastMessage(ch.getFakeChar(), MaplePacketCreator.closeRangeAttack(ch.getFakeChar().getId(), attack.skill, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.speed), false, true);
+                player
+                    .getMap()
+                    .broadcastMessage(
+                        ch.getFakeChar(),
+                        MaplePacketCreator.closeRangeAttack(
+                            ch.getFakeChar().getId(),
+                            attack.skill,
+                            attack.stance,
+                            attack.numAttackedAndDamage,
+                            attack.allDamage,
+                            attack.speed
+                        ),
+                        false,
+                        true
+                    );
                 applyAttack(attack, ch.getFakeChar(), attackCount);
             }
         }

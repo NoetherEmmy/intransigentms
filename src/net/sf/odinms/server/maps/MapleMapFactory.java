@@ -63,11 +63,12 @@ public class MapleMapFactory {
 
                 MapleData mapData = source.getData(mapName);
                 if (mapData == null) {
-                    throw new NullPointerException(
+                    System.err.println(
                         "No mapData available for mapName: " +
                             mapName +
                             ", source.getData(mapName) == null"
                     );
+                    return null;
                 }
                 float monsterRate = 0.0f;
                 if (respawns) {

@@ -384,7 +384,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void rewardPlayer() {
-        rewardPlayer(1, 1);
+        rewardPlayer(0, 0);
     }
 
     public String showQuestProgress() {
@@ -1858,7 +1858,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         validtime.set(Calendar.SECOND, 0);
         validtime.set(Calendar.MILLISECOND, 0);
         long time = validtime.getTimeInMillis() - System.currentTimeMillis();
-        time = time / (1000 * 60 * 60);
+        time = time / (1000L * 60L * 60L);
         return (int) time;
     }
 

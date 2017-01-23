@@ -344,11 +344,16 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             case 4001002:
                                 // Handle Disorder's scaling with player level
                                 Map<MonsterStatus, Integer> disorderStati = new LinkedHashMap<>(attackEffect.getMonsterStati());
+                                int attackReduction = 0;
                                 if (disorderStati.containsKey(MonsterStatus.WATK)) {
-                                    disorderStati.put(MonsterStatus.WATK, disorderStati.get(MonsterStatus.WATK) - (player.getLevel() / 2));
+                                    attackReduction = disorderStati.get(MonsterStatus.WATK) - (player.getLevel() / 2);
+                                    disorderStati.put(MonsterStatus.WATK, attackReduction);
                                 }
                                 if (disorderStati.containsKey(MonsterStatus.WDEF)) {
                                     disorderStati.put(MonsterStatus.WDEF, disorderStati.get(MonsterStatus.WDEF) - (player.getLevel() / 2));
+                                }
+                                if (attackReduction != 0) {
+                                    disorderStati.put(MonsterStatus.MATK, attackReduction);
                                 }
                                 monsterStatusEffect = new MonsterStatusEffect(disorderStati, theSkill, false);
                                 break;
@@ -418,28 +423,32 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         }
     }
 
-    private void handlePickPocket(MapleCharacter player, MapleMonster monster, Pair<Integer, List<Integer>> oned) {
+    private void handlePickPocket(final MapleCharacter player, final MapleMonster monster, Pair<Integer, List<Integer>> oned) {
         int delay = 0;
-        int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET);
-        int reqdamage = 20000;
+        int maxMeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET) * 4;
+        int reqDamage = 6000;
         Point monsterPosition = monster.getPosition();
-        ISkill pickpocket = SkillFactory.getSkill(4211003);
+        ISkill pickPocket = SkillFactory.getSkill(4211003);
 
         for (Integer eachd : oned.getRight()) {
-            if (pickpocket.getEffect(player.getSkillLevel(pickpocket)).makeChanceResult()) {
-                double perc = (double) eachd / (double) reqdamage;
+            if (pickPocket.getEffect(player.getSkillLevel(pickPocket)).makeChanceResult()) {
+                double perc = (double) eachd / (double) reqDamage;
 
-                final int todrop = Math.min((int) Math.max(perc * (double) maxmeso, (double) 1), maxmeso);
-                final MapleMap tdmap = player.getMap();
-                final Point tdpos = new Point(
-                    (int) (monsterPosition.getX() + (Math.random() * 100) - 50),
-                    (int) (monsterPosition.getY())
+                int baseDrop = Math.min((int) Math.max(perc * (double) maxMeso, 1.0d), maxMeso);
+                final int toDrop;
+                if (eachd > reqDamage) {
+                    toDrop = (int) (baseDrop + Math.sqrt(eachd - reqDamage) * 4.0d);
+                } else {
+                    toDrop = baseDrop;
+                }
+                final MapleMap map = player.getMap();
+                final Point pos = new Point(
+                    (int) (monsterPosition.getX() + (Math.random() * 100.0d) - 50.0d),
+                    (int) monsterPosition.getY()
                 );
-                final MapleMonster tdmob = monster;
-                final MapleCharacter tdchar = player;
 
                 TimerManager.getInstance().schedule(() ->
-                    tdmap.spawnMesoDrop(todrop, todrop, tdpos, tdmob, tdchar, false),
+                    map.spawnMesoDrop(toDrop, toDrop, pos, monster, player, false),
                     delay
                 );
 
