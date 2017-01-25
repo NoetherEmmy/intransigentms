@@ -304,7 +304,7 @@ public class PartyQuest {
             return min;
         });
 
-        if (pqmiMinPlayers == null || pqmiMinPlayers.getMap().playerCount() == 0) {
+        if (pqmiMinPlayers == null || pqmiMinPlayers.getMap().playerCount() == 0 || pqmiMinPlayers.getPlayers().get(0).getId() == player.getId()) {
             dispose();
             if (player.getMapId() != exitMapId) {
                 player.changeMap(exitMapId, 0);
