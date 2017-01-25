@@ -105,11 +105,11 @@ public class PartyQuest {
     }
 
     public void unregisterMap(MapleMap oldMap) {
-        if (!this.mapInstances.contains(oldMap.getPartyQuestInstance())) {
-            //throw new IllegalStateException("Attempting to deregister map that is not owned by the PartyQuest.");
-            System.err.println("Attempting to deregister map that is not owned by the PartyQuest.");
-        }
         if (oldMap.getPartyQuestInstance() != null) {
+            if (!mapInstances.contains(oldMap.getPartyQuestInstance())) {
+                //throw new IllegalStateException("Attempting to deregister map that is not owned by the PartyQuest.");
+                System.err.println("Attempting to deregister map that is not owned by the PartyQuest.");
+            }
             oldMap.getPartyQuestInstance().dispose();
         }
     }
@@ -185,7 +185,11 @@ public class PartyQuest {
 
     public void registerParty(MapleParty party) {
         party.getMembers().forEach(pc -> {
-            final MapleCharacter player = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterById(pc.getId());
+            final MapleCharacter player =
+                ChannelServer
+                    .getInstance(channel)
+                    .getPlayerStorage()
+                    .getCharacterById(pc.getId());
             registerPlayer(player);
         });
     }
@@ -214,21 +218,30 @@ public class PartyQuest {
     }
 
     public void dispose() {
-        players.forEach(p -> {
-            pqItems.forEach(itemId ->
-                MapleInventoryManipulator.removeAllById(
-                    p.getClient(),
-                    itemId,
-                    true
-                )
-            );
-            p.setPartyQuest(null);
-            if (p.getMapId() != exitMapId) p.changeMap(exitMapId);
-        });
+        try {
+            players.forEach(p -> {
+                if (p == null) return;
+                pqItems.forEach(itemId ->
+                    MapleInventoryManipulator.removeAllById(
+                        p.getClient(),
+                        itemId,
+                        true
+                    )
+                );
+                p.setPartyQuest(null);
+                if (p.getMapId() != exitMapId) p.changeMap(exitMapId);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         players.clear();
         registeredPlayerIds.clear();
-        while (!mapInstances.isEmpty()) {
-            mapInstances.get(0).dispose();
+        try {
+            while (!mapInstances.isEmpty()) {
+                mapInstances.get(0).dispose();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         pqItems.clear();
         ChannelServer.getInstance(channel).unregisterPartyQuest(name);

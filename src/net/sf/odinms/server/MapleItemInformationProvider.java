@@ -1531,7 +1531,7 @@ public class MapleItemInformationProvider {
     }
 
     public boolean isThrowingStar(int itemId) {
-        return (itemId >= 2070000 && itemId < 2080000);
+        return itemId >= 2070000 && itemId < 2080000;
     }
 
     public boolean isBullet(int itemId) {

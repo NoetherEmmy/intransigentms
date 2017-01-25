@@ -692,11 +692,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 ret.getClient().setGuest(rs.getInt("guest") > 0);
                 ret.donatePoints = rs.getInt("donorPoints");
                 ret.paypalnx = rs.getInt("paypalNX");
+                ret.initialNx = ret.paypalnx;
                 ret.maplepoints = rs.getInt("mPoints");
                 ret.cardnx = rs.getInt("cardNX");
                 ret.lastLogin = rs.getLong("LastLoginInMilliseconds");
                 ret.lastdailyprize = new Date(rs.getLong("lastdailyprize"));
                 ret.votepoints = rs.getInt("votepoints");
+                ret.initialVotePoints = ret.votepoints;
             }
             rs.close();
             ps.close();
@@ -1008,7 +1010,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 if (!rs.next()) {
                     rs.close();
                     ps.close();
-                    throw new RuntimeException("Reading votepoints failed.");
+                    throw new RuntimeException("Reading votepoints failed, acc ID: " + client.getAccID());
                 }
                 int dbNx = rs.getInt("paypalNX");
                 int dbVotepoints = rs.getInt("votepoints");
@@ -1019,6 +1021,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 int newDbNx = paypalnx + (dbNx - initialNx);
                 ps.setInt(1, paypalnx + (dbNx - initialNx));
                 initialNx = newDbNx;
+                paypalnx = newDbNx;
 
                 ps.setInt(2, maplepoints);
                 ps.setInt(3, cardnx);
@@ -1028,6 +1031,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 int newDbVotePoints = votepoints + (dbVotepoints - initialVotePoints);
                 ps.setInt(6, newDbVotePoints);
                 initialVotePoints = newDbVotePoints;
+                votepoints = newDbVotePoints;
 
                 ps.setInt(7, client.getAccID());
                 ps.executeUpdate();

@@ -101,12 +101,13 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     c.getChannelServer()
                      .getWorldInterface()
                      .broadcastGMMessage(null,
-                         MaplePacketCreator.serverNotice(6,
+                         MaplePacketCreator.serverNotice(
+                             6,
                              "WARNING: The player with name " +
-                             MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
-                             " on channel " +
-                             c.getChannel() +
-                             " MAY be using miss godmode."
+                                 MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
+                                 " on channel " +
+                                 c.getChannel() +
+                                 " MAY be using miss godmode."
                          ).getBytes()
                      );
                 } catch (RemoteException re) {

@@ -1009,7 +1009,7 @@ public class PlayerCommands implements Command {
                     if (victim != null) break;
                 }
             }
-            Integer overflowExp = null;
+            Long overflowExp = null;
             if (victim == null) {
                 // Not online
                 Connection con = DatabaseConnection.getConnection();
@@ -1020,7 +1020,7 @@ public class PlayerCommands implements Command {
                     ps.setString(1, name);
                     rs = ps.executeQuery();
                     if (rs.next()) {
-                        overflowExp = rs.getInt("overflowexp");
+                        overflowExp = rs.getLong("overflowexp");
                     }
                 } catch (SQLException sqle) {
                     mc.dropMessage("There was an exception finding the player specified.");

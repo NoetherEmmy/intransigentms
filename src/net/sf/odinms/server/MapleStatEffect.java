@@ -46,7 +46,7 @@ public class MapleStatEffect implements Serializable {
     private int moneyCon;
     private int cooldown;
     private boolean isMorph = false;
-    private int morphId = 0;
+    private int morphId;
     private List<MapleDisease> cureDebuffs;
     private int mastery, range;
 

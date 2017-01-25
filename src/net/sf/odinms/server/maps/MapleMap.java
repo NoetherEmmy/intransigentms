@@ -586,7 +586,7 @@ public class MapleMap {
                         if (meso > 0) {
                             final MapleMonster dropMonster = monster;
                             final MapleCharacter dropChar = dropOwner;
-                            final boolean publicLoot = this.isPQMap();
+                            final boolean publicLoot = isPQMap();
                             TimerManager.getInstance().schedule(() ->
                                 spawnMesoDrop(
                                     meso * mesoRate,
@@ -842,14 +842,31 @@ public class MapleMap {
                 for (MapleCharacter character : characters) {
                     if (character.isAlive()) {
                         statEffect.applyTo(character);
-                        broadcastMessage(MaplePacketCreator.showBuffeffect(character.getId(), monster.getBuffToGive(), 11, (byte) 1));
+                        broadcastMessage(
+                            MaplePacketCreator.showBuffeffect(
+                                character.getId(),
+                                monster.getBuffToGive(),
+                                11,
+                                (byte) 1
+                            )
+                        );
                     }
                 }
             }
         }
         if (monster.getId() == 8810018) {
             try {
-                chr.getClient().getChannelServer().getWorldInterface().broadcastMessage(chr.getName(), MaplePacketCreator.serverNotice(6, "To those of the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!").getBytes());
+                chr.getClient()
+                   .getChannelServer()
+                   .getWorldInterface()
+                   .broadcastMessage(
+                       chr.getName(),
+                       MaplePacketCreator.serverNotice(
+                           6,
+                           "To those of the crew that have finally conquered Horned Tail after numerous attempts, " +
+                               "I salute thee! You are the true heroes of Leafre!"
+                       ).getBytes()
+                   );
             } catch (RemoteException e) {
                 chr.getClient().getChannelServer().reconnectWorld();
             }

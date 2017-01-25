@@ -240,7 +240,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void damage(MapleCharacter from, int damage, boolean updateAttackTime) {
-        if (firstHit < 1) {
+        if (firstHit < 1L) {
             firstHit = System.currentTimeMillis();
         }
         AttackerEntry attacker;
@@ -275,7 +275,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 for (AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
                     if (cattacker.getAttacker().getMap() == from.getMap()) {
                         if (cattacker.getLastAttackTime() >= okTime) {
-                            cattacker.getAttacker().getClient().getSession().write(MaplePacketCreator.showMonsterHP(getObjectId(), remhppercentage));
+                            cattacker
+                                .getAttacker()
+                                .getClient()
+                                .getSession()
+                                .write(
+                                    MaplePacketCreator.showMonsterHP(
+                                        getObjectId(),
+                                        remhppercentage
+                                    )
+                                );
                         }
                     }
                 }
@@ -327,74 +336,80 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             highestDamageChar = attacker;
         }
 
-        if (attacker.getHp() > 0) {
-            long personalExp = exp;
-            if (exp > 0) {
-                Integer holySymbol = attacker.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
-                if (holySymbol != null) {
-                    if (numExpSharers == 1) {
-                        personalExp *= 1.0d + (holySymbol.doubleValue() / 500.0d);
-                    } else {
-                        personalExp *= 1.0d + (holySymbol.doubleValue() / 100.0d);
-                    }
-                }
+        if (attacker.getHp() <= 0) return;
 
-                if (numExpSharers > 1) {
-                    personalExp *= 1.0d + (0.25d * ((double) numExpSharers - 1.0d));
+        long personalExp = exp;
+        if (exp > 0) {
+            Integer holySymbol = attacker.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
+            if (holySymbol != null) {
+                if (numExpSharers <= 1) {
+                    personalExp *= 1.0d + (holySymbol.doubleValue() / 500.0d);
+                } else {
+                    personalExp *= 1.0d + (holySymbol.doubleValue() / 100.0d);
                 }
+            }
 
-                double mltpercent = 1.0d;
-                synchronized (activeEffects) {
-                    for (MonsterStatusEffect mse : activeEffects) {
-                        if (mse.getSkill().getId() == 4121003 || mse.getSkill().getId() == 4221003) {
-                            int percent = mse.getStati().get(MonsterStatus.SHOWDOWN) + 10;
-                            double tempmltpercent = 1.0d + (double) percent / 100.0d;
-                            if (tempmltpercent > mltpercent) {
-                                mltpercent = tempmltpercent;
-                            }
+            if (numExpSharers > 1) {
+                personalExp *= 1.0d + (0.25d * ((double) numExpSharers - 1.0d));
+            }
+
+            double mltpercent = 1.0d;
+            synchronized (activeEffects) {
+                for (MonsterStatusEffect mse : activeEffects) {
+                    if (mse.getSkill().getId() == 4121003 || mse.getSkill().getId() == 4221003) {
+                        int percent = mse.getStati().get(MonsterStatus.SHOWDOWN) + 10;
+                        double tempmltpercent = 1.0d + (double) percent / 100.0d;
+                        if (tempmltpercent > mltpercent) {
+                            mltpercent = tempmltpercent;
                         }
                     }
                 }
-
-                if (mltpercent != 1.0d) {
-                    personalExp = (long) (personalExp * mltpercent);
-                }
             }
 
-            personalExp *= attacker.getAbsoluteXp();
-            personalExp = (long) ((double) personalExp * attacker.getRelativeXp(getLevel()));
-
-            while (personalExp > Integer.MAX_VALUE) {
-                attacker.gainExp(Integer.MAX_VALUE, true, false, highestDamage, false);
-                personalExp -= Integer.MAX_VALUE;
+            if (mltpercent != 1.0d) {
+                personalExp = (long) (personalExp * mltpercent);
             }
-            if (attacker.getMap().getId() != 2000) {
-                attacker.gainExp((int) personalExp, true, false, highestDamage, false);
-            }
-            attacker.mobKilled(getId());
         }
+
+        personalExp *= attacker.getAbsoluteXp();
+        personalExp = (long) ((double) personalExp * attacker.getRelativeXp(getLevel()));
+
+        while (personalExp > Integer.MAX_VALUE) {
+            attacker.gainExp(Integer.MAX_VALUE, true, false, highestDamage, false);
+            personalExp -= Integer.MAX_VALUE;
+        }
+        if (attacker.getMap().getId() != 2000) {
+            attacker.gainExp((int) personalExp, true, false, highestDamage, false);
+        }
+        attacker.mobKilled(getId());
     }
 
     public MapleCharacter killBy(MapleCharacter killer) {
-        long totalBaseExpL = this.getExp() * ChannelServer.getInstance(killer.getClient().getChannel()).getExpRate() * killer.getClient().getPlayer().hasEXPCard();
-        int totalBaseExp = (int) (Math.min(Integer.MAX_VALUE, totalBaseExpL));
+        // * killer.getClient().getPlayer().hasEXPCard()
+        long totalBaseExpL = getExp() * ChannelServer.getInstance(killer.getClient().getChannel()).getExpRate();
+        int totalBaseExp = (int) Math.min(Integer.MAX_VALUE, totalBaseExpL);
         AttackerEntry highest = null;
-        int highdamage = 0;
+        int highDamage = 0;
         for (AttackerEntry attackEntry : attackers) {
-            if (attackEntry.getDamage() > highdamage) {
+            if (attackEntry.getDamage() > highDamage) {
                 highest = attackEntry;
-                highdamage = attackEntry.getDamage();
+                highDamage = attackEntry.getDamage();
             }
         }
         for (AttackerEntry attackEntry : attackers) {
-            int baseExp = (int) Math.ceil(totalBaseExp * ((double) attackEntry.getDamage() / getMaxHp()));
-            attackEntry.killedMob(killer.getMap(), baseExp, attackEntry == highest, this.isBoss());
+            int baseExp = (int) Math.ceil((double) totalBaseExp * ((double) attackEntry.getDamage() / (double) getMaxHp()));
+            attackEntry.killedMob(killer.getMap(), baseExp, attackEntry == highest, isBoss());
         }
-        if (this.getController() != null) {
-            getController().getClient().getSession().write(MaplePacketCreator.stopControllingMonster(this.getObjectId()));
+        if (getController() != null) {
+            getController()
+                .getClient()
+                .getSession()
+                .write(
+                    MaplePacketCreator.stopControllingMonster(getObjectId())
+                );
             getController().stopControllingMonster(this);
         }
-        final List<Integer> toSpawn = this.getRevives();
+        final List<Integer> toSpawn = getRevives();
         if (toSpawn != null) {
             final MapleMap reviveMap = killer.getMap();
             TimerManager.getInstance().schedule(() -> {
@@ -675,7 +690,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 int matk = from.getTotalMagic();
                 int _int = from.getTotalInt();
                 ISkill eleAmp = SkillFactory.getSkill(2110001);
-                double eleAmpMulti = (double) eleAmp.getEffect(from.getSkillLevel(eleAmp)).getY() / 100.0d;
+                int eleAmpLevel = from.getSkillLevel(eleAmp);
+                double eleAmpMulti;
+                if (eleAmpLevel > 0) {
+                    eleAmpMulti = (double) eleAmp.getEffect(from.getSkillLevel(eleAmp)).getY() / 100.0d;
+                } else {
+                    eleAmpMulti = 1.0d;
+                }
 
                 minPoisonDamage = (int) ((((matk * matk) / 1000.0d + matk * poisonMastery * 0.9d) / 30.0d + _int / 200.0d) * poisonBasicAtk * eleAmpMulti);
                 maxPoisonDamage = (int) ((((matk * matk) / 1000.0d + matk) / 30.0d + _int / 200.0d) * poisonBasicAtk * eleAmpMulti);
@@ -710,7 +731,20 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             } else {
                 status.setValue(MonsterStatus.POISON, maxPoisonDamage);
             }
-            status.setPoisonSchedule(timerManager.register(new PoisonTask(minPoisonDamage, maxPoisonDamage, from, status, cancelTask, false), 1000, 1000));
+            status.setPoisonSchedule(
+                timerManager.register(
+                    new PoisonTask(
+                        minPoisonDamage,
+                        maxPoisonDamage,
+                        from,
+                        status,
+                        cancelTask,
+                        false
+                    ),
+                    1000,
+                    1000
+                )
+            );
         } else if (venom) {
             if (from.getJob() == MapleJob.NIGHTLORD || from.getJob() == MapleJob.SHADOWER) {
                 int poisonLevel, matk;
@@ -793,7 +827,19 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 webDamage *= multiplier;
             }
 
-            status.setPoisonSchedule(timerManager.schedule(new PoisonTask(webDamage, webDamage, from, status, cancelTask, true), 3500));
+            status.setPoisonSchedule(
+                timerManager.schedule(
+                    new PoisonTask(
+                        webDamage,
+                        webDamage,
+                        from,
+                        status,
+                        cancelTask,
+                        true
+                    ),
+                    3500
+                )
+            );
         }
         for (MonsterStatus stat : status.getStati().keySet()) {
             stati.put(stat, status);
@@ -1346,7 +1392,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         private Map<MapleCharacter, OnePartyAttacker> resolveAttackers() {
             Map<MapleCharacter, OnePartyAttacker> ret = new HashMap<>(attackers.size());
-            for (Entry<Integer, OnePartyAttacker> aentry : attackers.entrySet()) {
+            for (Map.Entry<Integer, OnePartyAttacker> aentry : attackers.entrySet()) {
                 MapleCharacter chr = cserv.getPlayerStorage().getCharacterById(aentry.getKey());
                 if (chr != null) {
                     ret.put(chr, aentry.getValue());
@@ -1385,38 +1431,44 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
 
         @Override
-        public void killedMob(MapleMap map, int baseExp, boolean mostDamage, boolean isboss) {
+        public void killedMob(MapleMap map, int baseExp, boolean mostDamage, boolean isBoss) {
             Map<MapleCharacter, OnePartyAttacker> attackers_ = resolveAttackers();
             MapleCharacter highest = null;
             int highestDamage = 0;
             Map<MapleCharacter, Integer> expMap = new ArrayMap<>(6);
             for (Map.Entry<MapleCharacter, OnePartyAttacker> attacker : attackers_.entrySet()) {
-                MapleParty party = attacker.getValue().lastKnownParty;
+                final MapleParty party = attacker.getValue().lastKnownParty;
                 double averagePartyLevel = 0.0d;
-                List<MapleCharacter> expApplicable = new ArrayList<>();
-                for (MaplePartyCharacter partychar : party.getMembers()) {
-                    //if (attacker.getKey().getLevel() - partychar.getLevel() <= 15 || getLevel() - partychar.getLevel() <= 15) {
-                        MapleCharacter pchr = cserv.getPlayerStorage().getCharacterByName(partychar.getName());
-                        if (pchr != null) {
-                            if (pchr.isAlive() && pchr.getMap() == map) {
-                                expApplicable.add(pchr);
-                                averagePartyLevel += pchr.getLevel();
-                            }
+                List<MapleCharacter> expApplicable = new ArrayList<>(6);
+                for (MaplePartyCharacter partyChar : party.getMembers()) {
+                    //if (
+                    //    attacker.getKey().getLevel() - partyChar.getLevel() <= 15 ||
+                    //    getLevel() - partyChar.getLevel() <= 15
+                    //) {
+                    MapleCharacter pchr = cserv.getPlayerStorage().getCharacterByName(partyChar.getName());
+                    if (pchr != null) {
+                        if (pchr.isAlive() && pchr.getMap() == map) {
+                            expApplicable.add(pchr);
+                            averagePartyLevel += (double) pchr.getLevel();
                         }
+                    }
                     //}
                 }
+
                 double expBonus = 1.0d;
                 if (expApplicable.size() > 1) {
-                    expBonus = 1.1d + 0.05d * expApplicable.size();
-                    averagePartyLevel /= expApplicable.size();
+                    expBonus = 1.1d + 0.05d * (double) expApplicable.size();
+                    averagePartyLevel /= (double) expApplicable.size();
                 }
+
                 int iDamage = attacker.getValue().damage;
                 if (iDamage > highestDamage) {
                     highest = attacker.getKey();
                     highestDamage = iDamage;
                 }
-                double innerBaseExp = baseExp * ((double) iDamage / totDamage);
-                double expFraction = (innerBaseExp * expBonus) / (expApplicable.size() + 1.0d);
+
+                double innerBaseExp = (double) baseExp * (double) iDamage / (double) totDamage;
+                double expFraction = innerBaseExp * expBonus / ((double) expApplicable.size() + 1.0d);
                 for (MapleCharacter expReceiver : expApplicable) {
                     Integer oexp = expMap.get(expReceiver);
                     int iexp;
@@ -1425,8 +1477,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     } else {
                         iexp = oexp;
                     }
-                    double expWeight = (expReceiver == attacker.getKey() ? 2.0d : 1.0d);
-                    double levelMod = expReceiver.getLevel() / averagePartyLevel;
+                    double expWeight = expReceiver == attacker.getKey() ? 2.0d : 1.0d;
+                    double levelMod = (double) expReceiver.getLevel() / averagePartyLevel;
                     if (levelMod > 1.0d || attackers.containsKey(expReceiver.getId())) {
                         levelMod = 1.0d;
                     }
@@ -1434,16 +1486,21 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     expMap.put(expReceiver, iexp);
                 }
             }
+
             for (Map.Entry<MapleCharacter, Integer> expReceiver : expMap.entrySet()) {
                 boolean white = mostDamage && expReceiver.getKey() == highest;
-                if (highest != null && !isboss) {
+                if (highest != null && !isBoss) {
                     if (expReceiver.getKey().getLevel() >= highest.getLevel() - 15) {
                         giveExpToCharacter(expReceiver.getKey(), expReceiver.getValue(), white, expMap.size());
                         if (expReceiver.getKey().getId() == highest.getId()) {
                             expReceiver.getKey().updateLastKillOnMap();
                         }
-                    } else if (expReceiver.getKey().getLevel() >= highest.getLevel() - 60 && expReceiver.getKey().lastKillOnMapWithin(16)) {
-                        // EXP receiver is within +inf/-60 lvls of killer and has killed a mob in map within the last 16 sec.
+                    } else if (
+                        expReceiver.getKey().getLevel() >= highest.getLevel() - 60 &&
+                        expReceiver.getKey().lastKillOnMapWithin(16)
+                    ) {
+                        // EXP receiver is within +inf/-60 lvls of killer and
+                        // has killed a mob in map within the last 16 sec.
                         giveExpToCharacter(expReceiver.getKey(), expReceiver.getValue(), white, expMap.size());
                     }
                 } else {

@@ -5,11 +5,11 @@ import java.util.*;
 
 /**
  * Provides a strongly-typed map of keys to values.
- * 
+ *
  * @author Frz
  * @since Revision 589
  * @version 1.0
- * 
+ *
  * @param <K> The type of the keys.
  * @param <V> The type of the values.
  */
@@ -147,7 +147,6 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
     public Set<java.util.Map.Entry<K, V>> entrySet() {
         if (entries == null) {
             entries = new AbstractSet<Entry<K, V>>() {
-
                 @Override
                 public void clear() {
                     throw new UnsupportedOperationException();
