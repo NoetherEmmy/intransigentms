@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PartySearchHandler extends AbstractMaplePacketHandler {
-    //All bolleans as for now, all is useless... just for testing somehow, but I changed method while making
+    // All booleans as for now, all is useless... just for testing somehow, but I changed method while making
     boolean All = false, Beginner = false,
             AllWarriors = false, Warrior1 = false, Warrior2 = false, Warrior3 = false,
             AllMagician = false, Magician1 = false, Magician2 = false, Magician3 = false,

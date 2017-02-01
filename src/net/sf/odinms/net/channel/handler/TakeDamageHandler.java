@@ -176,7 +176,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Unable to handle smokescreen:");
+            System.err.println("Unable to handle smokescreen:");
             e.printStackTrace();
         }
 
@@ -206,7 +206,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 player.getName() + " took " + damage + " of damage."
             );
         } else if (damage > 60000) {
-            System.out.println(
+            System.err.println(
                 player.getName() +
                     " received an abnormal amount of damage and so was disconnected: " +
                     damage
@@ -363,7 +363,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             }
                         }
                     } catch (Exception e) {
-                        System.out.println("Failed to handle Achilles: " + e);
+                        System.err.println("Failed to handle Achilles:");
+                        e.printStackTrace();
                     }
                 }
 

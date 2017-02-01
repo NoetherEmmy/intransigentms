@@ -10,7 +10,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class UseChairHandler extends AbstractMaplePacketHandler {
-
     public UseChairHandler() {
     }
 

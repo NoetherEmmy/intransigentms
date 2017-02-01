@@ -8,7 +8,6 @@ import org.apache.mina.common.support.BaseIoSession;
 import java.net.SocketAddress;
 
 public class MockIOSession extends BaseIoSession {
-
     /**
      * Does nothing.
      */

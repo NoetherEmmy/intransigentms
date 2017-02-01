@@ -27,19 +27,18 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegistry {
-
     private static final long serialVersionUID = -5170574938159280746L;
-    private static WorldRegistryImpl instance = null;
+    private static WorldRegistryImpl instance;
     private static final Logger log = LoggerFactory.getLogger(WorldRegistryImpl.class);
     private final Map<Integer, ChannelWorldInterface> channelServer = new LinkedHashMap<>();
     private final List<LoginWorldInterface> loginServer = new LinkedList<>();
-    private final Map<Integer, MapleParty> parties = new HashMap<>();
+    private final Map<Integer, MapleParty> parties = new LinkedHashMap<>();
     private final AtomicInteger runningPartyId = new AtomicInteger();
-    private final Map<Integer, MapleMessenger> messengers = new HashMap<>();
+    private final Map<Integer, MapleMessenger> messengers = new LinkedHashMap<>();
     private final AtomicInteger runningMessengerId = new AtomicInteger();
     private final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
     private final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
-    private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>(); // contains id and alliance info.
+    private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>(); // Contains ID and alliance info
 
     private WorldRegistryImpl() throws RemoteException {
         super(0, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
@@ -80,10 +79,14 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     }
 
     @Override
-    public WorldChannelInterface registerChannelServer(String authKey, ChannelWorldInterface cb) throws RemoteException {
+    public WorldChannelInterface registerChannelServer(String authKey,
+                                                       ChannelWorldInterface cb) throws RemoteException {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM channels WHERE `key` = SHA1(?) AND world = ?");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "SELECT * FROM channels WHERE `key` = SHA1(?) AND world = ?"
+                );
             ps.setString(1, authKey);
             ps.setInt(2, WorldServer.getInstance().getWorldId());
             ResultSet rs = ps.executeQuery();
@@ -144,7 +147,10 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
         WorldLoginInterface ret = null;
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM loginserver WHERE `key` = SHA1(?) AND world = ?");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "SELECT * FROM loginserver WHERE `key` = SHA1(?) AND world = ?"
+                );
             ps.setString(1, authKey);
             ps.setInt(2, WorldServer.getInstance().getWorldId());
             ResultSet rs = ps.executeQuery();
@@ -177,7 +183,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     }
 
     public Set<Integer> getChannelServer() {
-        return new HashSet<>(channelServer.keySet());
+        return new LinkedHashSet<>(channelServer.keySet());
     }
 
     public Collection<ChannelWorldInterface> getAllChannelServers() {
@@ -213,7 +219,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     public String getStatus() throws RemoteException {
         StringBuilder ret = new StringBuilder();
         List<Entry<Integer, ChannelWorldInterface>> channelServers = new ArrayList<>(channelServer.entrySet());
-        Collections.sort(channelServers, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+        channelServers.sort(Comparator.comparing(Entry::getKey));
         int totalUsers = 0;
         for (Entry<Integer, ChannelWorldInterface> cs : channelServers) {
             ret.append("Channel ");
@@ -264,7 +270,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
             }
 
             MapleGuild g = new MapleGuild(id, mgc);
-            if (g.getId() == -1) { // Failed to load.
+            if (g.getId() == -1) { // Failed to load
                 return null;
             }
 
@@ -273,7 +279,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
         }
     }
 
-    public void clearGuilds() { // Force a reload of guilds from db.
+    public void clearGuilds() { // Force a reload of guilds from db
         synchronized (guilds) {
             guilds.clear();
         }
@@ -282,7 +288,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
                 cwi.reloadGuildCharacters();
             }
         } catch (RemoteException re) {
-            log.error("RemoteException occurred while attempting to reload guilds.", re);
+            log.error("RemoteException occurred while attempting to reload guilds. ", re);
         }
     }
 

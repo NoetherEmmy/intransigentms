@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EventScriptManager extends AbstractScriptManager {
-
     private class EventEntry {
         public EventEntry(String script, Invocable iv, EventManager em) {
             this.script = script;

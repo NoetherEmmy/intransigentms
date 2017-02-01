@@ -11,13 +11,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ReactorScriptManager extends AbstractScriptManager {
     private static final ReactorScriptManager instance = new ReactorScriptManager();
-    private final Map<Integer, List<DropEntry>> drops = new HashMap<>();
+    private final Map<Integer, List<DropEntry>> drops = new LinkedHashMap<>();
 
     public static synchronized ReactorScriptManager getInstance() {
         return instance;

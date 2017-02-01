@@ -47,9 +47,9 @@ public class MapleDoor extends AbstractMapleMapObject {
                 freePortals.add(port);
             }
         }
-        
+
         freePortals.sort(Comparator.comparingInt(MaplePortal::getId));
-        
+
         for (MapleMapObject obj : town.getMapObjects()) {
             if (obj instanceof MapleDoor) {
                 MapleDoor door = (MapleDoor) obj;
@@ -61,7 +61,7 @@ public class MapleDoor extends AbstractMapleMapObject {
                 }
             }
         }
-        
+
         return freePortals.iterator().next();
     }
 

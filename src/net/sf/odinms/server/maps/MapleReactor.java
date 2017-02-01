@@ -160,15 +160,15 @@ public class MapleReactor extends AbstractMapleMapObject {
 
         return new Rectangle(origX, origY, width, height);
     }
-    
+
     public void setTrigger(int trigger) {
         this.trigger = trigger;
     }
-    
+
     public int getTrigger() {
         return trigger;
     }
-    
+
     public boolean isTrigger() {
         return trigger != null;
     }

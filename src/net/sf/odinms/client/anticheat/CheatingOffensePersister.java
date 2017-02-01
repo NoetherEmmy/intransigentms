@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class CheatingOffensePersister {
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CheatingOffensePersister.class);
     private static final CheatingOffensePersister INSTANCE = new CheatingOffensePersister();
     private final Set<CheatingOffenseEntry> toPersist = new LinkedHashSet<>();
@@ -29,7 +28,6 @@ public class CheatingOffensePersister {
     }
 
     public class PersistingTask implements Runnable {
-
         @Override
         public void run() {
             CheatingOffenseEntry[] offenses;
@@ -40,8 +38,14 @@ public class CheatingOffensePersister {
 
             Connection con = DatabaseConnection.getConnection();
             try {
-                PreparedStatement insertps = con.prepareStatement("INSERT INTO cheatlog (cid, offense, count, lastoffensetime, param) VALUES (?, ?, ?, ?, ?)");
-                PreparedStatement updateps = con.prepareStatement("UPDATE cheatlog SET count = ?, lastoffensetime = ?, param = ? WHERE id = ?");
+                PreparedStatement insertps =
+                    con.prepareStatement(
+                        "INSERT INTO cheatlog (cid, offense, count, lastoffensetime, param) VALUES (?, ?, ?, ?, ?)"
+                    );
+                PreparedStatement updateps =
+                    con.prepareStatement(
+                        "UPDATE cheatlog SET count = ?, lastoffensetime = ?, param = ? WHERE id = ?"
+                    );
                 for (CheatingOffenseEntry offense : offenses) {
                     String parm = offense.getParam() == null ? "" : offense.getParam();
                     if (offense.getDbId() == -1) {
@@ -66,8 +70,8 @@ public class CheatingOffensePersister {
                 }
                 insertps.close();
                 updateps.close();
-            } catch (SQLException e) {
-                log.error("error persisting cheatlog", e);
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
             }
         }
     }

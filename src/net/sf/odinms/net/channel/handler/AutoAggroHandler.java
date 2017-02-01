@@ -7,8 +7,8 @@ import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class AutoAggroHandler extends AbstractMaplePacketHandler {
-
     //private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AutoAggroHandler.class);
+
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int oid = slea.readInt();

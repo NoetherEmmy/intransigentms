@@ -47,7 +47,7 @@ public class MapleMap {
     private final Collection<SpawnPoint> monsterSpawn = new ArrayList<>();
     private final AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
     private final Collection<MapleCharacter> characters = new LinkedHashSet<>();
-    private final Map<Integer, MaplePortal> portals = new HashMap<>();
+    private final Map<Integer, MaplePortal> portals = new LinkedHashMap<>();
     private final List<Rectangle> areas = new ArrayList<>();
     private MapleFootholdTree footholds = null;
     private final int mapid;
@@ -578,7 +578,7 @@ public class MapleMap {
                         if (mesoDecrease > 1.0d) {
                             mesoDecrease = 1.0d;
                         }
-                        int tempmeso = Math.min(30000, (int) (mesoDecrease * (monster.getExp()) * (1.0d + r.nextInt(20)) / 10.0d));
+                        int tempmeso = Math.min(30000, (int) (mesoDecrease * monster.getExp() * (1.0d + r.nextInt(20)) / 10.0d));
                         if (dropOwner != null && dropOwner.getBuffedValue(MapleBuffStat.MESOUP) != null) {
                             tempmeso = (int) (tempmeso * dropOwner.getBuffedValue(MapleBuffStat.MESOUP).doubleValue() / 100.0d);
                         }
@@ -1990,7 +1990,7 @@ public class MapleMap {
                 newpos = calcPointBelow(adjustedpos);
             }
             if (newpos == null) {
-                System.out.println("Could not generate mob spawn position. MapleMap.java: void addMonsterSpawn()");
+                System.err.println("Could not generate mob spawn position. MapleMap#addMonsterSpawn");
                 return;
             }
             newpos.y -= 1;

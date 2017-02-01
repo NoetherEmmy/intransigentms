@@ -5,10 +5,7 @@ import net.sf.odinms.client.SkillMacro;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
-
 public class SkillMacroHandler extends AbstractMaplePacketHandler {
-
-    // Create a new instance
     public SkillMacroHandler() {
     }
 

@@ -9,12 +9,12 @@ import net.sf.odinms.tools.Pair;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MobSkillFactory {
-    private static final Map<Pair<Integer, Integer>, MobSkill> mobSkills = new HashMap<>();
+    private static final Map<Pair<Integer, Integer>, MobSkill> mobSkills = new LinkedHashMap<>();
     private static final MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
     private static final MapleData skillRoot = dataSource.getData("MobSkill.img");
 

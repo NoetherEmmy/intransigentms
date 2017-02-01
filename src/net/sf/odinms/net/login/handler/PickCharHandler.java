@@ -14,7 +14,6 @@ import java.net.UnknownHostException;
 import java.util.Random;
 
 public class PickCharHandler extends AbstractMaplePacketHandler {
-
     private static final Logger log = LoggerFactory.getLogger(PickCharHandler.class);
 
     @Override
@@ -33,16 +32,34 @@ public class PickCharHandler extends AbstractMaplePacketHandler {
             }
             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
 
-            String channelServerIP = MapleClient.getChannelServerIPFromSubnet(c.getSession().getRemoteAddress().toString().replace("/", "").split(":")[0], c.getChannel());
+            String channelServerIP =
+                MapleClient.getChannelServerIPFromSubnet(
+                    c.getSession().getRemoteAddress().toString().replace("/", "").split(":")[0],
+                    c.getChannel()
+                );
             if (channelServerIP.equals("0.0.0.0")) {
                 String[] socket = LoginServer.getInstance().getIP(c.getChannel()).split(":");
-                c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
+                c.getSession()
+                 .write(
+                     MaplePacketCreator.getServerIP(
+                         InetAddress.getByName(socket[0]),
+                         Integer.parseInt(socket[1]),
+                         charId
+                     )
+                 );
             } else {
                 String[] socket = LoginServer.getInstance().getIP(c.getChannel()).split(":");
-                c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName(channelServerIP), Integer.parseInt(socket[1]), charId));
+                c.getSession()
+                 .write(
+                     MaplePacketCreator.getServerIP(
+                         InetAddress.getByName(channelServerIP),
+                         Integer.parseInt(socket[1]),
+                         charId
+                     )
+                 );
             }
-        } catch (UnknownHostException e) {
-            log.error("Host not found", e);
+        } catch (UnknownHostException uhe) {
+            log.error("Host not found. ", uhe);
         }
     }
 }

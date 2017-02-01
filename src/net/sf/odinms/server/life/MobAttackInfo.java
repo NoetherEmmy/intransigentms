@@ -1,11 +1,7 @@
 package net.sf.odinms.server.life;
 
 public class MobAttackInfo {
-
-    private int mpBurn;
-    private int diseaseSkill;
-    private int diseaseLevel;
-    private int mpCon;
+    private int mpBurn, diseaseSkill, diseaseLevel, mpCon;
 
     public MobAttackInfo(int mobId, int attackId) {
     }

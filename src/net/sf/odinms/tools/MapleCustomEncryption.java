@@ -1,7 +1,6 @@
 package net.sf.odinms.tools;
 
 public class MapleCustomEncryption {
-
     /**
      * Encrypts <code>data</code> with Maple's encryption routines.
      *
@@ -9,11 +8,10 @@ public class MapleCustomEncryption {
      * @return The encrypted data.
      */
     public static byte[] encryptData(byte data[]) {
-
         for (int j = 0; j < 6; ++j) {
             byte remember = 0;
             byte dataLength = (byte) (data.length & 0xFF);
-            // printByteArray(data);
+            //printByteArray(data);
             if (j % 2 == 0) {
                 for (int i = 0; i < data.length; ++i) {
                     byte cur = data[i];
@@ -21,7 +19,7 @@ public class MapleCustomEncryption {
                     cur += dataLength;
                     cur ^= remember;
                     remember = cur;
-                    cur = BitTools.rollRight(cur, (int)dataLength & 0xFF);
+                    cur = BitTools.rollRight(cur, (int) dataLength & 0xFF);
                     cur = ((byte) ((~cur) & 0xFF));
                     cur += 0x48;
                     dataLength--;
@@ -61,7 +59,7 @@ public class MapleCustomEncryption {
                 for (int i = 0; i < data.length; ++i) {
                     byte cur = data[i];
                     cur -= 0x48;
-                    cur = ((byte) ((~cur) & 0xFF));
+                    cur = (byte) ((~cur) & 0xFF);
                     cur = BitTools.rollLeft(cur, (int)dataLength & 0xFF);
                     nextRemember = cur;
                     cur ^= remember;

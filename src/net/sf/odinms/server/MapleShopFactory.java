@@ -1,11 +1,11 @@
 package net.sf.odinms.server;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MapleShopFactory {
-    private final Map<Integer, MapleShop> shops = new HashMap<>();
-    private final Map<Integer, MapleShop> npcShops = new HashMap<>();
+    private final Map<Integer, MapleShop> shops = new LinkedHashMap<>();
+    private final Map<Integer, MapleShop> npcShops = new LinkedHashMap<>();
 
     private static final MapleShopFactory instance = new MapleShopFactory();
 

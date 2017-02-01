@@ -109,8 +109,8 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             } else {
                 percentPerLevel = 0.07d;
             }
-            int min = player.calculateMinBaseDamage(player);
-            int max = player.calculateMaxBaseDamage(player.getTotalWatk());
+            final int min = player.calculateMinBaseDamage();
+            final int max = player.calculateMaxBaseDamage();
             int baseDmg;
             double skillLevelMultiplier = 1.5d + player.getSkillLevel(summonSkill) * percentPerLevel;
             for (int i = 0; i < allDamage.size(); ++i) {

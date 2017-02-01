@@ -8,13 +8,13 @@ import net.sf.odinms.tools.StringUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CashItemFactory {
-    private static final Map<Integer, Integer> snLookup = new HashMap<>();
-    private static final Map<Integer, CashItemInfo> itemStats = new HashMap<>();
+    private static final Map<Integer, Integer> snLookup = new LinkedHashMap<>();
+    private static final Map<Integer, CashItemInfo> itemStats = new LinkedHashMap<>();
     private static final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
     private static final MapleData commodities = data.getData(StringUtil.getLeftPaddedStr("Commodity.img", '0', 11));
 

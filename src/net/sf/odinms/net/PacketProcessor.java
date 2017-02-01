@@ -39,7 +39,7 @@ public final class PacketProcessor {
         try {
             handlers[code.getValue()] = handler;
         } catch (ArrayIndexOutOfBoundsException aiobe) {
-            System.out.println("Check your Recv Packet Opcodes - Something is wrong");
+            System.err.println("Check your Recv Packet Opcodes -- something is wrong.");
         }
     }
 

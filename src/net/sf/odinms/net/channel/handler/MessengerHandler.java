@@ -12,8 +12,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.rmi.RemoteException;
 
-    public class MessengerHandler extends AbstractMaplePacketHandler {
-	
+public class MessengerHandler extends AbstractMaplePacketHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         String input;
@@ -22,10 +21,10 @@ import java.rmi.RemoteException;
         WorldChannelInterface wci = ChannelServer.getInstance(c.getChannel()).getWorldInterface();
         MapleMessenger messenger = player.getMessenger();
         switch (mode) {
-            case 0x00: // open
+            case 0x00: // Open
                 if (messenger == null) {
                     int messengerid = slea.readInt();
-                    if (messengerid == 0) { // create
+                    if (messengerid == 0) { // Create
                         try {
                             MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
                             messenger = wci.createMessenger(messengerplayer);
@@ -34,25 +33,31 @@ import java.rmi.RemoteException;
                         } catch (RemoteException e) {
                             c.getChannelServer().reconnectWorld();
                         }
-                    } else { // join
+                    } else { // Join
                         try {
                             messenger = wci.getMessenger(messengerid);
-                            int position = messenger.getLowestPosition();
-                            MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player, position);
                             if (messenger != null) {
+                                int position = messenger.getLowestPosition();
+                                MapleMessengerCharacter messengerplayer =
+                                    new MapleMessengerCharacter(player, position);
                                 if (messenger.getMembers().size() < 3) {
                                     player.setMessenger(messenger);
                                     player.setMessengerPosition(position);
-                                    wci.joinMessenger(messenger.getId(), messengerplayer, player.getName(), messengerplayer.getChannel());
+                                    wci.joinMessenger(
+                                        messenger.getId(),
+                                        messengerplayer,
+                                        player.getName(),
+                                        messengerplayer.getChannel()
+                                    );
                                 }
                             }
-                        } catch (RemoteException e) {
+                        } catch (RemoteException re) {
                             c.getChannelServer().reconnectWorld();
                         }
                     }
                 }
                 break;
-            case 0x02: // exit
+            case 0x02: // Exit
                 if (messenger != null) {
                     MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
                     try {
@@ -64,21 +69,45 @@ import java.rmi.RemoteException;
                     player.setMessengerPosition(4);
                 }
                 break;
-            case 0x03: // invite
+            case 0x03: // Invite
                 if (messenger.getMembers().size() < 3) {
                     input = slea.readMapleAsciiString();
                     MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(input);
                     if (target != null) {
                         if (target.getMessenger() == null) {
-                            target.getClient().getSession().write(MaplePacketCreator.messengerInvite(c.getPlayer().getName(), messenger.getId()));
+                            target
+                                .getClient()
+                                .getSession()
+                                .write(
+                                    MaplePacketCreator.messengerInvite(
+                                        c.getPlayer().getName(),
+                                        messenger.getId()
+                                    )
+                                );
                             c.getSession().write(MaplePacketCreator.messengerNote(input, 4, 1));
                         } else {
-                            c.getSession().write(MaplePacketCreator.messengerChat(player.getName() + " : " + input + " is already using Maple Messenger"));
+                            c.getSession()
+                             .write(
+                                 MaplePacketCreator.messengerChat(
+                                     player.getName() +
+                                         " : " +
+                                         input +
+                                         " is already using Maple Messenger"
+                                 )
+                             );
                         }
                     } else {
                         try {
                             if (ChannelServer.getInstance(c.getChannel()).getWorldInterface().isConnected(input)) {
-                                ChannelServer.getInstance(c.getChannel()).getWorldInterface().messengerInvite(c.getPlayer().getName(), messenger.getId(), input, c.getChannel());
+                                ChannelServer
+                                    .getInstance(c.getChannel())
+                                    .getWorldInterface()
+                                    .messengerInvite(
+                                        c.getPlayer().getName(),
+                                        messenger.getId(),
+                                        input,
+                                        c.getChannel()
+                                    );
                             } else {
                                 c.getSession().write(MaplePacketCreator.messengerNote(input, 4, 0));
                             }
@@ -87,15 +116,30 @@ import java.rmi.RemoteException;
                         }
                     }
                 } else {
-                    c.getSession().write(MaplePacketCreator.messengerChat(player.getName() + " : You cannot have more than 3 people in the Maple Messenger"));
+                    c.getSession()
+                     .write(
+                         MaplePacketCreator.messengerChat(
+                             player.getName() +
+                                 " : You cannot have more than 3 people in the Maple Messenger"
+                         )
+                     );
                 }
                 break;
-            case 0x05: // decline
+            case 0x05: // Decline
                 String targeted = slea.readMapleAsciiString();
                 MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(targeted);
                 if (target != null) {
                     if (target.getMessenger() != null) {
-                        target.getClient().getSession().write(MaplePacketCreator.messengerNote(player.getName(), 5, 0));
+                        target
+                            .getClient()
+                            .getSession()
+                            .write(
+                                MaplePacketCreator.messengerNote(
+                                    player.getName(),
+                                    5,
+                                    0
+                                )
+                            );
                     }
                 } else {
                     try {
@@ -105,7 +149,7 @@ import java.rmi.RemoteException;
                     }
                 }
                 break;
-            case 0x06: // message
+            case 0x06: // Message
                 if (messenger != null) {
                     MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
                     input = slea.readMapleAsciiString();
@@ -116,6 +160,6 @@ import java.rmi.RemoteException;
                     }
                 }
                 break;
-            }
-	}
+        }
     }
+}

@@ -4,10 +4,12 @@ import net.sf.odinms.tools.HexTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 public class ExternalCodeTableGetter {
-
     final Properties props;
 
     public ExternalCodeTableGetter(Properties properties) {
@@ -23,7 +25,9 @@ public class ExternalCodeTableGetter {
         return null;
     }
 
-    private <T extends Enum<? extends IntValueHolder> & IntValueHolder> int getValue(String name, T[] values, int def) {
+    private <T extends Enum<? extends IntValueHolder> & IntValueHolder> int getValue(String name,
+                                                                                     T[] values,
+                                                                                     int def) {
         String prop = props.getProperty(name);
         if (prop != null && !prop.isEmpty()) {
             String trimmed = prop.trim();
@@ -48,11 +52,11 @@ public class ExternalCodeTableGetter {
         return def;
     }
 
-    public static <T extends Enum<? extends WritableIntValueHolder> & WritableIntValueHolder> String getOpcodeTable(T[] enumeration) {
+    public static <T extends Enum<? extends WritableIntValueHolder> & WritableIntValueHolder>
+                  String getOpcodeTable(T[] enumeration) {
         StringBuilder enumVals = new StringBuilder();
-        List<T> all = new ArrayList<>();
-        all.addAll(Arrays.asList(enumeration));
-        Collections.sort(all, (o1, o2) -> Integer.valueOf(o1.getValue()).compareTo(o2.getValue()));
+        List<T> all = new ArrayList<>(Arrays.asList(enumeration));
+        all.sort((o1, o2) -> Integer.valueOf(o1.getValue()).compareTo(o2.getValue()));
         for (T code : all) {
             enumVals.append(code.name());
             enumVals.append(" = ");
@@ -65,7 +69,8 @@ public class ExternalCodeTableGetter {
         return enumVals.toString();
     }
 
-    public static <T extends Enum<? extends WritableIntValueHolder> & WritableIntValueHolder> void populateValues(Properties properties, T[] values) {
+    public static <T extends Enum<? extends WritableIntValueHolder> & WritableIntValueHolder>
+                  void populateValues(Properties properties, T[] values) {
         ExternalCodeTableGetter exc = new ExternalCodeTableGetter(properties);
         for (T code : values) {
             code.setValue(exc.getValue(code.name(), values, -2));

@@ -14,8 +14,7 @@ import java.io.File;
 import java.util.*;
 
 public class MapleQuest {
-
-    private static final Map<Integer, MapleQuest> quests = new HashMap<>();
+    private static final Map<Integer, MapleQuest> quests = new LinkedHashMap<>();
     protected int id;
     protected List<MapleQuestRequirement> startReqs;
     protected List<MapleQuestRequirement> completeReqs;
@@ -25,7 +24,10 @@ public class MapleQuest {
     private boolean autoStart;
     private boolean autoPreComplete;
     private boolean repeatable = false;
-    private static final MapleDataProvider questData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz"));
+    private static final MapleDataProvider questData =
+        MapleDataProviderFactory.getDataProvider(
+            new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz")
+        );
     private static final MapleData actions = questData.getData("Act.img");
     private static final MapleData requirements = questData.getData("Check.img");
     private static final MapleData info = questData.getData("QuestInfo.img");
@@ -40,7 +42,7 @@ public class MapleQuest {
     private MapleQuest(int id) {
         this.id = id;
         relevantMobs = new ArrayList<>();
-        // read reqs
+        // Read requirements
         MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
         startReqs = new ArrayList<>();
         if (startReqData != null) {
@@ -61,7 +63,14 @@ public class MapleQuest {
         completeReqs = new ArrayList<>();
         if (completeReqData != null) {
             for (MapleData completeReq : completeReqData.getChildren()) {
-                MapleQuestRequirement req = new MapleQuestRequirement(this, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
+                MapleQuestRequirement req =
+                    new MapleQuestRequirement(
+                        this,
+                        MapleQuestRequirementType.getByWZName(
+                            completeReq.getName()
+                        ),
+                        completeReq
+                    );
                 if (req.getType().equals(MapleQuestRequirementType.MOB)) {
                     for (MapleData mob : completeReq.getChildren()) {
                         relevantMobs.add(MapleDataTool.getInt(mob.getChildByPath("id")));
@@ -82,7 +91,15 @@ public class MapleQuest {
         completeActs = new ArrayList<>();
         if (completeActData != null) {
             for (MapleData completeAct : completeActData.getChildren()) {
-                completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, this));
+                completeActs.add(
+                    new MapleQuestAction(
+                        MapleQuestActionType.getByWZName(
+                            completeAct.getName()
+                        ),
+                        completeAct,
+                        this
+                    )
+                );
             }
         }
         MapleData questInfo = info.getChildByPath(String.valueOf(id));
@@ -103,7 +120,10 @@ public class MapleQuest {
     }
 
     private boolean canStart(MapleCharacter c, Integer npcid) {
-        if (c.getQuest(this).getStatus() != Status.NOT_STARTED && !(c.getQuest(this).getStatus() == Status.COMPLETED && repeatable)) {
+        if (
+            c.getQuest(this).getStatus() != Status.NOT_STARTED &&
+            !(c.getQuest(this).getStatus() == Status.COMPLETED && repeatable)
+        ) {
             return false;
         }
         for (MapleQuestRequirement r : startReqs) {
@@ -119,7 +139,7 @@ public class MapleQuest {
         }
         return true;
     }
-    
+
     //
     public List<MapleQuestRequirement> getCompleteReqs() {
         return this.completeReqs;
@@ -198,8 +218,8 @@ public class MapleQuest {
     }
 
     public List<Integer> getQuestItemsToShowOnlyIfQuestIsActivated() {
-        Set<Integer> delta = new HashSet<>();
-        for (MapleQuestRequirement mqr : this.completeReqs) {
+        Set<Integer> delta = new LinkedHashSet<>();
+        for (MapleQuestRequirement mqr : completeReqs) {
             if (mqr.getType() != MapleQuestRequirementType.ITEM) continue;
             delta.addAll(mqr.getQuestItemsToShowOnlyIfQuestIsActivated());
         }

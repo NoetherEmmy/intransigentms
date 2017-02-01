@@ -3,17 +3,17 @@ package net.sf.odinms.client;
 import net.sf.odinms.tools.Pair;
 
 import java.io.FileInputStream;
-import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
 public class MapleCQuests {
     private int id;
-    private final Map<Integer, Pair<Integer, String>> monsterTargets = new HashMap<>(4, 0.8f);
-    private final Map<Integer, Pair<Integer, String>> itemsToCollect = new HashMap<>(4, 0.8f);
+    private final Map<Integer, Pair<Integer, String>> monsterTargets = new LinkedHashMap<>(4, 0.8f);
+    private final Map<Integer, Pair<Integer, String>> itemsToCollect = new LinkedHashMap<>(4, 0.8f);
     private int expReward, mesoReward;
-    private final Map<Integer, Integer> itemRewards = new HashMap<>(3);
+    private final Map<Integer, Integer> itemRewards = new LinkedHashMap<>(3);
     private String startNpc, endNpc;
     private String title;
     private String info;
@@ -23,7 +23,7 @@ public class MapleCQuests {
         try {
             p.load(new FileInputStream("quests/" + id + ".ini"));
             this.id = id;
-            
+
             monsterTargets.clear();
             int i = 1;
             String monsterTarget = p.getProperty("MonsterID" + i);
@@ -55,7 +55,7 @@ public class MapleCQuests {
                 i++;
                 itemToCollect = p.getProperty("CollectItemID" + i);
             }
-            
+
             expReward = Integer.parseInt(p.getProperty("EXP"));
             mesoReward = Integer.parseInt(p.getProperty("MESO"));
 
@@ -79,7 +79,7 @@ public class MapleCQuests {
                 i++;
                 itemReward = p.getProperty("ITEM" + i);
             }
-            
+
             startNpc = "" + p.getProperty("NPC");
             endNpc = p.getProperty("NPC_end");
             if (endNpc == null) {
@@ -155,59 +155,59 @@ public class MapleCQuests {
     public void closeQuest() {
         loadQuest(0);
     }
-    
+
     public Integer getNumberToKill(int monsterId) {
         if (!monsterTargets.containsKey(monsterId)) return null;
         return monsterTargets.get(monsterId).getLeft();
     }
-    
+
     public Integer getNumberToCollect(int itemId) {
         if (!itemsToCollect.containsKey(itemId)) return null;
         return itemsToCollect.get(itemId).getLeft();
     }
-    
+
     public int getExpReward() {
         return expReward;
     }
-    
+
     public int getMesoReward() {
         return mesoReward;
     }
-    
+
     public Map<Integer, Pair<Integer, String>> readMonsterTargets() {
-        return new HashMap<>(monsterTargets);
+        return new LinkedHashMap<>(monsterTargets);
     }
-    
+
     public Map<Integer, Pair<Integer, String>> readItemsToCollect() {
-        return new HashMap<>(itemsToCollect);
+        return new LinkedHashMap<>(itemsToCollect);
     }
-    
+
     public Map<Integer, Integer> readItemRewards() {
-        return new HashMap<>(itemRewards);
+        return new LinkedHashMap<>(itemRewards);
     }
-    
+
     public String getTargetName(int monsterId) {
         if (!monsterTargets.containsKey(monsterId)) return null;
         return monsterTargets.get(monsterId).getRight();
     }
-    
+
     public String getItemName(int itemId) {
         if (!itemsToCollect.containsKey(itemId)) return null;
         return itemsToCollect.get(itemId).getRight();
     }
-    
+
     public boolean requiresTarget(int monsterId) {
         return monsterTargets.containsKey(monsterId);
     }
-    
+
     public boolean requiresItem(int itemId) {
         return itemsToCollect.containsKey(itemId);
     }
-    
+
     public boolean requiresMonsterTargets() {
         return !monsterTargets.isEmpty();
     }
-    
+
     public boolean requiresItemCollection() {
         return !itemsToCollect.isEmpty();
     }

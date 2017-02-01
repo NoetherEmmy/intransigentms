@@ -8,7 +8,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.Map;
-	
+
 public class SkillBookHandler extends AbstractMaplePacketHandler {
     public SkillBookHandler() {
     }

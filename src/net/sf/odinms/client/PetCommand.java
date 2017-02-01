@@ -1,11 +1,7 @@
 package net.sf.odinms.client;
 
 public class PetCommand {
-
-    private final int petId;
-    private final int skillId;
-    private final int prob;
-    private final int inc;
+    private final int petId, skillId, prob, inc;
 
     public PetCommand(int petId, int skillId, int prob, int inc) {
         this.petId = petId;

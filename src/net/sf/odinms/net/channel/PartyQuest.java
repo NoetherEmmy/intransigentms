@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class PartyQuest {
     private final List<MapleCharacter> players = new ArrayList<>(6);
-    private final Set<Integer> registeredPlayerIds = new HashSet<>(8, 0.8f);
+    private final Set<Integer> registeredPlayerIds = new LinkedHashSet<>(8, 0.8f);
     private final List<PartyQuestMapInstance> mapInstances = new ArrayList<>(3);
     private final String name;
     private long timeStarted = 0;
@@ -159,7 +159,7 @@ public class PartyQuest {
     }
 
     public Set<Integer> readPqItems() {
-        return new HashSet<>(pqItems);
+        return new LinkedHashSet<>(pqItems);
     }
 
     public void registerPlayer(MapleCharacter player) {

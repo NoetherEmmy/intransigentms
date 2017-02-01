@@ -52,7 +52,7 @@ public class MapleGuild implements java.io.Serializable {
         try {
             con = DatabaseConnection.getConnection();
         } catch (Exception e) {
-            System.out.println("Unable to connect to database to load guild information." + e);
+            System.err.println("Unable to connect to database to load guild information: " + e);
             return;
         }
         try {
@@ -87,7 +87,7 @@ public class MapleGuild implements java.io.Serializable {
             if (!rs.first()) {
                 rs.close();
                 ps.close();
-                System.out.println("No members in guild.");
+                System.err.println("No members in guild, ID: " + guildid);
                 return;
             }
             do {
@@ -98,16 +98,13 @@ public class MapleGuild implements java.io.Serializable {
             }
             rs.close();
             ps.close();
-        } catch (SQLException se) {
-            System.out.println("unable to read guild information from sql" + se);
-            return;
+        } catch (SQLException sqle) {
+            System.err.println("Unable to read guild information from SQL: " + sqle);
         }
     }
 
     public void buildNotifications() {
-        if (!bDirty) {
-            return;
-        }
+        if (!bDirty) return;
         Set<Integer> chs = WorldRegistryImpl.getInstance().getChannelServer();
         if (notifications.keySet().size() != chs.size()) {
             notifications.clear();
@@ -126,7 +123,7 @@ public class MapleGuild implements java.io.Serializable {
                 }
                 List<Integer> ch = notifications.get(mgc.getChannel());
                 if (ch == null) {
-                    System.out.println("Unable to connect to channel " + mgc.getChannel());
+                    System.err.println("Unable to connect to channel " + mgc.getChannel());
                 } else {
                     ch.add(mgc.getId());
                 }
@@ -144,12 +141,18 @@ public class MapleGuild implements java.io.Serializable {
         try {
             con = DatabaseConnection.getConnection();
         } catch (Exception e) {
-            System.out.println("unable to connect to database to write guild information." + e);
+            System.err.println("Unable to connect to database to write guild information: " + e);
             return;
         }
         try {
             if (!bDisband) {
-                String sql = "UPDATE guilds SET " + "GP = ?, " + "logo = ?, " + "logoColor = ?, " + "logoBG = ?, " + "logoBGColor = ?, ";
+                String sql =
+                    "UPDATE guilds SET " +
+                        "GP = ?, " +
+                        "logo = ?, " +
+                        "logoColor = ?, " +
+                        "logoBG = ?, " +
+                        "logoBGColor = ?, ";
                 for (int i = 0; i < 5; ++i) {
                     sql += "rank" + (i + 1) + "title = ?, ";
                 }
@@ -165,22 +168,22 @@ public class MapleGuild implements java.io.Serializable {
                 }
                 ps.setInt(11, capacity);
                 ps.setString(12, notice);
-                ps.setInt(13, this.id);
+                ps.setInt(13, id);
                 ps.execute();
                 ps.close();
             } else {
                 PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = 0, guildrank = 5 WHERE guildid = ?");
-                ps.setInt(1, this.id);
+                ps.setInt(1, id);
                 ps.execute();
                 ps.close();
                 ps = con.prepareStatement("DELETE FROM guilds WHERE guildid = ?");
-                ps.setInt(1, this.id);
+                ps.setInt(1, id);
                 ps.execute();
                 ps.close();
-                this.broadcast(MaplePacketCreator.guildDisband(this.id));
+                broadcast(MaplePacketCreator.guildDisband(id));
             }
-        } catch (SQLException se) {
-            System.out.println(se.getLocalizedMessage() + se);
+        } catch (SQLException sqle) {
+            System.err.println(sqle.getLocalizedMessage() + " | " + sqle);
         }
     }
 
@@ -280,8 +283,9 @@ public class MapleGuild implements java.io.Serializable {
                         }
                     }
                 }
-            } catch (java.rmi.RemoteException re) {
-                System.out.println("Failed to contact channel(s) for broadcast." + re);
+            } catch (RemoteException re) {
+                System.err.println("Failed to contact channel(s) for broadcast:");
+                re.printStackTrace();
             }
         }
     }
@@ -355,20 +359,16 @@ public class MapleGuild implements java.io.Serializable {
             rs.close();
             ps.close();
             return guildid;
-        } catch (SQLException se) {
-            System.out.println("SQL THROW" + se);
-            return 0;
         } catch (Exception e) {
-            System.out.println("CREATE GUILD THROW" + e);
+            e.printStackTrace();
             return 0;
         }
     }
 
     public int addGuildMember(MapleGuildCharacter mgc) {
         synchronized (members) {
-            if (members.size() >= capacity) {
-                return 0;
-            }
+            if (members.size() >= capacity) return 0;
+
             for (int i = members.size() - 1; i >= 0; --i) {
                 if (members.get(i).getGuildRank() < 5 || members.get(i).getName().compareTo(mgc.getName()) < 0) {
                     members.add(i + 1, mgc);
@@ -408,10 +408,9 @@ public class MapleGuild implements java.io.Serializable {
                             String sendFrom = initiator.getName();
                             String msg = "You have been expelled from the guild.";
                             try {
-                                initiator.getName();
                                 MaplePacketCreator.sendUnkwnNote(sendTo, msg, sendFrom);
-                            } catch (SQLException e) {
-                                System.out.println("SAVING NOTE" + e);
+                            } catch (SQLException sqle) {
+                                System.err.println("Exception during saving note: " + sqle);
                             }
                             WorldRegistryImpl.getInstance().getChannel(1).setOfflineGuildStatus((short) 0, (byte) 5, cid);
                         }
@@ -422,7 +421,7 @@ public class MapleGuild implements java.io.Serializable {
                     return;
                 }
             }
-            System.out.println("Unable to find member with name " + name + " and id " + cid);
+            System.err.println("Unable to find member with name " + name + " and ID " + cid);
         }
     }
 
@@ -444,7 +443,7 @@ public class MapleGuild implements java.io.Serializable {
                 return;
             }
         }
-        System.out.println("INFO: unable to find the correct id for changeRank(" + cid + ", " + newRank + ")");
+        System.err.println("Unable to find the correct ID for changeRank(" + cid + ", " + newRank + ")");
     }
 
     public void setGuildNotice(String notice) {
@@ -529,8 +528,8 @@ public class MapleGuild implements java.io.Serializable {
             c.getSession().write(MaplePacketCreator.showGuildRanks(npcid, rs));
             ps.close();
             rs.close();
-        } catch (SQLException e) {
-            System.out.println("failed to display guild ranks." + e);
+        } catch (SQLException sqle) {
+            System.err.println("Failed to display guild ranks: " + sqle);
         }
     }
 

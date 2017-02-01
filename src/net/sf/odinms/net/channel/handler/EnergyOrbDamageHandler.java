@@ -60,7 +60,7 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
 
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                
+
                 if (player.getParty() != null && player.isBareHanded() && player.getTotalInt() >= 350) {
                     // Monk healing
                     final Rectangle bounds = calculateBoundingBox(player.getPosition(), player.isFacingLeft());
@@ -98,7 +98,7 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                                         2
                                     )
                                 );
-                        
+
                         affected.getMap().broadcastMessage(
                             affected,
                             MaplePacketCreator.showBuffeffect(
@@ -111,7 +111,7 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                         );
                     }
                 }
-                
+
                 MapleMonster monster = null;
                 if (dmg != null) {
                     monster = player.getMap().getMonsterByOid(dmg.getLeft());

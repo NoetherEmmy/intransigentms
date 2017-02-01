@@ -3,7 +3,6 @@ package net.sf.odinms.net;
 import net.sf.odinms.tools.HexTool;
 
 public class ByteArrayMaplePacket implements MaplePacket {
-
     public static final long serialVersionUID = -7997681658570958848L;
     private final byte[] data;
     private Runnable onSend;

@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class ReportHandler extends AbstractMaplePacketHandler {
-    
     final String[] reasons = {
         "Hacking",
         "Botting",
@@ -34,7 +33,7 @@ public class ReportHandler extends AbstractMaplePacketHandler {
         if (clogLen > 0) {
             chatlog = slea.readAsciiString(clogLen);
         }
-        System.out.println(c.getPlayer().getName() + " reported charid " + reportedCharId);
+        System.out.println(c.getPlayer().getName() + " reported character with ID " + reportedCharId);
 
         if (addReportEntry(c.getPlayer().getId(), reportedCharId, reason, chatlog)) {
             c.getSession().write(MaplePacketCreator.reportReply((byte) 0));
@@ -43,8 +42,19 @@ public class ReportHandler extends AbstractMaplePacketHandler {
         }
         try {
             WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
-            wci.broadcastGMMessage(null, MaplePacketCreator.serverNotice(5, c.getPlayer().getName() + " reported " + MapleCharacter.getNameById(reportedCharId, 0) + " for " + reasons[reason] + ".").getBytes());
-        } catch (RemoteException ex) {
+            wci.broadcastGMMessage(
+                null,
+                MaplePacketCreator.serverNotice(
+                    5,
+                    c.getPlayer().getName() +
+                        " reported " +
+                        MapleCharacter.getNameById(reportedCharId, 0) +
+                        " for " +
+                        reasons[reason] +
+                        "."
+                ).getBytes()
+            );
+        } catch (RemoteException re) {
             c.getChannelServer().reconnectWorld();
         }
     }
@@ -53,14 +63,16 @@ public class ReportHandler extends AbstractMaplePacketHandler {
         try {
             Connection dcon = DatabaseConnection.getConnection();
             PreparedStatement ps;
-            ps = dcon.prepareStatement("INSERT INTO reports VALUES (NULL, CURRENT_TIMESTAMP, ?, ?, ?, ?, 'UNHANDLED')");
+            ps = dcon.prepareStatement(
+                "INSERT INTO reports VALUES (NULL, CURRENT_TIMESTAMP, ?, ?, ?, ?, 'UNHANDLED')"
+            );
             ps.setInt(1, reporterId);
             ps.setInt(2, victimId);
             ps.setInt(3, reason);
             ps.setString(4, chatlog);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException ex) {
+        } catch (SQLException sqle) {
             return false;
         }
         return true;

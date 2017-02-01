@@ -4,7 +4,6 @@ import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.tools.MaplePacketCreator;
 
 public class ServernoticeMapleClientMessageCallback implements MessageCallback {
-
     private final MapleClient client;
     private final int mode;
 

@@ -5,24 +5,23 @@ import net.sf.odinms.client.IItem;
 import java.util.Calendar;
 
 public class DueyPackages {
-
-    private String sender = null;
-    private IItem item = null;
-    private int mesos = 0;
+    private String sender;
+    private IItem item;
+    private int mesos;
     private int day;
     private int quantity = 1;
     private int month;
     private int year;
-    private int packageId = 0;
+    private final int packageId;
 
     public DueyPackages(int pId, IItem item) {
         this.item = item;
-        this.quantity = item.getQuantity();
+        quantity = item.getQuantity();
         packageId = pId;
     }
 
-    public DueyPackages(int pId) { // Meso only package.
-        this.packageId = pId;
+    public DueyPackages(int packageId) { // Meso only package.
+        this.packageId = packageId;
     }
 
     public String getSender() {
@@ -57,7 +56,7 @@ public class DueyPackages {
         Calendar cal1 = Calendar.getInstance();
         cal1.set(year, month - 1, day);
         long diff = System.currentTimeMillis() - cal1.getTimeInMillis();
-        int diffDays = (int) Math.abs(diff / (24 * 60 * 60 * 1000));
+        int diffDays = (int) Math.abs(diff / (24L * 60L * 60L * 1000L));
         return diffDays > 30;
     }
 

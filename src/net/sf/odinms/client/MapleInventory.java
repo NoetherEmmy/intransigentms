@@ -134,11 +134,11 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
     public void removeSlot(byte slot) {
         inventory.remove(slot);
     }
-    
+
     public byte getSlotLimit() {
         return slotLimit;
     }
-    
+
     public int getSize() {
         return inventory.size();
     }

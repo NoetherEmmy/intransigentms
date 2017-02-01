@@ -14,33 +14,34 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class MapleStorage {
-
     private final int id;
-    private final List<IItem> items;
+    private final List<IItem> items = new ArrayList<>();
     private int meso;
     private byte slots;
     //private Set<MapleInventoryType> updatedTypes = new HashSet<MapleInventoryType>();
-    private final Map<MapleInventoryType, List<IItem>> typeItems = new HashMap<>();
+    private final Map<MapleInventoryType, List<IItem>> typeItems = new LinkedHashMap<>();
     private static final Logger log = LoggerFactory.getLogger(MapleStorage.class);
 
     private MapleStorage(int id, byte slots, int meso) {
         this.id = id;
         this.slots = slots;
-        this.items = new ArrayList<>();
         this.meso = meso;
     }
 
     public static MapleStorage create(int id) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO storages (accountid, slots, meso) VALUES (?, ?, ?)");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "INSERT INTO storages (accountid, slots, meso) VALUES (?, ?, ?)"
+                );
             ps.setInt(1, id);
             ps.setInt(2, 16);
             ps.setInt(3, 0);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException ex) {
-            log.error("Error creating storage", ex);
+        } catch (SQLException sqle) {
+            log.error("Error creating storage. ", sqle);
         }
         return loadOrCreateFromDB(id);
     }
@@ -62,7 +63,10 @@ public class MapleStorage {
                 ret = new MapleStorage(storeId, (byte) rs.getInt("slots"), rs.getInt("meso"));
                 rs.close();
                 ps.close();
-                String sql = "SELECT * FROM inventoryitems " + "LEFT JOIN inventoryequipment USING (inventoryitemid) " + "WHERE storageid = ?";
+                String sql =
+                    "SELECT * FROM inventoryitems " +
+                        "LEFT JOIN inventoryequipment USING (inventoryitemid) " +
+                        "WHERE storageid = ?";
                 ps = con.prepareStatement(sql);
                 ps.setInt(1, storeId);
                 rs = ps.executeQuery();
@@ -93,7 +97,13 @@ public class MapleStorage {
                         equip.setLevel((byte) rs.getInt("level"));
                         ret.items.add(equip);
                     } else {
-                        Item item = new Item(rs.getInt("itemid"), (byte) rs.getInt("position"), (short) rs.getInt("quantity"), rs.getInt("petid"));
+                        Item item =
+                            new Item(
+                                rs.getInt("itemid"),
+                                (byte) rs.getInt("position"),
+                                (short) rs.getInt("quantity"),
+                                rs.getInt("petid")
+                            );
                         item.setOwner(rs.getString("owner"));
                         ret.items.add(item);
                     }
@@ -101,8 +111,8 @@ public class MapleStorage {
                 rs.close();
                 ps.close();
             }
-        } catch (SQLException ex) {
-            log.error("Error loading storage", ex);
+        } catch (SQLException sqle) {
+            log.error("Error loading storage. ", sqle);
         }
         return ret;
     }
@@ -111,7 +121,10 @@ public class MapleStorage {
         try {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE storages SET slots = ?, meso = ? WHERE storageid = ?");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "UPDATE storages SET slots = ?, meso = ? WHERE storageid = ?"
+                );
             ps.setInt(1, slots);
             ps.setInt(2, meso);
             ps.setInt(3, id);
@@ -121,8 +134,16 @@ public class MapleStorage {
             ps.setInt(1, id);
             ps.executeUpdate();
             ps.close();
-            ps = con.prepareStatement("INSERT INTO inventoryitems (storageid, itemid, inventorytype, position, quantity, owner) VALUES (?, ?, ?, ?, ?, ?)");
-            PreparedStatement pse = con.prepareStatement("INSERT INTO inventoryequipment VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            ps = con.prepareStatement(
+                "INSERT INTO inventoryitems " +
+                    "(storageid, itemid, inventorytype, position, quantity, owner) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)"
+            );
+            PreparedStatement pse =
+                con.prepareStatement(
+                    "INSERT INTO inventoryequipment " +
+                        "VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                );
             MapleInventoryType type;
             for (IItem item : items) {
                 ps.setInt(1, id);
@@ -167,8 +188,8 @@ public class MapleStorage {
             }
             ps.close();
             pse.close();
-        } catch (SQLException ex) {
-            log.error("Error saving storage", ex);
+        } catch (SQLException sqle) {
+            log.error("Error saving storage. ", sqle);
         }
     }
 
@@ -203,7 +224,7 @@ public class MapleStorage {
     }
 
     public byte getSlot(MapleInventoryType type, byte slot) {
-        // MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        //MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         byte ret = 0;
         for (IItem item : items) {
             if (item == typeItems.get(type).get(slot)) {
@@ -258,7 +279,7 @@ public class MapleStorage {
 
     public void setMeso(int meso) {
         if (meso < 0) {
-            throw new RuntimeException();
+            throw new RuntimeException("meso < 0 in MapleStorage#setMeso");
         }
         this.meso = meso;
     }

@@ -23,7 +23,7 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private void addSP(SP sp) {
+    private synchronized void addSP(SP sp) {
         ISkill skill = sp.getSkill();
         MapleCharacter player = sp.getClient().getPlayer();
         int remainingSp = player.getRemainingSp();
@@ -44,9 +44,12 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
                 remainingSp = Math.min((player.getLevel() - 1), 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
         }
 
-        int maxlevel = skill.isFourthJob() ? Math.min(player.getMasterLevel(skill), skill.getMaxLevel()) : skill.getMaxLevel();
+        int maxlevel =
+            skill.isFourthJob() ?
+                Math.min(player.getMasterLevel(skill), skill.getMaxLevel()) :
+                skill.getMaxLevel();
         int curLevel = player.getSkillLevel(skill);
-        if (remainingSp > 0 && curLevel + 1 <= maxlevel && skill.canBeLearnedBy(player.getJob())) {
+        if (remainingSp > 0 && curLevel + 1 <= maxlevel && player.canLearnSkill(skill)) {
             if (!skill.isBeginnerSkill()) {
                 player.setRemainingSp(player.getRemainingSp() - 1);
             }
@@ -54,6 +57,8 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
             player.changeSkillLevel(skill, curLevel + 1, player.getMasterLevel(skill));
         } else if (!skill.canBeLearnedBy(player.getJob())) {
             player.getClient().disconnect();
+        } else {
+            player.dropMessage(1, "You can't learn that skill yet.");
         }
     }
 

@@ -11,7 +11,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import java.util.Collection;
 
 public class FourthJobQuestsPortalHandler {
-	
     public enum FourthJobQuests implements StringValueHolder {
         RUSH("s4rush"),
         BERSERK("s4berserk");
@@ -32,7 +31,8 @@ public class FourthJobQuestsPortalHandler {
 
     //c.getClient().getSession().write(MaplePacketCreator.enableActions());
     public static boolean handlePortal(String name, MapleCharacter c) {
-        ServernoticeMapleClientMessageCallback snmcmc = new ServernoticeMapleClientMessageCallback(5, c.getClient());
+        ServernoticeMapleClientMessageCallback snmcmc =
+            new ServernoticeMapleClientMessageCallback(5, c.getClient());
         if (name.equals(FourthJobQuests.RUSH.getValue())) {
             if (!checkPartyLeader(c) && !checkRush(c)) {
                 snmcmc.dropMessage("You step into the portal, but it swiftly kicks you out.");
@@ -48,7 +48,11 @@ public class FourthJobQuestsPortalHandler {
                 c.getClient().getSession().write(MaplePacketCreator.enableActions());
                 return true;
             }
-            c.getClient().getChannelServer().getEventSM().getEventManager("4jrush").startInstance(c.getParty(), c.getMap());
+            c.getClient()
+             .getChannelServer()
+             .getEventSM()
+             .getEventManager("4jrush")
+             .startInstance(c.getParty(), c.getMap());
             return true;
         } else if (name.equals(FourthJobQuests.BERSERK.getValue())) {
             if (!checkBerserk(c)) {
@@ -56,7 +60,11 @@ public class FourthJobQuestsPortalHandler {
                 c.getClient().getSession().write(MaplePacketCreator.enableActions());
                 return true;
             }
-            c.getClient().getChannelServer().getEventSM().getEventManager("4jberserk").startInstance(c.getParty(), c.getMap());
+            c.getClient()
+             .getChannelServer()
+             .getEventSM()
+             .getEventManager("4jberserk")
+             .startInstance(c.getParty(), c.getMap());
             return true;
         }
         return false;
@@ -68,7 +76,11 @@ public class FourthJobQuestsPortalHandler {
         Collection<MaplePartyCharacter> CsPartyMembers = csParty.getMembers();
         for (MaplePartyCharacter mpc : CsPartyMembers) {
             if (!MapleJob.getById(mpc.getJobId()).isA(MapleJob.WARRIOR)) return false;
-            if (!(MapleJob.getById(mpc.getJobId()).isA(MapleJob.HERO) || MapleJob.getById(mpc.getJobId()).isA(MapleJob.PALADIN) || MapleJob.getById(mpc.getJobId()).isA(MapleJob.DARKKNIGHT))) {
+            if (
+                !MapleJob.getById(mpc.getJobId()).isA(MapleJob.HERO) &&
+                !MapleJob.getById(mpc.getJobId()).isA(MapleJob.PALADIN) &&
+                !MapleJob.getById(mpc.getJobId()).isA(MapleJob.DARKKNIGHT)
+            ) {
                 return false;
             }
         }

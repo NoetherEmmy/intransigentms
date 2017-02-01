@@ -8,7 +8,7 @@ import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.net.channel.ChannelServer;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Donator implements Command {
@@ -25,7 +25,7 @@ public class Donator implements Command {
                 }
                 break;
             case "!goto":
-                Map<String, Integer> maps = new HashMap<>();
+                Map<String, Integer> maps = new LinkedHashMap<>();
                 maps.put("gmmap", 180000000);
                 maps.put("southperry", 60000);
                 maps.put("amherst", 1010000);

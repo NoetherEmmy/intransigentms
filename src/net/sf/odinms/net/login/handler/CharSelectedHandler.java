@@ -34,7 +34,7 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
             //c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName("127.0.0.1"), 7575, charId));
             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
             String channelServerIP = MapleClient.getChannelServerIPFromSubnet(c.getSession().getRemoteAddress().toString().replace("/", "").split(":")[0], c.getChannel());
-            if(channelServerIP.equals("0.0.0.0")) {
+            if (channelServerIP.equals("0.0.0.0")) {
                 String[] socket = LoginServer.getInstance().getIP(c.getChannel()).split(":");
                 c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
             } else {

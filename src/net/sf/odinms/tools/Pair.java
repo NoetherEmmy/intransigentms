@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Represents a pair of values.
- * 
+ *
  * @param <E> The type of the left value.
  * @param <F> The type of the right value.
  */

@@ -14,7 +14,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 //import net.sf.odinms.server.life.MapleMonster;
 
 public class UseSummonBag extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();

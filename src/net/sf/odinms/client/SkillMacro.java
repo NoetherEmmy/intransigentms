@@ -1,11 +1,7 @@
 package net.sf.odinms.client;
 
 public class SkillMacro {
-
-    private int macroId;
-    private int skill1;
-    private int skill2;
-    private int skill3;
+    private int macroId, skill1, skill2, skill3;
     private String name;
     private int shout;
     private int position;

@@ -6,36 +6,28 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import java.util.concurrent.ScheduledFuture;
 
 public class MapleMount {
-
-    private int itemid;
-    private int skillid;
-    private int tiredness;
-    private int exp;
-    private int level;
+    private int itemId, skillId, tiredness, exp, level;
     private ScheduledFuture<?> tirednessSchedule;
     private final MapleCharacter owner;
-    private boolean active;
+    private boolean active = true;
 
-    public MapleMount(MapleCharacter owner, int id, int skillid) {
-        this.itemid = id;
-        this.skillid = skillid;
-        this.tiredness = 0;
+    public MapleMount(MapleCharacter owner, int id, int skillId) {
+        this.itemId = id;
+        this.skillId = skillId;
         this.level = 1;
-        this.exp = 0;
         this.owner = owner;
-        active = true;
     }
 
     public int getItemId() {
-        return itemid;
+        return itemId;
     }
 
     public int getSkillId() {
-        return skillid;
+        return skillId;
     }
 
     public int getId() {
-        switch (this.itemid) {
+        switch (itemId) {
             case 1902000:
                 return 1;
             case 1902001:
@@ -64,44 +56,45 @@ public class MapleMount {
         return level;
     }
 
-    public void setTiredness(int newtiredness) {
-        this.tiredness = newtiredness;
+    public void setTiredness(int newTiredness) {
+        tiredness = newTiredness;
         if (tiredness < 0) {
             tiredness = 0;
         }
     }
 
     public void increaseTiredness() {
-        this.tiredness++;
+        tiredness++;
         owner.getMap().broadcastMessage(MaplePacketCreator.updateMount(owner.getId(), this, false));
         if (tiredness > 100) {
             owner.dispelSkill(1004);
         }
     }
 
-    public void setExp(int newexp) {
-        this.exp = newexp;
+    public void setExp(int exp) {
+        this.exp = exp;
     }
 
-    public void setLevel(int newlevel) {
-        this.level = newlevel;
+    public void setLevel(int level) {
+        this.level = level;
     }
 
-    public void setItemId(int newitemid) {
-        this.itemid = newitemid;
+    public void setItemId(int itemId) {
+        this.itemId = itemId;
     }
 
-    public void setSkillId(int skillid) {
-        this.skillid = skillid;
+    public void setSkillId(int skillId) {
+        this.skillId = skillId;
     }
 
     public void startSchedule() {
-        this.tirednessSchedule = TimerManager.getInstance().register(this::increaseTiredness, 60000, 60000);
+        tirednessSchedule = TimerManager.getInstance().register(this::increaseTiredness, 60000, 60000);
     }
 
     public void cancelSchedule() {
-        if (this.tirednessSchedule != null)
-            this.tirednessSchedule.cancel(false);
+        if (tirednessSchedule != null) {
+            tirednessSchedule.cancel(false);
+        }
     }
 
     public void setActive(boolean set) {

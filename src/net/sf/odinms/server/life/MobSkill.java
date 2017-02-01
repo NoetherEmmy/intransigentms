@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Random;
 
 public class MobSkill {
-
     private final int skillId;
     private final int skillLevel;
     private int mpCon;
@@ -89,7 +88,7 @@ public class MobSkill {
         boolean dispel = false;
         boolean seduce = false;
         boolean banish = false;
-                if (skillId > 119 && skillId < 140 && player.isGM()) {
+        if (skillId > 119 && skillId < 140 && player.isGM()) {
             return;
         }
         switch (skillId) {
@@ -181,7 +180,7 @@ public class MobSkill {
                                 break;
                         }
                         // Get spawn coordinates (This fixes monster lock)
-                        // TODO get map left and right wall. Any suggestions? PM TheRamon
+                        // TODO: Get map left and right wall.
                         switch (monster.getMap().getId()) {
                             case 220080001: //Pap map
                                 if (xpos < -890) {

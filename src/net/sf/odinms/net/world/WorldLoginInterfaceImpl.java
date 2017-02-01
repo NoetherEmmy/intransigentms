@@ -8,7 +8,7 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,7 +36,7 @@ public class WorldLoginInterfaceImpl extends UnicastRemoteObject implements Worl
 
     @Override
     public Map<Integer, Integer> getChannelLoad() throws RemoteException {
-        Map<Integer, Integer> ret = new HashMap<>();
+        Map<Integer, Integer> ret = new LinkedHashMap<>();
         for (ChannelWorldInterface cwi : WorldRegistryImpl.getInstance().getAllChannelServers()) {
             ret.put(cwi.getChannelId(), cwi.getConnected());
         }

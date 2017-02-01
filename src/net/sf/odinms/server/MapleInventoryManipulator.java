@@ -233,7 +233,7 @@ public class MapleInventoryManipulator {
                 numSlotsNeeded = 1;
             } else {
                 numSlotsNeeded = 1;
-                System.out.println("Error - 0 slotMax.");
+                System.err.println("Error -- 0 slotMax.");
             }
             return !c.getPlayer().getInventory(type).isFull(numSlotsNeeded - 1);
         } else {
@@ -415,7 +415,7 @@ public class MapleInventoryManipulator {
         Equip source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(src);
         Equip target = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
         if (dst < 0) {
-            System.out.println("Unequipping to negative slot. (" + c.getPlayer().getName() + ": " + src + " -> " + dst);
+            System.err.println("Unequipping to negative slot. (" + c.getPlayer().getName() + ": " + src + " -> " + dst);
         }
         if (source == null) {
             return;
@@ -459,7 +459,18 @@ public class MapleInventoryManipulator {
             }
         }
         if (quantity < 0 || quantity == 0 && !ii.isThrowingStar(itemId) && !ii.isBullet(itemId)) {
-            System.out.println("Dropping " + quantity + " " + itemId + " (" + type.name() + "/" + src + ")");
+            System.err.println(
+                c.getPlayer().getName() +
+                    " dropping " +
+                    quantity +
+                    " " +
+                    itemId +
+                    " (" +
+                    type.name() +
+                    "/" +
+                    src +
+                    ")"
+            );
             c.disconnect();
             return;
         }
@@ -469,7 +480,11 @@ public class MapleInventoryManipulator {
             target.setQuantity(quantity);
             source.setQuantity((short) (source.getQuantity() - quantity));
             c.getSession().write(MaplePacketCreator.dropInventoryItemUpdate(type, source));
-            boolean weddingRing = source.getItemId() == 1112803 || source.getItemId() == 1112806 || source.getItemId() == 1112807 || source.getItemId() == 1112809;
+            boolean weddingRing =
+                source.getItemId() == 1112803 ||
+                source.getItemId() == 1112806 ||
+                source.getItemId() == 1112807 ||
+                source.getItemId() == 1112809;
             if (weddingRing) {
                 c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), target, dropPos);
             } else if (c.getPlayer().getMap().getEverlast()) {

@@ -35,7 +35,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             player = MapleCharacter.loadCharFromDB(cid, c, true);
             c.setPlayer(player);
         } catch (SQLException e) {
-            System.out.println("Loading the char failed" + e);
+            System.err.println("Loading character with ID " + cid + " failed: " + e);
             return;
         }
         c.setAccID(player.getAccountID());
@@ -56,7 +56,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
                             cserv.removePlayer(dPlayer);
                             dPlayer.getClient().disconnect();
                             dPlayer.getClient().getSession().close();
-                            System.out.println(player.getName() + ": Attempting to double login with: " + charName);
+                            System.err.println(player.getName() + ": Attempting to double login with: " + charName);
                             break;
                         }
                     }

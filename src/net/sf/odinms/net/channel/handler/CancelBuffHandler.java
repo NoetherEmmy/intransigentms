@@ -8,7 +8,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CancelBuffHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int sourceid = slea.readInt();

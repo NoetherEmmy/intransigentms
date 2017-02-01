@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class XMLDomMapleData implements MapleData {
             try {
                 numChildNodes = childNodes.getLength();
             } catch (NullPointerException npe) {
-                System.out.print("Exception in XMLDomMapleData.getChildByPath() for path " + path + ", " + npe + "\n");
+                //System.err.print("Exception in XMLDomMapleData.getChildByPath() for path " + path + ", " + npe + "\n");
                 numChildNodes = 0;
             }
             for (int i = 0; i < numChildNodes; ++i) {
@@ -90,12 +91,14 @@ public class XMLDomMapleData implements MapleData {
                 }
             }
         } catch (NullPointerException npe) {
+            /*
             try {
-                System.out.println("NPE in XMLDomMapleData.java in method getChildren(), XML file path: " + imageDataDir.getCanonicalPath());
+                System.err.println("NPE in XMLDomMapleData.java in method getChildren(), XML file path: " + imageDataDir.getCanonicalPath());
             } catch (IOException ioe) {
-                System.out.println("NPE and IOE in XMLDomMapleData.java in method getChildren()");
+                System.err.println("NPE and IOE in XMLDomMapleData.java in method getChildren()");
             }
-            return new ArrayList<>();
+            */
+            return Collections.emptyList();
         }
         return ret;
     }
@@ -170,7 +173,14 @@ public class XMLDomMapleData implements MapleData {
             case "null":
                 return MapleDataType.IMG_0x00;
         }
-        System.out.print("Returning null in XMLDomMapleData.getType(): node's name: " + nodeName + ", " + "node's URI: " + node.getBaseURI() + "\n");
+        System.err.print(
+            "Returning null in XMLDomMapleData.getType(): node's name: " +
+                nodeName +
+                ", " +
+                "node's URI: " +
+                node.getBaseURI() +
+                "\n"
+        );
         return null;
     }
 

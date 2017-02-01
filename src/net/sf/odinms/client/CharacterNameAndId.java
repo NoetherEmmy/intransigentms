@@ -1,7 +1,6 @@
 package net.sf.odinms.client;
 
 public class CharacterNameAndId {
-
     private final int id;
     private final String name;
 

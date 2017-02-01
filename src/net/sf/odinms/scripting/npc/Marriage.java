@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class Marriage {
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Marriage.class);
 
     public static void createMarriage(MapleCharacter player, MapleCharacter partner) {

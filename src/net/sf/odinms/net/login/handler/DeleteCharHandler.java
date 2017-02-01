@@ -8,7 +8,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.util.Calendar;
 
 public class DeleteCharHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int idate = slea.readInt();

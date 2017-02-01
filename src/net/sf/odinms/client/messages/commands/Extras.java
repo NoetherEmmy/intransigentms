@@ -9,11 +9,10 @@ import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.maps.SavedLocationType;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Extras implements Command {
-
     @Override
     public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
@@ -63,7 +62,7 @@ public class Extras implements Command {
                     }
                     break;
                 case "@go":
-                    Map<String, Integer> maps = new HashMap<>();
+                    Map<String, Integer> maps = new LinkedHashMap<>();
                     maps.put("fm", 910000000);
                     maps.put("henesys", 100000000);
                     maps.put("ellinia", 101000000);

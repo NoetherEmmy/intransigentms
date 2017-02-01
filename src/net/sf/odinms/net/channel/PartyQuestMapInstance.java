@@ -27,14 +27,13 @@ public class PartyQuestMapInstance {
     private final String path;
     private Invocable invocable;
     private final Map<MapleCharacter, Map<String, Object>> playerPropertyMap;
-    private int levelLimit = 0;
+    private int levelLimit;
     private boolean listeningForPlayerMovement = false;
-    private final Map<Integer, Obstacle> obstacles = new HashMap<>(10, 0.8f);
-    private final Map<Integer, Trigger> triggers = new HashMap<>(10, 0.8f);
+    private final Map<Integer, Obstacle> obstacles = new LinkedHashMap<>(10, 0.8f);
+    private final Map<Integer, Trigger> triggers = new LinkedHashMap<>(10, 0.8f);
     private final Map<MapleCharacter, Point> lastPointsHeard;
-    private final Set<Integer> disabledSkills = new HashSet<>(5, 0.8f);
-    private int currentObstacleId = 0;
-    private int currentTriggerId = 0;
+    private final Set<Integer> disabledSkills = new LinkedHashSet<>(5, 0.8f);
+    private int currentObstacleId, currentTriggerId;
 
     PartyQuestMapInstance(PartyQuest partyQuest, MapleMap map) {
         this.partyQuest = partyQuest;
@@ -49,19 +48,19 @@ public class PartyQuestMapInstance {
             scriptEngine.put("pq", this.partyQuest);
             scriptEngine.put("map", this.map);
         } catch (FileNotFoundException fnfe) {
-            System.out.println("PartyQuestMapInstance could not locate script at path: " + path);
+            System.err.println("PartyQuestMapInstance could not locate script at path: " + path);
         } catch (ScriptException se) {
-            System.out.println("Error evaluating script in PartyQuestMapInstance at path " + path);
+            System.err.println("Error evaluating script in PartyQuestMapInstance at path " + path);
             se.printStackTrace();
         } catch (IOException ioe) {
-            System.out.println("Error reading script in PartyQuestMapInstance at path " + path);
+            System.err.println("Error reading script in PartyQuestMapInstance at path " + path);
             ioe.printStackTrace();
         } finally {
             invocable = (Invocable) scriptEngine;
         }
-        playerPropertyMap = new HashMap<>(getPlayers().size() + 1, 0.9f);
-        this.getPlayers().forEach(p -> playerPropertyMap.put(p, new HashMap<>(4)));
-        lastPointsHeard = new HashMap<>(getPlayers().size() + 1, 0.9f);
+        playerPropertyMap = new LinkedHashMap<>(getPlayers().size() + 1, 0.9f);
+        this.getPlayers().forEach(p -> playerPropertyMap.put(p, new LinkedHashMap<>(4)));
+        lastPointsHeard = new LinkedHashMap<>(getPlayers().size() + 1, 0.9f);
     }
 
     public void dispose() {
@@ -91,7 +90,7 @@ public class PartyQuestMapInstance {
         try {
             return invocable.invokeFunction(name);
         } catch (ScriptException se) {
-            System.out.println("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
+            System.err.println("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
             se.printStackTrace();
         } catch (NoSuchMethodException ignored) {
         }
@@ -102,7 +101,7 @@ public class PartyQuestMapInstance {
         try {
             return invocable.invokeFunction(name, args);
         } catch (ScriptException se) {
-            System.out.println("Error invoking " + name + "(...) in PartyQuestMapInstance at path " + path);
+            System.err.println("Error invoking " + name + "(...) in PartyQuestMapInstance at path " + path);
             se.printStackTrace();
         } catch (NoSuchMethodException ignored) {
         }
@@ -112,7 +111,7 @@ public class PartyQuestMapInstance {
     public void setPlayerProperty(MapleCharacter player, String property, Object value) {
         if (!getPlayers().contains(player)) return;
         if (!playerPropertyMap.containsKey(player)) {
-            playerPropertyMap.put(player, new HashMap<>(4));
+            playerPropertyMap.put(player, new LinkedHashMap<>(4));
         }
         playerPropertyMap.get(player).put(property, value);
     }
@@ -120,7 +119,7 @@ public class PartyQuestMapInstance {
     public void setPlayerPropertyIfNotSet(MapleCharacter player, String property, Object value) {
         if (!getPlayers().contains(player)) return;
         if (!playerPropertyMap.containsKey(player)) {
-            playerPropertyMap.put(player, new HashMap<>(4));
+            playerPropertyMap.put(player, new LinkedHashMap<>(4));
         }
         playerPropertyMap.get(player).putIfAbsent(property, value);
     }
@@ -128,7 +127,7 @@ public class PartyQuestMapInstance {
     public void setPropertyForAll(final String property, final Object value) {
         getPlayers().forEach(p -> {
             if (!playerPropertyMap.containsKey(p)) {
-                playerPropertyMap.put(p, new HashMap<>(4));
+                playerPropertyMap.put(p, new LinkedHashMap<>(4));
             }
             playerPropertyMap.get(p).put(property, value);
         });
@@ -229,7 +228,11 @@ public class PartyQuestMapInstance {
         return currentObstacleId++;
     }
 
-    public int registerObstacle(int reactorId, Point closed, Point open, boolean defaultClosed, Collection<Direction> directions) {
+    public int registerObstacle(int reactorId,
+                                Point closed,
+                                Point open,
+                                boolean defaultClosed,
+                                Collection<Direction> directions) {
         obstacles.put(currentObstacleId, new Obstacle(reactorId, closed, open, defaultClosed, directions));
         return currentObstacleId++;
     }
@@ -243,7 +246,7 @@ public class PartyQuestMapInstance {
     }
 
     public Map<Integer, Obstacle> readObstacles() {
-        return new HashMap<>(obstacles);
+        return new LinkedHashMap<>(obstacles);
     }
 
     public boolean toggleObstacle(int obsId) {
@@ -400,12 +403,12 @@ public class PartyQuestMapInstance {
             scriptEngine.put("pq", this.partyQuest);
             scriptEngine.put("map", this.map);
         } catch (FileNotFoundException fnfe) {
-            System.out.println("PartyQuestMapInstance could not locate script at path: " + path);
+            System.err.println("PartyQuestMapInstance could not locate script at path: " + path);
         } catch (ScriptException se) {
-            System.out.println("Error evaluating script in PartyQuestMapInstance at path " + path);
+            System.err.println("Error evaluating script in PartyQuestMapInstance at path " + path);
             se.printStackTrace();
         } catch (IOException ioe) {
-            System.out.println("Error reading script in PartyQuestMapInstance at path " + path);
+            System.err.println("Error reading script in PartyQuestMapInstance at path " + path);
             ioe.printStackTrace();
         } finally {
             invocable = (Invocable) scriptEngine;
@@ -446,7 +449,7 @@ public class PartyQuestMapInstance {
                 }
             }
 
-            this.directions = new HashSet<>(directions);
+            this.directions = new LinkedHashSet<>(directions);
         }
 
         /**
@@ -477,7 +480,7 @@ public class PartyQuestMapInstance {
                 }
             }
 
-            this.directions = new HashSet<>(
+            this.directions = new LinkedHashSet<>(
                 Arrays.asList(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
             );
         }

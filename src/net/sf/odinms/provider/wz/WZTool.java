@@ -7,12 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WZTool {
-
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(WZTool.class);
 
     private WZTool() {
-
     }
 
     public static char[] xorCharArray(char[] cypher, char[] key) {
@@ -43,7 +41,7 @@ public class WZTool {
             return;
         }
         if (unicode) {
-            // do unicode
+            // Do unicode
             short umask = (short) 0xAAAA;
             if (s.length() < 0x7F)
                 leo.write(s.length());
@@ -58,7 +56,7 @@ public class WZTool {
                 leo.writeShort((short)chr);
             }
         } else {
-            // non-unicode
+            // Non-unicode
             byte mask = (byte) 0xAA;
             if (s.length() <= 127)
                 leo.write(-s.length());
@@ -77,15 +75,19 @@ public class WZTool {
     public static String readDecodedString() {
         return "";
     }
+
     public static String transStr() {
         return "";
     }
+
     public static String transStr16KMST() {
         return "";
     }
+
     public static int getBytes() {
         return 9001;
     }
+
     public static byte[] decrypt() {
         return new byte[0];
     }
@@ -96,7 +98,7 @@ public class WZTool {
     }
 
     public static String readDecodedStringAtOffsetAndReset(SeekableLittleEndianAccessor slea, int offset) {
-        long pos = 0;
+        long pos;
         pos = slea.getPosition();
         slea.seek(offset);
         String ret = readDecodedString();

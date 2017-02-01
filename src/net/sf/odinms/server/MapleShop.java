@@ -25,7 +25,7 @@ public class MapleShop {
     private final int npcId;
     private final List<MapleShopItem> items;
     private static final Logger log = LoggerFactory.getLogger(PacketProcessor.class);
-    
+
     static {
         for (int i = 2070000; i <= 2070018; ++i) {
             rechargeableItems.add(i);

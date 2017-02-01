@@ -7,9 +7,7 @@ import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.tools.MockIOSession;
 
 public class FakeCharacter {
-
-    private final MapleCharacter ch;
-    private final MapleCharacter owner;
+    private final MapleCharacter ch, owner;
     private boolean follow = true;
 
     public FakeCharacter(MapleCharacter player, int id) {
@@ -34,7 +32,7 @@ public class FakeCharacter {
         player.getMap().addBotPlayer(clone);
         clone.setClient(new MapleClient(null, null, new MockIOSession()));
         ch = clone;
-		owner = player;
+        owner = player;
     }
 
     public MapleCharacter getFakeChar() {
@@ -48,7 +46,7 @@ public class FakeCharacter {
     public void setFollow(boolean set) {
         follow = set;
     }
-	
+
     public MapleCharacter getOwner() {
         return owner;
     }

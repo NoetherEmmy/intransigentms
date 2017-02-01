@@ -26,7 +26,7 @@ public class MapleQuestRequirement {
         switch (getType()) {
             case JOB:
                 if (getData() == null) {
-                    System.out.println("getData() == null in MapleQuestRequirement.check(), case JOB:, quest: " + quest.getId());
+                    //System.err.println("getData() == null in MapleQuestRequirement.check(), case JOB:, quest: " + quest.getId());
                     return false;
                 }
                 try {
@@ -36,13 +36,13 @@ public class MapleQuestRequirement {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case JOB:, quest: " + quest.getId() + ", data: " + getData().getName());
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case JOB:, quest: " + quest.getId() + ", data: " + getData().getName());
                     return false;
                 }
                 return false;
             case QUEST:
                 if (getData() == null) {
-                    System.out.println("getData() == null in MapleQuestRequirement.check(), case QUEST:, quest: " + quest.getId());
+                    //System.err.println("getData() == null in MapleQuestRequirement.check(), case QUEST:, quest: " + quest.getId());
                     return false;
                 }
                 try {
@@ -50,11 +50,11 @@ public class MapleQuestRequirement {
                         MapleData iddata = questEntry.getChildByPath("id");
                         MapleData statedata = questEntry.getChildByPath("state");
                         if (iddata == null) {
-                            System.out.println("Getting quest ID failed in MapleQuestRequirement.check(): " + questEntry.getName());
+                            System.err.println("Getting quest ID failed in MapleQuestRequirement.check(): " + questEntry.getName());
                             return false;
                         }
                         if (statedata == null) {
-                            System.out.println("Getting quest state failed in MapleQuestRequirement.check(): " + questEntry.getName());
+                            System.err.println("Getting quest state failed in MapleQuestRequirement.check(): " + questEntry.getName());
                             return false;
                         }
                         MapleQuestStatus q = c.getQuest(MapleQuest.getInstance(MapleDataTool.getInt(questEntry.getChildByPath("id"))));
@@ -69,13 +69,13 @@ public class MapleQuestRequirement {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case QUEST:, quest: " + quest.getId() + ", data: " + getData().getName());
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case QUEST:, quest: " + quest.getId() + ", data: " + getData().getName());
                     return false;
                 }
                 return true;
             case ITEM:
                 if (getData() == null) {
-                    System.out.println("getData() == null in MapleQuestRequirement.check(), case ITEM:, quest: " + quest.getId());
+                    //System.err.println("getData() == null in MapleQuestRequirement.check(), case ITEM:, quest: " + quest.getId());
                     return false;
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -93,7 +93,7 @@ public class MapleQuestRequirement {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case ITEM:, quest: " + quest.getId() + ", data: " + getData().getName());
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case ITEM:, quest: " + quest.getId() + ", data: " + getData().getName());
                     return false;
                 }
                 return true;
@@ -101,14 +101,14 @@ public class MapleQuestRequirement {
                 try {
                     return c.getLevel() >= MapleDataTool.getInt(getData());
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case MIN_LEVEL:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case MIN_LEVEL:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
                     return false;
                 }
             case MAX_LEVEL:
                 try {
                     return c.getLevel() <= MapleDataTool.getInt(getData());
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case MAX_LEVEL:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case MAX_LEVEL:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
                     return false;
                 }
             case END_DATE:
@@ -118,12 +118,12 @@ public class MapleQuestRequirement {
                     cal.set(Integer.parseInt(timeStr.substring(0, 4)), Integer.parseInt(timeStr.substring(4, 6)), Integer.parseInt(timeStr.substring(6, 8)), Integer.parseInt(timeStr.substring(8, 10)), 0);
                     return cal.getTimeInMillis() >= System.currentTimeMillis();
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case END_DATE:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case END_DATE:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
                     return false;
                 }
             case MOB:
                 if (getData() == null) {
-                    System.out.println("getData() == null in MapleQuestRequirement.check(), case MOB:, quest: " + quest.getId());
+                    //System.err.println("getData() == null in MapleQuestRequirement.check(), case MOB:, quest: " + quest.getId());
                     return false;
                 }
                 try {
@@ -135,7 +135,7 @@ public class MapleQuestRequirement {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case MOB:, quest: " + quest.getId() + ", data: " + getData().getName());
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case MOB:, quest: " + quest.getId() + ", data: " + getData().getName());
                     return false;
                 }
                 return true;
@@ -143,7 +143,7 @@ public class MapleQuestRequirement {
                 try {
                     return npcid == null || npcid == MapleDataTool.getInt(getData());
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case NPC:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case NPC:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
                     return false;
                 }
             case FIELD_ENTER:
@@ -151,14 +151,14 @@ public class MapleQuestRequirement {
                     MapleData zeroField = getData().getChildByPath("0");
                     return zeroField != null && MapleDataTool.getInt(zeroField) == c.getMapId();
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case FIELD_ENTER:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case FIELD_ENTER:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
                     return false;
                 }
             case INTERVAL:
                 try {
                     return !c.getQuest(quest).getStatus().equals(MapleQuestStatus.Status.COMPLETED) || c.getQuest(quest).getCompletionTime() <= System.currentTimeMillis() - MapleDataTool.getInt(getData()) * 60 * 1000;
                 } catch (Exception e) {
-                    System.out.println(e + " in MapleQuestRequirement.check(), case INTERVAL:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
+                    //System.err.println(e + " in MapleQuestRequirement.check(), case INTERVAL:, quest: " + quest.getId() + ", data: " + (getData() != null ? getData().getName() : "NULL"));
                     return false;
                 }
             //case PET:
@@ -187,7 +187,7 @@ public class MapleQuestRequirement {
         List<Integer> delta = new ArrayList<>();
         for (MapleData itemEntry : getData().getChildren()) {
             int itemId = MapleDataTool.getInt(itemEntry.getChildByPath("id"));
-            if(ii.isQuestItem(itemId)) delta.add(itemId);
+            if (ii.isQuestItem(itemId)) delta.add(itemId);
         }
         return Collections.unmodifiableList(delta);
     }

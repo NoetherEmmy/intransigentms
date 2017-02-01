@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ClanHolder {
-
-    private final Map<MapleCharacter, Integer> online = new LinkedHashMap<>(); // Only for each channel sadly
+    private final Map<MapleCharacter, Integer> online = new LinkedHashMap<>(); // Only for each channel, sadly
     private static final Map<String, Integer> offline = new LinkedHashMap<>(); // Only contains name
 
     public void registerPlayer(MapleCharacter chr) {

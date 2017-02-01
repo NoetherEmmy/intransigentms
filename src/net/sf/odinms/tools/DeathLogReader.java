@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public final class DeathLogReader {
     private static DeathLogReader instance;
     private static File f;
-    private static final Map<String, List<List<String>>> itemLogCache = new HashMap<>(3, 0.8f);
+    private static final Map<String, List<List<String>>> itemLogCache = new LinkedHashMap<>(3, 0.8f);
 
     private DeathLogReader(File file) {
         if (file == null) {

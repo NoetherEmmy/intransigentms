@@ -6,13 +6,16 @@ import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.life.Element;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Skill implements ISkill {
     private final int id;
     private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
     private int animationTime;
+    private final Map<Integer, Integer> requirements = new LinkedHashMap<>(2);
 
     private Skill(int id) {
         super();
@@ -202,6 +205,9 @@ public class Skill implements ISkill {
             MapleStatEffect statEffect = MapleStatEffect.loadSkillEffectFromData(level, id, isBuff);
             ret.effects.add(statEffect);
         }
+        for (MapleData req : data.getChildByPath("req")) {
+            ret.requirements.put(Integer.parseInt(req.getName()), (Integer) req.getData());
+        }
         ret.animationTime = 0;
         if (effect != null) {
             for (MapleData effectEntry : effect) {
@@ -262,5 +268,10 @@ public class Skill implements ISkill {
     @Override
     public boolean isGMSkill() {
         return id > 9000000;
+    }
+
+    @Override
+    public Map<Integer, Integer> getRequirements() {
+        return requirements;
     }
 }

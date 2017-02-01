@@ -9,7 +9,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class QuestActionHandler extends AbstractMaplePacketHandler {
-
     /** Creates a new instance of QuestActionHandler */
     public QuestActionHandler() {
     }
@@ -19,11 +18,11 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
         byte action = slea.readByte();
         short quest = slea.readShort();
         MapleCharacter player = c.getPlayer();
-        if (action == 1) { // Start quest.
+        if (action == 1) { // Start quest
             int npc = slea.readInt();
             slea.readInt();
             MapleQuest.getInstance(quest).start(player, npc);
-        } else if (action == 2) { // Complete quest.
+        } else if (action == 2) { // Complete quest
             int npc = slea.readInt();
             slea.readInt();
             if (slea.available() >= 4) {
@@ -32,8 +31,19 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
             } else {
                 MapleQuest.getInstance(quest).complete(player, npc);
             }
-            c.getSession().write(MaplePacketCreator.showOwnBuffEffect(0, 9)); // Quest completion.
-            player.getMap().broadcastMessage(player, MaplePacketCreator.showBuffeffect(player.getId(), 0, 9, (byte) 0), false);
+            c.getSession().write(MaplePacketCreator.showOwnBuffEffect(0, 9)); // Quest completion
+            player
+                .getMap()
+                .broadcastMessage(
+                    player,
+                    MaplePacketCreator.showBuffeffect(
+                        player.getId(),
+                        0,
+                        9,
+                        (byte) 0
+                    ),
+                    false
+                );
             // c.getSession().write(MaplePacketCreator.completeQuest(c.getPlayer(), quest));
             // c.getSession().write(MaplePacketCreator.updateQuestInfo(c.getPlayer(), quest, npc, (byte)14));
             // 6 = start quest
@@ -48,7 +58,7 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
             int npc = slea.readInt();
             slea.readInt();
             QuestScriptManager.getInstance().start(c, npc, quest);
-        } else if (action == 5) { // Scripted end quests.
+        } else if (action == 5) { // Scripted end quests
             int npc = slea.readInt();
             slea.readInt();
             QuestScriptManager.getInstance().end(c, npc, quest);

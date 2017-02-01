@@ -24,12 +24,11 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class CommandProcessor implements CommandProcessorMBean {
-
-    private static final List<Pair<MapleCharacter, String>> gmlog = Collections.synchronizedList(new ArrayList<Pair<MapleCharacter, String>>());
+    private static final List<Pair<MapleCharacter, String>> gmlog =
+        Collections.synchronizedList(new ArrayList<Pair<MapleCharacter, String>>());
     private final Map<String, DefinitionCommandPair> commands = new LinkedHashMap<>();
     private static CommandProcessor instance = new CommandProcessor();
     private static final Runnable persister;
-
 
     static {
         persister = new PersistingTask();
@@ -42,7 +41,6 @@ public class CommandProcessor implements CommandProcessorMBean {
     }
 
     public static class PersistingTask implements Runnable {
-        
         @Override
         public void run() {
             synchronized (gmlog) {
@@ -58,7 +56,7 @@ public class CommandProcessor implements CommandProcessorMBean {
                     }
                     ps.close();
                 } catch (SQLException e) {
-                    System.out.println("Error persisting cheatlog: " + e);
+                    System.err.println("Error persisting cheatlog: " + e);
                 }
                 gmlog.clear();
             }
@@ -68,9 +66,12 @@ public class CommandProcessor implements CommandProcessorMBean {
     public static void registerMBean() {
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         try {
-            mBeanServer.registerMBean(instance, new ObjectName("net.sf.odinms.client.messages:name=CommandProcessor"));
+            mBeanServer.registerMBean(
+                instance,
+                new ObjectName("net.sf.odinms.client.messages:name=CommandProcessor")
+            );
         } catch (Exception e) {
-            System.out.println("Error registering CommandProcessor MBean: " + e);
+            System.err.println("Error registering CommandProcessor MBean: " + e);
         }
     }
 
@@ -137,7 +138,7 @@ public class CommandProcessor implements CommandProcessorMBean {
     public String processCommandJMX(int cserver, int mapid, String command) {
         ChannelServer cserv = ChannelServer.getInstance(cserver);
         if (cserv == null) {
-            return "The specified channel Server does not exist in this serverprocess";
+            return "The specified channel server does not exist in this serverprocess.";
         }
         MapleClient c = new MapleClient(null, null, new MockIOSession());
         MapleCharacter chr = MapleCharacter.getDefault(c, 26023);
@@ -185,12 +186,12 @@ public class CommandProcessor implements CommandProcessorMBean {
                         Command newInstance = (Command) clasz.newInstance();
                         registerCommand(newInstance);
                     } catch (Exception e) {
-                        System.out.println("Error instantiating command class: " + e);
+                        System.err.println("Error instantiating command class: " + e);
                     }
                 }
             }
         } catch (ClassNotFoundException e) {
-            System.out.println("THROW" + e);
+            e.printStackTrace();
         }
     }
 
@@ -236,7 +237,7 @@ public class CommandProcessor implements CommandProcessorMBean {
             }
             fw.close();
         } catch (IOException e) {
-            System.out.println("THROW" + e);
+            e.printStackTrace();
         }
     }
 
@@ -251,7 +252,10 @@ public class CommandProcessor implements CommandProcessorMBean {
             String[] splitted = line.split(" ");
             if (splitted.length > 0) {
                 DefinitionCommandPair definitionCommandPair = commands.get(splitted[0].toLowerCase().substring(1));
-                if (definitionCommandPair != null && c.getPlayer().getGMLevel() >= definitionCommandPair.getDefinition().getRequiredLevel()) {
+                if (
+                    definitionCommandPair != null &&
+                    c.getPlayer().getGMLevel() >= definitionCommandPair.getDefinition().getRequiredLevel()
+                ) {
                     if (definitionCommandPair.getDefinition().getRequiredLevel() >= 3) {
                         gmlog.add(new Pair<>(c.getPlayer(), line));
                         System.out.println("Notice: " + c.getPlayer().getName() + " used a command: " + line);
@@ -262,7 +266,7 @@ public class CommandProcessor implements CommandProcessorMBean {
                     try {
                         definitionCommandPair.getCommand().execute(c, mc, splitted);
                     } catch (Exception e) {
-                        System.out.println("Command Error, line " + line + ": " + e);
+                        System.err.println("Command error, line " + line + ": " + e);
                     }
                     return true;
                 }
@@ -273,7 +277,6 @@ public class CommandProcessor implements CommandProcessorMBean {
 }
 
 class DefinitionCommandPair {
-
     private final Command command;
     private final CommandDefinition definition;
 

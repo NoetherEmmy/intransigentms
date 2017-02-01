@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class MapleMonsterInformationProvider {
 
     public static final int APPROX_FADE_DELAY = 90;
     private static MapleMonsterInformationProvider instance = null;
-    private final Map<Integer, List<DropEntry>> drops = new HashMap<>();
+    private final Map<Integer, List<DropEntry>> drops = new LinkedHashMap<>();
     private static final Logger log = LoggerFactory.getLogger(MapleMonsterInformationProvider.class);
 
     private MapleMonsterInformationProvider() {

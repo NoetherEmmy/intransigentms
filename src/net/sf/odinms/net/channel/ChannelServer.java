@@ -84,13 +84,13 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private int PvPis;
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
-    private final Map<String, PartyQuest> partyQuests = new HashMap<>(2);
-    private final Map<String, Set<Integer>> partyQuestItems = new HashMap<>(2);
-    private static final Map<Integer, ChannelServer> instances = new HashMap<>();
-    private static final Map<String, ChannelServer> pendingInstances = new HashMap<>();
-    private final Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
+    private final Map<String, PartyQuest> partyQuests = new LinkedHashMap<>(2);
+    private final Map<String, Set<Integer>> partyQuestItems = new LinkedHashMap<>(2);
+    private static final Map<Integer, ChannelServer> instances = new LinkedHashMap<>();
+    private static final Map<String, ChannelServer> pendingInstances = new LinkedHashMap<>();
+    private final Map<Integer, MapleGuildSummary> gsStore = new LinkedHashMap<>();
     private Boolean worldReady = true;
-    private final Map<MapleSquadType, MapleSquad> mapleSquads = new HashMap<>();
+    private final Map<MapleSquadType, MapleSquad> mapleSquads = new LinkedHashMap<>();
     private final ClanHolder clans = new ClanHolder();
     private final Collection<FakeCharacter> clones = new ArrayList<>();
     private int levelCap;
@@ -138,7 +138,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                         return;
                     }
                 }
-                System.out.println("Reconnecting to world server.");
+                System.err.println("Reconnecting to world server.");
                 synchronized (wci) {
                     // Completely re-establish the rmi connection.
                     try {
@@ -180,7 +180,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                         DatabaseConnection.getConnection();
                         wci.serverReady();
                     } catch (Exception e) {
-                        System.out.println("Reconnecting failed" + e);
+                        System.err.println("Reconnecting failed: " + e);
                     }
                     worldReady = true;
                 }
@@ -233,7 +233,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 ps.executeUpdate();
                 ps.close();
             } catch (SQLException ex) {
-                System.out.println("Could not reset databases" + ex);
+                System.err.println("Could not reset databases: " + ex);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -259,7 +259,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             wci.serverReady();
             eventSM.init();
         } catch (IOException e) {
-            System.out.println("Binding to port " + port + " failed (ch: " + getChannel() + ")" + e);
+            System.err.println("Binding to port " + port + " failed (ch: " + getChannel() + ") " + e);
         }
     }
 
@@ -424,7 +424,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         try {
             return getWorldInterface().getIP(channel);
         } catch (RemoteException e) {
-            System.out.println("Lost connection to world server" + e);
+            System.err.println("Lost connection to world server: " + e);
             throw new RuntimeException("Lost connection to world server");
         }
     }
@@ -511,7 +511,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         if (partyQuestItems.containsKey(pqName)) {
             partyQuestItems.get(pqName).add(id);
         } else {
-            Set<Integer> items = new HashSet<>(4, 0.8f);
+            Set<Integer> items = new LinkedHashSet<>(4, 0.8f);
             items.add(id);
             partyQuestItems.put(pqName, items);
         }
@@ -519,7 +519,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
 
     public Set<Integer> readPqItems(String pqName) {
         if (partyQuestItems.containsKey(pqName)) {
-            return new HashSet<>(partyQuestItems.get(pqName));
+            return new LinkedHashSet<>(partyQuestItems.get(pqName));
         } else {
             return Collections.emptySet();
         }
@@ -594,7 +594,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         try {
             g = this.getWorldInterface().getGuild(gid, mgc);
         } catch (RemoteException re) {
-            System.out.println("RemoteException while fetching MapleGuild." + re);
+            System.err.println("RemoteException while fetching MapleGuild. " + re);
             return null;
         }
 
@@ -614,7 +614,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 }
                 return gsStore.get(gid);
             } catch (RemoteException re) {
-                System.out.println("RemoteException while fetching GuildSummary." + re);
+                System.err.println("RemoteException while fetching GuildSummary. " + re);
                 return null;
             }
         }
@@ -636,7 +636,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 }
             }
         } catch (RemoteException re) {
-            System.out.println("RemoteException while reloading GuildSummary." + re);
+            System.err.println("RemoteException while reloading GuildSummary. " + re);
         }
     }
 

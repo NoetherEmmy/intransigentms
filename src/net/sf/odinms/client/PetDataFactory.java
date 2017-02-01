@@ -7,14 +7,13 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.tools.Pair;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PetDataFactory {
-
     private static final MapleDataProvider dataRoot = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Item.wz"));
-    private static final Map<Pair<Integer, Integer>, PetCommand> petCommands = new HashMap<>();
-    private static final Map<Integer, Integer> petHunger = new HashMap<>();
+    private static final Map<Pair<Integer, Integer>, PetCommand> petCommands = new LinkedHashMap<>();
+    private static final Map<Integer, Integer> petHunger = new LinkedHashMap<>();
 
     public static PetCommand getPetCommand(int petId, int skillId) {
         PetCommand ret = petCommands.get(new Pair<>(petId, skillId));

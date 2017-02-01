@@ -36,7 +36,7 @@ public abstract class AbstractScriptManager {
             if (engine == null) {
                 File scriptFile = new File(path);
                 if (!scriptFile.exists()) {
-                    System.out.print("path0: " + path + "\n");
+                    System.err.print("path0: " + path + "\n");
                     return null;
                 }
                 engine = sem.getEngineByName("javascript");
@@ -50,7 +50,7 @@ public abstract class AbstractScriptManager {
             return (Invocable) engine;
         } catch (Exception e) {
             log.error("Error executing script.", e);
-            System.out.print("path1: " + path + "\n");
+            System.err.print("path1: " + path + "\n");
             return null;
         }
     }

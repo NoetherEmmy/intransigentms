@@ -25,10 +25,10 @@ public final class DeathBot {
     private JDA jda;
     private boolean on = true;
     private static List<String> quotes;
-    
+
     /** Singleton class */
     private DeathBot() {}
-    
+
     public static synchronized DeathBot getInstance() {
         if (instance == null) {
             instance = new DeathBot();
@@ -36,7 +36,7 @@ public final class DeathBot {
         }
         return instance;
     }
-    
+
     public static synchronized boolean reInit() {
         if (instance != null) {
             return instance.init();
@@ -44,7 +44,7 @@ public final class DeathBot {
         instance = new DeathBot();
         return instance.init();
     }
-    
+
     private synchronized boolean init() {
         on = true;
         try {
@@ -75,11 +75,11 @@ public final class DeathBot {
         }
         return true;
     }
-    
+
     public synchronized void toggle() {
         on = !on;
     }
-    
+
     public boolean isOn() {
         return on;
     }
@@ -113,7 +113,7 @@ public final class DeathBot {
                 causeofdeath = "at the hands of a " + causeofdeath;
             }
         }
-        
+
         msg.append(p.getName())
            .append(", level ")
            .append(life.get(0))
@@ -126,7 +126,7 @@ public final class DeathBot {
            .append("'s last words: \"")
            .append(quotes.get((int) (Math.random() * quotes.size())))
            .append("\"\n\n:rip:");
-        
+
         TextChannel graveyard = jda.getTextChannelById("267935436935004161");
         if (graveyard == null) {
             System.err.println("Getting text channel by ID returns null.");
@@ -137,10 +137,10 @@ public final class DeathBot {
             return false;
         }
         graveyard.sendMessage(msg.toString()).queue();
-        
+
         return true;
     }
-    
+
     public void dispose() {
         try {
             token = null;

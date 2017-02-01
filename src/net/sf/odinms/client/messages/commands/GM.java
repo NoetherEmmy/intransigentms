@@ -25,14 +25,8 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.StringUtil;
 
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -515,7 +509,6 @@ public class GM implements Command {
                 for (int i = 0; i < coke.length; ++i) {
                     player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(coke[i]), player.getPosition());
                 }
-
                 break;
             case "!papu":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
@@ -1327,7 +1320,7 @@ public class GM implements Command {
                 mc.dropMessage("1112809 - silverswan");
                 break;
             case "!ring":
-                Map<String, Integer> rings = new HashMap<>();
+                Map<String, Integer> rings = new LinkedHashMap<>();
                 rings.put("clover", 1112800);
                 rings.put("crush", 1112001);
                 rings.put("flower", 1112801);
@@ -2020,7 +2013,7 @@ public class GM implements Command {
                 Connection con = DatabaseConnection.getConnection();
                 PreparedStatement ps;
                 try {
-                    ps = con.prepareStatement("select * from jobs where characterid = ? and jobid = ?");
+                    ps = con.prepareStatement("SELECT * FROM jobs WHERE characterid = ? AND jobid = ?");
                     ps.setInt(1, id);
                     ps.setInt(2, job);
                     ResultSet rs = ps.executeQuery();
@@ -2032,8 +2025,8 @@ public class GM implements Command {
                     c.getPlayer().changeJob(MapleJob.getById(job), false);
 
                     ps.close();
-                } catch (SQLException e) {
-                    System.out.println("SQL Exception: " + e);
+                } catch (SQLException sqle) {
+                    sqle.printStackTrace();
                 }
                 break;
             }

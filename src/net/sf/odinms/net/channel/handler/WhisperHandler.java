@@ -11,7 +11,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.rmi.RemoteException;
 
 public class WhisperHandler extends AbstractMaplePacketHandler {
-
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         byte mode = slea.readByte();

@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements WorldChannelInterface {
-
     private static final long serialVersionUID = -5568606556235590482L;
     private ChannelWorldInterface cb;
     private int dbId;
@@ -58,8 +57,9 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
             }
             rs.close();
             ps.close();
-        } catch (SQLException ex) {
-            System.out.println("Could not retrieve channel configuration: " + ex);
+        } catch (SQLException sqle) {
+            System.err.println("Could not retrieve channel configuration:");
+            sqle.printStackTrace();
         }
         return ret;
     }
@@ -187,7 +187,7 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
 
     @Override
     public Map<Integer, Integer> getConnected() throws RemoteException {
-        Map<Integer, Integer> ret = new HashMap<>();
+        Map<Integer, Integer> ret = new LinkedHashMap<>();
         int total = 0;
         for (int i : WorldRegistryImpl.getInstance().getChannelServer()) {
             ChannelWorldInterface cwi = WorldRegistryImpl.getInstance().getChannel(i);
@@ -228,7 +228,9 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
     }
 
     @Override
-    public void updateParty(int partyid, PartyOperation operation, MaplePartyCharacter target) throws RemoteException {
+    public void updateParty(int partyid,
+                            PartyOperation operation,
+                            MaplePartyCharacter target) throws RemoteException {
         MapleParty party = WorldRegistryImpl.getInstance().getParty(partyid);
         if (party == null) {
             throw new IllegalArgumentException("no party with the specified partyid exists");
@@ -331,7 +333,10 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
     }
 
     @Override
-    public void buddyChat(int[] recipientCharacterIds, int cidFrom, String nameFrom, String chattext) throws RemoteException {
+    public void buddyChat(int[] recipientCharacterIds,
+                          int cidFrom,
+                          String nameFrom,
+                          String chattext) throws RemoteException {
         for (ChannelWorldInterface cwi : WorldRegistryImpl.getInstance().getAllChannelServers()) {
             cwi.buddyChat(recipientCharacterIds, cidFrom, nameFrom, chattext);
         }
@@ -441,7 +446,10 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
     }
 
     @Override
-    public void messengerInvite(String sender, int messengerid, String target, int fromchannel) throws RemoteException {
+    public void messengerInvite(String sender,
+                                int messengerid,
+                                String target,
+                                int fromchannel) throws RemoteException {
         for (int i : WorldRegistryImpl.getInstance().getChannelServer()) {
             ChannelWorldInterface cwi = WorldRegistryImpl.getInstance().getChannel(i);
             try {
@@ -472,7 +480,10 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
     }
 
     @Override
-    public void joinMessenger(int messengerid, MapleMessengerCharacter target, String from, int fromchannel) throws RemoteException {
+    public void joinMessenger(int messengerid,
+                              MapleMessengerCharacter target,
+                              String from,
+                              int fromchannel) throws RemoteException {
         MapleMessenger messenger = WorldRegistryImpl.getInstance().getMessenger(messengerid);
         if (messenger == null) {
             throw new IllegalArgumentException("No messenger with the specified messengerid exists");
@@ -542,7 +553,9 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
     }
 
     @Override
-    public void silentJoinMessenger(int messengerid, MapleMessengerCharacter target, int position) throws RemoteException {
+    public void silentJoinMessenger(int messengerid,
+                                    MapleMessengerCharacter target,
+                                    int position) throws RemoteException {
         MapleMessenger messenger = WorldRegistryImpl.getInstance().getMessenger(messengerid);
         if (messenger == null) {
             throw new IllegalArgumentException("No messenger with the specified messengerid exists");

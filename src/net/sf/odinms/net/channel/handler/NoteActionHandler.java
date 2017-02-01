@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class NoteActionHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -29,7 +28,7 @@ public class NoteActionHandler extends AbstractMaplePacketHandler {
     private void deleteNote(int id) {
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM notes WHERE `id` = ? ");
+            PreparedStatement ps = con.prepareStatement("DELETE FROM notes WHERE `id` = ?");
             ps.setInt(1, id);
             ps.executeUpdate();
             ps.close();

@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class MapleMiniGame extends PlayerInteractionManager {
-
     private final MapleCharacter owner;
     private MiniGameType GameType;
     private final int[] piece = new int[250];
@@ -25,13 +24,9 @@ public class MapleMiniGame extends PlayerInteractionManager {
     boolean ready = false;
     private int loser = 1;
     private boolean started; // 0 = waiting, 1 = in progress
-    private int firstslot = 0;
-    private int visitorpoints = 0;
-    private int ownerpoints = 0;
-    private int matchestowin = 0;
+    private int firstslot, visitorpoints, ownerpoints, matchestowin;
 
     public enum MiniGameType {
-
         OMOK, MATCH_CARDS
     }
 
@@ -116,7 +111,9 @@ public class MapleMiniGame extends PlayerInteractionManager {
         PreparedStatement ps;
         try {
             if (winnerslot < 3) {
-                ps = con.prepareStatement("UPDATE characters SET matchcardwins = matchcardwins + 1 + WHERE name = ?");
+                ps = con.prepareStatement(
+                    "UPDATE characters SET matchcardwins = matchcardwins + 1 + WHERE name = ?"
+                );
                 if (winnerslot == 1) {
                     ps.setString(1, owner.getName());
                 } else if (winnerslot == 2) {
@@ -125,7 +122,9 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 ps.executeUpdate();
                 ps.close();
 
-                ps = con.prepareStatement("UPDATE characters SET matchcardlosses = matchcardlosses + 1 WHERE name = ?");
+                ps = con.prepareStatement(
+                    "UPDATE characters SET matchcardlosses = matchcardlosses + 1 WHERE name = ?"
+                );
                 if (winnerslot == 1) {
                     ps.setString(1, visitors[0].getName());
                 } else if (winnerslot == 2) {
@@ -134,24 +133,31 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 ps.executeUpdate();
                 ps.close();
             } else if (winnerslot == 3) {
-                ps = con.prepareStatement("UPDATE characters SET matchcardties = matchcardties + 1 WHERE name = ? OR name = ?");
+                ps = con.prepareStatement(
+                    "UPDATE characters SET matchcardties = matchcardties + 1 WHERE name = ? OR name = ?"
+                );
                 ps.setString(1, owner.getName());
                 ps.setString(2, visitors[0].getName());
                 ps.executeUpdate();
                 ps.close();
             }
-        } catch (SQLException e) {
-            owner.dropMessage("Exception has occured: " + e);
-            return;
+        } catch (SQLException sqle) {
+            owner.dropMessage("An exception has occured: " + sqle);
+            sqle.printStackTrace();
         }
     }
 
-    public int getOmokPoints(String type) { // wins, losses, ties
+    public int getOmokPoints(String type) { // Wins, losses, ties
         Connection con = DatabaseConnection.getConnection();
         int points = 0;
 
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT omok" + type + " FROM characters WHERE name = ?");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "SELECT omok" +
+                        type +
+                        " FROM characters WHERE name = ?"
+                );
             ps.setString(1, owner.getName());
             ResultSet rs = ps.executeQuery();
             rs.next();
@@ -159,8 +165,9 @@ public class MapleMiniGame extends PlayerInteractionManager {
             rs.close();
             ps.close();
             return points;
-        } catch (SQLException e) {
-            owner.dropMessage("Exception has occured: " + e);
+        } catch (SQLException sqle) {
+            owner.dropMessage("An exception has occured: " + sqle);
+            sqle.printStackTrace();
         }
         return points;
     }
@@ -168,6 +175,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
     public int getMatchCardPoints(String type) { // wins, losses, ties
         Connection con = DatabaseConnection.getConnection();
         int points = 0;
+
         try {
             PreparedStatement ps = con.prepareStatement("SELECT matchcard" + type + " FROM characters WHERE name = ?");
             ps.setString(1, owner.getName());
@@ -177,19 +185,22 @@ public class MapleMiniGame extends PlayerInteractionManager {
             rs.close();
             ps.close();
             return points;
-        } catch (SQLException e) {
-            owner.dropMessage("Exception has occured: " + e);
+        } catch (SQLException sqle) {
+            owner.dropMessage("An exception has occured: " + sqle);
+            sqle.printStackTrace();
         }
         return points;
     }
 
-    public void setOmokPoints(int winnerslot) { // 1 = owner, 2 = visitor 3 = tie
+    public void setOmokPoints(int winnerslot) { // 1 = owner, 2 = visitor, 3 = tie
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps;
 
         try {
             if (winnerslot < 3) {
-                ps = con.prepareStatement("UPDATE characters SET omokwins = omokwins + 1 WHERE name = ?");
+                ps = con.prepareStatement(
+                    "UPDATE characters SET omokwins = omokwins + 1 WHERE name = ?"
+                );
                 if (winnerslot == 1) {
                     ps.setString(1, owner.getName());
                 }
@@ -198,7 +209,9 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 }
                 ps.executeUpdate();
                 ps.close();
-                ps = con.prepareStatement("UPDATE characters SET omoklosses = omoklosses + 1 WHERE name = ?");
+                ps = con.prepareStatement(
+                    "UPDATE characters SET omoklosses = omoklosses + 1 WHERE name = ?"
+                );
                 if (winnerslot == 1) {
                     ps.setString(1, visitors[0].getName());
                 }
@@ -208,14 +221,16 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 ps.executeUpdate();
                 ps.close();
             } else if (winnerslot == 3) {
-                ps = con.prepareStatement("UPDATE characters SET omokties = omokties + 1 WHERE name = ? OR name = ?");
+                ps = con.prepareStatement(
+                    "UPDATE characters SET omokties = omokties + 1 WHERE name = ? OR name = ?"
+                );
                 ps.setString(1, owner.getName());
                 ps.setString(2, visitors[0].getName());
                 ps.executeUpdate();
                 ps.close();
             }
-        } catch (SQLException e) {
-            return;
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
     }
 
@@ -229,22 +244,26 @@ public class MapleMiniGame extends PlayerInteractionManager {
 
     public void setGameType(MiniGameType game) {
         GameType = game;
-        if (game == GameType.MATCH_CARDS) {
-            if (matchestowin == 6) {
-                for (int i = 0; i < matchestowin; ++i) {
-                    list4x3.add(i);
-                    list4x3.add(i);
-                }
-            } else if (matchestowin == 10) {
-                for (int i = 0; i < matchestowin; ++i) {
-                    list5x4.add(i);
-                    list5x4.add(i);
-                }
-            } else if (matchestowin == 15) {
-                for (int i = 0; i < matchestowin; ++i) {
-                    list6x5.add(i);
-                    list6x5.add(i);
-                }
+        if (game == MiniGameType.MATCH_CARDS) {
+            switch (matchestowin) {
+                case 6:
+                    for (int i = 0; i < matchestowin; ++i) {
+                        list4x3.add(i);
+                        list4x3.add(i);
+                    }
+                    break;
+                case 10:
+                    for (int i = 0; i < matchestowin; ++i) {
+                        list5x4.add(i);
+                        list5x4.add(i);
+                    }
+                    break;
+                case 15:
+                    for (int i = 0; i < matchestowin; ++i) {
+                        list6x5.add(i);
+                        list6x5.add(i);
+                    }
+                    break;
             }
         }
     }
@@ -254,23 +273,31 @@ public class MapleMiniGame extends PlayerInteractionManager {
     }
 
     public void shuffleList() {
-        if (matchestowin == 6) {
-            Collections.shuffle(list4x3);
-        } else if (matchestowin == 10) {
-            Collections.shuffle(list5x4);
-        } else if (matchestowin == 15) {
-            Collections.shuffle(list6x5);
+        switch (matchestowin) {
+            case 6:
+                Collections.shuffle(list4x3);
+                break;
+            case 10:
+                Collections.shuffle(list5x4);
+                break;
+            case 15:
+                Collections.shuffle(list6x5);
+                break;
         }
     }
 
     public int getCardId(int slot) {
         int cardid = 0;
-        if (matchestowin == 6) {
-            cardid = list4x3.get(slot - 1);
-        } else if (matchestowin == 10) {
-            cardid = list5x4.get(slot - 1);
-        } else if (matchestowin == 15) {
-            cardid = list6x5.get(slot - 1);
+        switch (matchestowin) {
+            case 6:
+                cardid = list4x3.get(slot - 1);
+                break;
+            case 10:
+                cardid = list5x4.get(slot - 1);
+                break;
+            case 15:
+                cardid = list6x5.get(slot - 1);
+                break;
         }
         return cardid;
     }
@@ -300,10 +327,11 @@ public class MapleMiniGame extends PlayerInteractionManager {
     }
 
     public void setPiece(int move1, int move2, int type, MapleCharacter chr) {
-        int slot = ((move2 * 15) + (move1 + 1));
+        int slot = move2 * 15 + move1 + 1;
         if (piece[slot] == 0) {
             piece[slot] = type;
             broadcast(MaplePacketCreator.getMiniGameMoveOmok(move1, move2, type), true);
+
             for (int y = 0; y < 15; ++y) {
                 for (int x = 0; x < 11; ++x) {
                     if (searchCombo(x, y, type)) {
@@ -313,19 +341,19 @@ public class MapleMiniGame extends PlayerInteractionManager {
                             setLoser(0);
                         } else {
                             broadcast(MaplePacketCreator.getMiniGameWin(this, 1), true);
-                            this.setStarted(false);
-                            this.setLoser(1);
+                            setStarted(false);
+                            setLoser(1);
                         }
-                        for (int y2 = 0; y2 < 15; y2++) {
-                            for (int x2 = 0; x2 < 15; x2++) {
-                                int slot2 = ((y2 * 15) + (x2 + 1));
+                        for (int y2 = 0; y2 < 15; ++y2) {
+                            for (int x2 = 0; x2 < 15; ++x2) {
+                                int slot2 = y2 * 15 + x2 + 1;
                                 piece[slot2] = 0;
-
                             }
                         }
                     }
                 }
             }
+
             for (int y = 0; y < 15; ++y) {
                 for (int x = 4; x < 15; ++x) {
                     if (searchCombo2(x, y, type)) {
@@ -338,84 +366,78 @@ public class MapleMiniGame extends PlayerInteractionManager {
                             setStarted(false);
                             setLoser(1);
                         }
-                        for (int y2 = 0; y2 < 15; y2++) {
-                            for (int x2 = 0; x2 < 15; x2++) {
-                                int slot2 = ((y2 * 15) + (x2 + 1));
+                        for (int y2 = 0; y2 < 15; ++y2) {
+                            for (int x2 = 0; x2 < 15; ++x2) {
+                                int slot2 = y2 * 15 + x2 + 1;
                                 piece[slot2] = 0;
-
                             }
                         }
                     }
                 }
             }
         }
-
     }
 
     public boolean searchCombo(int x, int y, int type) {
         boolean winner = false;
-        int slot = ((y * 15) + (x + 1));
+        int slot = y * 15 + x + 1;
+
         if (piece[slot] == type) {
-            if (piece[slot + 1] == type) {
-                if (piece[slot + 2] == type) {
-                    if (piece[slot + 3] == type) {
-                        if (piece[slot + 4] == type) {
-                            winner = true;
-                        }
-                    }
-                }
+            if (
+                piece[slot + 1] == type &&
+                piece[slot + 2] == type &&
+                piece[slot + 3] == type &&
+                piece[slot + 4] == type
+            ) {
+                winner = true;
+            }
+
+            if (
+                piece[slot + 16] == type &&
+                piece[slot + 32] == type &&
+                piece[slot + 48] == type &&
+                piece[slot + 64] == type
+            ) {
+                winner = true;
+            }
+
+            if (
+                piece[slot + 15] == type &&
+                piece[slot + 30] == type &&
+                piece[slot + 45] == type &&
+                piece[slot + 60] == type
+            ) {
+                winner = true;
             }
         }
-        if (piece[slot] == type) {
-            if (piece[slot + 16] == type) {
-                if (piece[slot + 32] == type) {
-                    if (piece[slot + 48] == type) {
-                        if (piece[slot + 64] == type) {
-                            winner = true;
-                        }
-                    }
-                }
-            }
-        }
-        if (piece[slot] == type) {
-            if (piece[slot + 15] == type) {
-                if (piece[slot + 30] == type) {
-                    if (piece[slot + 45] == type) {
-                        if (piece[slot + 60] == type) {
-                            winner = true;
-                        }
-                    }
-                }
-            }
-        }
+
         return winner;
     }
 
     public boolean searchCombo2(int x, int y, int type) {
         boolean winner = false;
-        int slot = ((y * 15) + (x + 1));
+        int slot = y * 15 + x + 1;
+
         if (piece[slot] == type) {
-            if (piece[slot + 15] == type) {
-                if (piece[slot + 30] == type) {
-                    if (piece[slot + 45] == type) {
-                        if (piece[slot + 60] == type) {
-                            winner = true;
-                        }
-                    }
-                }
+            if (
+                piece[slot + 15] == type &&
+                piece[slot + 30] == type &&
+                piece[slot + 45] == type &&
+                piece[slot + 60] == type
+            ) {
+                winner = true;
+            }
+
+            if (
+                piece[slot + 14] == type &&
+                piece[slot + 28] == type &&
+                piece[slot + 42] == type &&
+                piece[slot + 56] == type
+            ) {
+                winner = true;
             }
         }
-        if (piece[slot] == type) {
-            if (piece[slot + 14] == type) {
-                if (piece[slot + 28] == type) {
-                    if (piece[slot + 42] == type) {
-                        if (piece[slot + 56] == type) {
-                            winner = true;
-                        }
-                    }
-                }
-            }
-        }
+
         return winner;
     }
 

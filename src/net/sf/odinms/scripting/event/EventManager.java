@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class EventManager {
     private final Invocable iv;
     private final ChannelServer cserv;
-    private final Map<String, EventInstanceManager> instances = new HashMap<>();
+    private final Map<String, EventInstanceManager> instances = new LinkedHashMap<>();
     private final Properties props = new Properties();
     private final String name;
 

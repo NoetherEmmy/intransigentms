@@ -7,8 +7,12 @@ import java.util.List;
 public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
     @Override
     String getName();
+
     MapleDataType getType();
+
     List<MapleData> getChildren();
+
     MapleData getChildByPath(String path);
+
     Object getData();
 }

@@ -11,7 +11,7 @@ public class CPUSampler {
     private static final CPUSampler instance = new CPUSampler();
     private long interval = 5;
     private SamplerThread sampler = null;
-    private final Map<StackTrace, Integer> recorded = new HashMap<>();
+    private final Map<StackTrace, Integer> recorded = new LinkedHashMap<>();
     private int totalSamples = 0;
 
     private CPUSampler() {

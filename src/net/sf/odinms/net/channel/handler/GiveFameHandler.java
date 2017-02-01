@@ -9,7 +9,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class GiveFameHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -31,8 +30,23 @@ public class GiveFameHandler extends AbstractMaplePacketHandler {
                     target.updateSingleStat(MapleStat.FAME, target.getFame());
                 }
                 c.getPlayer().hasGivenFame(target);
-                c.getSession().write(MaplePacketCreator.giveFameResponse(mode, target.getName(), target.getFame()));
-                target.getClient().getSession().write(MaplePacketCreator.receiveFame(mode, c.getPlayer().getName()));
+                c.getSession()
+                 .write(
+                     MaplePacketCreator.giveFameResponse(
+                         mode,
+                         target.getName(),
+                         target.getFame()
+                     )
+                 );
+                target
+                    .getClient()
+                    .getSession()
+                    .write(
+                        MaplePacketCreator.receiveFame(
+                            mode,
+                            c.getPlayer().getName()
+                        )
+                    );
                 break;
             case NOT_TODAY:
                 c.getSession().write(MaplePacketCreator.giveFameErrorResponse(3));

@@ -17,9 +17,8 @@ import java.sql.SQLException;
 import java.util.concurrent.ScheduledFuture;
 
 public class HiredMerchant extends PlayerInteractionManager {
-
     private boolean open;
-    public ScheduledFuture<?> schedule = null;
+    public ScheduledFuture<?> schedule;
     private final MapleMap map;
     private final int itemId;
 
@@ -27,7 +26,11 @@ public class HiredMerchant extends PlayerInteractionManager {
         super(owner, itemId % 10, desc, 3);
         this.itemId = itemId;
         this.map = owner.getMap();
-        this.schedule = TimerManager.getInstance().schedule(() -> HiredMerchant.this.closeShop(true), 1000 * 60 * 60 * 24);
+        this.schedule =
+            TimerManager.getInstance().schedule(
+                () -> HiredMerchant.this.closeShop(true),
+                1000L * 60L * 60L * 24L
+            );
     }
 
     @Override
@@ -47,7 +50,12 @@ public class HiredMerchant extends PlayerInteractionManager {
                         if (MapleInventoryManipulator.addFromDrop(c, newItem)) {
                             Connection con = DatabaseConnection.getConnection();
                             try {
-                                PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = MerchantMesos + " + pItem.getPrice() * quantity + " WHERE id = ?");
+                                PreparedStatement ps =
+                                    con.prepareStatement(
+                                        "UPDATE characters SET MerchantMesos = MerchantMesos + " +
+                                            pItem.getPrice() * quantity +
+                                            " WHERE id = ?"
+                                    );
                                 ps.setInt(1, getOwnerId());
                                 ps.executeUpdate();
                                 ps.close();
@@ -75,7 +83,12 @@ public class HiredMerchant extends PlayerInteractionManager {
         map.removeMapObject(this);
         map.broadcastMessage(MaplePacketCreator.destroyHiredMerchant(getOwnerId()));
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?");
+            PreparedStatement ps =
+                DatabaseConnection
+                    .getConnection()
+                    .prepareStatement(
+                        "UPDATE characters SET HasMerchant = 0 WHERE id = ?"
+                    );
             ps.setInt(1, getOwnerId());
             ps.executeUpdate();
             ps.close();
@@ -83,17 +96,18 @@ public class HiredMerchant extends PlayerInteractionManager {
             if (saveItems) {
                 saveItems();
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
         schedule.cancel(false);
     }
 
     public boolean isOpen() {
-        return this.open;
+        return open;
     }
 
     public void setOpen(boolean set) {
-        this.open = set;
+        open = set;
     }
 
     public MapleMap getMap() {

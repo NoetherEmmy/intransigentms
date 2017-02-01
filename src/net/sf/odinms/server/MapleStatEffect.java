@@ -75,7 +75,7 @@ public class MapleStatEffect implements Serializable {
         this.moveTo = mse.getMoveTo();
         this.skill = mse.isSkill();
         this.statups = new ArrayList<>(mse.getStatups());
-        this.monsterStatus = new HashMap<>(mse.getMonsterStati());
+        this.monsterStatus = new LinkedHashMap<>(mse.getMonsterStati());
         this.x = mse.getX();
         this.y = mse.getY();
         this.z = mse.getZ();
@@ -605,7 +605,7 @@ public class MapleStatEffect implements Serializable {
 
                 TimerManager tMan = TimerManager.getInstance();
                 final ScheduledFuture<?> ninjaTask = tMan.register(() -> {
-                    final int min = attacker.calculateMinBaseDamage(attacker);
+                    final int min = attacker.calculateMinBaseDamage();
                     final int max = attacker.getCurrentMaxBaseDamage();
                     map.getMapObjectsInRect(aoe, Collections.singletonList(MapleMapObjectType.MONSTER))
                        .stream()

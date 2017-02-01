@@ -9,7 +9,7 @@ import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.MaplePacketCreator;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -69,13 +69,23 @@ public class MapleQuestAction {
                 if (status.getStatus() == MapleQuestStatus.Status.NOT_STARTED && status.getForfeited() > 0) {
                     break;
                 }
-                c.gainExp(MapleDataTool.getInt(data) * ChannelServer.getInstance(c.getClient().getChannel()).getExpRate() * c.getAbsoluteXp(), true, true);
+                c.gainExp(
+                    MapleDataTool.getInt(data) *
+                        ChannelServer.getInstance(c.getClient().getChannel()).getExpRate() *
+                        c.getAbsoluteXp(),
+                    true,
+                    true
+                );
                 break;
             case ITEM:
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                Map<Integer, Integer> props = new HashMap<>();
+                Map<Integer, Integer> props = new LinkedHashMap<>();
                 for (MapleData iEntry : data.getChildren()) {
-                    if (iEntry.getChildByPath("prop") != null && MapleDataTool.getInt(iEntry.getChildByPath("prop")) != -1 && canGetItem(iEntry, c)) {
+                    if (
+                        iEntry.getChildByPath("prop") != null &&
+                        MapleDataTool.getInt(iEntry.getChildByPath("prop")) != -1 &&
+                        canGetItem(iEntry, c)
+                    ) {
                         for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); ++i) {
                             props.put(props.size(), MapleDataTool.getInt(iEntry.getChildByPath("id")));
                         }
@@ -110,7 +120,15 @@ public class MapleQuestAction {
                             // It's better to catch this here so we'll at least try to remove the other items
                             log.warn("[h4x] Completing a quest without meeting the requirements", ie);
                         }
-                        c.getClient().getSession().write(MaplePacketCreator.getShowItemGain(itemId, (short) MapleDataTool.getInt(iEntry.getChildByPath("count")), true));
+                        c.getClient()
+                         .getSession()
+                         .write(
+                             MaplePacketCreator.getShowItemGain(
+                                 itemId,
+                                 (short) MapleDataTool.getInt(iEntry.getChildByPath("count")),
+                                 true
+                             )
+                         );
                     } else { // add items
                         int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
                         short quantity = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"));
@@ -119,22 +137,33 @@ public class MapleQuestAction {
                     }
                 }
                 break;
-//			case NEXTQUEST:
-//				int nextquest = MapleDataTool.getInt(data);
-//				Need to somehow make the chat popup for the next quest...
-//				break;
+            //case NEXTQUEST:
+                //int nextquest = MapleDataTool.getInt(data);
+                //Need to somehow make the chat popup for the next quest...
+                //break;
             case MESO:
                 status = c.getQuest(quest);
                 if (status.getStatus() == MapleQuestStatus.Status.NOT_STARTED && status.getForfeited() > 0) {
                     break;
                 }
-                c.gainMeso(MapleDataTool.getInt(data) * ChannelServer.getInstance(c.getClient().getChannel()).getMesoRate(), true, false, true);
+                c.gainMeso(
+                    MapleDataTool.getInt(data) *
+                        ChannelServer.getInstance(c.getClient().getChannel()).getMesoRate(),
+                    true,
+                    false,
+                    true
+                );
                 break;
             case QUEST:
                 for (MapleData qEntry : data) {
                     int questid = MapleDataTool.getInt(qEntry.getChildByPath("id"));
                     int stat = MapleDataTool.getInt(qEntry.getChildByPath("state"));
-                    c.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(questid), MapleQuestStatus.Status.getById(stat)));
+                    c.updateQuest(
+                        new MapleQuestStatus(
+                            MapleQuest.getInstance(questid),
+                            MapleQuestStatus.Status.getById(stat)
+                        )
+                    );
                 }
                 break;
             case SKILL:
@@ -159,7 +188,14 @@ public class MapleQuestAction {
                     masterLevel = Math.max(masterLevel, c.getMasterLevel(skillObject));
                     if (shouldLearn) {
                         c.changeSkillLevel(skillObject, skillLevel, masterLevel);
-                        snmcmc.dropMessage("You have learned " + SkillFactory.getSkillName(skillid) + " with level " + skillLevel + " and with max level " + masterLevel);
+                        snmcmc.dropMessage(
+                            "You have learned " +
+                                SkillFactory.getSkillName(skillid) +
+                                " with level " +
+                                skillLevel +
+                                " and with max level " +
+                                masterLevel
+                        );
                     }
                 }
                 break;

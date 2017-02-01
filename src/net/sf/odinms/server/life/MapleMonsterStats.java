@@ -14,8 +14,8 @@ public class MapleMonsterStats {
     private boolean undead;
     private boolean ffaLoot;
     private String name;
-    private final Map<String, Integer> animationTimes = new HashMap<>();
-    private final Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
+    private final Map<String, Integer> animationTimes = new LinkedHashMap<>();
+    private final Map<Element, ElementalEffectiveness> resistance = new LinkedHashMap<>();
     private List<Integer> revives = Collections.emptyList();
     private byte tagColor;
     private byte tagBgColor;
@@ -57,19 +57,19 @@ public class MapleMonsterStats {
     public void setLevel(int level) {
         this.level = level;
     }
-    
+
     public int getAccuracy() {
         return this.accuracy;
     }
-    
+
     public void setAccuracy(int acc) {
         this.accuracy = acc;
     }
-    
+
     public int getAvoid() {
         return this.avoid;
     }
-    
+
     public void setAvoid(int avoid) {
         this.avoid = avoid;
     }

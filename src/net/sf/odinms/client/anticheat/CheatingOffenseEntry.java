@@ -3,9 +3,8 @@ package net.sf.odinms.client.anticheat;
 import net.sf.odinms.client.MapleCharacter;
 
 public class CheatingOffenseEntry {
-
     private final CheatingOffense offense;
-    private int count = 0;
+    private int count;
     private final MapleCharacter chrfor;
     private long lastOffense;
     private final long firstOffense;
@@ -32,12 +31,12 @@ public class CheatingOffenseEntry {
     }
 
     public void incrementCount() {
-        this.count++;
+        count++;
         lastOffense = System.currentTimeMillis();
     }
 
     public boolean isExpired() {
-        return lastOffense < (System.currentTimeMillis() - offense.getValidityDuration());
+        return lastOffense < System.currentTimeMillis() - offense.getValidityDuration();
     }
 
     public int getPoints() {
@@ -68,8 +67,8 @@ public class CheatingOffenseEntry {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((chrfor == null) ? 0 : chrfor.getId());
-        result = prime * result + ((offense == null) ? 0 : offense.hashCode());
+        result = prime * result + (chrfor == null ? 0 : chrfor.getId());
+        result = prime * result + (offense == null ? 0 : offense.hashCode());
         result = prime * result + Long.valueOf(firstOffense).hashCode();
         return result;
     }

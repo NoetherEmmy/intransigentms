@@ -50,7 +50,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("================================================================");
             mc.dropMessage("@snipedisplay - | - Toggles displaying the damage you do every time you use the Snipe skill.");
             mc.dropMessage("@samsara - | - Displays the current cooldown for the Samsara ability.");
-            mc.dropMessage("@checkstat - | - Displays your stats.");
+            mc.dropMessage("@checkstats - | - Displays your stats.");
             mc.dropMessage("@save - | - Saves your progress.");
             mc.dropMessage("@expfix - | - Fixes your negative experience.");
             mc.dropMessage("@dispose - | - Unsticks you from any hanging NPC interactions.");
@@ -58,7 +58,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@questinfo - | - Gets the info for your current IntransigentQuest.");
             mc.dropMessage("@ria - | - Opens chat with Ria to get info about IntransigentQuests.");
             mc.dropMessage("@cancelquest - | - Cancels your current quest.");
-            mc.dropMessage("@togglesmega - | - Turn smegas OFF/ON.");
+            mc.dropMessage("@togglesmega - | - Turns smegas off/on.");
             mc.dropMessage("@str/@dex/@int/@luk <number> - | - Automatically adds AP to your stats.");
             mc.dropMessage("@gm <message> - | - Sends a message to the GMs online.");
             mc.dropMessage("@afk <playername> - | - Shows how long a person has been AFK.");
@@ -172,7 +172,7 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@togglesmega")) {
             player.setSmegaEnabled(!player.getSmegaEnabled());
-            String text = (!player.getSmegaEnabled() ? "[Disable] Smegas are now disabled." : "[Enable] Smegas are now enabled.");
+            String text = !player.getSmegaEnabled() ? "[Disable] Smegas are now disabled." : "[Enable] Smegas are now enabled.";
             mc.dropMessage(text);
         } else if (splitted[0].equals("@str") || splitted[0].equals("@dex") || splitted[0].equals("@int") || splitted[0].equals("@luk")) {
             if (splitted.length != 2) {
@@ -350,8 +350,8 @@ public class PlayerCommands implements Command {
                     } else {
                         mc.dropMessage("No mobs drop this item.");
                     }
-                } catch (SQLException e) {
-                    System.out.print("@whodrops failed with SQLException: " + e);
+                } catch (SQLException sqle) {
+                    System.err.print("@whodrops failed: " + sqle);
                 } catch (NumberFormatException nfe) {
                     try {
                         String searchstring = "";
@@ -419,7 +419,7 @@ public class PlayerCommands implements Command {
                                 mc.dropMessage("No mobs drop this item.");
                             }
                         } catch (SQLException sqle) {
-                            System.out.print("@whodrops failed with SQLException: " + sqle);
+                            System.err.print("@whodrops failed: " + sqle);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -489,8 +489,8 @@ public class PlayerCommands implements Command {
                             mc.dropMessage("This mob does not drop any items.");
                         }
                     }
-                } catch (SQLException e) {
-                    System.out.print("@monsterdrops failed with SQLException: " + e);
+                } catch (SQLException sqle) {
+                    System.err.print("@monsterdrops failed: " + sqle);
                 } catch (NumberFormatException nfe) {
                     try {
                         int searchid = 0;
@@ -591,7 +591,7 @@ public class PlayerCommands implements Command {
                             }
                         }
                     } catch (SQLException sqle) {
-                        System.out.print("@monsterdrops failed with SQLException: " + sqle);
+                        System.err.print("@monsterdrops failed: " + sqle);
                     }
                 }
             }
@@ -1147,7 +1147,7 @@ public class PlayerCommands implements Command {
 
     @Override
     public CommandDefinition[] getDefinition() {
-        return new CommandDefinition[]{
+        return new CommandDefinition[] {
             new CommandDefinition("command", 0),
             new CommandDefinition("commands", 0),
             new CommandDefinition("help", 0),

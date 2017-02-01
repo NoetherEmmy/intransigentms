@@ -9,12 +9,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PlayerNPCs extends AbstractMapleMapObject {
-
-    private final Map<Byte, Integer> equips = new HashMap<>();
+    private final Map<Byte, Integer> equips = new LinkedHashMap<>();
     private int npcId, mapid, face, hair;
     private byte skin, dir, gender;
     private String name = "";

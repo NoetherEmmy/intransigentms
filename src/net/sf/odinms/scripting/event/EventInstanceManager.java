@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class EventInstanceManager {
     private final List<MapleCharacter> chars = new ArrayList<>();
     private final List<MapleMonster> mobs = new ArrayList<>();
-    private final Map<MapleCharacter, Integer> killCount = new HashMap<>();
+    private final Map<MapleCharacter, Integer> killCount = new LinkedHashMap<>();
     private EventManager em;
     private MapleMapFactory mapFactory;
     private final String name;

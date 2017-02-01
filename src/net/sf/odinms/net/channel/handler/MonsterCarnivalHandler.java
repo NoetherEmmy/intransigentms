@@ -10,7 +10,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.awt.*;
 
 public class MonsterCarnivalHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int tab = slea.readByte();
@@ -37,22 +36,23 @@ public class MonsterCarnivalHandler extends AbstractMaplePacketHandler {
         return new Point(posx, posy);
     }
 
+    /**
+     * <ul>
+     * <li>1 - Brown Teddy - 3000005</li>
+     * <li>2 - Bloctopus - 3230302</li>
+     * <li>3 - Ratz - 3110102</li>
+     * <li>4 - Chronos - 3230306</li>
+     * <li>5 - Toy Trojan - 3230305</li>
+     * <li>6 - Tick-Tock - 4230113</li>
+     * <li>7 - Robo - 4230111</li>
+     * <li>8 - King Bloctopus - 3230103</li>
+     * <li>9 - Master Chronos - 4230115</li>
+     * <li>10 - Rombot - 4130103</li>
+     * </ul>
+     */
     public int getMonsterIdByNum(int num) {
-        /*
-         *  1 - Brown Teddy - 3000005
-        2 - Bloctopus - 3230302
-        3 - Ratz - 3110102
-        4 - Chronos - 3230306
-        5 - Toy Trojan - 3230305
-        6 - Tick-Tock - 4230113
-        7 - Robo - 4230111
-        8 - King Bloctopus - 3230103
-        9 - Master Chronos - 4230115
-        10 - Rombot - 4130103
-         * */
-        int mid = 0;
+        int mid;
         num++;
-
         switch (num) {
             case 1:
                 mid = 3000005;

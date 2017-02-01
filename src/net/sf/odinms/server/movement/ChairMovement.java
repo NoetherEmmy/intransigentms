@@ -6,7 +6,7 @@ import java.awt.*;
 
 
 public class ChairMovement extends AbstractLifeMovement  {
-	
+
     private int unk;
 
     public ChairMovement(int type, Point position, int duration, int newstate) {

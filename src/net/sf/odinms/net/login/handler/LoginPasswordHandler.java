@@ -27,9 +27,9 @@ public class LoginPasswordHandler implements MaplePacketHandler {
         //
         pwd = LoginCrypto.hexSha1(pwd);
         //
-        
+
         c.setAccountName(login);
-        
+
         int loginok = 0;
         boolean ipBan = c.hasBannedIP();
         boolean macBan = c.hasBannedMac();

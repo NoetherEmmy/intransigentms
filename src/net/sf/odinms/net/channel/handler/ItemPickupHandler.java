@@ -96,8 +96,8 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                 }
                 mapitem.setPickedUp(true);
                 if (player.getQuestId() > 0) {
-                    if (player.getCQuest().requiresItem(mapitem.getItem().getItemId())) { 
-                        player.makeQuestProgress(0, mapitem.getItem().getItemId()); 
+                    if (player.getCQuest().requiresItem(mapitem.getItem().getItemId())) {
+                        player.makeQuestProgress(0, mapitem.getItem().getItemId());
                     }
                 }
             }

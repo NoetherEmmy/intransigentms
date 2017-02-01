@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class MapleDataTool {
-
     private MapleDataTool() {
     }
 
@@ -18,7 +17,7 @@ public class MapleDataTool {
         if (data == null || data.getData() == null) {
             return def;
         } else {
-            return ((String) data.getData());
+            return (String) data.getData();
         }
     }
 
@@ -92,9 +91,7 @@ public class MapleDataTool {
 
     public static int getIntConvert(String path, MapleData data, int def) {
         MapleData d = data.getChildByPath(path);
-        if (d == null) {
-            return def;
-        }
+        if (d == null) return def;
         if (d.getType() == MapleDataType.STRING) {
             try {
                 return Integer.parseInt(getString(d));

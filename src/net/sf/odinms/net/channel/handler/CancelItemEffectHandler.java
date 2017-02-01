@@ -8,7 +8,6 @@ import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CancelItemEffectHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();

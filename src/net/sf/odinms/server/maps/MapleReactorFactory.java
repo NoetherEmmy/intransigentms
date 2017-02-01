@@ -8,26 +8,33 @@ import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MapleReactorFactory {
     //private static Logger log = LoggerFactory.getLogger(MapleReactorFactory.class);
-    private static final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Reactor.wz"));
-    private static final Map<Integer, MapleReactorStats> reactorStats = new HashMap<>();
+    private static final MapleDataProvider data =
+        MapleDataProviderFactory.getDataProvider(
+            new File(
+                System.getProperty("net.sf.odinms.wzpath") + "/Reactor.wz"
+            )
+        );
+    private static final Map<Integer, MapleReactorStats> reactorStats = new LinkedHashMap<>();
 
     public static MapleReactorStats getReactor(int rid) {
         MapleReactorStats stats = reactorStats.get(rid);
         if (stats == null) {
             int infoId = rid;
-            MapleData reactorData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
+            MapleData reactorData =
+                data.getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
             MapleData link = reactorData.getChildByPath("info/link");
             if (link != null) {
                 infoId = MapleDataTool.getIntConvert("info/link", reactorData);
                 stats = reactorStats.get(infoId);
             }
             if (stats == null) {
-                reactorData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
+                reactorData =
+                    data.getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
                 MapleData reactorInfoData = reactorData.getChildByPath("0/event/0");
                 stats = new MapleReactorStats();
 
@@ -38,7 +45,11 @@ public class MapleReactorFactory {
                         Pair<Integer, Integer> reactItem = null;
                         int type = MapleDataTool.getIntConvert("type", reactorInfoData);
                         if (type == 100 || type == 99) { // Reactor waits for item or is an obstacle
-                            reactItem = new Pair<>(MapleDataTool.getIntConvert("0", reactorInfoData), MapleDataTool.getIntConvert("1", reactorInfoData));
+                            reactItem =
+                                new Pair<>(
+                                    MapleDataTool.getIntConvert("0", reactorInfoData),
+                                    MapleDataTool.getIntConvert("1", reactorInfoData)
+                                );
                             if (!areaSet) { // Only set area of effect for item-triggered reactors once
                                 stats.setTL(MapleDataTool.getPoint("lt", reactorInfoData));
                                 stats.setBR(MapleDataTool.getPoint("rb", reactorInfoData));

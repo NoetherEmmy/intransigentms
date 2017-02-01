@@ -229,8 +229,8 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 break;
                             case 3: // Heart megaphone
                             case 4: // Skull megaphone
-                                System.out.println("Unhandled Megaphone Packet : " + slea.toString());
-                                System.out.println("Megaphone ID: " + itemId);
+                                System.err.println("Unhandled Megaphone Packet: " + slea);
+                                System.err.println("Megaphone ID: " + itemId);
                                 break;
                             case 5: // Maple TV
                                 int tvType = itemId % 10;
@@ -493,12 +493,12 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                     break;
                 default:
-                    System.out.println("Non-existent cash item was used, itemid: " + itemId);
+                    System.err.println("Non-existent cash item was used, item ID: " + itemId);
             }
             c.getSession().write(MaplePacketCreator.enableActions());
         } catch (RemoteException re) {
             c.getChannelServer().reconnectWorld();
-            System.out.println("REMOTE ERROR: " + re);
+            System.err.println("REMOTE ERROR: " + re);
         }
     }
 

@@ -193,15 +193,15 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     case 1221011: // Sanctuary
                         if (attack.isHH) {
                             // TODO: Min damage still needs calculation. Using -20% as minimum damage in the meantime... seems to work.
-                            int HHDmg = player.calculateMaxBaseDamage(player.getTotalWatk()) * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100);
-                            HHDmg = (int) (Math.floor(Math.random() * (HHDmg - HHDmg * 0.80d) + HHDmg * 0.80d));
+                            int HHDmg = (int) ((double) player.calculateMaxBaseDamage() * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100.0d));
+                            HHDmg = (int) (Math.random() * (HHDmg - HHDmg * 0.8d) + HHDmg * 0.8d);
                             map.damageMonster(player, monster, HHDmg);
                         }
                         break;
                     case 3221007: // Snipe
                         //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
                         int upperRange = player.getCurrentMaxBaseDamage();
-                        int lowerRange = player.calculateMinBaseDamage(player);
+                        int lowerRange = player.calculateMinBaseDamage();
                         totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 100.0d * monster.getVulnerability());
                         String rawDmgString = "" + totDamageToOneMonster;
                         List<String> digitGroupings = new ArrayList<>(5);
@@ -222,36 +222,34 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         break;
                     case 4101005: // Drain
                     case 5111004: // Energy drain
-                        int gainhp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0d);
-                        gainhp = Math.min(monster.getMaxHp(), Math.min(gainhp, player.getMaxHp() / 2));
-                        player.addHP(gainhp);
+                        int gainHp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0d);
+                        gainHp = Math.min(monster.getMaxHp(), Math.min(gainHp, player.getMaxHp() / 2));
+                        player.addHP(gainHp);
                         break;
-                    case 2121003: // Fire Demon
-                        {
-                            ISkill fireDemon = SkillFactory.getSkill(2121003);
-                            MapleStatEffect fireDemonEffect = fireDemon.getEffect(player.getSkillLevel(fireDemon));
-                            monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, fireDemonEffect.getDuration());
-                            monster.applyFlame(player, fireDemon, fireDemonEffect.getDuration(), false);
-                        }
+                    case 2121003: { // Fire Demon
+                        ISkill fireDemon = SkillFactory.getSkill(2121003);
+                        MapleStatEffect fireDemonEffect = fireDemon.getEffect(player.getSkillLevel(fireDemon));
+                        monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, fireDemonEffect.getDuration());
+                        monster.applyFlame(player, fireDemon, fireDemonEffect.getDuration(), false);
                         break;
-                    case 2221003: // Ice Demon
-                        {
-                            ISkill iceDemon = SkillFactory.getSkill(2221003);
-                            MapleStatEffect iceDemonEffect = iceDemon.getEffect(player.getSkillLevel(iceDemon));
-                            monster.setTempEffectiveness(Element.FIRE, ElementalEffectiveness.WEAK, iceDemonEffect.getX());
-                        }
+                    }
+                    case 2221003: { // Ice Demon
+                        ISkill iceDemon = SkillFactory.getSkill(2221003);
+                        MapleStatEffect iceDemonEffect = iceDemon.getEffect(player.getSkillLevel(iceDemon));
+                        monster.setTempEffectiveness(Element.FIRE, ElementalEffectiveness.WEAK, iceDemonEffect.getX());
                         break;
+                    }
                     case 5211004: // Flamethrower
                         ISkill flamethrower = SkillFactory.getSkill(5211004);
                         MapleStatEffect flameEffect = flamethrower.getEffect(player.getSkillLevel(flamethrower));
                         for (int i = 0; i < attackCount; ++i) {
-                            monster.applyFlame(player, flamethrower, flameEffect.getDuration(), attack.charge == 1);
+                            monster.applyFlame(player, flamethrower, flameEffect.getDuration() * 2L, attack.charge == 1);
                         }
                         break;
                     case 5111006: // Shockwave
                         if (player.isBareHanded()) {
                             ISkill shockwave = SkillFactory.getSkill(5111006);
-                            monster.applyFlame(player, shockwave, 20 * 1000, false);
+                            monster.applyFlame(player, shockwave, 20L * 1000L, false);
                         }
                         break;
                     case 5121001: // Dragon Strike

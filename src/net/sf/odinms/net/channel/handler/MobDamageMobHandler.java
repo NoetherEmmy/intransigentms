@@ -7,7 +7,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class MobDamageMobHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int attackerOid = slea.readInt();
@@ -19,6 +18,14 @@ public class MobDamageMobHandler extends AbstractMaplePacketHandler {
             return;
         }
         int damage = (int) (Math.random() * (damaged.getMaxHp() / 13 + attacker.getPADamage() * 10)) * 2 + 500;
-        c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.MobDamageMob(damaged, damage), damaged.getPosition());
+        c.getPlayer()
+         .getMap()
+         .broadcastMessage(
+             MaplePacketCreator.MobDamageMob(
+                 damaged,
+                 damage
+             ),
+             damaged.getPosition()
+         );
     }
 }

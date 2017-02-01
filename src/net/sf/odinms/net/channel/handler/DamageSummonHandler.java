@@ -11,14 +11,13 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.util.Iterator;
 
 public class DamageSummonHandler extends AbstractMaplePacketHandler {
-
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        final MapleCharacter player = c.getPlayer();
         slea.readInt();
         int unkByte = slea.readByte();
         int damage = slea.readInt();
         int monsterIdFrom = slea.readInt();
         slea.readByte();
-        MapleCharacter player = c.getPlayer();
         Iterator<MapleSummon> iter = player.getSummons().values().iterator();
         while (iter.hasNext()) {
             MapleSummon summon = iter.next();
@@ -27,7 +26,19 @@ public class DamageSummonHandler extends AbstractMaplePacketHandler {
                 if (summon.getHP() <= 0) {
                     player.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
                 }
-                c.getPlayer().getMap().broadcastMessage(player, MaplePacketCreator.damageSummon(player.getId(), summon.getSkill(), damage, unkByte, monsterIdFrom), summon.getPosition());
+                player
+                    .getMap()
+                    .broadcastMessage(
+                        player,
+                        MaplePacketCreator.damageSummon(
+                            player.getId(),
+                            summon.getSkill(),
+                            damage,
+                            unkByte,
+                            monsterIdFrom
+                        ),
+                        summon.getPosition()
+                    );
                 break;
             }
         }

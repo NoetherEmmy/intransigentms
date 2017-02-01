@@ -1,5 +1,6 @@
 package net.sf.odinms.net.channel.handler;
 
+import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.client.MaplePet;
@@ -15,67 +16,104 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 public class PetLootHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        final MapleCharacter p = c.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
-        if (c.getPlayer().getNoPets() == 0) {
-            return;
-        }
-        MaplePet pet = c.getPlayer().getPet(c.getPlayer().getPetIndex(slea.readInt()));
+        if (p.getNoPets() < 1) return;
+
+        final int petIndex = p.getPetIndex(slea.readInt());
+        if (petIndex < 0) return;
+        MaplePet pet = p.getPet(petIndex);
         slea.skip(13);
         int oid = slea.readInt();
-        MapleMapObject ob = c.getPlayer().getMap().getMapObject(oid);
+        final MapleMapObject ob = p.getMap().getMapObject(oid);
         if (ob == null || pet == null) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
         }
         if (ob instanceof MapleMapItem) {
-            final MapleMapItem mapitem = (MapleMapItem) ob;
-            synchronized (mapitem) {
-                if (mapitem.isPickedUp()) {
+            final MapleMapItem mapItem = (MapleMapItem) ob;
+            synchronized (mapItem) {
+                if (mapItem.isPickedUp()) {
                     c.getSession().write(MaplePacketCreator.getInventoryFull());
                     return;
                 }
-                double distance = pet.getPos().distanceSq(mapitem.getPosition());
-                c.getPlayer().getCheatTracker().checkPickupAgain();
+                double distance = pet.getPos().distanceSq(mapItem.getPosition());
+                p.getCheatTracker().checkPickupAgain();
                 if (distance > 90000.0d) { // 300^2, 550 is approximately the range of ultimates
-                    c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.ITEMVAC);
+                    p.getCheatTracker().registerOffense(CheatingOffense.ITEMVAC);
                 } else if (distance > 22500.0d) {
-                    c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.SHORT_ITEMVAC);
+                    p.getCheatTracker().registerOffense(CheatingOffense.SHORT_ITEMVAC);
                 }
-                if (mapitem.getMeso() > 0) {
-                    if (c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).findById(1812000) != null) { // Hack fix in the absence of the actual packet
-                        c.getPlayer().gainMeso(mapitem.getMeso(), true, true);
-                        c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, c.getPlayer().getId(), true, c.getPlayer().getPetIndex(pet)), mapitem.getPosition());
-                        c.getPlayer().getCheatTracker().pickupComplete();
-                        c.getPlayer().getMap().removeMapObject(ob);
+                if (mapItem.getMeso() > 0) {
+                    // Hack fix in the absence of the actual packet
+                    if (p.getInventory(MapleInventoryType.EQUIPPED).findById(1812000) != null) {
+                        p.gainMeso(mapItem.getMeso(), true, true);
+                        p.getMap().broadcastMessage(
+                            MaplePacketCreator.removeItemFromMap(
+                                mapItem.getObjectId(),
+                                5,
+                                p.getId(),
+                                true,
+                                p.getPetIndex(pet)
+                            ),
+                            mapItem.getPosition()
+                        );
+                        p.getCheatTracker().pickupComplete();
+                        p.getMap().removeMapObject(ob);
                     } else {
-                        c.getPlayer().getCheatTracker().pickupComplete();
-                        mapitem.setPickedUp(false);
+                        p.getCheatTracker().pickupComplete();
+                        mapItem.setPickedUp(false);
                         c.getSession().write(MaplePacketCreator.enableActions());
                         return;
                     }
                 } else {
-                    if (ii.isPet(mapitem.getItem().getItemId())) {
-                        if (MapleInventoryManipulator.addById(c, mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), null)) {
-                            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, c.getPlayer().getId(), true, c.getPlayer().getPetIndex(pet)), mapitem.getPosition());
-                            c.getPlayer().getCheatTracker().pickupComplete();
-                            c.getPlayer().getMap().removeMapObject(ob);
+                    if (ii.isPet(mapItem.getItem().getItemId())) {
+                        if (
+                            MapleInventoryManipulator.addById(
+                                c,
+                                mapItem.getItem().getItemId(),
+                                mapItem.getItem().getQuantity(),
+                                null
+                            )
+                        ) {
+                            p.getMap().broadcastMessage(
+                                MaplePacketCreator.removeItemFromMap(
+                                    mapItem.getObjectId(),
+                                    5,
+                                    p.getId(),
+                                    true,
+                                    p.getPetIndex(pet)
+                                ),
+                                mapItem.getPosition()
+                            );
+                            p.getCheatTracker().pickupComplete();
+                            p.getMap().removeMapObject(ob);
                         } else {
-                            c.getPlayer().getCheatTracker().pickupComplete();
+                            p.getCheatTracker().pickupComplete();
                             return;
                         }
                     } else {
-                        if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true)) {
-                            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, c.getPlayer().getId(), true, c.getPlayer().getPetIndex(pet)), mapitem.getPosition());
-                            c.getPlayer().getCheatTracker().pickupComplete();
-                            c.getPlayer().getMap().removeMapObject(ob);
+                        if (MapleInventoryManipulator.addFromDrop(c, mapItem.getItem(), true)) {
+                            p.getMap().broadcastMessage(
+                                MaplePacketCreator.removeItemFromMap(
+                                    mapItem.getObjectId(),
+                                    5,
+                                    p.getId(),
+                                    true,
+                                    p.getPetIndex(pet)
+                                ),
+                                mapItem.getPosition()
+                            );
+                            p.getCheatTracker().pickupComplete();
+                            p.getMap().removeMapObject(ob);
                         } else {
-                            c.getPlayer().getCheatTracker().pickupComplete();
+                            p.getCheatTracker().pickupComplete();
                             return;
                         }
                     }
                 }
-                mapitem.setPickedUp(true);
+                mapItem.setPickedUp(true);
             }
         }
         c.getSession().write(MaplePacketCreator.enableActions());

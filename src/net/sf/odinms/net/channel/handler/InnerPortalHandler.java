@@ -6,7 +6,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
     public class InnerPortalHandler extends AbstractMaplePacketHandler {
     //private static org.slf4j.Logger log = LoggerFactory.getLogger(SpecialPortalHandler.class);
-	
+
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         /*

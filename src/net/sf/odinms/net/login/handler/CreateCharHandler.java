@@ -114,9 +114,9 @@ public class CreateCharHandler extends AbstractMaplePacketHandler {
 
         if (charok && MapleCharacterUtil.canCreateChar(name, c.getWorld())) {
             newchar.saveToDB(false, true);
-            c.getSession().write(MaplePacketCreator.addNewCharEntry(newchar, charok));
+            c.getSession().write(MaplePacketCreator.addNewCharEntry(newchar, true));
         } else {
-            System.out.println(MapleClient.getLogMessage(c, "Trying to create a character with a name: " + name));
+            System.err.println(MapleClient.getLogMessage(c, "Trying to create a character with a name: " + name));
         }
     }
 }

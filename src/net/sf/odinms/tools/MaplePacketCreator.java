@@ -5701,7 +5701,7 @@ public class MaplePacketCreator {
         }
         for (int i = 0; i < messages.size(); ++i) {
             if (i == 4 && messages.get(4).length() > 15) {
-                mplew.writeMapleAsciiString(messages.get(4).substring(0, 15)); // hmm ?
+                mplew.writeMapleAsciiString(messages.get(4).substring(0, 15)); // Hmm?
             } else {
                 mplew.writeMapleAsciiString(messages.get(i));
             }
@@ -5783,7 +5783,6 @@ public class MaplePacketCreator {
 
     public static MaplePacket sendSpouseChat(String name, String message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
         mplew.writeShort(SendPacketOpcode.SPOUSE_CHAT.getValue());
         mplew.writeMapleAsciiString(name);
         mplew.writeMapleAsciiString(message);
@@ -5793,14 +5792,14 @@ public class MaplePacketCreator {
     public static MaplePacket updateEquipSlot(IItem item) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.MODIFY_INVENTORY_ITEM.getValue());
-        mplew.write(0); // any number,
+        mplew.write(0); // Any number
         mplew.write(HexTool.getByteArrayFromHexString("02 03 01"));
-        mplew.writeShort(item.getPosition()); // set item into this slot
+        mplew.writeShort(item.getPosition()); // Set item into this slot
         mplew.write(0);
-        mplew.write(item.getType()); // 1 show / 0 disapear ? o________o
-        mplew.writeShort(item.getPosition()); // update this slot ?
+        mplew.write(item.getType()); // 1 show | 0 disappear?
+        mplew.writeShort(item.getPosition()); // Update this slot?
         addItemInfo(mplew, item, true, true);
-        mplew.writeMapleAsciiString("XiuzSource");
+        mplew.writeMapleAsciiString("IntransigentMS");
         return mplew.getPacket();
     }
 
@@ -5808,7 +5807,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.DAMAGE_MONSTER.getValue());
         mplew.writeInt(mob.getObjectId());
-        mplew.write(1); // direction ?
+        mplew.write(1); // Direction?
         mplew.writeInt(damage);
         int remainingHp = mob.getHp() - damage;
         if (remainingHp < 0) {

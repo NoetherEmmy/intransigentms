@@ -10,7 +10,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class NPCTalkHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -24,13 +23,19 @@ public class NPCTalkHandler extends AbstractMaplePacketHandler {
             if (!c.getPlayer().getCheatTracker().Spam(1000, 4)) {
                 if (npc.getId() == 9010009) {
                     if (c.isGuest()) {
-                        c.getPlayer().dropMessage(1, "Duey is not available to Guests");
+                        c.getPlayer().dropMessage(1, "Duey is not available to guests.");
                         c.getSession().write(MaplePacketCreator.enableActions());
                         return;
                     }
-                    c.getSession().write(MaplePacketCreator.sendDuey((byte) 8, DueyHandler.loadItems(c.getPlayer())));
+                    c.getSession()
+                     .write(
+                         MaplePacketCreator.sendDuey(
+                             (byte) 8,
+                             DueyHandler.loadItems(c.getPlayer())
+                         )
+                     );
                 } else if (npc.hasShop()) {
-                    //destroy the old shop if one exists...
+                    // Destroy the old shop if one exists
                     if (c.getPlayer().getShop() != null) {
                         c.getPlayer().setShop(null);
                         c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 20));

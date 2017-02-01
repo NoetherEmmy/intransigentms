@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class Vect implements IVect {
     private final List<Integer> elems;
-    
+
     /** Initializes an {@code n}-dimensional 0-vector (all elements set
      ** equal to zero).
      **
@@ -17,14 +17,14 @@ public class Vect implements IVect {
     public Vect(int n) {
         this(new ArrayList<>(Collections.nCopies(n, 0)));
     }
-    
+
     /** Copy constructor.
      **
      ** @throws NullPointerException when {@code elems == null} */
     public Vect(Vect v) {
         this(v.xs());
     }
-    
+
     /** Initializes a vector using each member of the
      ** specified collection, in order, as an element.
      **
@@ -51,7 +51,7 @@ public class Vect implements IVect {
             elems.add(x);
         }
     }
-    
+
     /** Takes in a <code>Point</code>, constructing a new <code>Vect</code> using
      ** the given <code>Point</code>'s coordinates in 2-space.
      **
@@ -67,7 +67,7 @@ public class Vect implements IVect {
     public static Vect point(Point p) {
         return new Vect(p.x, p.y);
     }
-    
+
     /** Returns this <code>IVect</code> object's equivalent as a <code>Vect</code> */
     @Override
     public Vect asVect() {
@@ -79,7 +79,7 @@ public class Vect implements IVect {
     public VectR asVectR() {
         return new VectR(elems.stream().map(Integer::doubleValue).collect(Collectors.toList()));
     }
-    
+
     /** Returns the element of the vector at the 0-based position
      ** specified by {@code index}
      **
@@ -99,7 +99,7 @@ public class Vect implements IVect {
     public double realX(int index) {
         return elems.get(index).doubleValue();
     }
-    
+
     /** Returns an <b>unmodifiable</b> view of the <code>Integer</code> elements of the vector,
      ** as a list. */
     @Override
@@ -113,7 +113,7 @@ public class Vect implements IVect {
     public List<Double> realXs() {
         return elems.stream().map(Integer::doubleValue).collect(Collectors.toList());
     }
-    
+
     /** Sets the value of the element specified by {@code index}
      ** to {@code x}
      **
@@ -133,13 +133,13 @@ public class Vect implements IVect {
     public void let(int index, double x) {
         elems.set(index, (int) Math.round(x));
     }
-    
+
     /** Returns the dimension of the vector. */
     @Override
     public int dim() {
         return elems.size();
     }
-    
+
     /** Adds the specified vector {@code v} to this vector and returns
      ** the resulting vector.
      **
@@ -175,7 +175,7 @@ public class Vect implements IVect {
         }
         return new Vect(difference);
     }
-    
+
     /** Multiplies this vector by the given {@code scalar} and returns the resulting vector. */
     @Override
     public Vect scalarMult(final int scalar) {
@@ -188,7 +188,7 @@ public class Vect implements IVect {
     public Vect scalarMult(final double scalar) {
         return new Vect(elems.stream().map(e -> (int) Math.round(e * scalar)).collect(Collectors.toList()));
     }
-    
+
     /** Adds {@code scalar} to every element of this vector and returns the resulting vector.
      ** {@code scalar} can be negative. */
     @Override
@@ -227,13 +227,13 @@ public class Vect implements IVect {
         v.let(index, v.x(index) + scalar);
         return v;
     }
-    
+
     /** Returns the norm (a.k.a. modulus or magnitude) of this vector as a {@code double} */
     @Override
     public double norm() {
         return Math.sqrt(elems.stream().map(Integer::doubleValue).reduce(0.0d, (s, e) -> s + Math.pow(e, 2)));
     }
-    
+
     /** Takes the dot product of the given vector {@code v} with the vector,
      ** and returns the resulting scalar as a {@code double}
      **
@@ -251,7 +251,7 @@ public class Vect implements IVect {
         }
         return product;
     }
-    
+
     /** <p>Takes the cross product of two 3-vectors or two 7-vectors, returning the resulting vector
      ** (strictly speaking, a pseudo-vector) in the same space.</p>
      **
@@ -305,12 +305,12 @@ public class Vect implements IVect {
         }
         return cross;
     }
-    
+
     /** <p>Returns the "unit" vector that is parallel (not anti-parallel) to this vector,
      ** rounding to the nearest integer values to determine the elements of the new "unit" vector.
      ** Thus the new vector is often not a <i>true</i> unit vector, and taking its <code>norm()</code>
      ** will not return 1.0 in such a case.</p>
-     ** 
+     **
      ** <p>To get a true unit vector (which is then not guaranteed to be parallel to
      ** this one), use <code>basisVect()</code></p> */
     @Override
@@ -318,7 +318,7 @@ public class Vect implements IVect {
         final double norm = norm();
         return new Vect(elems.stream().map(e -> (int) Math.round(e.doubleValue() / norm)).collect(Collectors.toList()));
     }
-    
+
     /** Returns the basis vector that is closest to being parallel to this vector.
      ** If there is a tie, the basis vector with the lowest index wins. If this vector
      ** is a zero-vector, returns the zero-vector, otherwise guaranteed to return a
@@ -338,7 +338,7 @@ public class Vect implements IVect {
         basisV.let(maxIndex, 1);
         return basisV;
     }
-    
+
     /** Decomposes this vector into a(n ordered) list of vectors representing the magnitude
      ** of this vector along each axis (i.e. projected along each basis vector), and returns
      ** the list (<code>ArrayList</code>). */
@@ -352,16 +352,16 @@ public class Vect implements IVect {
         }
         return decomp;
     }
-    
+
     /** Takes the scalar triple product of this vector with the two specified vectors {@code v}
      ** and {@code u}, as follows:
      ** <pre>
      **     {@code this} &#8901;{@code (v} &#10799;{@code u)}</pre>
-     ** 
+     **
      ** Or, in code,
      ** <pre>
      **     {@code this.dot(v.cross(u))}</pre>
-     ** 
+     **
      ** The scalar is returned as a {@code double}
      **
      ** @throws UnsupportedOperationException when {@code v.dim() != 3 && v.dim() != 7}
@@ -396,7 +396,7 @@ public class Vect implements IVect {
     public Vect vect3Prod(IVect v, IVect u) {
         return cross(v.cross(u));
     }
-    
+
     /** Returns the <b>unsigned magnitude</b> of the wedge product of this vector and the specified vector {@code v},
      ** equal to:
      ** <pre>
@@ -418,7 +418,7 @@ public class Vect implements IVect {
         }
         return norm() * v.norm() * Math.sin(angle(v));
     }
-    
+
     /** <p>Returns the shortest angle between this vector and the given vector {@code v}</p>
      ** <p>Value is in the range from 0.0 through &#960; radians.</p>
      **
@@ -432,12 +432,12 @@ public class Vect implements IVect {
         }
         return Math.acos(dot(v) / (norm() * v.norm()));
     }
-    
+
     /** Returns {@code true} iff all elements of this vector are zero. */
     public boolean isZero() {
         return elems.stream().allMatch(e -> e == 0);
     }
-    
+
     /** Performs the projection of this vector onto the specified vector {@code v},
      ** and then returns the new resulting vector.
      **
@@ -491,7 +491,7 @@ public class Vect implements IVect {
         }
         return false;
     }
-    
+
     /** Returns a {@code String} that represents the vector. */
     @Override
     public String toString() {

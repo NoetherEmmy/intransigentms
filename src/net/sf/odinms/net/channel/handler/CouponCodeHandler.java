@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CouponCodeHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         slea.skip(2);

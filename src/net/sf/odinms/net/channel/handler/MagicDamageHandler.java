@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 public class MagicDamageHandler extends AbstractDealDamageHandler {
-	@Override
-	public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    @Override
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         AttackInfo attack = parseDamage(slea, false);
         MapleCharacter player = c.getPlayer();
@@ -108,13 +108,16 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 ElementalEffectiveness ee = null;
                 if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
                     ee = monster.getAddedEffectiveness(skillUsed.getElement());
-                    if ((ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) && monster.getEffectiveness(skillUsed.getElement()) == ElementalEffectiveness.WEAK) {
+                    if (
+                        (ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
+                        monster.getEffectiveness(skillUsed.getElement()) == ElementalEffectiveness.WEAK
+                    ) {
                         ee = null;
                     }
                 }
                 double multiplier = monster.getVulnerability();
-                List<Integer> additionalDmg = new ArrayList<>();
-                List<Integer> newDmg = new ArrayList<>();
+                List<Integer> additionalDmg = new ArrayList<>(6);
+                List<Integer> newDmg = new ArrayList<>(6);
                 if (ee != null) {
                     switch (ee) {
                         case WEAK:
@@ -124,7 +127,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                             multiplier *= 0.5d;
                             break;
                         case IMMUNE:
-                            multiplier *= 0.0d;
+                            multiplier = 0.0d;
                             break;
                     }
                 }
@@ -135,7 +138,16 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
                     for (Integer additionald : additionalDmg) {
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
+                        player
+                            .getMap()
+                            .broadcastMessage(
+                                player,
+                                MaplePacketCreator.damageMonster(
+                                    dmg.getLeft(),
+                                    additionald
+                                ),
+                                true
+                            );
                     }
                 }
             }
@@ -156,15 +168,44 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
                     for (Integer additionald : additionaldmg) {
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
+                        player
+                            .getMap()
+                            .broadcastMessage(
+                                player,
+                                MaplePacketCreator.damageMonster(
+                                    dmg.getLeft(),
+                                    additionald
+                                ),
+                                true
+                            );
                     }
                 }
             }
         }
 
-        MaplePacket packet = MaplePacketCreator.magicAttack(player.getId(), attack.skill, attack.stance, attack.numAttackedAndDamage, attack.allDamage, -1, attack.speed);
+        MaplePacket packet;
         if (attack.skill == 2121001 || attack.skill == 2221001 || attack.skill == 2321001) {
-            packet = MaplePacketCreator.magicAttack(player.getId(), attack.skill, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.charge, attack.speed);
+            packet =
+                MaplePacketCreator.magicAttack(
+                    player.getId(),
+                    attack.skill,
+                    attack.stance,
+                    attack.numAttackedAndDamage,
+                    attack.allDamage,
+                    attack.charge,
+                    attack.speed
+                );
+        } else {
+            packet =
+                MaplePacketCreator.magicAttack(
+                    player.getId(),
+                    attack.skill,
+                    attack.stance,
+                    attack.numAttackedAndDamage,
+                    attack.allDamage,
+                    -1,
+                    attack.speed
+                );
         }
         player.getMap().broadcastMessage(player, packet, false, true);
         MapleStatEffect effect = attack.getAttackEffect(c.getPlayer());
@@ -183,8 +224,20 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 return;
             } else {
                 c.getSession().write(MaplePacketCreator.skillCooldown(attack.skill, effect_.getCooldown()));
-                ScheduledFuture<?> timer = TimerManager.getInstance().schedule(new CancelCooldownAction(c.getPlayer(), attack.skill), effect_.getCooldown() * 1000);
-                player.addCooldown(attack.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, timer);
+                ScheduledFuture<?> timer =
+                    TimerManager.getInstance().schedule(
+                        new CancelCooldownAction(
+                            c.getPlayer(),
+                            attack.skill
+                        ),
+                        effect_.getCooldown() * 1000L
+                    );
+                player.addCooldown(
+                    attack.skill,
+                    System.currentTimeMillis(),
+                    effect_.getCooldown() * 1000L,
+                    timer
+                );
             }
         }
         applyAttack(attack, player, effect.getAttackCount());
@@ -198,7 +251,16 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             if (eaterLevel > 0 && attack.allDamage != null) {
                 for (Pair<Integer, List<Integer>> singleDamage : attack.allDamage) {
                     if (singleDamage != null && singleDamage.getLeft() != null) {
-                        eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage.getLeft()));
+                        eaterSkill
+                            .getEffect(eaterLevel)
+                            .applyPassive(
+                                player,
+                                player
+                                    .getMap()
+                                    .getMapObject(
+                                        singleDamage.getLeft()
+                                    )
+                            );
                     }
                 }
                 break;

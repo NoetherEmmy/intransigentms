@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PlayerInteractionManager extends AbstractMapleMapObject implements IPlayerInteractionManager {
-
     private final String ownerName;
     private final int ownerId;
     private final byte type;
@@ -75,7 +74,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
         try {
             tempItems(true, true);
         } catch (SQLException ex) {
-            System.out.println("Error Saving " + this.getOwnerName() + " items: " + ex);
+            System.err.println("Error saving " + getOwnerName() + " items: " + ex);
         }
     }
 
@@ -83,7 +82,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
         try {
             tempItems(true, false);
         } catch (SQLException ex) {
-            System.out.println("Error Saving " + this.getOwnerName() + " temporary items: " + ex);
+            System.err.println("Error saving " + getOwnerName() + " temporary items: " + ex);
         }
     }
 

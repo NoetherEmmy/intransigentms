@@ -130,7 +130,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 packetHandler.handlePacket(slea, client);
             } catch (Throwable t) {
                 if (!packetHandler.getClass().getName().contains("ItemPickupHandler")) {
-                    System.out.println("Exception during processing packet: " + packetHandler.getClass().getName() + ": ");
+                    System.err.println(
+                        "Exception during processing packet: " +
+                            packetHandler.getClass().getName() +
+                            ":"
+                    );
                     t.printStackTrace();
                 }
             }

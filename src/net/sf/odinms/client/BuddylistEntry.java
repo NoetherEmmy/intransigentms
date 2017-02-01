@@ -1,18 +1,13 @@
 package net.sf.odinms.client;
 
 public class BuddylistEntry {
-
     private final String name;
     private final int cid;
     private int channel;
     private boolean visible;
 
     /**
-     * 
-     * @param name
-     * @param characterId
      * @param channel should be -1 if the buddy is offline
-     * @param visible
      */
     public BuddylistEntry(String name, int characterId, int channel, boolean visible) {
         super();

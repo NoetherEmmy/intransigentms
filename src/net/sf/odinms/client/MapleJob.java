@@ -84,7 +84,7 @@ public enum MapleJob {
     public boolean isA(MapleJob basejob) {
         return getId() >= basejob.getId() && getId() / 100 == basejob.getId() / 100;
     }
-    
+
     public static String getJobName(int id) {
         switch (id) {
             case 0:   return "Beginner";

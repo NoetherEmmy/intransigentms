@@ -7,22 +7,36 @@ import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.StringUtil;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PublicChatHandler {
-
-    private static final Map<Integer, Integer> playerHolder = new HashMap<>();
+    private static final Map<Integer, Integer> playerHolder = new LinkedHashMap<>();
 
     private static void addPlayer(MapleCharacter chr) {
         playerHolder.put(chr.getId(), chr.getClient().getChannel());
         for (int chrIds : playerHolder.keySet()) {
-            MapleCharacter chrs = ChannelServer.getInstance(playerHolder.get(chrIds)).getPlayerStorage().getCharacterById(chrIds);
+            MapleCharacter chrs =
+                ChannelServer.getInstance(
+                    playerHolder.get(chrIds)
+                )
+                .getPlayerStorage()
+                .getCharacterById(chrIds);
             if (chrs == null) {
                 playerHolder.remove(chrIds);
                 continue;
             }
-            chrs.getClient().getSession().write(MaplePacketCreator.multiChat("", chr.getName() + " has been added to the chat.", 2));
+            chrs
+                .getClient()
+                .getSession()
+                .write(
+                    MaplePacketCreator.multiChat(
+                        "",
+                        chr.getName() +
+                            " has been added to the chat.",
+                        2
+                    )
+                );
         }
     }
 
@@ -30,12 +44,27 @@ public class PublicChatHandler {
         if (playerHolder.containsKey(chr.getId())) {
             playerHolder.remove(chr.getId());
             for (int chrIds : playerHolder.keySet()) {
-                MapleCharacter chrs = ChannelServer.getInstance(playerHolder.get(chrIds)).getPlayerStorage().getCharacterById(chrIds);
+                MapleCharacter chrs =
+                    ChannelServer.getInstance(
+                        playerHolder.get(chrIds)
+                    )
+                    .getPlayerStorage()
+                    .getCharacterById(chrIds);
                 if (chrs == null) {
                     playerHolder.remove(chrIds);
                     continue;
                 }
-                chrs.getClient().getSession().write(MaplePacketCreator.multiChat("", chr.getName() + " has left the chat.", 2));
+                chrs
+                    .getClient()
+                    .getSession()
+                    .write(
+                        MaplePacketCreator.multiChat(
+                            "",
+                            chr.getName() +
+                                " has left the chat.",
+                            2
+                        )
+                    );
             }
         }
     }
@@ -43,12 +72,26 @@ public class PublicChatHandler {
     private static void sendMessage(MapleCharacter chr, String message) {
         if (playerHolder.containsKey(chr.getId())) {
             for (int chrIds : playerHolder.keySet()) {
-                MapleCharacter chrs = ChannelServer.getInstance(playerHolder.get(chrIds)).getPlayerStorage().getCharacterById(chrIds);
-                if (chrs == null) { // changing channels ?
+                MapleCharacter chrs =
+                    ChannelServer.getInstance(
+                        playerHolder.get(chrIds)
+                    )
+                    .getPlayerStorage()
+                    .getCharacterById(chrIds);
+                if (chrs == null) { // Changing channels?
                     playerHolder.remove(chrIds);
                     continue;
                 }
-                chrs.getClient().getSession().write(MaplePacketCreator.multiChat(chr.getName(), message, 3));
+                chrs
+                    .getClient()
+                    .getSession()
+                    .write(
+                        MaplePacketCreator.multiChat(
+                            chr.getName(),
+                            message,
+                            3
+                        )
+                    );
             }
         }
     }
@@ -76,20 +119,36 @@ public class PublicChatHandler {
                 }
             } else if (splitted[0].equalsIgnoreCase("online")) {
                 if (playerHolder.containsKey(player.getId())) {
-                    mc.dropMessage("There are currently " + playerHolder.size() + " connected people in this channel.");
+                    mc.dropMessage(
+                        "There are currently " +
+                            playerHolder.size() +
+                            " connected people in this channel."
+                    );
                 } else {
-                    mc.dropMessage("Please make sure you're in the chat room first.");
+                    mc.dropMessage("Please make sure you're in a chat room first.");
                 }
             } else if (splitted[0].equalsIgnoreCase("whoson")) {
                 StringBuilder sb = new StringBuilder();
-                c.getSession().write(MaplePacketCreator.multiChat("", "Current people in the chat", 3));
+                c.getSession().write(MaplePacketCreator.multiChat("", "Current people in the chat:", 3));
                 c.getSession().write(MaplePacketCreator.serverNotice(6, ""));
                 int i = 0;
                 if (playerHolder.isEmpty()) {
-                    c.getSession().write(MaplePacketCreator.multiChat("", "No one is in this chat unfortunately", 3));
+                    c.getSession()
+                     .write(
+                         MaplePacketCreator.multiChat(
+                             "",
+                             "No one is in this chat, unfortunately.",
+                             3
+                         )
+                     );
                 } else {
                     for (int chrIds : playerHolder.keySet()) {
-                        MapleCharacter chrs = ChannelServer.getInstance(playerHolder.get(chrIds)).getPlayerStorage().getCharacterById(chrIds);
+                        MapleCharacter chrs =
+                            ChannelServer.getInstance(
+                                playerHolder.get(chrIds)
+                            )
+                            .getPlayerStorage()
+                            .getCharacterById(chrIds);
                         if (chrs == null) { // Changing channels
                             playerHolder.remove(chrIds);
                             continue;

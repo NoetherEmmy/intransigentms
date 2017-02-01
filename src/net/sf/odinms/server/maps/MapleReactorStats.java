@@ -3,29 +3,30 @@ package net.sf.odinms.server.maps;
 import net.sf.odinms.tools.Pair;
 
 import java.awt.*;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MapleReactorStats {
-    private Point tl;
-    private Point br;
-    private final Map<Byte, StateData> stateInfo = new HashMap<>();
+    private Point tl, br;
+    private final Map<Byte, StateData> stateInfo = new LinkedHashMap<>();
 
-    /*public int getInfoId() {
-    return infoId;
+    /*
+    public int getInfoId() {
+        return infoId;
     }
 
     public void setInfoId(int infoId) {
-    this.infoId = infoId;
+        this.infoId = infoId;
     }
 
     public void setType(int type) {
-            this.type = type;
+        this.type = type;
     }
 
     public int getType() {
-            return type;
-    }*/
+        return type;
+    }
+    */
 
     public void setTL(Point tl) {
         this.tl = tl;

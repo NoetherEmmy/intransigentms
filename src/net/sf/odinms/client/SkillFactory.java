@@ -7,11 +7,11 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.tools.StringUtil;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SkillFactory {
-    private static final Map<Integer, ISkill> skills = new HashMap<>();
+    private static final Map<Integer, ISkill> skills = new LinkedHashMap<>();
     private static final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
     private static final MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
 

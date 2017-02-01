@@ -10,7 +10,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class useSolomonHandler extends AbstractMaplePacketHandler {
-
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         slea.readInt();
         byte slot = (byte) slea.readShort();
@@ -23,6 +22,12 @@ public class useSolomonHandler extends AbstractMaplePacketHandler {
         }
         c.getPlayer().gainExp(ii.getExpCache(itemid), true, false);
         c.getSession().write(MaplePacketCreator.enableActions());
-        MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
+        MapleInventoryManipulator.removeFromSlot(
+            c,
+            MapleInventoryType.USE,
+            slot,
+            (short) 1,
+            false
+        );
     }
 }

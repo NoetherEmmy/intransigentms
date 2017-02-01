@@ -35,7 +35,7 @@ public class VIPAddMapHandler extends AbstractMaplePacketHandler {
                     ps.executeUpdate();
                     ps.close();
                 } catch (SQLException sqle) {
-                    System.out.println("Could not handle removing VIP Rock map: " + sqle.getMessage());
+                    System.err.println("Could not handle removing VIP Rock map: " + sqle.getMessage());
                 }
                 break;
             case 1: // Add map
@@ -47,7 +47,7 @@ public class VIPAddMapHandler extends AbstractMaplePacketHandler {
                     ps.executeUpdate();
                     ps.close();
                 } catch (SQLException sqle) {
-                    System.out.println("Could not handle adding VIP Rock map: " + sqle.getMessage());
+                    System.err.println("Could not handle adding VIP Rock map: " + sqle.getMessage());
                 }
                 break;
             default:

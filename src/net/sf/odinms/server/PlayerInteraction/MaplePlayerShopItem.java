@@ -3,7 +3,6 @@ package net.sf.odinms.server.PlayerInteraction;
 import net.sf.odinms.client.IItem;
 
 public class MaplePlayerShopItem {
-
     private final IItem item;
     private short bundles;
     private final int price;

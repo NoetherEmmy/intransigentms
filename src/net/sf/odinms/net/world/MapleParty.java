@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class MapleParty implements Serializable {
-
     private static final long serialVersionUID = 9179541993413738569L;
     private MaplePartyCharacter leader;
     private final List<MaplePartyCharacter> members = new ArrayList<>();
@@ -23,8 +22,8 @@ public class MapleParty implements Serializable {
     private int points = 0;
 
     public MapleParty(int id, MaplePartyCharacter chrfor) {
-        this.leader = chrfor;
-        this.members.add(this.leader);
+        leader = chrfor;
+        members.add(leader);
         this.id = id;
     }
 
@@ -53,27 +52,27 @@ public class MapleParty implements Serializable {
     }
 
     public void setCapture(boolean c) {
-        this.capture = c;
+        capture = c;
     }
 
-    public void setWaiting(boolean c) {
-        this.waiting = c;
+    public void setWaiting(boolean w) {
+        waiting = w;
     }
 
     public void setChallenging(boolean c) {
-        this.challenging = c;
+        challenging = c;
     }
 
     public void setChallenged(boolean c) {
-        this.challenged = c;
+        challenged = c;
     }
 
     public void setChallenger(MapleParty c) {
-        this.challenger = c;
+        challenger = c;
     }
 
-    public void setPoints(int c) {
-        this.points = c;
+    public void setPoints(int p) {
+        points = p;
     }
 
     public boolean containsMembers(MaplePartyCharacter member) {
@@ -81,7 +80,7 @@ public class MapleParty implements Serializable {
     }
 
     public void setLeader(MaplePartyCharacter victim) {
-        this.leader = victim;
+        leader = victim;
     }
 
     public void addMember(MaplePartyCharacter member) {
@@ -123,19 +122,19 @@ public class MapleParty implements Serializable {
     }
 
     public int getCP() {
-        return this.CP;
+        return CP;
     }
 
     public int getTeam() {
-        return this.team;
+        return team;
     }
 
     public int getTotalCP() {
-        return this.totalCP;
+        return totalCP;
     }
 
     public void setCP(int cp) {
-        this.CP = cp;
+        CP = cp;
     }
 
     public void setTeam(int team) {
@@ -143,7 +142,7 @@ public class MapleParty implements Serializable {
     }
 
     public void setTotalCP(int totalcp) {
-        this.totalCP = totalcp;
+        totalCP = totalcp;
     }
 
     public MaplePartyCharacter getLeader() {

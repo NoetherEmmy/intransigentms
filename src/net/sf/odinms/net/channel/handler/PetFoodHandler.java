@@ -12,7 +12,6 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.util.Random;
 
 public class PetFoodHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -51,7 +50,14 @@ public class PetFoodHandler extends AbstractMaplePacketHandler {
                     if (newCloseness >= ExpTable.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                         pet.setLevel(pet.getLevel() + 1);
                         c.getSession().write(MaplePacketCreator.showOwnPetLevelUp(c.getPlayer().getPetIndex(pet)));
-                        c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showPetLevelUp(c.getPlayer(), c.getPlayer().getPetIndex(pet)));
+                        c.getPlayer()
+                         .getMap()
+                         .broadcastMessage(
+                             MaplePacketCreator.showPetLevelUp(
+                                 c.getPlayer(),
+                                 c.getPlayer().getPetIndex(pet)
+                             )
+                         );
                     }
                 }
             } else {
@@ -67,7 +73,19 @@ public class PetFoodHandler extends AbstractMaplePacketHandler {
                 }
             }
             c.getSession().write(MaplePacketCreator.updatePet(pet, true));
-            c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.commandResponse(c.getPlayer().getId(), (byte) 1, slot, true, true), true);
+            c.getPlayer()
+             .getMap()
+             .broadcastMessage(
+                 c.getPlayer(),
+                 MaplePacketCreator.commandResponse(
+                     c.getPlayer().getId(),
+                     (byte) 1,
+                     slot,
+                     true,
+                     true
+                 ),
+                 true
+             );
             MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemId, 1, true, false);
         }
     }

@@ -77,7 +77,7 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
                 MaplePortal pto = to.getPortal(0);
                 player.changeMap(to, pto);
             } else if (targetid != -1 && !player.isGM()) {
-                System.out.println("Player " + player.getName() + " attempted map jumping without being a GM.");
+                System.err.println("Player " + player.getName() + " attempted map jumping without being a GM.");
             } else {
                 if (portal != null) {
                     portal.enterPortal(c);
@@ -90,7 +90,7 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
                     */
                 } else {
                     c.getSession().write(MaplePacketCreator.enableActions());
-                    System.out.println("Portal " + startwp + " not found on map " + player.getMap().getId());
+                    System.err.println("Portal " + startwp + " not found on map " + player.getMap().getId());
                 }
             }
         }

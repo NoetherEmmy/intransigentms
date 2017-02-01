@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class MapleLifeFactory {
     private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
     private static final MapleData mobStringData = stringDataWZ.getData("Mob.img");
     private static final MapleData npcStringData = stringDataWZ.getData("Npc.img");
-    private static final Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
+    private static final Map<Integer, MapleMonsterStats> monsterStats = new LinkedHashMap<>();
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {
@@ -59,7 +59,7 @@ public class MapleLifeFactory {
                 stats.setName(MapleDataTool.getString(mid + "/name", mobStringData, "MISSINGNO"));
             } catch (Exception e) {
                 stats.setName("MISSINGNO");
-                System.out.print(e + "   !ID!:  " + mid + "\n");
+                System.err.print(e + "   !ID!:  " + mid + "\n");
             }
             //
             stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));

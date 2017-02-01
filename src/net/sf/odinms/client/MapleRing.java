@@ -11,11 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MapleRing implements Comparable<MapleRing> {
-
-    private final int ringId;
-    private final int ringId2;
-    private final int partnerId;
-    private final int itemId;
+    private final int ringId, ringId2, partnerId, itemId;
     private final String partnerName;
     private boolean equipped;
 
@@ -34,7 +30,14 @@ public class MapleRing implements Comparable<MapleRing> {
             ps.setInt(1, ringId);
             ResultSet rs = ps.executeQuery();
             rs.next();
-            MapleRing ret = new MapleRing(ringId, rs.getInt("partnerRingId"), rs.getInt("partnerChrId"), rs.getInt("itemid"), rs.getString("partnerName"));
+            MapleRing ret =
+                new MapleRing(
+                    ringId,
+                    rs.getInt("partnerRingId"),
+                    rs.getInt("partnerChrId"),
+                    rs.getInt("itemid"),
+                    rs.getString("partnerName")
+                );
             rs.close();
             ps.close();
             return ret;
@@ -46,15 +49,18 @@ public class MapleRing implements Comparable<MapleRing> {
     public static int createRing(int itemid, final MapleCharacter partner1, final MapleCharacter partner2) {
         try {
             if (partner1 == null) {
-                return -2; // Partner Number 1 is not on the same channel.
+                return -2; // Partner number 1 is not on the same channel
             } else if (partner2 == null) {
-                return -1; // Partner Number 2 is not on the same channel.
+                return -1; // Partner number 2 is not on the same channel
             } else if (checkRingDB(partner1) || checkRingDB(partner2)) {
-                return 0; // Error or Already have ring.
+                return 0; // Error, or already have ring
             }
             int[] ringID = new int[2];
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO rings (itemid, partnerChrId, partnername) VALUES (?, ?, ?)");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "INSERT INTO rings (itemid, partnerChrId, partnername) VALUES (?, ?, ?)"
+                );
             ps.setInt(1, itemid);
             ps.setInt(2, partner2.getId());
             ps.setString(3, partner2.getName());
@@ -64,7 +70,9 @@ public class MapleRing implements Comparable<MapleRing> {
             ringID[0] = rs.getInt(1);
             rs.close();
             ps.close();
-            ps = con.prepareStatement("INSERT INTO rings (itemid, partnerRingId, partnerChrId, partnername) VALUES (?, ?, ?, ?)");
+            ps = con.prepareStatement(
+                "INSERT INTO rings (itemid, partnerRingId, partnerChrId, partnername) VALUES (?, ?, ?, ?)"
+            );
             ps.setInt(1, itemid);
             ps.setInt(2, ringID[0]);
             ps.setInt(3, partner1.getId());
@@ -130,10 +138,7 @@ public class MapleRing implements Comparable<MapleRing> {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof MapleRing) {
-            return ((MapleRing) o).getRingId() == getRingId();
-        }
-        return false;
+        return o instanceof MapleRing && ((MapleRing) o).getRingId() == getRingId();
     }
 
     @Override

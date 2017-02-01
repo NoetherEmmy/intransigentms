@@ -8,7 +8,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class UseCatchItemHandler extends AbstractMaplePacketHandler {
-
     public UseCatchItemHandler() {
     }
 
@@ -28,13 +27,42 @@ public class UseCatchItemHandler extends AbstractMaplePacketHandler {
         if (mob != null) {
             if (mob.getHp() <= mob.getMaxHp() / 2) {
                 if (itemid == 2270002) {
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterid, itemid, (byte) 1));
+                    c.getPlayer()
+                     .getMap()
+                     .broadcastMessage(
+                         MaplePacketCreator.catchMonster(
+                             monsterid,
+                             itemid,
+                             (byte) 1
+                         )
+                     );
                 }
-                mob.getMap().killMonster(mob, (MapleCharacter) mob.getMap().getAllPlayers().get(0), false, false, 0);
+                mob.getMap()
+                   .killMonster(
+                       mob,
+                       (MapleCharacter) mob.getMap().getAllPlayers().get(0),
+                       false,
+                       false,
+                       0
+                   );
                 c.getPlayer().setAPQScore(c.getPlayer().getAPQScore() + 1);
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.updateAriantPQRanking(c.getPlayer().getName(), c.getPlayer().getAPQScore(), false));
+                c.getPlayer()
+                 .getMap()
+                 .broadcastMessage(
+                     MaplePacketCreator.updateAriantPQRanking(
+                         c.getPlayer().getName(),
+                         c.getPlayer().getAPQScore(),
+                         false
+                     )
+                 );
             } else {
-                c.getSession().write(MaplePacketCreator.serverNotice(5, "You cannot catch the monster as it is too strong."));
+                c.getSession()
+                 .write(
+                     MaplePacketCreator.serverNotice(
+                         5,
+                         "You cannot catch the monster as it is too strong."
+                     )
+                 );
             }
         }
     }

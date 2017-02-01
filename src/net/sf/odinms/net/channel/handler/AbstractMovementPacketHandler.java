@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketHandler {
-
     //private static Logger log = LoggerFactory.getLogger(AbstractMovementPacketHandler.class);
+
     protected List<LifeMovementFragment> parseMovement(LittleEndianAccessor lea) {
         List<LifeMovementFragment> res = new ArrayList<>();
         int numCommands = lea.readByte();
@@ -28,11 +28,12 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                     int unk = lea.readShort();
                     int newstate = lea.readByte();
                     int duration = lea.readShort();
-                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
+                    AbsoluteLifeMovement alm =
+                        new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
                     alm.setUnk(unk);
                     alm.setPixelsPerSecond(new Point(xwobble, ywobble));
-                    // log.trace("Move to {},{} command {} wobble {},{} ? {} state {} duration {}", new Object[] { xpos,
-                    // xpos, command, xwobble, ywobble, newstate, duration });
+                    //log.trace("Move to {},{} command {} wobble {},{} ? {} state {} duration {}", new Object[] { xpos,
+                    //xpos, command, xwobble, ywobble, newstate, duration });
                     res.add(alm);
                     break;
                 }
@@ -46,7 +47,8 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                     int ymod = lea.readShort();
                     int newstate = lea.readByte();
                     int duration = lea.readShort();
-                    RelativeLifeMovement rlm = new RelativeLifeMovement(command, new Point(xmod, ymod), duration, newstate);
+                    RelativeLifeMovement rlm =
+                        new RelativeLifeMovement(command, new Point(xmod, ymod), duration, newstate);
                     res.add(rlm);
                     // log.trace("Relative move {},{} state {}, duration {}", new Object[] { xmod, ymod, newstate,
                     // duration });
@@ -92,7 +94,8 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                     int fh = lea.readShort();
                     int newstate = lea.readByte();
                     int duration = lea.readShort();
-                    JumpDownMovement jdm = new JumpDownMovement(command, new Point(xpos, ypos), duration, newstate);
+                    JumpDownMovement jdm =
+                        new JumpDownMovement(command, new Point(xpos, ypos), duration, newstate);
                     jdm.setUnk(unk);
                     jdm.setPixelsPerSecond(new Point(xwobble, ywobble));
                     jdm.setFH(fh);

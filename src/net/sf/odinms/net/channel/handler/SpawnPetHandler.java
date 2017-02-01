@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Random;
 
 public class SpawnPetHandler extends AbstractMaplePacketHandler {
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -34,7 +33,14 @@ public class SpawnPetHandler extends AbstractMaplePacketHandler {
             for (int i = 0; i < pet.length && !done; ++i) {
                 petno = egg.nextInt(pet.length);
                 if (!player.haveItem(pet[petno], 1, true, true)) {
-                    MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, item.getPosition(), (short) 1, true, false);
+                    MapleInventoryManipulator.removeFromSlot(
+                        c,
+                        MapleInventoryType.CASH,
+                        item.getPosition(),
+                        (short) 1,
+                        true,
+                        false
+                    );
                     MapleInventoryManipulator.addById(c, pet[petno], (short) 1, null, MaplePet.createPet(pet[petno]));
                     done = true;
                 }
@@ -44,9 +50,21 @@ public class SpawnPetHandler extends AbstractMaplePacketHandler {
                 return;
             }
         }
-        MaplePet pet = MaplePet.loadFromDb(player.getInventory(MapleInventoryType.CASH).getItem(slot).getItemId(), slot, player.getInventory(MapleInventoryType.CASH).getItem(slot).getPetId());
+        MaplePet pet =
+            MaplePet.loadFromDb(
+                player.getInventory(MapleInventoryType.CASH).getItem(slot).getItemId(),
+                slot,
+                player.getInventory(MapleInventoryType.CASH).getItem(slot).getPetId()
+            );
         if (pet == null) {
-            MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, item.getItemId(), item.getQuantity(), false, false);
+            MapleInventoryManipulator.removeById(
+                c,
+                MapleInventoryType.CASH,
+                item.getItemId(),
+                item.getQuantity(),
+                false,
+                false
+            );
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
@@ -67,6 +85,7 @@ public class SpawnPetHandler extends AbstractMaplePacketHandler {
             player.addPet(pet);
             player.getMap().broadcastMessage(player, MaplePacketCreator.showPet(player, pet, false), true);
             int uniqueid = pet.getUniqueId();
+
             List<Pair<MapleStat, Integer>> stats = new ArrayList<>();
             stats.add(new Pair<>(MapleStat.PET, uniqueid));
             c.getSession().write(MaplePacketCreator.petStatUpdate(player));

@@ -30,7 +30,7 @@ public class BossMapMonitor {
         if (map.mobCount() == 0 && map.playerCount() == 0) {
             schedule.cancel(false);
         } else {
-            System.out.println("BossMapMonitor is having errors.");
+            System.err.println("ERROR: map.mobCount() == 0 && map.playerCount() == 0 in BossMapMonitor.");
         }
     }
 }

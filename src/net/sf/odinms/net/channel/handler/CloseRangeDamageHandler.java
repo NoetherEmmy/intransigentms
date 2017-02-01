@@ -79,7 +79,10 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 if (attack.skill != 1111008) { // Shout should not give orbs.
                     player.handleOrbgain();
                 }
-            } else if ((player.getJob().equals(MapleJob.BUCCANEER) || player.getJob().equals(MapleJob.MARAUDER)) && player.getSkillLevel(SkillFactory.getSkill(5110001)) > 0) {
+            } else if (
+                (player.getJob().equals(MapleJob.BUCCANEER) || player.getJob().equals(MapleJob.MARAUDER)) &&
+                player.getSkillLevel(SkillFactory.getSkill(5110001)) > 0
+            ) {
                 for (int i = 0; i < attack.numAttacked; ++i) {
                     player.handleEnergyChargeGain();
                 }
@@ -149,8 +152,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 } else {
                     skillDamage = 1.0d;
                 }
-                int minDmg = (int) (((double) player.getTotalInt() * 0.9d * mastery + (double) player.getTotalDex()) * effectiveMagic / 100.0d);
-                int maxDmg = (int) ((double) (player.getTotalInt() + player.getTotalDex()) * effectiveMagic / 100.0d);
+                int minDmg = (int) ((2.0d * (double) player.getTotalInt() / 3.0d * 0.9d * mastery + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
+                int maxDmg = (int) ((2.0d * (double) player.getTotalInt() / 3.0d + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
 
                 final Random rand = new Random();
                 for (int i = 0; i < attack.allDamage.size(); ++i) {

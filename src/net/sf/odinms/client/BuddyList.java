@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class BuddyList {
-
     public enum BuddyOperation {
         ADDED, DELETED
     }
@@ -34,10 +33,7 @@ public class BuddyList {
 
     public boolean containsVisible(int characterId) {
         BuddylistEntry ble = buddies.get(characterId);
-        if (ble == null) {
-            return false;
-        }
-        return ble.isVisible();
+        return ble != null && ble.isVisible();
     }
 
     public int getCapacity() {
@@ -93,12 +89,19 @@ public class BuddyList {
 
     public void loadFromDb(int characterId) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT b.buddyid, b.pending, c.name as buddyname FROM buddies as b, characters as c WHERE c.id = b.buddyid AND b.characterid = ?");
+        PreparedStatement ps =
+            con.prepareStatement(
+                "SELECT b.buddyid, b.pending, c.name as buddyname FROM " +
+                    "buddies as b, characters as c WHERE " +
+                    "c.id = b.buddyid AND b.characterid = ?"
+            );
         ps.setInt(1, characterId);
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             if (rs.getInt("pending") == 1) {
-                pendingRequests.push(new CharacterNameAndId(rs.getInt("buddyid"), rs.getString("buddyname")));
+                pendingRequests.push(
+                    new CharacterNameAndId(rs.getInt("buddyid"), rs.getString("buddyname"))
+                );
             } else {
                 put(new BuddylistEntry(rs.getString("buddyname"), rs.getInt("buddyid"), -1, true));
             }

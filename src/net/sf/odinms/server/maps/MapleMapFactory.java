@@ -15,7 +15,6 @@ import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.life.MapleNPC;
 import net.sf.odinms.tools.MockIOSession;
 import net.sf.odinms.tools.StringUtil;
-import org.apache.commons.lang3.ObjectUtils;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -23,7 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public class MapleMapFactory {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
     private final MapleDataProvider source;
     private final MapleData nameData;
-    private final Map<Integer, MapleMap> maps = new HashMap<>();
+    private final Map<Integer, MapleMap> maps = new LinkedHashMap<>();
     private int channel;
 
     public MapleMapFactory(MapleDataProvider source, MapleDataProvider stringSource) {

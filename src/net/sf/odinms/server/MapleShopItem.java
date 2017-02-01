@@ -1,10 +1,8 @@
 package net.sf.odinms.server;
 
 public class MapleShopItem {
-
     private final short buyable;
-    private final int itemId;
-    private final int price;
+    private final int itemId, price;
     private short availible;
 
     /** Creates a new instance of MapleShopItem */
@@ -23,7 +21,7 @@ public class MapleShopItem {
     }
 
     public void setAvailible(short set) {
-        this.availible = set;
+        availible = set;
     }
 
     public void decAvailible() {

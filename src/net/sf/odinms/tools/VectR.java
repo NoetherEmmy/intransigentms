@@ -182,7 +182,7 @@ public class VectR implements IVect {
         return new VectR(elems.stream().map(e -> e * scalar).collect(Collectors.toList()));
     }
 
-    /** Multiplies this vector by the given {@code scalar} 
+    /** Multiplies this vector by the given {@code scalar}
      ** and returns the resulting vector. */
     @Override
     public VectR scalarMult(final double scalar) {
@@ -196,7 +196,7 @@ public class VectR implements IVect {
         return new VectR(elems.stream().map(e -> e + scalar).collect(Collectors.toList()));
     }
 
-    /** Adds {@code scalar} to every element of this vector 
+    /** Adds {@code scalar} to every element of this vector
      ** and returns the resulting vector.
      ** {@code scalar} can be negative. */
     @Override

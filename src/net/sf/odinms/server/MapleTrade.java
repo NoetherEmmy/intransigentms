@@ -142,11 +142,15 @@ public class MapleTrade {
         this.partner = partner;
     }
 
-//	private void broadcast(MaplePacket packet) {
-//		chr.getClient().getSession().write(packet);
-//		if (partner != null)
-//			partner.getChr().getClient().getSession().write(packet);
-//	}
+    /*
+    private void broadcast(MaplePacket packet) {
+        chr.getClient().getSession().write(packet);
+        if (partner != null) {
+            partner.getChr().getClient().getSession().write(packet);
+        }
+    }
+    */
+
     public MapleCharacter getChr() {
         return chr;
     }

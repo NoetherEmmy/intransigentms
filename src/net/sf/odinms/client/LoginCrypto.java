@@ -8,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 public class LoginCrypto {
-
     private LoginCrypto() {
     }
 
@@ -102,7 +101,7 @@ public class LoginCrypto {
         if (salt.length() != 8) {
             throw new RuntimeException("Error hashing password - Invalid seed.");
         }
-        byte[] sha1Hash = new byte[40];
+        byte[] sha1Hash;
         try {
             digester = MessageDigest.getInstance("SHA-1");
             digester.update((salt + password).getBytes("iso-8859-1"), 0, (salt + password).length());
@@ -110,17 +109,23 @@ public class LoginCrypto {
             do {
                 byte[] CombinedBytes = new byte[sha1Hash.length + password.length()];
                 System.arraycopy(sha1Hash, 0, CombinedBytes, 0, sha1Hash.length);
-                System.arraycopy(password.getBytes("iso-8859-1"), 0, CombinedBytes, sha1Hash.length, password.getBytes("iso-8859-1").length);
+                System.arraycopy(
+                    password.getBytes("iso-8859-1"),
+                    0,
+                    CombinedBytes,
+                    sha1Hash.length,
+                    password.getBytes("iso-8859-1").length
+                );
                 digester.update(CombinedBytes, 0, CombinedBytes.length);
                 sha1Hash = digester.digest();
             } while (--count > 0);
             out = seed.substring(0, 12);
             out += encode64(sha1Hash);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException Ex) {
-            System.out.println("Error hashing password." + Ex);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            System.err.println("Error hashing password. " + e);
         }
         if (out == null) {
-            throw new RuntimeException("Error hashing password - out = null");
+            throw new RuntimeException("Error hashing password: out == null");
         }
         return out;
     }

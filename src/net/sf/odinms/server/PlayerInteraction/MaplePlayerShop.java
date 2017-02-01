@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MaplePlayerShop extends PlayerInteractionManager {
-
     private final MapleCharacter owner;
-    private int boughtnumber = 0;
+    private int boughtnumber;
     private final List<String> bannedList = new ArrayList<>();
 
     public MaplePlayerShop(MapleCharacter owner, int itemId, String desc) {

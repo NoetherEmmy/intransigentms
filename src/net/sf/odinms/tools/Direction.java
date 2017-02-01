@@ -24,11 +24,11 @@ public enum Direction {
     public static Direction valueOf(IVect direction) {
         return map.get(direction.unit().asVect());
     }
-    
+
     public Vect unitVect() {
         return unitVect;
     }
-    
+
     public static Set<Direction> directionsOf(final IVect v) {
         return map.entrySet()
                   .stream()

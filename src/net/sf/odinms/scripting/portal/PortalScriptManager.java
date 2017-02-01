@@ -9,13 +9,13 @@ import javax.script.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PortalScriptManager {
     private static final Logger log = LoggerFactory.getLogger(PortalScriptManager.class);
     private static final PortalScriptManager instance = new PortalScriptManager();
-    private final Map<String, PortalScript> scripts = new HashMap<>();
+    private final Map<String, PortalScript> scripts = new LinkedHashMap<>();
     private final ScriptEngineFactory sef;
 
     private PortalScriptManager() {

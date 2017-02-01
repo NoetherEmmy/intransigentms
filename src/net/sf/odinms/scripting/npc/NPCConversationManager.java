@@ -610,7 +610,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public int calculateLevelGroup(int level) {
-	    int lg = 0;
+        int lg = 0;
         if (level >= 20) {
             lg++;
         }
@@ -644,20 +644,24 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (level >= 161) {
             lg++;
         }
-	    return lg;
+        return lg;
     }
 
     public boolean enterMonsterTrial() {
-        final int monsters[][] = { /* (In this array) 1st dimension: Corresponds to level group of player (-1 to adjust for level group not being zero-based)
-                                                2nd dimension: Monster IDs for that level group as ints, with a digit added at the end of the decimal
-                                                               representation corresponding to how many should be spawned. Thus the raw magnitudes of
-                                                               these ints are ~1 order of magnitude larger than the actual IDs would be. */
+         /*
+          * 1st dimension: Corresponds to level group of player (-1 to adjust for level group not being zero-based)
+          * 2nd dimension: Monster IDs for that level group as ints, with a digit added at the end of the decimal
+          *                representation corresponding to how many should be spawned. Thus the raw magnitudes of
+          *                these ints are ~1 order of magnitude larger than the actual IDs would be.
+          */
+        final int monsters[][] = {
             {22200002, 32200001, 95001692, 95001683}, // 20 - 25
             {95001693, 32200002, 32200011, 95001701}, // 26 - 30
             {32200012, 93000031, 42200011, 95001702, 95003281}, // 31 - 40
             {42200012, 95003281, 52200021, 95001771, 51201001, 95003301}, // 41 - 50
             {52200011, 95001771, 52200031, 95003341, 95001761, 61301011, 62200001, 62200011}, // 51 - 70
-            {62200011, 52200012, 71304002, 71304012, 71304022, 93000121, 95001731, 95001741, 63000051, 72200001, 71103003, 90010041}, // 71 - 90
+            {62200011, 52200012, 71304002, 71304012, 71304022,
+             93000121, 95001731, 95001741, 63000051, 72200001, 71103003, 90010041}, // 71 - 90
             {82200021, 82200001, 81301001, 72200021, 93000121, 95001731, 95001741, 94100141}, // 91 - 100
             {82200011, 94002051, 93001191, 93000391, 95003351, 94001201, 81700001, 81600001}, // 101 - 120
             {81500001, 93000281, 93000891, 93000901, 93000311, 93000321}, // 121 - 140
@@ -689,7 +693,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     try {
                         map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(monsterid), monsterspawnpoint);
                     } catch (NullPointerException npe) {
-                        System.out.println(
+                        System.err.println(
                             "Player " +
                             player.getName() +
                             " booted from Monster Trials; monsterchoice, monsterid: " +
@@ -728,7 +732,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         partyMembers = partyMembers.stream()
                                    .filter(Objects::nonNull)
-                                   .collect(Collectors.toList());
+                                   .collect(Collectors.toCollection(ArrayList::new));
         map = c.getChannelServer().getMapFactory().getMap(mapId);
         if (map.playerCount() == 0) {
             map.killAllMonsters(false);
@@ -900,10 +904,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public String getDeathRankingByLevel(int level) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM pastlives WHERE level >= ? ORDER BY characterid");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM pastlives WHERE level >= ? ORDER BY characterid"
+            );
             ps.setInt(1, level);
             ResultSet rs = ps.executeQuery();
-            Map<Integer, Integer> idstodeaths = new HashMap<>();
+            Map<Integer, Integer> idstodeaths = new LinkedHashMap<>();
             while (rs.next()) {
                 int id = rs.getInt("characterid");
                 int lvl = rs.getInt("level");
@@ -1417,7 +1423,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 disease = MapleDisease.SEDUCE;
                 break;
             default:
-                System.out.println(
+                System.err.println(
                     "Failed to apply debuff of skill ID " +
                         debuff +
                         " and skill level " +
@@ -1780,7 +1786,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 return "No mobs drop this item.";
             }
         } catch (SQLException e) {
-            System.out.print("cm.whoDrops() failed with SQLException: " + e);
+            System.err.print("cm.whoDrops() failed with SQLException: " + e);
             dropstring = "#dcm.whoDrops()#k failed with SQLException:\r\n\r\n#r" + e + "#k";
         }
         return dropstring;
@@ -1816,7 +1822,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             charrs.close();
             charps.close();
         } catch (SQLException e) {
-            System.out.print("cm.canGetDailyPrizes() failed with SQLException: " + e);
+            System.err.print("cm.canGetDailyPrizes() failed with SQLException: " + e);
         }
 
         return ret;
@@ -1954,7 +1960,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
             return redeemed == 0;
         } catch (SQLException e) {
-            System.out.print("cm.getBetaTester() failed with SQLException: " + e);
+            System.err.print("cm.getBetaTester() failed with SQLException: " + e);
             return false;
         }
     }
@@ -1974,7 +1980,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException se) {
-            System.out.print("cm.removeHiredMerchantItem() failed with SQLException: " + se);
+            System.err.print("cm.removeHiredMerchantItem() failed with SQLException: " + se);
         }
     }
 

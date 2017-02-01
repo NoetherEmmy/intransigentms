@@ -118,7 +118,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     USE_SOLOMAN_ITEM,
     ALLIANCE_OPERATION,
     HIRED_MERCHANT_REQUEST;
-    
+
     private int code = -2;
 
     public void setValue(int code) {
