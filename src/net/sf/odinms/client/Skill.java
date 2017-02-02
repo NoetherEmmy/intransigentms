@@ -205,8 +205,11 @@ public class Skill implements ISkill {
             MapleStatEffect statEffect = MapleStatEffect.loadSkillEffectFromData(level, id, isBuff);
             ret.effects.add(statEffect);
         }
-        for (MapleData req : data.getChildByPath("req")) {
-            ret.requirements.put(Integer.parseInt(req.getName()), (Integer) req.getData());
+        MapleData reqData = data.getChildByPath("req");
+        if (reqData != null) {
+            for (MapleData req : data.getChildByPath("req")) {
+                ret.requirements.put(Integer.parseInt(req.getName()), (Integer) req.getData());
+            }
         }
         ret.animationTime = 0;
         if (effect != null) {
