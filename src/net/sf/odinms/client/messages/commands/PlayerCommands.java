@@ -214,7 +214,7 @@ public class PlayerCommands implements Command {
                 c.getChannelServer().reconnectWorld();
             }
             mc.dropMessage("Message sent.");
-            // player.dropMessage(1, "Please don't flood GMs with your messages.");
+            //player.dropMessage(1, "Please don't flood GMs with your messages.");
         } else if (splitted[0].equals("@afk")) {
             if (splitted.length >= 2) {
                 String name = splitted[1];

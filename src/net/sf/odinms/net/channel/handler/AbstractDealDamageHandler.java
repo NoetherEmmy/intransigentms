@@ -198,28 +198,6 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             map.damageMonster(player, monster, HHDmg);
                         }
                         break;
-                    case 3221007: // Snipe
-                        //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
-                        int upperRange = player.getCurrentMaxBaseDamage();
-                        int lowerRange = player.calculateMinBaseDamage();
-                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 100.0d * monster.getVulnerability());
-                        String rawDmgString = "" + totDamageToOneMonster;
-                        List<String> digitGroupings = new ArrayList<>(5);
-                        digitGroupings.add(rawDmgString.substring(0, rawDmgString.length() % 3));
-                        for (int i = rawDmgString.length() % 3; i < rawDmgString.length(); i += 3) {
-                            digitGroupings.add(rawDmgString.substring(i, i + 3));
-                        }
-                        if (player.showSnipeDmg()) {
-                            player.sendHint(
-                                "Snipe damage: #r" +
-                                    digitGroupings
-                                        .stream()
-                                        .reduce((accu, grouping) -> accu + "," + grouping)
-                                        .orElse("0") +
-                                    "#k"
-                            );
-                        }
-                        break;
                     case 4101005: // Drain
                     case 5111004: // Energy drain
                         int gainHp = (int) ((double) totDamageToOneMonster * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0d);
@@ -269,29 +247,105 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             );
                         }
                         break;
+                    case 3221007: // Snipe
+                        //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
+                        int upperRange = player.getCurrentMaxBaseDamage();
+                        int lowerRange = player.calculateMinBaseDamage();
+                        totDamageToOneMonster = (int) ((lowerRange + Math.random() * (upperRange - lowerRange + 1.0d)) * 100.0d * monster.getVulnerability());
+                        String rawDmgString = "" + totDamageToOneMonster;
+                        List<String> digitGroupings = new ArrayList<>(5);
+                        digitGroupings.add(rawDmgString.substring(0, rawDmgString.length() % 3));
+                        for (int i = rawDmgString.length() % 3; i < rawDmgString.length(); i += 3) {
+                            digitGroupings.add(rawDmgString.substring(i, i + 3));
+                        }
+                        if (player.showSnipeDmg()) {
+                            player.sendHint(
+                                "Snipe damage: #r" +
+                                    digitGroupings
+                                        .stream()
+                                        .reduce((accu, grouping) -> accu + "," + grouping)
+                                        .orElse("0") +
+                                    "#k"
+                            );
+                        }
+                        // Intentional fallthrough to default case
                     default:
                         // Passives' attack bonuses
                         if (totDamageToOneMonster > 0 && monster.isAlive()) {
                             if (player.getBuffedValue(MapleBuffStat.BLIND) != null) {
-                                if (SkillFactory.getSkill(3221006).getEffect(player.getSkillLevel(SkillFactory.getSkill(3221006))).makeChanceResult()) {
-                                    MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.ACC, SkillFactory.getSkill(3221006).getEffect(player.getSkillLevel(SkillFactory.getSkill(3221006))).getX()), SkillFactory.getSkill(3221006), false);
-                                    monster.applyStatus(player, monsterStatusEffect, false, SkillFactory.getSkill(3221006).getEffect(player.getSkillLevel(SkillFactory.getSkill(3221006))).getY() * 1000);
+                                MapleStatEffect blindEffect =
+                                    SkillFactory
+                                        .getSkill(3221006)
+                                        .getEffect(player.getSkillLevel(3221006));
+                                if (blindEffect.makeChanceResult()) {
+                                    MonsterStatusEffect monsterStatusEffect =
+                                        new MonsterStatusEffect(
+                                            Collections.singletonMap(
+                                                MonsterStatus.ACC,
+                                                blindEffect.getX()
+                                            ),
+                                            SkillFactory.getSkill(3221006),
+                                            false
+                                        );
+                                    monster.applyStatus(
+                                        player,
+                                        monsterStatusEffect,
+                                        false,
+                                        blindEffect.getY() * 1000L
+                                    );
                                 }
                             }
                             if (player.getBuffedValue(MapleBuffStat.HAMSTRING) != null) {
-                                if (SkillFactory.getSkill(3121007).getEffect(player.getSkillLevel(SkillFactory.getSkill(3121007))).makeChanceResult()) {
-                                    MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SPEED, SkillFactory.getSkill(3121007).getEffect(player.getSkillLevel(SkillFactory.getSkill(3121007))).getX()), SkillFactory.getSkill(3121007), false);
-                                    monster.applyStatus(player, monsterStatusEffect, false, SkillFactory.getSkill(3121007).getEffect(player.getSkillLevel(SkillFactory.getSkill(3121007))).getY() * 1000);
+                                MapleStatEffect hamstringEffect =
+                                    SkillFactory
+                                        .getSkill(3121007)
+                                        .getEffect(player.getSkillLevel(3121007));
+                                if (hamstringEffect.makeChanceResult()) {
+                                    MonsterStatusEffect monsterStatusEffect =
+                                        new MonsterStatusEffect(
+                                            Collections.singletonMap(
+                                                MonsterStatus.SPEED,
+                                                hamstringEffect.getX()
+                                            ),
+                                            SkillFactory.getSkill(3121007),
+                                            false
+                                        );
+                                    monster.applyStatus(
+                                        player,
+                                        monsterStatusEffect,
+                                        false,
+                                        hamstringEffect.getY() * 1000L
+                                    );
                                 }
                             }
                             if (player.getJob().isA(MapleJob.WHITEKNIGHT)) {
                                 int[] charges = {1211005, 1211006};
                                 for (int charge : charges) {
                                     if (player.isBuffFrom(MapleBuffStat.WK_CHARGE, SkillFactory.getSkill(charge))) {
-                                        final ElementalEffectiveness iceEffectiveness = monster.getEffectiveness(Element.ICE);
-                                        if (iceEffectiveness == ElementalEffectiveness.NORMAL || iceEffectiveness == ElementalEffectiveness.WEAK) {
-                                            MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.FREEZE, 1), SkillFactory.getSkill(charge), false);
-                                            monster.applyStatus(player, monsterStatusEffect, false, SkillFactory.getSkill(charge).getEffect(player.getSkillLevel(SkillFactory.getSkill(charge))).getY() * 2000);
+                                        final ElementalEffectiveness iceEffectiveness =
+                                            monster.getEffectiveness(Element.ICE);
+                                        if (
+                                            iceEffectiveness == ElementalEffectiveness.NORMAL ||
+                                            iceEffectiveness == ElementalEffectiveness.WEAK
+                                        ) {
+                                            MonsterStatusEffect monsterStatusEffect =
+                                                new MonsterStatusEffect(
+                                                    Collections.singletonMap(
+                                                        MonsterStatus.FREEZE,
+                                                        1
+                                                    ),
+                                                    SkillFactory.getSkill(charge),
+                                                    false
+                                                );
+                                            monster.applyStatus(
+                                                player,
+                                                monsterStatusEffect,
+                                                false,
+                                                SkillFactory
+                                                    .getSkill(charge)
+                                                    .getEffect(player.getSkillLevel(charge))
+                                                    .getY() * 2000L
+                                            );
                                         }
                                         break;
                                     }

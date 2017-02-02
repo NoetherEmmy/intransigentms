@@ -48,8 +48,8 @@ public class PortalScriptManager {
             if (fr != null) {
                 try {
                     fr.close();
-                } catch (IOException e) {
-                    log.error("ERROR CLOSING", e);
+                } catch (IOException ioe) {
+                    log.error("ERROR CLOSING", ioe);
                 }
             }
         }

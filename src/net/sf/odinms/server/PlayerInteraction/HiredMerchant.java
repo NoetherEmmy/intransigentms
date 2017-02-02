@@ -4,6 +4,7 @@ import net.sf.odinms.client.IItem;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.database.DatabaseConnection;
+import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.server.AutobanManager;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.TimerManager;
@@ -14,6 +15,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 
 public class HiredMerchant extends PlayerInteractionManager {
@@ -99,6 +101,15 @@ public class HiredMerchant extends PlayerInteractionManager {
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+
+        ChannelServer
+            .getAllInstances()
+            .stream()
+            .map(cs -> cs.getPlayerStorage().getCharacterById(getOwnerId()))
+            .filter(Objects::nonNull)
+            .findAny()
+            .ifPresent(owner -> owner.setHasMerchant(false, false));
+
         schedule.cancel(false);
     }
 

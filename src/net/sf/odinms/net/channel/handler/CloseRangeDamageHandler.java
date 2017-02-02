@@ -152,8 +152,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 } else {
                     skillDamage = 1.0d;
                 }
-                int minDmg = (int) ((2.0d * (double) player.getTotalInt() / 3.0d * 0.9d * mastery + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
-                int maxDmg = (int) ((2.0d * (double) player.getTotalInt() / 3.0d + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
+                int minDmg = (int) (((double) player.getTotalInt() * 0.9d * mastery + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
+                int maxDmg = (int) (((double) player.getTotalInt() + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
 
                 final Random rand = new Random();
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
