@@ -137,8 +137,11 @@ public class XMLDomMapleData implements MapleData {
             case CANVAS: {
                 String width = attributes.getNamedItem("width").getNodeValue();
                 String height = attributes.getNamedItem("height").getNodeValue();
-                return new FileStoredPngMapleCanvas(Integer.parseInt(width), Integer.parseInt(height), new File(
-                imageDataDir, getName() + ".png"));
+                return new FileStoredPngMapleCanvas(
+                    Integer.parseInt(width),
+                    Integer.parseInt(height),
+                    new File(imageDataDir, getName() + ".png")
+                );
             }
         }
         return null;
