@@ -528,8 +528,27 @@ public class MapleStatEffect implements Serializable {
                         if (absorbMp > 0) {
                             mob.setMp(mob.getMp() - absorbMp);
                             applyto.addMP(absorbMp);
-                            applyto.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(sourceid, 1));
-                            applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.showBuffeffect(applyto.getId(), sourceid, 1, (byte) 3), false);
+                            applyto
+                                .getClient()
+                                .getSession()
+                                .write(
+                                    MaplePacketCreator.showOwnBuffEffect(
+                                        sourceid,
+                                        1
+                                    )
+                                );
+                            applyto
+                                .getMap()
+                                .broadcastMessage(
+                                    applyto,
+                                    MaplePacketCreator.showBuffeffect(
+                                        applyto.getId(),
+                                        sourceid,
+                                        1,
+                                        (byte) 3
+                                    ),
+                                    false
+                                );
                         }
                     }
                     break;
@@ -557,7 +576,14 @@ public class MapleStatEffect implements Serializable {
                 } else {
                     MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(itemCon);
                     if (applyFrom.getItemQuantity(itemCon, false) >= itemConNo) {
-                        MapleInventoryManipulator.removeById(applyTo.getClient(), type, itemCon, itemConNo, false, true);
+                        MapleInventoryManipulator.removeById(
+                            applyTo.getClient(),
+                            type,
+                            itemCon,
+                            itemConNo,
+                            false,
+                            true
+                        );
                     } else {
                         applyFrom.dropMessage(5, "You do not have enough Elans Vital to use the Resurrection skill.");
                         applyFrom.removeCooldown(sourceid);
@@ -605,18 +631,27 @@ public class MapleStatEffect implements Serializable {
 
                 TimerManager tMan = TimerManager.getInstance();
                 final ScheduledFuture<?> ninjaTask = tMan.register(() -> {
-                    final int min = attacker.calculateMinBaseDamage();
-                    final int max = attacker.getCurrentMaxBaseDamage();
-                    map.getMapObjectsInRect(aoe, Collections.singletonList(MapleMapObjectType.MONSTER))
+                    final int min = (int) (attacker.calculateMinBaseDamage() * multiplier);
+                    final int max = (int) (attacker.getCurrentMaxBaseDamage() * multiplier);
+                    map.getMapObjectsInRect(aoe, MapleMapObjectType.MONSTER)
                        .stream()
                        .map(mmo -> (MapleMonster) mmo)
                        .forEach(mob -> {
+                           int localMin = (int) (min * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.6d);
+                           int localMax = (int) (max * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.5d);
                            double chanceToHit =
                                attacker.getAccuracy() / ((1.84d + 0.07d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) * (double) mob.getAvoid()) - 1.0d;
                            if (Math.random() < chanceToHit) {
-                               int dmg = (int) (multiplier * (rand.nextInt(max - min) + min) * mob.getVulnerability());
+                               int dmg = (int) ((rand.nextInt(max - min) + min) * mob.getVulnerability());
+                               map.broadcastMessage(
+                                   attacker,
+                                   MaplePacketCreator.damageMonster(
+                                       mob.getObjectId(),
+                                       dmg
+                                   ),
+                                   true
+                               );
                                map.damageMonster(attacker, mob, dmg);
-                               map.broadcastMessage(attacker, MaplePacketCreator.damageMonster(mob.getObjectId(), dmg), true);
                            }
                        });
                 }, 800);
@@ -1321,7 +1356,7 @@ public class MapleStatEffect implements Serializable {
                                 su.getRight().equals(statup.getRight())
                             )
                     )
-                    .collect(Collectors.toList()),
+                    .collect(Collectors.toCollection(ArrayList::new)),
                 startTime,
                 schedule
             );

@@ -111,7 +111,7 @@ public class Vect implements IVect {
      ** converted to a list of <code>Double</code>s. */
     @Override
     public List<Double> realXs() {
-        return elems.stream().map(Integer::doubleValue).collect(Collectors.toList());
+        return elems.stream().map(Integer::doubleValue).collect(Collectors.toCollection(ArrayList::new));
     }
 
     /** Sets the value of the element specified by {@code index}

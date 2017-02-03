@@ -9,7 +9,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class QuestActionHandler extends AbstractMaplePacketHandler {
-    /** Creates a new instance of QuestActionHandler */
     public QuestActionHandler() {
     }
 

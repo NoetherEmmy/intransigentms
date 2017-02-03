@@ -286,7 +286,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return this;
     }
 
-    public static MapleCharacter loadCharFromDB(int charid, MapleClient client, boolean channelserver) throws SQLException {
+    public static MapleCharacter loadCharFromDB(int charid,
+                                                MapleClient client,
+                                                boolean channelserver) throws SQLException {
         MapleCharacter ret = new MapleCharacter();
         ret.client = client;
         ret.id = charid;
@@ -466,7 +468,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         rs.close();
         ps.close();
-        String sql = "SELECT * FROM inventoryitems LEFT JOIN inventoryequipment USING (inventoryitemid) WHERE characterid = ?";
+        String sql =
+            "SELECT * FROM inventoryitems LEFT JOIN inventoryequipment USING (inventoryitemid) WHERE characterid = ?";
         if (!channelserver) {
             sql += " AND inventorytype = " + MapleInventoryType.EQUIPPED.getType();
         }
@@ -527,7 +530,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             PreparedStatement pse = con.prepareStatement("SELECT * FROM queststatusmobs WHERE queststatusid = ?");
             while (rs.next()) {
                 MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
-                MapleQuestStatus status = new MapleQuestStatus(q, MapleQuestStatus.Status.getById(rs.getInt("status")));
+                MapleQuestStatus status =
+                    new MapleQuestStatus(q, MapleQuestStatus.Status.getById(rs.getInt("status")));
                 long cTime = rs.getLong("time");
                 if (cTime > -1) {
                     status.setCompletionTime(cTime * 1000);
@@ -594,7 +598,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
             rs.close();
             ps.close();
-            ps = con.prepareStatement("SELECT `characterid_to`,`when` FROM famelog WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30");
+            ps = con.prepareStatement(
+                "SELECT `characterid_to`,`when` FROM famelog WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30"
+            );
             ps.setInt(1, charid);
             rs = ps.executeQuery();
             ret.lastFameTime = 0;
@@ -631,7 +637,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             //
         }
         if (ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18) != null) {
-            ret.maplemount = new MapleMount(ret, ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18).getItemId(), 1004);
+            ret.maplemount =
+                new MapleMount(
+                    ret,
+                    ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18).getItemId(),
+                    1004
+                );
             ret.maplemount.setExp(mountexp);
             ret.maplemount.setLevel(mountlevel);
             ret.maplemount.setTiredness(mounttiredness);
@@ -855,7 +866,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 if (!update) {
                     ResultSet rs = ps.getGeneratedKeys();
                     if (rs.next()) {
-                        this.id = rs.getInt(1);
+                        id = rs.getInt(1);
                     } else {
                         throw new DatabaseException("Inserting char failed.");
                     }
@@ -875,7 +886,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 for (int i = 0; i < 5; ++i) {
                     SkillMacro macro = skillMacros[i];
                     if (macro != null) {
-                        ps = con.prepareStatement("INSERT INTO skillmacros (characterid, skill1, skill2, skill3, name, shout, position) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                        ps = con.prepareStatement(
+                            "INSERT INTO skillmacros " +
+                                "(characterid, skill1, skill2, skill3, name, shout, position) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?)"
+                        );
                         ps.setInt(1, id);
                         ps.setInt(2, macro.getSkill1());
                         ps.setInt(3, macro.getSkill2());
@@ -960,8 +975,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 ps.close();
                 pse.close();
-                deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
-                ps = con.prepareStatement("INSERT INTO skills (characterid, skillid, skilllevel, masterlevel) VALUES (?, ?, ?, ?)");
+                deleteWhereCharacterId(
+                    con,
+                    "DELETE FROM skills WHERE characterid = ?"
+                );
+                ps = con.prepareStatement(
+                    "INSERT INTO skills (characterid, skillid, skilllevel, masterlevel) VALUES (?, ?, ?, ?)"
+                );
                 ps.setInt(1, id);
                 for (Entry<ISkill, SkillEntry> skill_ : skills.entrySet()) {
                     ps.setInt(2, skill_.getKey().getId());
@@ -971,9 +991,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 ps.close();
                 deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?");
-                ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)");
+                ps = con.prepareStatement(
+                    "INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)"
+                );
                 ps.setInt(1, id);
-                for (Entry<Integer, MapleKeyBinding> keybinding : keymap.entrySet()) {
+                for (Map.Entry<Integer, MapleKeyBinding> keybinding : keymap.entrySet()) {
                     ps.setInt(2, keybinding.getKey());
                     ps.setInt(3, keybinding.getValue().getType());
                     ps.setInt(4, keybinding.getValue().getAction());
@@ -981,7 +1003,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 ps.close();
                 deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?");
-                ps = con.prepareStatement("INSERT INTO savedlocations (characterid, `locationtype`, `map`) VALUES (?, ?, ?)");
+                ps = con.prepareStatement(
+                    "INSERT INTO savedlocations (characterid, `locationtype`, `map`) VALUES (?, ?, ?)"
+                );
                 ps.setInt(1, id);
                 for (SavedLocationType savedLocationType : SavedLocationType.values()) {
                     if (savedLocations[savedLocationType.ordinal()] != -1) {
@@ -992,7 +1016,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 ps.close();
                 deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ? AND pending = 0");
-                ps = con.prepareStatement("INSERT INTO buddies (characterid, `buddyid`, `pending`) VALUES (?, ?, 0)");
+                ps = con.prepareStatement(
+                    "INSERT INTO buddies (characterid, `buddyid`, `pending`) VALUES (?, ?, 0)"
+                );
                 ps.setInt(1, id);
                 for (BuddylistEntry entry : buddylist.getBuddies()) {
                     if (entry.isVisible()) {
@@ -1017,7 +1043,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 rs.close();
                 ps.close();
 
-                ps = con.prepareStatement("UPDATE accounts SET `paypalNX` = ?, `mPoints` = ?, `cardNX` = ?, `donorPoints` = ?, `lastdailyprize` = ?, `votepoints` = ? WHERE id = ?");
+                ps = con.prepareStatement(
+                    "UPDATE accounts SET `paypalNX` = ?, `mPoints` = ?, `cardNX` = ?, " +
+                        "`donorPoints` = ?, `lastdailyprize` = ?, `votepoints` = ? WHERE id = ?"
+                );
                 int newDbNx = paypalnx + (dbNx - initialNx);
                 ps.setInt(1, paypalnx + (dbNx - initialNx));
                 initialNx = newDbNx;
@@ -1049,7 +1078,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 rs.close();
                 ps.close();
-                ps = con.prepareStatement("INSERT INTO pastlives (`characterid`, `death`, `level`, `job`, `lastdamagesource`) VALUES (?, ?, ?, ?, ?)");
+                ps = con.prepareStatement(
+                    "INSERT INTO pastlives " +
+                        "(`characterid`, `death`, `level`, `job`, `lastdamagesource`) VALUES (?, ?, ?, ?, ?)"
+                );
                 ps.setInt(1, id);
                 for (List<Integer> pastlife : newpastlives) {
                     lastlifenotupdated++;
@@ -1061,7 +1093,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
                 ps.close();
                 deleteWhereCharacterId(con, "DELETE FROM questkills WHERE characterid = ?");
-                ps = con.prepareStatement("INSERT INTO questkills (`characterid`, `monsterid`, `killcount`) VALUES (?, ?, ?)");
+                ps = con.prepareStatement(
+                    "INSERT INTO questkills (`characterid`, `monsterid`, `killcount`) VALUES (?, ?, ?)"
+                );
                 ps.setInt(1, id);
                 for (Map.Entry<Integer, Integer> e : questKills.entrySet()) {
                     ps.setInt(2, e.getKey());
@@ -3054,7 +3088,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void changeSkillLevel(ISkill skill, int newLevel, int newMasterlevel) {
         skills.put(skill, new SkillEntry(newLevel, newMasterlevel));
-        this.getClient().getSession().write(MaplePacketCreator.updateSkill(skill.getId(), newLevel, newMasterlevel));
+        getClient().getSession().write(MaplePacketCreator.updateSkill(skill.getId(), newLevel, newMasterlevel));
     }
 
     public void setHp(int newHp) {
@@ -3838,7 +3872,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     mainStat = localStr;
                     secondaryStat = localDex;
                 }
-                maxbasedamage = (int) (((weapon.getMaxDamageMultiplier() * (double) mainStat + (double) secondaryStat) / 100.0d) * (double) getTotalWatk());
+                maxbasedamage =
+                    (int) (((weapon.getMaxDamageMultiplier() * (double) mainStat + (double) secondaryStat) / 100.0d)
+                        * (double) getTotalWatk());
                 maxbasedamage += 10;
             } else {
                 maxbasedamage = 0;
@@ -6080,7 +6116,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                         level +
                         " to player " +
                         getName() +
-                        ". Function: MapleCharacter#giveDebuff"
+                        ". Method: MapleCharacter#giveDebuff"
                 );
                 return;
         }

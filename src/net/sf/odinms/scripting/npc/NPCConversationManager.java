@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class NPCConversationManager extends AbstractPlayerInteraction {
     private final MapleClient c;
     private final int npc;
-    private String fileName = null;
+    private final String fileName;
     private String getText;
     private final MapleCharacter chr;
 
@@ -1572,12 +1572,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleInventory etc = c.getPlayer().getInventory(MapleInventoryType.ETC);
         List<Integer> leaveBehind = Arrays.asList(lb1, lb2, lb3, lb4);
         List<IItem> cleared = new LinkedList<>(); // Linked list for a damn reason
+        final int markOfTheBeta = 1002419;
 
         int i = 0;
         byte[] equipSlots = new byte[equip.list().size()];
         for (IItem equipItem : equip.list()) {
             if (!leaveBehind.contains((int) equipItem.getPosition())) {
-                if (!ii.isCash(equipItem.getItemId())) {
+                if (!ii.isCash(equipItem.getItemId()) && equipItem.getItemId() != markOfTheBeta) {
                     equipSlots[i] = equipItem.getPosition();
                     i++;
                 }
@@ -1632,7 +1633,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         if (!DeathLogger.logItems(cleared, c)) {
-            System.err.println("There was an error logging " + getPlayer().getName() + "'s items lost on death.");
+            System.err.println(
+                "There was an error logging " +
+                    getPlayer().getName() +
+                    "'s items lost on death."
+            );
         }
     }
 
@@ -1750,7 +1755,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String whoDrops(int searchid) {
-        String dropstring = "";
+        String dropString = "";
         try {
             List<String> retMobs = new ArrayList<>();
             MapleData data;
@@ -1780,16 +1785,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.close();
             if (!retMobs.isEmpty()) {
                 for (String singleRetMob : retMobs) {
-                    dropstring += singleRetMob + "\r\n";
+                    dropString += singleRetMob + "\r\n";
                 }
             } else {
                 return "No mobs drop this item.";
             }
-        } catch (SQLException e) {
-            System.err.print("cm.whoDrops() failed with SQLException: " + e);
-            dropstring = "#dcm.whoDrops()#k failed with SQLException:\r\n\r\n#r" + e + "#k";
+        } catch (SQLException sqle) {
+            System.err.print("NPCConversationManager#whoDrops failed: " + sqle);
+            dropString = "NPCConversationManager#whoDrops failed:\r\n\r\n#r" + sqle + "#k";
         }
-        return dropstring;
+        return dropString;
     }
 
     public boolean canGetDailyPrizes() {
@@ -1821,8 +1826,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             charrs.close();
             charps.close();
-        } catch (SQLException e) {
-            System.err.print("cm.canGetDailyPrizes() failed with SQLException: " + e);
+        } catch (SQLException sqle) {
+            System.err.print("NPCConversationManager#canGetDailyPrizes failed: " + sqle);
         }
 
         return ret;
@@ -1877,7 +1882,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void revive() {
         final MapleCharacter player = getPlayer();
         player.setInvincible(true); // 10 second invincibility
-        TimerManager.getInstance().schedule(() -> player.setInvincible(false), 10 * 1000);
+        TimerManager.getInstance().schedule(() -> player.setInvincible(false), 10L * 1000L);
         player.setHp(player.getMaxHp(), false);
         player.setMp(player.getMaxMp());
         player.updateSingleStat(MapleStat.HP, player.getMaxHp());
@@ -1921,7 +1926,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             mesos = rs.getInt("MerchantMesos");
             rs.close();
             ps.close();
-        } catch (SQLException se) {
+        } catch (SQLException sqle) {
             return 0;
         }
         return mesos;
@@ -1945,7 +1950,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             PreparedStatement ps = con.prepareStatement("SELECT redeemed FROM betatesters WHERE name = ?");
             ps.setString(1, c.getAccountName());
             ResultSet rs = ps.executeQuery();
-            int redeemed = 1;
+            int redeemed = -1;
             while (rs.next()) {
                 redeemed = rs.getInt("redeemed");
             }
@@ -1957,45 +1962,63 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 ps.executeUpdate();
                 ps.close();
             }
-
             return redeemed == 0;
-        } catch (SQLException e) {
-            System.err.print("cm.getBetaTester() failed with SQLException: " + e);
+        } catch (SQLException sqle) {
+            System.err.print("NPCConversationManager#getBetaTester failed: " + sqle);
             return false;
         }
     }
 
+    public int betaTester() {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT redeemed FROM betatesters WHERE name = ?");
+            ps.setString(1, c.getAccountName());
+            ResultSet rs = ps.executeQuery();
+            int redeemed = -1;
+            while (rs.next()) {
+                redeemed = rs.getInt("redeemed");
+            }
+            rs.close();
+            ps.close();
+            return redeemed;
+        } catch (SQLException sqle) {
+            System.err.print("NPCConversationManager#betaTester failed: " + sqle);
+            return -1;
+        }
+    }
+
     public void removeHiredMerchantItem(boolean tempItem, int itemId) {
-        String Table = "";
-        if (tempItem) Table = "temp";
+        String table = "";
+        if (tempItem) table = "temp";
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement(
                 "DELETE FROM hiredmerchant" +
-                    Table +
+                    table +
                     " WHERE itemid = ? AND ownerid = ? LIMIT 1"
             );
             ps.setInt(1, itemId);
             ps.setInt(2, getPlayer().getId());
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException se) {
-            System.err.print("cm.removeHiredMerchantItem() failed with SQLException: " + se);
+        } catch (SQLException sqle) {
+            System.err.print("NPCConversationManager#removeHiredMerchantItem failed: " + sqle);
         }
     }
 
     public boolean getHiredMerchantItems(boolean tempTable) {
         boolean temp = false;
-        String Table = "";
+        String table = "";
         if (tempTable) {
-            Table = "temp";
+            table = "temp";
             temp = true;
         }
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement(
                 "SELECT * FROM hiredmerchant" +
-                    Table +
+                    table +
                     " WHERE ownerid = ?"
             );
             ps.setInt(1, getPlayer().getId());
@@ -2050,8 +2073,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             rs.close();
             ps.close();
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
             return false;
         }
         return true;

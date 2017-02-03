@@ -15,6 +15,7 @@ import net.sf.odinms.scripting.reactor.ReactorScriptManager;
 import net.sf.odinms.server.*;
 import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.*;
+import net.sf.odinms.server.quest.MapleQuest;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.StringUtil;
 import net.sf.odinms.tools.performance.CPUSampler;
@@ -28,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,7 +55,7 @@ public class Admins implements Command {
                              .stream()
                              .flatMap(channel -> channel.getPlayerStorage().getAllCharacters().stream())
                              .filter(p -> p != player)
-                             .collect(Collectors.toList())
+                             .collect(Collectors.toCollection(ArrayList::new))
                              .forEach(p -> {
                                  p.getClient().disconnect();
                                  p.getClient().getSession().close();
@@ -753,6 +755,10 @@ public class Admins implements Command {
                 DeathBot.getInstance().dispose();
                 mc.dropMessage("Discord bot disposed.");
                 break;
+            case "!clearquests":
+                MapleQuest.clearQuests();
+                mc.dropMessage("Quest cache has bene cleared.");
+                break;
         }
     }
 
@@ -809,7 +815,8 @@ public class Admins implements Command {
             new CommandDefinition("removeplayernpcs", 4),
             new CommandDefinition("pmob", 4),
             new CommandDefinition("reinitdiscord", 4),
-            new CommandDefinition("disposediscord", 4)
+            new CommandDefinition("disposediscord", 4),
+            new CommandDefinition("clearquests", 4)
         };
     }
 }

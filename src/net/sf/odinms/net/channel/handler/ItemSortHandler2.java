@@ -9,6 +9,7 @@ import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class ItemSortHandler2 extends AbstractMaplePacketHandler {
                                      .stream()
                                      .filter(i -> i.getPetId() == -1)
                                      .map(IItem::copy)
-                                     .collect(Collectors.toList());
+                                     .collect(Collectors.toCollection(ArrayList::new));
 
         itemStatMap.forEach(itemStats ->
             MapleInventoryManipulator.removeById(

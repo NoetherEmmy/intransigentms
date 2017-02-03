@@ -1563,4 +1563,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     public int getPADamage() {
         return stats.getPADamage();
     }
+
+    public int getWdef() {
+        return stats.getWdef();
+    }
+
+    public int getMdef() {
+        return stats.getMdef();
+    }
 }

@@ -14,15 +14,14 @@ import java.io.File;
 import java.util.*;
 
 public class MapleQuest {
-    private static final Map<Integer, MapleQuest> quests = new LinkedHashMap<>();
+    private static final Map<Integer, MapleQuest> quests = new HashMap<>();
     protected int id;
     protected List<MapleQuestRequirement> startReqs;
     protected List<MapleQuestRequirement> completeReqs;
     protected List<MapleQuestAction> startActs;
     protected List<MapleQuestAction> completeActs;
-    protected final List<Integer> relevantMobs;
-    private boolean autoStart;
-    private boolean autoPreComplete;
+    protected final List<Integer> relevantMobs = new ArrayList<>();
+    private boolean autoStart, autoPreComplete;
     private boolean repeatable = false;
     private static final MapleDataProvider questData =
         MapleDataProviderFactory.getDataProvider(
@@ -31,17 +30,14 @@ public class MapleQuest {
     private static final MapleData actions = questData.getData("Act.img");
     private static final MapleData requirements = questData.getData("Check.img");
     private static final MapleData info = questData.getData("QuestInfo.img");
-
     protected static final Logger log = LoggerFactory.getLogger(MapleQuest.class);
 
     protected MapleQuest() {
-        relevantMobs = new ArrayList<>();
     }
 
     /** Creates a new instance of MapleQuest */
     private MapleQuest(int id) {
         this.id = id;
-        relevantMobs = new ArrayList<>();
         // Read requirements
         MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
         startReqs = new ArrayList<>();
@@ -107,13 +103,18 @@ public class MapleQuest {
         autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
     }
 
+    public static void clearQuests() {
+        quests.clear();
+    }
+
     public static MapleQuest getInstance(int id) {
         MapleQuest ret = quests.get(id);
         if (ret == null) {
-            if (id > 99999)
+            if (id > 99999) {
                 ret = new MapleCustomQuest(id);
-            else
+            } else {
                 ret = new MapleQuest(id);
+            }
             quests.put(id, ret);
         }
         return ret;
@@ -140,11 +141,9 @@ public class MapleQuest {
         return true;
     }
 
-    //
     public List<MapleQuestRequirement> getCompleteReqs() {
-        return this.completeReqs;
+        return completeReqs;
     }
-    //
 
     public void start(MapleCharacter c, int npc) {
         if ((autoStart || checkNPCOnMap(c, npc)) && canStart(c, npc)) {

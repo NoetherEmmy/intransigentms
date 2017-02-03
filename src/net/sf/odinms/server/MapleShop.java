@@ -15,14 +15,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class MapleShop {
-    private static final Set<Integer> rechargeableItems = new LinkedHashSet<>();
-    private final int id;
-    private final int npcId;
+    private static final Set<Integer> rechargeableItems = new HashSet<>();
+    private final int id, npcId;
     private final List<MapleShopItem> items;
     private static final Logger log = LoggerFactory.getLogger(PacketProcessor.class);
 
@@ -30,8 +29,8 @@ public class MapleShop {
         for (int i = 2070000; i <= 2070018; ++i) {
             rechargeableItems.add(i);
         }
-        rechargeableItems.add(2331000);//Blaze Capsule
-        rechargeableItems.add(2332000);//Glaze Capsule
+        rechargeableItems.add(2331000); // Blaze Capsule
+        rechargeableItems.add(2332000); // Glaze Capsule
         rechargeableItems.remove(2070014);
         rechargeableItems.remove(2070017);
         for (int i = 2330000; i <= 2330005; ++i) {
@@ -74,7 +73,7 @@ public class MapleShop {
                         c.getPlayer().gainMeso(-(item.getPrice()), false);
                     }
                 } else {
-                    c.getSession().write(MaplePacketCreator.serverNotice(1, "Your Inventory is full"));
+                    c.getSession().write(MaplePacketCreator.serverNotice(1, "Your inventory is full."));
                 }
                 c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 0));
             } else {
@@ -96,7 +95,7 @@ public class MapleShop {
                             }
                             c.getPlayer().gainMeso(diff, false);
                         } else {
-                            c.getSession().write(MaplePacketCreator.serverNotice(1, "Your Inventory is full"));
+                            c.getSession().write(MaplePacketCreator.serverNotice(1, "Your inventory is full."));
                         }
                         c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 0));
                     }
@@ -146,7 +145,13 @@ public class MapleShop {
         }
         short slotMax = ii.getSlotMax(c, item.getItemId());
         if (item.getQuantity() < 0) {
-            log.warn(c.getPlayer().getName() + " is trying to recharge " + item.getItemId() + " with quantity " + item.getQuantity());
+            log.warn(
+                c.getPlayer().getName() +
+                    " is trying to recharge " +
+                    item.getItemId() +
+                    " with quantity " +
+                    item.getQuantity()
+            );
         }
         if (item.getQuantity() < slotMax) {
             int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
@@ -198,7 +203,8 @@ public class MapleShop {
             List<Integer> recharges = new ArrayList<>(rechargeableItems);
             while (rs.next()) {
                 if (ii.isThrowingStar(rs.getInt("itemid")) || ii.isBullet(rs.getInt("itemid"))) {
-                    MapleShopItem starItem = new MapleShopItem((short) 1, rs.getInt("itemid"), rs.getInt("price"));
+                    MapleShopItem starItem =
+                        new MapleShopItem((short) 1, rs.getInt("itemid"), rs.getInt("price"));
                     ret.addItem(starItem);
                     if (rechargeableItems.contains(starItem.getItemId())) {
                         recharges.remove(Integer.valueOf(starItem.getItemId()));
@@ -212,8 +218,8 @@ public class MapleShop {
             }
             rs.close();
             ps.close();
-        } catch (SQLException e) {
-            log.error("Could not load shop", e);
+        } catch (SQLException sqle) {
+            log.error("Could not load shop. ", sqle);
         }
         return ret;
     }

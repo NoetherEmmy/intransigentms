@@ -10,7 +10,7 @@ public class MapleDataTool {
     }
 
     public static String getString(MapleData data) {
-        return ((String) data.getData());
+        return (String) data.getData();
     }
 
     public static String getString(MapleData data, String def) {
@@ -30,11 +30,11 @@ public class MapleDataTool {
     }
 
     public static double getDouble(MapleData data) {
-        return ((Double) data.getData());
+        return (Double) data.getData();
     }
 
     public static float getFloat(MapleData data) {
-        return ((Float) data.getData());
+        return (Float) data.getData();
     }
 
     public static int getInt(MapleData data) {
@@ -52,7 +52,7 @@ public class MapleDataTool {
             if (data.getType() == MapleDataType.STRING) {
                 return Integer.parseInt(getString(data));
             } else {
-                return ((Integer) data.getData());
+                return (Integer) data.getData();
             }
         }
     }
@@ -108,7 +108,7 @@ public class MapleDataTool {
     }
 
     public static Point getPoint(MapleData data) {
-        return ((Point) data.getData());
+        return (Point) data.getData();
     }
 
     public static Point getPoint(String path, MapleData data) {
@@ -117,9 +117,7 @@ public class MapleDataTool {
 
     public static Point getPoint(String path, MapleData data, Point def) {
         final MapleData pointData = data.getChildByPath(path);
-        if (pointData == null) {
-            return def;
-        }
+        if (pointData == null) return def;
         return getPoint(pointData);
     }
 

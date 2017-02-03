@@ -25,6 +25,7 @@ public class MapleMonsterStats {
     private boolean explosive;
     private int accuracy;
     private int avoid;
+    private int wdef, mdef;
 
     public int getExp() {
         return exp;
@@ -174,11 +175,11 @@ public class MapleMonsterStats {
     }
 
     public List<Pair<Integer, Integer>> getSkills() {
-        return Collections.unmodifiableList(this.skills);
+        return Collections.unmodifiableList(skills);
     }
 
     public int getNoSkills() {
-        return this.skills.size();
+        return skills.size();
     }
 
     public boolean hasSkill(int skillId, int level) {
@@ -199,7 +200,7 @@ public class MapleMonsterStats {
     }
 
     public void setBuffToGive(int buff) {
-        this.buffToGive = buff;
+        buffToGive = buff;
     }
 
     public int getBuffToGive() {
@@ -207,11 +208,27 @@ public class MapleMonsterStats {
     }
 
     public void setPADamage(int dmg) {
-        this.PADamage = dmg;
+        PADamage = dmg;
     }
 
     public int getPADamage() {
         return PADamage;
+    }
+
+    public void setWdef(int wdef) {
+        this.wdef = wdef;
+    }
+
+    public int getWdef() {
+        return wdef;
+    }
+
+    public void setMdef(int mdef) {
+        this.mdef = mdef;
+    }
+
+    public int getMdef() {
+        return mdef;
     }
 
     public void setExplosive(boolean explosive) {

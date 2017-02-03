@@ -14,10 +14,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.rmi.RemoteException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TakeDamageHandler extends AbstractMaplePacketHandler {
@@ -434,7 +431,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                       p.isBareHanded()
                               )
                               .sorted(Comparator.comparingDouble(p -> p.getPosition().distanceSq(player.getPosition())))
-                              .collect(Collectors.toList());
+                              .collect(Collectors.toCollection(ArrayList::new));
 
                     for (MapleCharacter p : transformed) {
                         double absorptionProportion;

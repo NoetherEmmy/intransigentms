@@ -3,6 +3,7 @@ package net.sf.odinms.net.channel;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
 import net.sf.odinms.net.world.MapleParty;
+import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.maps.MapleMap;
@@ -183,15 +184,21 @@ public class PartyQuest {
         }
     }
 
-    public void registerParty(MapleParty party) {
-        party.getMembers().forEach(pc -> {
+    public boolean registerParty(MapleParty party) {
+        for (MaplePartyCharacter pc : party.getMembers()) {
             final MapleCharacter player =
                 ChannelServer
                     .getInstance(channel)
                     .getPlayerStorage()
                     .getCharacterById(pc.getId());
+            if (player == null) {
+                players.clear();
+                registeredPlayerIds.clear();
+                return false;
+            }
             registerPlayer(player);
-        });
+        }
+        return true;
     }
 
     public void leftParty(MapleCharacter player) {

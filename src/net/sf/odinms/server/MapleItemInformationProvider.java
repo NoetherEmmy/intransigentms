@@ -685,7 +685,8 @@ public class MapleItemInformationProvider {
                             // Match condition is that all decimal places EXCEPT for the hundreds place match.
                             if (
                                 faceList != null &&
-                                (faceList.size() < 300 ||
+                                (
+                                    faceList.size() < 300 ||
                                     faceList.stream().anyMatch(x ->
                                         Integer.valueOf(x - (x % 1000 / 100 * 100))
                                                .equals(id - (id % 1000 / 100 * 100))
@@ -730,8 +731,10 @@ public class MapleItemInformationProvider {
                             }
                             if (
                                 hairList != null &&
-                                (hairList.size() < 300 ||
-                                    hairList.stream().anyMatch(x -> Integer.valueOf(x / 10).equals(id / 10)))
+                                (
+                                    hairList.size() < 300 ||
+                                    hairList.stream().anyMatch(x -> Integer.valueOf(x / 10).equals(id / 10))
+                                )
                             ) {
                                 hairList.add(id);
                             } else {
@@ -836,7 +839,7 @@ public class MapleItemInformationProvider {
                                 .filter(x ->
                                     Integer.valueOf(x - (x % 1000 / 100 * 100)).equals(match)
                                 )
-                                .collect(Collectors.toList())
+                                .collect(Collectors.toCollection(ArrayList::new))
                     );
                     break;
                 }
@@ -860,7 +863,7 @@ public class MapleItemInformationProvider {
                                 .filter(x ->
                                     Integer.valueOf(x / 10).equals(match)
                                 )
-                                .collect(Collectors.toList())
+                                .collect(Collectors.toCollection(ArrayList::new))
                     );
                     break;
                 }
@@ -1053,7 +1056,12 @@ public class MapleItemInformationProvider {
     }
 
     public List<Entry<String, Integer>> getCashEquipEntries(final int type) {
-        return cashEquips.entrySet().stream().filter(e -> e.getValue() / 10000 == type).collect(Collectors.toList());
+        return
+            cashEquips
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue() / 10000 == type)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public boolean cashEquipExists(int id) {
@@ -1080,13 +1088,13 @@ public class MapleItemInformationProvider {
     }
 
     public List<Integer> cashEquipSearch(String query) {
-        if (query.length() < 1) return new ArrayList<>();
+        if (query.length() < 1) return Collections.emptyList();
         query = query.toUpperCase();
         final List<String> splitQuery = Arrays.stream(query.split("\\s+"))
                                               .distinct()
-                                              .collect(Collectors.toList());
+                                              .collect(Collectors.toCollection(ArrayList::new));
         splitQuery.remove("");
-        if (splitQuery.isEmpty()) return new ArrayList<>();
+        if (splitQuery.isEmpty()) return Collections.emptyList();
         return cashEquips
                 .entrySet()
                 .stream()
@@ -1128,21 +1136,21 @@ public class MapleItemInformationProvider {
                     return name1.compareTo(name2);
                 })
                 .map(Entry::getValue)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<Integer> cashEquipsByType(final int type) {
         return cashEquips.values().stream().filter((id) -> {
             int t = id / 10000;
             return t == type;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<Integer> cashEquipsByType(final int lowerType, final int upperType) {
         return cashEquips.values().stream().filter((id) -> {
             int type = id / 10000;
             return type >= lowerType && type <= upperType;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public int getReqLevel(int itemId) {

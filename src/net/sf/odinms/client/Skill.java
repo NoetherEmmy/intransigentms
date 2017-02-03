@@ -15,7 +15,7 @@ public class Skill implements ISkill {
     private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
     private int animationTime;
-    private final Map<Integer, Integer> requirements = new LinkedHashMap<>(2);
+    private final Map<Integer, Integer> requirements = new LinkedHashMap<>(3);
 
     private Skill(int id) {
         super();
@@ -205,14 +205,21 @@ public class Skill implements ISkill {
             MapleStatEffect statEffect = MapleStatEffect.loadSkillEffectFromData(level, id, isBuff);
             ret.effects.add(statEffect);
         }
-        /*
-        MapleData reqData = data.getChildByPath("req");
-        if (reqData != null) {
-            for (MapleData req : data.getChildByPath("req")) {
-                ret.requirements.put(Integer.parseInt(req.getName()), MapleDataTool.getInt() );
+
+        try {
+            MapleData reqData = data.getChildByPath("req");
+            if (reqData != null) {
+                for (MapleData req : reqData) {
+                    ret.requirements.put(
+                        Integer.parseInt(req.getName()),
+                        MapleDataTool.getInt(req.getName(), reqData, 0)
+                    );
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        */
+
         ret.animationTime = 0;
         if (effect != null) {
             for (MapleData effectEntry : effect) {

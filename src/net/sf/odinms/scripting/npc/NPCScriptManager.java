@@ -49,6 +49,14 @@ public class NPCScriptManager extends AbstractScriptManager {
             NPCScript ns = iv.getInterface(NPCScript.class);
             scripts.put(c, ns);
             iv.invokeFunction("start");
+        } catch (NoSuchMethodException nsme) {
+            System.err.println(
+                "The start method appears to be missing from NPC " +
+                    npc +
+                    (filename != null ? ", filename " + filename + ".js" : "")
+            );
+            dispose(c);
+            cms.remove(c);
         } catch (Exception e) {
             log.error("Error executing NPC script. NPC: " + npc + " Script: " + filename, e);
             dispose(c);
@@ -96,7 +104,7 @@ public class NPCScriptManager extends AbstractScriptManager {
     }
 
     public int getNpcTalkTimes(int chrid, int npc) {
-        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc); // First time looks wrong.
+        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc); // First time looks wrong
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }

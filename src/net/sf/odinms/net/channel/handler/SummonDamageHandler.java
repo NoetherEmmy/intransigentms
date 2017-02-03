@@ -78,7 +78,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             allDamage
                 .stream()
                 .filter(d -> player.getMap().getMonsterByOid(d.getMonsterOid()) != null)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
 
         if (player.getMap().isDamageMuted()) {
             for (SummonAttackEntry attackEntry : allDamage) {

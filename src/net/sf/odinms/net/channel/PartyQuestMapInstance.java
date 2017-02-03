@@ -242,7 +242,7 @@ public class PartyQuestMapInstance {
     }
 
     public List<Integer> registeredObstacleIds() {
-        return obstacles.keySet().stream().sorted().collect(Collectors.toList());
+        return obstacles.keySet().stream().sorted().collect(Collectors.toCollection(ArrayList::new));
     }
 
     public Map<Integer, Obstacle> readObstacles() {

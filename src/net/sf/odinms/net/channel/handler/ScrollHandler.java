@@ -27,8 +27,7 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         IEquip toScroll = (IEquip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
-        ISkill LegendarySpirit = SkillFactory.getSkill(1003);
-        if (c.getPlayer().getSkillLevel(LegendarySpirit) > 0 && dst >= 0) {
+        if (c.getPlayer().getSkillLevel(1003) > 0 && dst >= 0) {
             legendarySpirit = true;
             toScroll = (IEquip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
         }
@@ -36,13 +35,13 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
 
         MapleInventory useInventory = c.getPlayer().getInventory(MapleInventoryType.USE);
         IItem scroll = useInventory.getItem(slot);
-        IItem wscroll = null;
+        IItem wscroll;
         if (toScroll.getUpgradeSlots() < 1 && scroll.getItemId() != 2049004) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
         }
 
-        List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
+        final List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
         if (!scrollReqs.isEmpty() && !scrollReqs.contains(toScroll.getItemId())) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
@@ -52,12 +51,34 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             wscroll = useInventory.findById(2340000);
             if (wscroll == null || wscroll.getItemId() != 2340000) {
                 whiteScroll = false;
-                log.info("[h4x] Player {} is trying to scroll with non-existent white scroll", new Object[]{c.getPlayer().getName()});
+                log.info(
+                    "[h4x] Player {} is trying to scroll with non-existent white scroll",
+                    new Object[] {
+                        c.getPlayer().getName()
+                    }
+                );
             }
+        } else {
+            wscroll = useInventory.findById(2340000);
+            if (wscroll != null && wscroll.getPosition() == (byte) 100) {
+                c.getPlayer().dropMessage(
+                    5,
+                    "Please move your White Scrolls out of the last spot of your use inventory."
+                );
+                c.getSession().write(MaplePacketCreator.enableActions());
+                return;
+            }
+            wscroll = null;
         }
-        if (scroll.getItemId() != 2049100 && scroll.getItemId() != 2049122 && scroll.getItemId() != 2049004 && !ii.isCleanSlate(scroll.getItemId())) {
+
+        if (
+            scroll.getItemId() != 2049100 &&
+            scroll.getItemId() != 2049122 &&
+            scroll.getItemId() != 2049004 &&
+            !ii.isCleanSlate(scroll.getItemId())
+        ) {
             if (!ii.canScroll(scroll.getItemId(), toScroll.getItemId())) {
-                log.info("[h4x] Player {} is trying to scroll {} with {}, which should not work.", new Object[]{
+                log.info("[h4x] Player {} is trying to scroll {} with {}, which should not work.", new Object[] {
                     c.getPlayer().getName(), toScroll.getItemId(), scroll.getItemId()
                 });
                 return;
@@ -68,12 +89,18 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             throw new InventoryException("<= 0 quantity when scrolling");
         }
         IEquip scrolled = (IEquip) ii.scrollEquipWithId(c, toScroll, scroll.getItemId(), whiteScroll);
-        ScrollResult scrollSuccess = IEquip.ScrollResult.FAIL; // fail
+        ScrollResult scrollSuccess = IEquip.ScrollResult.FAIL; // Failure
 
         if (scrolled == null) {
             scrollSuccess = IEquip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || (ii.isCleanSlate(scroll.getItemId()) && scrolled.getLevel() == oldLevel + 1) ||
-                (scroll.getItemId() == 2049004 && scrolled.getUpgradeSlots() == ((Equip) ii.getEquipById(scrolled.getItemId())).getUpgradeSlots())) {
+        } else if (
+            scrolled.getLevel() > oldLevel ||
+            (ii.isCleanSlate(scroll.getItemId()) && scrolled.getLevel() == oldLevel + 1) ||
+            (
+                scroll.getItemId() == 2049004 &&
+                scrolled.getUpgradeSlots() == ((Equip) ii.getEquipById(scrolled.getItemId())).getUpgradeSlots()
+            )
+        ) {
             scrollSuccess = IEquip.ScrollResult.SUCCESS;
         }
         useInventory.removeItem(scroll.getPosition(), (short) 1, false);
@@ -81,7 +108,14 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
         if (whiteScroll) {
             useInventory.removeItem(wscroll.getPosition(), (short) 1, false);
             if (wscroll.getQuantity() < 1) {
-                c.getSession().write(MaplePacketCreator.clearInventoryItem(MapleInventoryType.USE, wscroll.getPosition(), false));
+                c.getSession()
+                 .write(
+                     MaplePacketCreator.clearInventoryItem(
+                         MapleInventoryType.USE,
+                         wscroll.getPosition(),
+                         false
+                     )
+                 );
             } else {
                 c.getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, wscroll));
             }
@@ -96,8 +130,22 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
         } else {
             c.getSession().write(MaplePacketCreator.scrolledItem(scroll, scrolled, false));
         }
-        c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit));
-        if (dst < 0 && (scrollSuccess == IEquip.ScrollResult.SUCCESS || scrollSuccess == IEquip.ScrollResult.CURSE)) {
+        c.getPlayer()
+         .getMap()
+         .broadcastMessage(
+             MaplePacketCreator.getScrollEffect(
+                 c.getPlayer().getId(),
+                 scrollSuccess,
+                 legendarySpirit
+             )
+         );
+        if (
+            dst < 0 &&
+            (
+                scrollSuccess == IEquip.ScrollResult.SUCCESS ||
+                scrollSuccess == IEquip.ScrollResult.CURSE
+            )
+        ) {
             c.getPlayer().equipChanged();
         }
     }

@@ -10,16 +10,9 @@ import javax.script.ScriptEngineManager;
 import java.io.File;
 import java.io.FileReader;
 
-//import java.io.IOException;
-//import java.nio.file.Files;
-//import java.util.stream.Collectors;
-//import java.util.stream.Stream;
-//import javax.script.ScriptException;
-
 public abstract class AbstractScriptManager {
     protected ScriptEngine engine;
     private final ScriptEngineManager sem;
-
     protected static final Logger log = LoggerFactory.getLogger(AbstractScriptManager.class);
 
     protected AbstractScriptManager() {
@@ -36,7 +29,7 @@ public abstract class AbstractScriptManager {
             if (engine == null) {
                 File scriptFile = new File(path);
                 if (!scriptFile.exists()) {
-                    System.err.print("path0: " + path + "\n");
+                    System.err.println("path0: " + path);
                     return null;
                 }
                 engine = sem.getEngineByName("javascript");
@@ -49,8 +42,8 @@ public abstract class AbstractScriptManager {
             }
             return (Invocable) engine;
         } catch (Exception e) {
-            log.error("Error executing script.", e);
-            System.err.print("path1: " + path + "\n");
+            log.error("Error executing script. ", e);
+            System.err.println("path1: " + path);
             return null;
         }
     }

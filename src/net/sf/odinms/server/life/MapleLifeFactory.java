@@ -40,15 +40,15 @@ public class MapleLifeFactory {
         MapleMonsterStats stats = monsterStats.get(mid);
         if (stats == null) {
             MapleData monsterData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
-            if (monsterData == null) {
-                return null;
-            }
+            if (monsterData == null) return null;
             MapleData monsterInfoData = monsterData.getChildByPath("info");
             stats = new MapleMonsterStats();
             stats.setHp(MapleDataTool.getIntConvert("maxHP", monsterInfoData));
             stats.setMp(MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0));
             stats.setExp(MapleDataTool.getIntConvert("exp", monsterInfoData, 0));
             stats.setPADamage(MapleDataTool.getIntConvert("PADamage", monsterInfoData, 0));
+            stats.setWdef(MapleDataTool.getIntConvert("PDDamage", monsterInfoData, 0));
+            stats.setMdef(MapleDataTool.getIntConvert("MDDamage", monsterInfoData, 0));
             stats.setLevel(MapleDataTool.getIntConvert("level", monsterInfoData));
             stats.setRemoveAfter(MapleDataTool.getIntConvert("removeAfter", monsterInfoData, 0));
             stats.setBoss(MapleDataTool.getIntConvert("boss", monsterInfoData, 0) > 0);
@@ -59,7 +59,7 @@ public class MapleLifeFactory {
                 stats.setName(MapleDataTool.getString(mid + "/name", mobStringData, "MISSINGNO"));
             } catch (Exception e) {
                 stats.setName("MISSINGNO");
-                System.err.print(e + "   !ID!:  " + mid + "\n");
+                System.err.println(e + "   !ID!:  " + mid);
             }
             //
             stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));

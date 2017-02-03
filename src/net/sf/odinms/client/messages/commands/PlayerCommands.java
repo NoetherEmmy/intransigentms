@@ -33,9 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -65,6 +63,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@onlinetime - | - Shows how long a person has been online.");
             mc.dropMessage("@online - | - Lists all online players.");
             mc.dropMessage("@event - | - Teleports you to the currectly active event, if there is one.");
+            mc.dropMessage("@roll <dice> [dice...] - | - Rolls some dice.");
             mc.dropMessage("@monstertrialtime - | - Shows how much longer you must wait to enter another Monster Trial.");
             mc.dropMessage("@dailyprize - | - Displays the amount of time you have until you can get another prize from T-1337.");
             mc.dropMessage("@mapleadmin - | - Opens up chat with Maple Adminstrator NPC.");
@@ -172,9 +171,17 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@togglesmega")) {
             player.setSmegaEnabled(!player.getSmegaEnabled());
-            String text = !player.getSmegaEnabled() ? "[Disable] Smegas are now disabled." : "[Enable] Smegas are now enabled.";
+            String text =
+                !player.getSmegaEnabled() ?
+                    "[Disable] Smegas are now disabled." :
+                    "[Enable] Smegas are now enabled.";
             mc.dropMessage(text);
-        } else if (splitted[0].equals("@str") || splitted[0].equals("@dex") || splitted[0].equals("@int") || splitted[0].equals("@luk")) {
+        } else if (
+            splitted[0].equals("@str") ||
+            splitted[0].equals("@dex") ||
+            splitted[0].equals("@int") ||
+            splitted[0].equals("@luk")
+        ) {
             if (splitted.length != 2) {
                 mc.dropMessage("Syntax: @<stat> <amount>");
                 mc.dropMessage("stat: <STR> <DEX> <INT> <LUK>");
@@ -199,7 +206,11 @@ public class PlayerCommands implements Command {
                 } else if (splitted[0].equals("@luk") && x + player.getLuk() < max) {
                     player.addAP(c, 4, x);
                 } else {
-                    mc.dropMessage("Make sure the stat you are trying to raise will not be over " + Short.MAX_VALUE + ".");
+                    mc.dropMessage(
+                        "Make sure the stat you are trying to raise will not be over " +
+                            Short.MAX_VALUE +
+                            "."
+                    );
                 }
             } else {
                 mc.dropMessage("Please make sure your AP is valid.");
@@ -209,7 +220,20 @@ public class PlayerCommands implements Command {
                 return;
             }
             try {
-                c.getChannelServer().getWorldInterface().broadcastGMMessage(null, MaplePacketCreator.serverNotice(6, "Channel: " + c.getChannel() + "  " + player.getName() + ": " + StringUtil.joinStringFrom(splitted, 1)).getBytes());
+                c.getChannelServer()
+                 .getWorldInterface()
+                 .broadcastGMMessage(
+                     null,
+                     MaplePacketCreator.serverNotice(
+                         6,
+                         "Channel: " +
+                             c.getChannel() +
+                             "  " +
+                             player.getName() +
+                             ": " +
+                             StringUtil.joinStringFrom(splitted, 1)
+                     ).getBytes()
+                 );
             } catch (RemoteException ex) {
                 c.getChannelServer().reconnectWorld();
             }
@@ -388,17 +412,27 @@ public class PlayerCommands implements Command {
                             }
                             List<String> retMobs = new ArrayList<>();
                             MapleData data;
-                            MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
+                            MapleDataProvider dataProvider =
+                                MapleDataProviderFactory.getDataProvider(
+                                    new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
+                                );
                             data = dataProvider.getData("Mob.img");
                             mc.dropMessage(candidate.getRight() + " is dropped by the following mobs:");
                             List<Pair<Integer, String>> mobPairList = new ArrayList<>();
                             Connection con = DatabaseConnection.getConnection();
-                            PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
+                            PreparedStatement ps =
+                                con.prepareStatement(
+                                    "SELECT monsterid FROM monsterdrops WHERE itemid = ?"
+                                );
                             ps.setInt(1, searchid);
                             ResultSet rs = ps.executeQuery();
                             for (MapleData mobIdData : data.getChildren()) {
                                 int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                                String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
+                                String mobNameFromData =
+                                    MapleDataTool.getString(
+                                        mobIdData.getChildByPath("name"),
+                                        "NO-NAME"
+                                    );
                                 mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
                             }
                             while (rs.next()) {
@@ -428,7 +462,10 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@monsterdrops")) {
             if (splitted.length < 2) {
-                mc.dropMessage("Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] or @monsterdrops <searchstring> [eqp/use/etc] instead.");
+                mc.dropMessage(
+                    "Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] or " +
+                        "@monsterdrops <searchstring> [eqp/use/etc] instead."
+                );
             } else {
                 try {
                     int searchid = Integer.parseInt(splitted[1]);
@@ -449,7 +486,10 @@ public class PlayerCommands implements Command {
                                 itemtype = MapleInventoryType.ETC;
                                 break;
                             default:
-                                mc.dropMessage("Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] or @monsterdrops <searchstring> [eqp/use/etc] instead.");
+                                mc.dropMessage(
+                                    "Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] or " +
+                                        "@monsterdrops <searchstring> [eqp/use/etc] instead."
+                                );
                                 return;
                         }
                     }
@@ -522,18 +562,25 @@ public class PlayerCommands implements Command {
                             }
                         }
                         if (searchstring == null) {
-                            mc.dropMessage("Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] or @monsterdrops <searchstring> [eqp/use/etc] instead.");
+                            mc.dropMessage(
+                                "Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] " +
+                                    "or @monsterdrops <searchstring> [eqp/use/etc] instead."
+                            );
                             return;
                         }
                         searchstring = searchstring.toUpperCase();
                         List<String> retItems = new ArrayList<>();
                         MapleData data;
-                        MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
+                        MapleDataProvider dataProvider =
+                            MapleDataProviderFactory.getDataProvider(
+                                new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
+                            );
                         data = dataProvider.getData("Mob.img");
                         List<Pair<Integer, String>> mobPairList = new ArrayList<>();
                         for (MapleData mobIdData : data.getChildren()) {
                             int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                            String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
+                            String mobNameFromData =
+                                MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
                             mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
                         }
                         String bestmatch = null;
@@ -557,11 +604,18 @@ public class PlayerCommands implements Command {
                                 mc.dropMessage(bestmatch + " drops the following items:");
                             }
                         } else {
-                            mc.dropMessage("No mobs were found that start with \"" + searchstring.toLowerCase() + "\".");
+                            mc.dropMessage(
+                                "No mobs were found that start with \"" +
+                                    searchstring.toLowerCase() +
+                                    "\"."
+                            );
                             return;
                         }
                         Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement("SELECT itemid FROM monsterdrops WHERE monsterid = ?");
+                        PreparedStatement ps =
+                            con.prepareStatement(
+                                "SELECT itemid FROM monsterdrops WHERE monsterid = ?"
+                            );
                         ps.setInt(1, searchid);
                         ResultSet rs = ps.executeQuery();
                         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -638,7 +692,9 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@monstersinrange")) {
             int upperrange, lowerrange;
             boolean sortbylevel = false;
-            String incorrectsyntax = "Incorrect syntax; instead use (where [] means optional): @monstersinrange [[lowerRange, upperRange], [sortBy (\"level\"/\"xphpratio\")]]";
+            String incorrectsyntax =
+                "Incorrect syntax; instead use (where [] means optional): " +
+                    "@monstersinrange [[lowerRange, upperRange], [sortBy (\"level\"/\"xphpratio\")]]";
             String note = "Note that if exactly one integer argument is present, it is parsed as upperRange.";
             switch (splitted.length) {
                 case 1:
@@ -723,7 +779,10 @@ public class PlayerCommands implements Command {
                 int max = player.getLevel() + upperrange;
                 int min = player.getLevel() - lowerrange;
                 MapleData data;
-                MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
+                MapleDataProvider dataProvider =
+                    MapleDataProviderFactory.getDataProvider(
+                        new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
+                    );
                 data = dataProvider.getData("Mob.img");
                 List<MapleMonster> mobList = new ArrayList<>();
                 try {
@@ -754,7 +813,13 @@ public class PlayerCommands implements Command {
                         double xphpratio = ((double) mob.getExp() * player.getTotalMonsterXp(mob.getLevel())) / (double) mob.getHp();
                         BigDecimal xhrbd = BigDecimal.valueOf(xphpratio);
                         xhrbd = xhrbd.setScale(2, RoundingMode.HALF_UP);
-                        mc.dropMessage(mob.getName() + ": level " + mob.getLevel() + ", XP/HP ratio " + xhrbd.toString());
+                        mc.dropMessage(
+                            mob.getName() +
+                                ": level " +
+                                mob.getLevel() +
+                                ", XP/HP ratio " +
+                                xhrbd
+                        );
                     }
                     String sort;
                     if (sortbylevel) {
@@ -762,7 +827,15 @@ public class PlayerCommands implements Command {
                     } else {
                         sort = "XP/HP ratio";
                     }
-                    mc.dropMessage("The above mobs are within " + lowerrange + " levels below and " + upperrange + " levels above you, sorted by " + sort + ", descending as you scroll upwards.");
+                    mc.dropMessage(
+                        "The above mobs are within " +
+                            lowerrange +
+                            " levels below and " +
+                            upperrange +
+                            " levels above you, sorted by " +
+                            sort +
+                            ", descending as you scroll upwards."
+                    );
                 } else {
                     mc.dropMessage("No mobs are in the specified range.");
                 }
@@ -770,7 +843,14 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("Invalid syntax, or range too large.");
             }
         } else if (splitted[0].equals("@monstertrialtier")) {
-            mc.dropMessage("Your Monster Trial tier: " + player.getMonsterTrialTier() + " Your Monster Trial points: " + player.getMonsterTrialPoints() + " Points for next tier: " + player.getTierPoints(player.getMonsterTrialTier() + 1));
+            mc.dropMessage(
+                "Your Monster Trial tier: " +
+                    player.getMonsterTrialTier() +
+                    " Your Monster Trial points: " +
+                    player.getMonsterTrialPoints() +
+                    " Points for next tier: " +
+                    player.getTierPoints(player.getMonsterTrialTier() + 1)
+            );
         } else if (splitted[0].equals("@damagescale")) {
             float damagescale = player.getDamageScale();
             BigDecimal ds = new BigDecimal(damagescale);
@@ -798,7 +878,15 @@ public class PlayerCommands implements Command {
                             MapleMonster mobcause = MapleLifeFactory.getMonster(morgue.get(i).get(2));
                             causeofdeath = mobcause != null ? mobcause.getName() : "Suicide";
                         }
-                        mc.dropMessage("Level: " + morgue.get(i).get(0) + ", Job: " + MapleJob.getJobName(morgue.get(i).get(1)) + ", Cause of death: " + causeofdeath + ".");
+                        mc.dropMessage(
+                            "Level: " +
+                                morgue.get(i).get(0) +
+                                ", Job: " +
+                                MapleJob.getJobName(morgue.get(i).get(1)) +
+                                ", Cause of death: " +
+                                causeofdeath +
+                                "."
+                        );
                     }
                 }
             } else {
@@ -877,8 +965,20 @@ public class PlayerCommands implements Command {
                         break;
                 }
                 mc.dropMessage("Current death penalty level: " + player.getDeathPenalty());
-                mc.dropMessage("Current effects: -" + (hppenalty * player.getDeathPenalty()) + " maxHP, -" + (mppenalty * player.getDeathPenalty()) + " maxMP,");
-                mc.dropMessage("-" + Math.min(3 * player.getDeathPenalty(), 100) + "% weapon damage, -" + Math.min(3 * player.getDeathPenalty(), 100) + "% magic damage");
+                mc.dropMessage(
+                    "Current effects: -" +
+                        (hppenalty * player.getDeathPenalty()) +
+                        " maxHP, -" +
+                        (mppenalty * player.getDeathPenalty()) +
+                        " maxMP,"
+                );
+                mc.dropMessage(
+                    "-" +
+                        Math.min(3 * player.getDeathPenalty(), 100) +
+                        "% weapon damage, -" +
+                        Math.min(3 * player.getDeathPenalty(), 100) +
+                        "% magic damage"
+                );
                 mc.dropMessage(player.getStrengtheningTimeString());
             }
         } else if (splitted[0].equals("@monsterhp")) {
@@ -908,7 +1008,9 @@ public class PlayerCommands implements Command {
                     try {
                         repeatTime = Integer.parseInt(splitted[1]);
                     } catch (NumberFormatException nfe) {
-                        mc.dropMessage("Could not parse repeat time for @bosshp. Make sure you are entering a valid integer.");
+                        mc.dropMessage(
+                            "Could not parse repeat time for @bosshp. Make sure you are entering a valid integer."
+                        );
                         return;
                     }
                     if (repeatTime < 1000 || repeatTime > 300000) {
@@ -978,7 +1080,12 @@ public class PlayerCommands implements Command {
                 player.dropMessage("It doesn't look like you're reading at the moment.");
             }
         } else if (splitted[0].equals("@defense") || splitted[0].equals("@defence")) {
-            player.dropMessage("Weapon defense: " + player.getTotalWdef() + ", magic defense: " + player.getTotalMdef());
+            player.dropMessage(
+                "Weapon defense: " +
+                    player.getTotalWdef() +
+                    ", magic defense: " +
+                    player.getTotalMdef()
+            );
         } else if (splitted[0].equals("@ria")) {
             NPCScriptManager.getInstance().start(c, 9010003);
         } else if (splitted[0].equals("@pqpoints")) {
@@ -1074,11 +1181,14 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@event")) {
             final int eventMapId = c.getChannelServer().getEventMap();
             if (eventMapId == 0) {
-                mc.dropMessage("It doesn't look like there's an event going on in this channel at the moment. Maybe you're in the wrong channel?");
+                mc.dropMessage(
+                    "It doesn't look like there's an event going on in this channel at the moment. " +
+                        "Maybe you're in the wrong channel?"
+                );
             } else {
                 mc.dropMessage("Going to the event, please wait...");
                 TimerManager.getInstance().schedule(() -> {
-                    if (player.isAlive() && player.getMapId() != 100) {
+                    if (player.isAlive() && player.getMapId() != 100 && player.getMapId() != eventMapId) {
                         player.setPreEventMap(player.getMapId());
                         player.changeMap(eventMapId);
                     }
@@ -1089,10 +1199,18 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@samsara")) {
             if (player.getSkillLevel(5121000) > 0) {
                 StringBuilder sb = new StringBuilder();
-                long timeDiff = player.getLastSamsara() + MapleCharacter.SAMSARA_COOLDOWN - System.currentTimeMillis();
+                long timeDiff =
+                    player.getLastSamsara() +
+                        MapleCharacter.SAMSARA_COOLDOWN -
+                        System.currentTimeMillis();
                 if (timeDiff > 0) {
                     sb.append("You may use Samsara again in ");
-                    compareTime(sb, player.getLastSamsara() + MapleCharacter.SAMSARA_COOLDOWN - System.currentTimeMillis());
+                    compareTime(
+                        sb,
+                        player.getLastSamsara() +
+                            MapleCharacter.SAMSARA_COOLDOWN -
+                            System.currentTimeMillis()
+                    );
                 } else {
                     sb.append("You may use Samsara.");
                 }
@@ -1102,31 +1220,65 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@dailyprize")) {
             player.dropDailyPrizeTime(true);
+        } else if (splitted[0].equals("@roll")) {
+            final String invalidSyntax =
+                "Invalid syntax. Use: @roll <dice> [dice...], " +
+                    "where dice is $Nd$F, " +
+                    "where $N is the number of dice and $F is the number of faces on each die.";
+            if (splitted.length < 2) {
+                mc.dropMessage(invalidSyntax);
+                return;
+            }
+            final Pattern dicePattern = Pattern.compile("(?i)[1-9][0-9]?d[1-9][0-9]{0,3}");
+            final Random rand = new Random();
+
+            int total = 0;
+            StringBuilder msg = new StringBuilder();
+            msg.append(player.getName()).append(" rolled ");
+
+            for (int i = 1; i < splitted.length; ++i) {
+                if (!dicePattern.matcher(splitted[i]).matches()) {
+                    mc.dropMessage(invalidSyntax);
+                    return;
+                }
+                String[] nfSplit = splitted[i].split("(?i)d");
+                final int n = Integer.parseInt(nfSplit[0]);
+                final int f = Integer.parseInt(nfSplit[1]);
+                if (i > 1) {
+                    msg.append(" + ");
+                }
+                msg.append(n).append('d').append(f);
+                for (int j = 0; j < n; ++j) {
+                    total += 1 + rand.nextInt(f);
+                }
+            }
+            msg.append(", for a total of ").append(total).append('.');
+            player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, msg.toString()));
         }
     }
 
     private void compareTime(StringBuilder sb, long timeDiff) {
-        double secondsAway = timeDiff / 1000;
-        double minutesAway = 0;
-        double hoursAway = 0;
+        double secondsAway = timeDiff / 1000L;
+        double minutesAway = 0.0d;
+        double hoursAway = 0.0d;
 
-        while (secondsAway > 60) {
+        while (secondsAway > 60.0d) {
             minutesAway++;
-            secondsAway -= 60;
+            secondsAway -= 60.0d;
         }
-        while (minutesAway > 60) {
+        while (minutesAway > 60.0d) {
             hoursAway++;
-            minutesAway -= 60;
+            minutesAway -= 60.0d;
         }
         boolean hours = false;
         boolean minutes = false;
-        if (hoursAway > 0) {
+        if (hoursAway > 0.0d) {
             sb.append(" ");
             sb.append((int) hoursAway);
             sb.append(" hours");
             hours = true;
         }
-        if (minutesAway > 0) {
+        if (minutesAway > 0.0d) {
             if (hours) {
                 sb.append(" -");
             }
@@ -1135,7 +1287,7 @@ public class PlayerCommands implements Command {
             sb.append(" minutes");
             minutes = true;
         }
-        if (secondsAway > 0) {
+        if (secondsAway > 0.0d) {
             if (minutes) {
                 sb.append(" and");
             }
@@ -1202,7 +1354,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("event", 0),
             new CommandDefinition("magic", 0),
             new CommandDefinition("samsara", 0),
-            new CommandDefinition("dailyprize", 0)
+            new CommandDefinition("dailyprize", 0),
+            new CommandDefinition("roll", 0)
         };
     }
 }

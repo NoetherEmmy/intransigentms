@@ -160,9 +160,9 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
                     List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
+                    MapleMonster m = map.getMonsterByOid(dmg.getLeft());
                     double critMulti = 1.0d;
                     if (stunMasteryLevel > 0) {
-                        MapleMonster m = map.getMonsterByOid(dmg.getLeft());
                         if (m != null) {
                             boolean stunned = m.isBuffed(MonsterStatus.STUN);
                             if (stunned) {
@@ -188,14 +188,16 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         critMulti = 1.0d + critDamage;
                     }
                     int hitIndex = 0;
+                    int localMinDmg = (int) (minDmg * skillDamage * critMulti - m.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(m.getLevel() - player.getLevel(), 0.0d)));
+                    int localMaxDmg = (int) (maxDmg * skillDamage * critMulti - m.getMdef() * 0.5d * (1.0d + 0.01d * Math.max(m.getLevel() - player.getLevel(), 0.0d)));
                     for (Integer dmgNumber : dmg.getRight()) {
                         if (dmgNumber == null || dmgNumber < 1) continue;
                         int magicDmgNumber;
-                        if (attack.skill == 5121007 && hitIndex > 3 && hitIndex < 6) {
+                        if (attack.skill == 5121007 && hitIndex >= 4 && hitIndex <= 5) {
                             // Barrage's last two strikes do additional damage.
-                            magicDmgNumber = (int) ((double) (minDmg + rand.nextInt(maxDmg - minDmg + 1)) * skillDamage * critMulti * (hitIndex - 3.0d) * 2.0d);
+                            magicDmgNumber = (localMinDmg + rand.nextInt(localMaxDmg - localMinDmg + 1)) * (hitIndex - 3) * 2;
                         } else {
-                            magicDmgNumber = (int) ((double) (minDmg + rand.nextInt(maxDmg - minDmg + 1)) * skillDamage * critMulti);
+                            magicDmgNumber = localMinDmg + rand.nextInt(localMaxDmg - localMinDmg + 1);
                         }
                         additionalDmg.add(magicDmgNumber);
                         newDmg.add(dmgNumber + magicDmgNumber);
@@ -288,7 +290,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     player.setEnergyBar(0);
                     if (someHit) {
                         player.setInvincible(true);
-                        TimerManager.getInstance().schedule(() -> player.setInvincible(false), 5 * 1000);
+                        TimerManager.getInstance().schedule(() -> player.setInvincible(false), 5L * 1000L);
                     }
                 } else if (player.getTotalInt() >= 750 && attack.skill == 5121007) {
                     // Despondency
@@ -311,7 +313,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                             double multiplier =
                                 (double) player.getSkillLevel(5121007) *
                                     (Math.sqrt(1.0d / (struckMobHpPercentage + 0.01d)) - 0.9d);
-                            final long animationInterval = 250L; //SkillFactory.getSkill(5121007).getAnimationTime() / 5L;
+                            final long animationInterval = 300L; //SkillFactory.getSkill(5121007).getAnimationTime() / 5L;
                             List<MapleMonster> targets =
                                 player.getMap()
                                       .getMapObjectsInRange(
@@ -356,16 +358,16 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         }
 
         if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
-            int mrSkillLevel = player.getSkillLevel(SkillFactory.getSkill(2321002));
+            int mrSkillLevel = player.getSkillLevel(2321002);
             if (player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null && mrSkillLevel > 0) {
                 double mrmultiplier = 2.0d + (double) mrSkillLevel * 0.05d;
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    List<Integer> additionalDmg = new ArrayList<>();
-                    List<Integer> newDmg = new ArrayList<>();
+                    List<Integer> additionalDmg = new ArrayList<>(1);
+                    List<Integer> newDmg = new ArrayList<>(1);
                     for (Integer dmgNumber : dmg.getRight()) {
-                        additionalDmg.add((int) (dmgNumber * (mrmultiplier - 1.0d)));
-                        newDmg.add((int) (dmgNumber * mrmultiplier));
+                        additionalDmg.add((int) ((double) dmgNumber * (mrmultiplier - 1.0d)));
+                        newDmg.add((int) ((double) dmgNumber * mrmultiplier));
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
                     for (Integer additionald : additionalDmg) {
@@ -437,7 +439,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                             multiplier *= 0.5d;
                             break;
                         case IMMUNE:
-                            multiplier *= 0.0d;
+                            multiplier = 0.0d;
                             break;
                     }
                 }
@@ -531,8 +533,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 if (dmg != null) {
-                    List<Integer> additionaldmg = new ArrayList<>();
-                    List<Integer> newdmg = new ArrayList<>();
+                    List<Integer> additionaldmg = new ArrayList<>(6);
+                    List<Integer> newdmg = new ArrayList<>(6);
                     for (Integer dmgnumber : dmg.getRight()) {
                         additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0d)));
                         newdmg.add((int) (dmgnumber * dpmultiplier));
@@ -569,7 +571,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         // Handle charged blow.
         if (attack.numAttacked > 0 && attack.skill == 1211002) {
             boolean advcharge_prob = false;
-            int advcharge_level = player.getSkillLevel(SkillFactory.getSkill(1220010));
+            int advcharge_level = player.getSkillLevel(1220010);
             if (advcharge_level > 0) {
                 MapleStatEffect advcharge_effect = SkillFactory.getSkill(1220010).getEffect(advcharge_level);
                 advcharge_prob = advcharge_effect != null && advcharge_effect.makeChanceResult();
@@ -628,9 +630,9 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                     c.getPlayer(),
                                     attack.skill
                                 ),
-                                effect_.getCooldown() * 1000
+                                effect_.getCooldown() * 1000L
                             );
-                    player.addCooldown(attack.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, timer);
+                    player.addCooldown(attack.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000L, timer);
                 }
             }
         }

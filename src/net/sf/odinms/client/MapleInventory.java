@@ -82,7 +82,11 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
             source.setPosition(dSlot);
             inventory.put(dSlot, source);
             inventory.remove(sSlot);
-        } else if (target.getItemId() == source.getItemId() && !ii.isThrowingStar(source.getItemId()) && !ii.isBullet(source.getItemId())) {
+        } else if (
+            target.getItemId() == source.getItemId() &&
+            !ii.isThrowingStar(source.getItemId()) &&
+            !ii.isBullet(source.getItemId())
+        ) {
             if (type.getType() == MapleInventoryType.EQUIP.getType()) {
                 swap(target, source);
             }
@@ -153,9 +157,7 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
 
     /** Returns the next empty slot id, -1 if the inventory is full */
     public byte getNextFreeSlot() {
-        if (isFull()) {
-            return -1;
-        }
+        if (isFull()) return -1;
         for (byte i = 1; i <= slotLimit; ++i) {
             if (!inventory.keySet().contains(i)) {
                 return i;

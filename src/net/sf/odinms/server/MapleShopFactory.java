@@ -6,7 +6,6 @@ import java.util.Map;
 public class MapleShopFactory {
     private final Map<Integer, MapleShop> shops = new LinkedHashMap<>();
     private final Map<Integer, MapleShop> npcShops = new LinkedHashMap<>();
-
     private static final MapleShopFactory instance = new MapleShopFactory();
 
     public static MapleShopFactory getInstance() {

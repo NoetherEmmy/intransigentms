@@ -2345,6 +2345,65 @@ public class GM implements Command {
 
                 items.forEach(i -> gainItem(target.getClient(), i));
                 break;
+            case "!stunall": {
+                final long stunTime;
+                if (splitted.length > 1) {
+                    try {
+                        stunTime = Integer.parseInt(splitted[1]) * 1000L;
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage("Could not parse given value for stun time.");
+                        return;
+                    }
+                } else {
+                    stunTime = 5L * 1000L;
+                }
+                int i = 0;
+                for (MapleCharacter p : player.getMap().getCharacters()) {
+                    if (!p.isGM()) {
+                        p.forciblyGiveDebuff(123, 13, stunTime);
+                        i++;
+                    }
+                }
+                mc.dropMessage(i + " players stunned for " + (stunTime / 1000L) + " seconds.");
+                break;
+            }
+            case "!muteall": {
+                int i = 0;
+                for (MapleCharacter p : player.getMap().getCharacters()) {
+                    if (!p.isGM()) {
+                        if (p.getCanTalk()) i++;
+                        p.canTalk(false);
+                    }
+                }
+                mc.dropMessage(i + " players muted.");
+                break;
+            }
+            case "!unmuteall": {
+                int i = 0;
+                for (MapleCharacter p : player.getMap().getCharacters()) {
+                    if (!p.isGM()) {
+                        if (!p.getCanTalk()) i++;
+                        p.canTalk(true);
+                    }
+                }
+                mc.dropMessage(i + " players unmuted.");
+                break;
+            }
+            case "!togglemuteall": {
+                int i = 0, j = 0;
+                for (MapleCharacter p : player.getMap().getCharacters()) {
+                    if (!p.isGM()) {
+                        if (p.getCanTalk()) {
+                            i++;
+                        } else {
+                            j++;
+                        }
+                        p.canTalk(!p.getCanTalk());
+                    }
+                }
+                mc.dropMessage(i + " players muted, " + j + " players unmuted.");
+                break;
+            }
         }
     }
 
@@ -2499,7 +2558,11 @@ public class GM implements Command {
             new CommandDefinition("giftvp", 3),
             new CommandDefinition("unregisterallpqmis", 3),
             new CommandDefinition("reloadpqmiscript", 3),
-            new CommandDefinition("givedeathitems", 3)
+            new CommandDefinition("givedeathitems", 3),
+            new CommandDefinition("stunall", 3),
+            new CommandDefinition("muteall", 3),
+            new CommandDefinition("unmuteall", 3),
+            new CommandDefinition("togglemuteall", 3)
         };
     }
 

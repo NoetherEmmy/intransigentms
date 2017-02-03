@@ -34,7 +34,6 @@ import java.util.Properties;
 import java.util.Set;
 
 public class LoginServer implements Runnable, LoginServerMBean {
-
     public static final int PORT = 8484;
     private IoAcceptor acceptor;
     private static WorldRegistry worldRegistry = null;
@@ -58,11 +57,13 @@ public class LoginServer implements Runnable, LoginServerMBean {
     private byte AutoRegLimit;
     private static final LoginServer instance = new LoginServer();
 
-
     static {
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         try {
-            mBeanServer.registerMBean(instance, new ObjectName("net.sf.odinms.net.login:type=LoginServer,name=LoginServer"));
+            mBeanServer.registerMBean(
+                instance,
+                new ObjectName("net.sf.odinms.net.login:type=LoginServer,name=LoginServer")
+            );
         } catch (Exception e) {
             System.err.println("MBEAN ERROR: " + e);
         }
@@ -133,11 +134,20 @@ public class LoginServer implements Runnable, LoginServerMBean {
                         FileReader fileReader = new FileReader(System.getProperty("net.sf.odinms.login.config"));
                         initialProp.load(fileReader);
                         fileReader.close();
-                        Registry registry = LocateRegistry.getRegistry(initialProp.getProperty("net.sf.odinms.world.host"),
-                        Registry.REGISTRY_PORT, new SslRMIClientSocketFactory());
+                        Registry registry =
+                            LocateRegistry.getRegistry(
+                                initialProp.getProperty("net.sf.odinms.world.host"),
+                                Registry.REGISTRY_PORT,
+                                new SslRMIClientSocketFactory()
+                            );
                         worldRegistry = (WorldRegistry) registry.lookup("WorldRegistry");
                         lwi = new LoginWorldInterfaceImpl();
-                        wli = worldRegistry.registerLoginServer(initialProp.getProperty("net.sf.odinms.login.key"), lwi);
+                        wli =
+                            worldRegistry
+                                .registerLoginServer(
+                                    initialProp.getProperty("net.sf.odinms.login.key"),
+                                    lwi
+                                );
                         Properties dbProp = new Properties();
                         fileReader = new FileReader("db.properties");
                         dbProp.load(fileReader);
@@ -147,10 +157,12 @@ public class LoginServer implements Runnable, LoginServerMBean {
                         prop = wli.getWorldProperties();
                         userLimit = Integer.parseInt(prop.getProperty("net.sf.odinms.login.userlimit", "150"));
                         serverName = prop.getProperty("net.sf.odinms.world.serverName", "IntransigentMS");
-                        eventMessage = prop.getProperty("net.sf.odinms.login.eventMessage", "Welcome to IntransigentMS!");
+                        eventMessage =
+                            prop.getProperty("net.sf.odinms.login.eventMessage", "Welcome to IntransigentMS!");
                         flag = Integer.parseInt(prop.getProperty("net.sf.odinms.login.flag", "0"));
                         maxCharacters = Integer.parseInt(prop.getProperty("net.sf.odinms.login.maxCharacters", "6"));
-                        serverCheck = Boolean.parseBoolean(prop.getProperty("net.sf.odinms.login.serverCheck", "false"));
+                        serverCheck =
+                            Boolean.parseBoolean(prop.getProperty("net.sf.odinms.login.serverCheck", "false"));
                         AutoReg = Boolean.parseBoolean(prop.getProperty("net.sf.odinms.login.AutoRegister", "false"));
                         AutoRegLimit = Byte.parseByte(prop.getProperty("net.sf.odinms.login.AutoRegisterLimit", "5"));
                         twoWorlds = Boolean.parseBoolean(prop.getProperty("net.sf.odinms.world.twoWorlds", "false"));
@@ -206,7 +218,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
                 subnetInfo.load(fileReader);
                 fileReader.close();
             } catch (Exception e) {
-                System.err.println("Could not load subnet configuration. (Run) " + e);
+                System.out.println("Could not load subnet configuration. (LoginServer#run) " + e);
             }
         } catch (Exception e) {
             throw new RuntimeException("Could not connect to world server.", e);
@@ -223,7 +235,12 @@ public class LoginServer implements Runnable, LoginServerMBean {
         long rankingInterval = Long.parseLong(prop.getProperty("net.sf.odinms.login.ranking.interval"));
         tMan.register(new RankingWorker(), rankingInterval);
         try {
-            acceptor.bind(new InetSocketAddress(PORT), new MapleServerHandler(PacketProcessor.getProcessor(PacketProcessor.Mode.LOGINSERVER)), cfg);
+            acceptor
+                .bind(
+                    new InetSocketAddress(PORT),
+                    new MapleServerHandler(PacketProcessor.getProcessor(PacketProcessor.Mode.LOGINSERVER)),
+                    cfg
+                );
             System.out.println("Listening on port: " + PORT);
         } catch (IOException e) {
             System.err.println("Binding to port " + PORT + " failed: " + e);

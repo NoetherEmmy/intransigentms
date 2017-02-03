@@ -6,8 +6,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 public class CharacterIdChannelPair implements Externalizable {
-    private int charid;
-    private int channel;
+    private int charid, channel;
 
     public CharacterIdChannelPair() {
     }
