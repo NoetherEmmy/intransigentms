@@ -13,14 +13,15 @@ import java.util.logging.Logger;
 
 public class EventScriptManager extends AbstractScriptManager {
     private class EventEntry {
+        public final String script;
+        public final Invocable iv;
+        public final EventManager em;
+
         public EventEntry(String script, Invocable iv, EventManager em) {
             this.script = script;
             this.iv = iv;
             this.em = em;
         }
-        public final String script;
-        public final Invocable iv;
-        public final EventManager em;
     }
 
     private final Map<String, EventEntry> events = new LinkedHashMap<>();
@@ -48,8 +49,8 @@ public class EventScriptManager extends AbstractScriptManager {
             try {
                 ((ScriptEngine) entry.iv).put("em", entry.em);
                 entry.iv.invokeFunction("init", (Object) null);
-            } catch (ScriptException | NoSuchMethodException ex) {
-                Logger.getLogger(EventScriptManager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ScriptException | NoSuchMethodException e) {
+                Logger.getLogger(EventScriptManager.class.getName()).log(Level.SEVERE, null, e);
             }
         }
     }

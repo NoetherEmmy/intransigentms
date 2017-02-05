@@ -54,49 +54,49 @@ public class MapleStatEffect implements Serializable {
     }
 
     private MapleStatEffect(MapleStatEffect mse) {
-        this.watk = mse.getWatk();
-        this.matk = mse.getMatk();
-        this.wdef = mse.getWdef();
-        this.mdef = mse.getMdef();
-        this.acc = mse.getAcc();
-        this.avoid = mse.getAvoid();
-        this.hands = mse.getHands();
-        this.speed = mse.getSpeed();
-        this.jump = mse.getJump();
-        this.hp = mse.getHp();
-        this.mp = mse.getMp();
-        this.hpR = mse.getHpR();
-        this.mpR = mse.getMpR();
-        this.mpCon = mse.getMpCon();
-        this.hpCon = mse.getHpCon();
-        this.duration = mse.getDuration();
-        this.overTime = mse.isOverTime();
-        this.sourceid = mse.getSourceId();
-        this.moveTo = mse.getMoveTo();
-        this.skill = mse.isSkill();
-        this.statups = new ArrayList<>(mse.getStatups());
-        this.monsterStatus = new LinkedHashMap<>(mse.getMonsterStati());
-        this.x = mse.getX();
-        this.y = mse.getY();
-        this.z = mse.getZ();
-        this.prop = mse.getProp() / 100.0d;
-        this.iProp = mse.getIProp();
-        this.itemCon = mse.getItemCon();
-        this.itemConNo = mse.getItemConNo();
-        this.damage = mse.getDamage();
-        this.attackCount = mse.getAttackCount();
-        this.bulletCount = mse.getBulletCount();
-        this.bulletConsume = mse.getBulletConsume();
-        this.lt = mse.getLt();
-        this.rb = mse.getRb();
-        this.mobCount = mse.getMobCount();
-        this.moneyCon = mse.getMoneyCon();
-        this.cooldown = mse.getCooldown();
-        this.isMorph = mse.isMorph();
-        this.morphId = mse.getMorph();
-        this.cureDebuffs = mse.getCureDebuffs();
-        this.mastery = mse.getMastery();
-        this.range = mse.getRange();
+        watk = mse.getWatk();
+        matk = mse.getMatk();
+        wdef = mse.getWdef();
+        mdef = mse.getMdef();
+        acc = mse.getAcc();
+        avoid = mse.getAvoid();
+        hands = mse.getHands();
+        speed = mse.getSpeed();
+        jump = mse.getJump();
+        hp = mse.getHp();
+        mp = mse.getMp();
+        hpR = mse.getHpR();
+        mpR = mse.getMpR();
+        mpCon = mse.getMpCon();
+        hpCon = mse.getHpCon();
+        duration = mse.getDuration();
+        overTime = mse.isOverTime();
+        sourceid = mse.getSourceId();
+        moveTo = mse.getMoveTo();
+        skill = mse.isSkill();
+        statups = new ArrayList<>(mse.getStatups());
+        monsterStatus = new LinkedHashMap<>(mse.getMonsterStati());
+        x = mse.getX();
+        y = mse.getY();
+        z = mse.getZ();
+        prop = mse.getProp() / 100.0d;
+        iProp = mse.getIProp();
+        itemCon = mse.getItemCon();
+        itemConNo = mse.getItemConNo();
+        damage = mse.getDamage();
+        attackCount = mse.getAttackCount();
+        bulletCount = mse.getBulletCount();
+        bulletConsume = mse.getBulletConsume();
+        lt = mse.getLt();
+        rb = mse.getRb();
+        mobCount = mse.getMobCount();
+        moneyCon = mse.getMoneyCon();
+        cooldown = mse.getCooldown();
+        isMorph = mse.isMorph();
+        morphId = mse.getMorph();
+        cureDebuffs = mse.getCureDebuffs();
+        mastery = mse.getMastery();
+        range = mse.getRange();
     }
 
     public static MapleStatEffect loadSkillEffectFromData(MapleData source, int skillid, boolean overtime) {
@@ -107,7 +107,9 @@ public class MapleStatEffect implements Serializable {
         return loadFromData(source, itemid, false, false);
     }
 
-    private static void addBuffStatPairToListIfNotZero(List<Pair<MapleBuffStat, Integer>> list, MapleBuffStat buffstat, Integer val) {
+    private static void addBuffStatPairToListIfNotZero(List<Pair<MapleBuffStat, Integer>> list,
+                                                       MapleBuffStat buffstat,
+                                                       Integer val) {
         if (val != 0) {
             list.add(new Pair<>(buffstat, val));
         }
@@ -669,7 +671,7 @@ public class MapleStatEffect implements Serializable {
         }
         if (isDispel() && makeChanceResult()) {
             MonsterStatus[] remove = {MonsterStatus.ACC, MonsterStatus.AVOID, MonsterStatus.WEAPON_IMMUNITY, MonsterStatus.MAGIC_IMMUNITY, MonsterStatus.SPEED};
-            for (MapleMapObject _mob : applyFrom.getMap().getMapObjectsInRange(applyFrom.getPosition(), 30000 + applyFrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 1000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+            for (MapleMapObject _mob : applyFrom.getMap().getMapObjectsInRange(applyFrom.getPosition(), 30000 + applyFrom.getSkillLevel(sourceid) * 1000, MapleMapObjectType.MONSTER)) {
                 MapleMonster mob = (MapleMonster) _mob;
                 if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
                     for (int i = 0; i < remove.length; ++i) {
@@ -757,7 +759,7 @@ public class MapleStatEffect implements Serializable {
         applyTo.getClient().getSession().write(MaplePacketCreator.updatePlayerStats(hpMpUpdate, true));
         if (isResurrection() && !primary) {
             applyTo.setInvincible(true); // 10 second invincibility
-            TimerManager.getInstance().schedule(() -> applyTo.setInvincible(false), 10 * 1000);
+            TimerManager.getInstance().schedule(() -> applyTo.setInvincible(false), 10L * 1000L);
             applyTo.incrementDeathPenaltyAndRecalc(5);
             applyTo.setExp(0);
             applyTo.updateSingleStat(MapleStat.EXP, 0);
@@ -777,6 +779,9 @@ public class MapleStatEffect implements Serializable {
                     target = ChannelServer.getInstance(applyTo.getClient().getChannel())
                                           .getMapFactory()
                                           .getMap(moveTo);
+                }
+                if (target == null) {
+                    return false;
                 }
                 applyTo.changeMap(target, target.getPortal(0));
             } else {
@@ -1501,7 +1506,8 @@ public class MapleStatEffect implements Serializable {
     }
 
     private boolean isPartyBuff() {
-        return !(lt == null || rb == null) && !((sourceid >= 1211003 && sourceid <= 1211008) || sourceid == 1221003 || sourceid == 1221004);
+        return !(lt == null || rb == null) &&
+               !((sourceid >= 1211003 && sourceid <= 1211008) || sourceid == 1221003 || sourceid == 1221004);
     }
 
     public boolean isHeal() {
@@ -1525,23 +1531,23 @@ public class MapleStatEffect implements Serializable {
     }
 
     public double getHpR() {
-        return this.hpR;
+        return hpR;
     }
 
     public double getMpR() {
-        return this.mpR;
+        return mpR;
     }
 
     public short getHpCon() {
-        return this.hpCon;
+        return hpCon;
     }
 
     public short getMpCon() {
-        return this.mpCon;
+        return mpCon;
     }
 
     public int getMoveTo() {
-        return this.moveTo;
+        return moveTo;
     }
 
     public int getIProp() {
@@ -1549,19 +1555,19 @@ public class MapleStatEffect implements Serializable {
     }
 
     public int getItemCon() {
-        return this.itemCon;
+        return itemCon;
     }
 
     public int getItemConNo() {
-        return this.itemConNo;
+        return itemConNo;
     }
 
     public Point getLt() {
-        return this.lt;
+        return lt;
     }
 
     public Point getRb() {
-        return this.rb;
+        return rb;
     }
 
     public int getMobCount() {
@@ -1569,7 +1575,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     public List<MapleDisease> getCureDebuffs() {
-        return this.cureDebuffs;
+        return cureDebuffs;
     }
 
     public short getWatk() {
@@ -1621,7 +1627,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     public boolean sameSource(MapleStatEffect effect) {
-        return this.sourceid == effect.sourceid && this.skill == effect.skill;
+        return sourceid == effect.sourceid && skill == effect.skill;
     }
 
     public int getX() {
@@ -1873,7 +1879,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     public void doubleDuration() {
-        this.duration *= 2;
+        duration *= 2;
     }
 
     private int getDefScaleFactor() {

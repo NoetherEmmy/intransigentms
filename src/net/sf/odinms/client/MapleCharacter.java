@@ -3015,6 +3015,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void changeJob(MapleJob newJob, boolean announcement) {
+        if (newJob == null) return;
         job = newJob;
         remainingSp++;
         if (newJob.getId() % 10 == 2) {
@@ -3082,8 +3083,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void gainAp(int ap) {
-        this.remainingAp += ap;
-        updateSingleStat(MapleStat.AVAILABLEAP, this.remainingAp);
+        remainingAp += ap;
+        updateSingleStat(MapleStat.AVAILABLEAP, remainingAp);
     }
 
     public void changeSkillLevel(ISkill skill, int newLevel, int newMasterlevel) {
@@ -3351,7 +3352,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                         permadeath();
                     }
                 }
-            }, 120 * 1000); // 120 seconds
+            }, 120L * 1000L); // 120 seconds
             getClient().getSession().write(MaplePacketCreator.getClock(120));
 
             getClient().getSession().write(MaplePacketCreator.enableActions());
@@ -3365,7 +3366,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (tier < 1) {
             return 0;
         }
-        return (int) (getTierPoints(tier - 1) + (10 * Math.pow(tier + 1, 2)) * (Math.floor(tier * 1.5) + 3));
+        return (int) (getTierPoints(tier - 1) + (10 * Math.pow(tier + 1, 2)) * (Math.floor(tier * 1.5d) + 3));
     }
 
     public void updatePartyMemberHP() {
@@ -3373,7 +3374,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterByName(partychar.getName());
+                    MapleCharacter other =
+                        ChannelServer
+                            .getInstance(channel)
+                            .getPlayerStorage()
+                            .getCharacterByName(partychar.getName());
                     if (other != null) {
                         other
                             .getClient()
@@ -3417,13 +3422,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    public void setMp(int newmp) {
-        if (newmp < 0) {
-            newmp = 0;
-        } else if (newmp > localMaxMp) {
-            newmp = localMaxMp;
+    public void setMp(int newMp) {
+        if (newMp < 0) {
+            newMp = 0;
+        } else if (newMp > localMaxMp) {
+            newMp = localMaxMp;
         }
-        this.mp = newmp;
+        mp = newMp;
     }
 
     public void addHP(int delta) {
@@ -3485,12 +3490,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             return;
         }
         if (getLevel() < levelCap) {
-            if ((long) this.exp.get() + (long) gain > (long) Integer.MAX_VALUE) {
-                int gainFirst = ExpTable.getExpNeededForLevel(level) - this.exp.get();
+            if ((long) exp.get() + (long) gain > (long) Integer.MAX_VALUE) {
+                int gainFirst = ExpTable.getExpNeededForLevel(level) - exp.get();
                 gain -= gainFirst + 1;
-                this.gainExp(gainFirst + 1, false, inChat, white);
+                gainExp(gainFirst + 1, false, inChat, white);
             }
-            updateSingleStat(MapleStat.EXP, this.exp.addAndGet(gain));
+            updateSingleStat(MapleStat.EXP, exp.addAndGet(gain));
         } else {
             addOverflowExp((long) gain);
             return;
@@ -6560,7 +6565,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (isfake) {
             this.job = MapleJob.getById(job);
         } else {
-            this.changeJob(MapleJob.getById(job), false);
+            changeJob(MapleJob.getById(job), false);
         }
     }
 
@@ -6569,7 +6574,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     private void setJob(MapleJob job) {
-        this.changeJob(job, false);
+        changeJob(job, false);
     }
 
     public int isDonator() {

@@ -162,26 +162,25 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
                     MapleMonster m = map.getMonsterByOid(dmg.getLeft());
                     double critMulti = 1.0d;
+                    if (m == null) continue;
                     if (stunMasteryLevel > 0) {
-                        if (m != null) {
-                            boolean stunned = m.isBuffed(MonsterStatus.STUN);
-                            if (stunned) {
-                                MapleStatEffect stunMasteryEffect =
-                                    SkillFactory
-                                        .getSkill(5110000)
-                                        .getEffect(stunMasteryLevel);
-                                double stunCritChance = stunMasteryEffect.getProp() / 100.0d + critRate;
-                                if (stunCritChance > Math.random()) {
-                                    critMulti = (double) stunMasteryEffect.getDamage() / 100.0d + critDamage;
-                                }
-                            } else if (critRate > 0.0d) {
-                                MapleStatEffect stunMasteryEffect =
-                                    SkillFactory
-                                        .getSkill(5110000)
-                                        .getEffect(stunMasteryLevel);
-                                if (critRate > Math.random()) {
-                                    critMulti = (double) stunMasteryEffect.getDamage() / 100.0d + critDamage;
-                                }
+                        boolean stunned = m.isBuffed(MonsterStatus.STUN);
+                        if (stunned) {
+                            MapleStatEffect stunMasteryEffect =
+                                SkillFactory
+                                    .getSkill(5110000)
+                                    .getEffect(stunMasteryLevel);
+                            double stunCritChance = stunMasteryEffect.getProp() / 100.0d + critRate;
+                            if (stunCritChance > Math.random()) {
+                                critMulti = (double) stunMasteryEffect.getDamage() / 100.0d + critDamage;
+                            }
+                        } else if (critRate > 0.0d) {
+                            MapleStatEffect stunMasteryEffect =
+                                SkillFactory
+                                    .getSkill(5110000)
+                                    .getEffect(stunMasteryLevel);
+                            if (critRate > Math.random()) {
+                                critMulti = (double) stunMasteryEffect.getDamage() / 100.0d + critDamage;
                             }
                         }
                     } else if (critRate > 0.0d && critRate > Math.random()) {
@@ -476,7 +475,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                             }
                             List<MapleMonster> splashedMonsters = new ArrayList<>(); // This will store all monsters that are affected by splash damage.
                             // The following for loop gets all the map objects of type MONSTER within a squared distance of 100,000 from the initially struck monster (~316.23 linear distance).
-                            for (MapleMapObject _mob : player.getMap().getMapObjectsInRange(struckMonster.getPosition(), magicGuardRadius, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+                            for (MapleMapObject _mob : player.getMap().getMapObjectsInRange(struckMonster.getPosition(), magicGuardRadius, MapleMapObjectType.MONSTER)) {
                                 MapleMonster mob = (MapleMonster) _mob; // Casting to MapleMonster since we know we are only getting objs of type MONSTER.
                                 if (mob.getObjectId() != struckMonster.getObjectId()) { // Making sure the map object isn't the initially struck monster, since they get no splash damage.
                                     if (splashedMonsters.size() < splashedMonsterCount) { // If we haven't yet gathered as many monsters as can be splashed, just add it in to the list.

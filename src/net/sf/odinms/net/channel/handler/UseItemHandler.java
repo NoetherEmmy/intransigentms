@@ -47,7 +47,13 @@ public class UseItemHandler extends AbstractMaplePacketHandler {
                             int returnMapId = c.getPlayer().getMap().getReturnMapId();
                             if (returnMapId < 999999999) {
                                 warpRandom(c, c.getPlayer().getMap().getReturnMapId());
-                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
+                                MapleInventoryManipulator.removeFromSlot(
+                                    c,
+                                    MapleInventoryType.USE,
+                                    slot,
+                                    (short) 1,
+                                    false
+                                );
                             } else {
                                 c.getPlayer().dropMessage(5, "You can't use that here.");
                             }

@@ -41,7 +41,7 @@ public class MapleRing implements Comparable<MapleRing> {
             rs.close();
             ps.close();
             return ret;
-        } catch (SQLException ex) {
+        } catch (SQLException sqle) {
             return null;
         }
     }
@@ -53,7 +53,7 @@ public class MapleRing implements Comparable<MapleRing> {
             } else if (partner2 == null) {
                 return -1; // Partner number 2 is not on the same channel
             } else if (checkRingDB(partner1) || checkRingDB(partner2)) {
-                return 0; // Error, or already have ring
+                return 0;  // Error, or already have ring
             }
             int[] ringID = new int[2];
             Connection con = DatabaseConnection.getConnection();
@@ -103,7 +103,7 @@ public class MapleRing implements Comparable<MapleRing> {
             partner2.dropMessage(5, "Congratulations to you and " + partner1.getName() + ".");
             partner2.dropMessage(5, "Please log off and log back in if the rings do not work.");
             return 1;
-        } catch (SQLException ex) {
+        } catch (SQLException sqle) {
             return 0;
         }
     }
@@ -144,7 +144,7 @@ public class MapleRing implements Comparable<MapleRing> {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 53 * hash + this.ringId;
+        hash = 53 * hash + ringId;
         return hash;
     }
 
@@ -169,7 +169,7 @@ public class MapleRing implements Comparable<MapleRing> {
             rs.close();
             ps.close();
             return has;
-        } catch (SQLException ex) {
+        } catch (SQLException sqle) {
             return true;
         }
     }

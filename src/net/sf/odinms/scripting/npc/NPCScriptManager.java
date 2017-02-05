@@ -6,14 +6,11 @@ import net.sf.odinms.scripting.AbstractScriptManager;
 import net.sf.odinms.tools.Pair;
 
 import javax.script.Invocable;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NPCScriptManager extends AbstractScriptManager {
-    private final Map<MapleClient, NPCConversationManager> cms = new LinkedHashMap<>();
-    private final Map<MapleClient, NPCScript> scripts = new LinkedHashMap<>();
+    private final Map<MapleClient, NPCConversationManager> cms = new HashMap<>();
+    private final Map<MapleClient, NPCScript> scripts = new HashMap<>();
     private static final NPCScriptManager instance = new NPCScriptManager();
     private final Map<Pair<Integer, Integer>, Integer> npcTalk = new LinkedHashMap<>();
 

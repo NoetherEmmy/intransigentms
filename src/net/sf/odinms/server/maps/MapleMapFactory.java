@@ -22,7 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +30,7 @@ public class MapleMapFactory {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
     private final MapleDataProvider source;
     private final MapleData nameData;
-    private final Map<Integer, MapleMap> maps = new LinkedHashMap<>();
+    private final Map<Integer, MapleMap> maps = new HashMap<>();
     private int channel;
 
     public MapleMapFactory(MapleDataProvider source, MapleDataProvider stringSource) {

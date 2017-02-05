@@ -1097,7 +1097,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public int makeRing(MapleCharacter partner, int ringId) {
-        return net.sf.odinms.client.MapleRing.createRing(ringId, getPlayer(), partner);
+        return MapleRing.createRing(ringId, getPlayer(), partner);
     }
 
     public void resetReactors() {
@@ -1192,7 +1192,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         } else if (type.startsWith("s")) {
             return cal.get(Calendar.SECOND);
         }
-        return -1; // wrong input
+        return -1; // Wrong input
     }
 
     public void addBuddyCapacity(int capacity) {
@@ -1205,7 +1205,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void scheduleWarp(int delay, int mapid) {
         final int fmapid = mapid;
-        TimerManager.getInstance().schedule(() -> getPlayer().changeMap(fmapid), delay * 1000);
+        TimerManager.getInstance().schedule(() -> getPlayer().changeMap(fmapid), delay * 1000L);
     }
 
     public void startClock(int limit, int endMap) {
@@ -1383,7 +1383,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public MapleCharacter getSender() {
-        return this.chr;
+        return chr;
     }
 
     public boolean hasTemp() {

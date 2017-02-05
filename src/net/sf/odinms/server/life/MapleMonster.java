@@ -500,7 +500,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     private boolean isHT() {
-        return this.getId() == 8810018;
+        return getId() == 8810018;
     }
 
     @Override

@@ -223,7 +223,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         if (
             !belowLevelLimit &&
             (player.getJob().equals(MapleJob.BUCCANEER) || player.getJob().equals(MapleJob.MARAUDER)) &&
-            player.getSkillLevel(SkillFactory.getSkill(5110001)) > 0 &&
+            player.getSkillLevel(5110001) > 0 &&
             player.isBareHanded() &&
             player.getTotalInt() >= 350
         ) {

@@ -810,7 +810,11 @@ public class MapleMap {
     }
 
     @SuppressWarnings("static-access")
-    public void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean secondTime, int animation) {
+    public void killMonster(final MapleMonster monster,
+                            final MapleCharacter chr,
+                            final boolean withDrops,
+                            final boolean secondTime,
+                            int animation) {
         monster.stopOtherMobHitChecking();
         monster.getMap()
                .getAllPlayers()
@@ -831,7 +835,7 @@ public class MapleMap {
             TimerManager.getInstance().schedule(() -> {
                 killMonster(monster, chr, withDrops, true, 1);
                 killAllMonsters(false);
-            }, 3000);
+            }, 3L * 1000L);
             return;
         }
         if (monster.getBuffToGive() > -1) {
@@ -1598,9 +1602,9 @@ public class MapleMap {
 
     public void addPlayer(MapleCharacter chr) {
         synchronized (characters) {
-            this.characters.add(chr);
+            characters.add(chr);
         }
-        synchronized (this.mapObjects) {
+        synchronized (mapObjects) {
             if (!chr.isHidden()) {
                 broadcastMessage(chr, (MaplePacketCreator.spawnPlayerMapobject(chr)), false);
                 MaplePet[] pets = chr.getPets();
@@ -1648,7 +1652,7 @@ public class MapleMap {
             if (chr.getChalkboard() != null) {
                 chr.getClient().getSession().write((MaplePacketCreator.useChalkboard(chr, false)));
             }
-            this.mapObjects.put(chr.getObjectId(), chr);
+            mapObjects.put(chr.getObjectId(), chr);
         }
         MapleStatEffect summonStat = chr.getStatForBuff(MapleBuffStat.SUMMON);
         if (summonStat != null) {
@@ -1675,10 +1679,10 @@ public class MapleMap {
             chr.startMapTimeLimitTask(this, this.getForcedReturnMap());
         }
         if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted()) {
-            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
+            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000L)));
         }
         if (chr.getPartyQuest() != null && chr.getPartyQuest().isTimerStarted()) {
-            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (chr.getPartyQuest().getTimeLeft() / 1000)));
+            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (chr.getPartyQuest().getTimeLeft() / 1000L)));
         }
         if (hasClock()) {
             Calendar cal = Calendar.getInstance();
@@ -1687,7 +1691,7 @@ public class MapleMap {
             int second = cal.get(Calendar.SECOND);
             chr.getClient().getSession().write((MaplePacketCreator.getClockTime(hour, min, second)));
         } else if (getPartyQuestInstance() != null && getPartyQuestInstance().getPartyQuest().isTimerStarted()) {
-            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (getPartyQuestInstance().getPartyQuest().getTimeLeft() / 1000)));
+            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (getPartyQuestInstance().getPartyQuest().getTimeLeft() / 1000L)));
         }
         if (hasBoat() == 2) {
             chr.getClient().getSession().write((MaplePacketCreator.boatPacket(true)));
@@ -1829,19 +1833,25 @@ public class MapleMap {
         MapleCharacter chr = mapleClient.getPlayer();
 
         if (chr != null) {
-            for (MapleMapObject o : getMapObjectsInRange(chr.getPosition(), MapleCharacter.MAX_VIEW_RANGE_SQ, rangedMapObjectTypes)) {
-                if (o.getType() == MapleMapObjectType.REACTOR) {
-                    if (((MapleReactor) o).isAlive()) {
-                        o.sendSpawnData(chr.getClient());
-                        chr.addVisibleMapObject(o);
+            List<MapleMapObject> mapObjects_ =
+                getMapObjectsInRange(
+                    chr.getPosition(),
+                    MapleCharacter.MAX_VIEW_RANGE_SQ,
+                    rangedMapObjectTypes
+                );
+            for (MapleMapObject mmo : mapObjects_) {
+                if (mmo.getType() == MapleMapObjectType.REACTOR) {
+                    if (((MapleReactor) mmo).isAlive()) {
+                        mmo.sendSpawnData(chr.getClient());
+                        chr.addVisibleMapObject(mmo);
                     }
                 } else {
-                    o.sendSpawnData(chr.getClient());
-                    chr.addVisibleMapObject(o);
+                    mmo.sendSpawnData(chr.getClient());
+                    chr.addVisibleMapObject(mmo);
                 }
             }
         } else {
-            log.info("sendObjectPlacement invoked with null char");
+            log.info("MapleMap#sendObjectPlacement invoked with null chr");
         }
     }
 

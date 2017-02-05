@@ -42,7 +42,7 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
                 player.dropMessage(1, "Your engagement has been broken up.");
                 break;
             default:
-                log.info("Unhandled ring packet : " + slea.getBytesRead());
+                System.err.println("Unhandled ring packet. mode: " + mode + " bytes read: " + slea.getBytesRead());
                 break;
         }
     }
