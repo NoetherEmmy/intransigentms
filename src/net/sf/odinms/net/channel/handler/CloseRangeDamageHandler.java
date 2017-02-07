@@ -160,8 +160,9 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
                     List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
-                    MapleMonster m = map.getMonsterByOid(dmg.getLeft());
+                    final MapleMonster m = map.getMonsterByOid(dmg.getLeft());
                     double critMulti = 1.0d;
+                    if (dmg.getRight() == null) continue;
                     if (m == null) continue;
                     if (stunMasteryLevel > 0) {
                         boolean stunned = m.isBuffed(MonsterStatus.STUN);
@@ -402,7 +403,16 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
                     for (Integer additionald : additionalDmg) {
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
+                        player
+                            .getMap()
+                            .broadcastMessage(
+                                player,
+                                MaplePacketCreator.damageMonster(
+                                    dmg.getLeft(),
+                                    additionald
+                                ),
+                                true
+                            );
                     }
                 }
             }
@@ -559,7 +569,12 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         if (attack.numAttacked > 0 && attack.skill == 1311005) {
             // Sacrifice attacks only 1 mob with 1 attack.
             int totDamageToOneMonster = attack.allDamage.get(0).getRight().get(0);
-            int remainingHP = player.getHp() - totDamageToOneMonster * attack.getAttackEffect(player).getX() / 100;
+            int remainingHP =
+                player.getHp() -
+                    Math.min(
+                        totDamageToOneMonster * attack.getAttackEffect(player).getX() / 100,
+                        4 * player.getCurrentMaxHp() / 10
+                    );
             if (remainingHP > 1) {
                 player.setHp(remainingHP);
             } else {

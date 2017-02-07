@@ -175,7 +175,7 @@ public class AbstractPlayerInteraction {
         getPlayer().getMap().broadcastMessage(MaplePacketCreator.musicChange(songName));
     }
 
-    // default playerMessage and mapMessage to use type 5
+    // Default playerMessage and mapMessage to use type 5
     public void playerMessage(String message) {
         playerMessage(5, message);
     }
@@ -219,8 +219,10 @@ public class AbstractPlayerInteraction {
     public boolean isLeader() {
         return getParty().getLeader().equals(new MaplePartyCharacter(getPlayer()));
     }
-    //PQ methods: give items/exp to all party members
 
+    /**
+     * PQ method: Gives items/exp to all party members.
+     */
     public void givePartyItems(int id, short quantity, List<MapleCharacter> party) {
         for (MapleCharacter chr : party) {
             MapleClient cl = chr.getClient();
@@ -232,16 +234,21 @@ public class AbstractPlayerInteraction {
             cl.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity, true));
         }
     }
-    //PQ gain EXP: Multiplied by channel rate here to allow global values to be input direct into NPCs
 
+    /**
+     * PQ gain EXP: Multiplied by channel rate and absolute EXP multiplier here
+     * to allow global values to be input direct into NPCs.
+     */
     public void givePartyExp(final int amount, List<MapleCharacter> party) {
         party.forEach(chr ->
             chr.gainExp(amount * c.getChannelServer().getExpRate() * chr.getAbsoluteXp(), true, true)
         );
     }
-    //remove all items of type from party
-    //combination of haveItem and gainItem
 
+    /**
+     * Remove all items of type from party.
+     * Combination of {@code haveItem} and {@code gainItem}.
+     */
     public void removeFromParty(int id, List<MapleCharacter> party) {
         for (MapleCharacter chr : party) {
             int possesed = chr.getItemQuantity(id, false);
@@ -288,8 +295,8 @@ public class AbstractPlayerInteraction {
         return c.getChannelServer().getMapFactory().getMap(mapid).getCharacters().size();
     }
 
-    public int getCurrentPartyId(int mapid) {
-        return getMap(mapid).getCurrentPartyId();
+    public int getCurrentPartyId(int mapId) {
+        return getMap(mapId).getCurrentPartyId();
     }
 
     public void showInstruction(String msg, int width, int height) {

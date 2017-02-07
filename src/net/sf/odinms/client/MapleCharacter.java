@@ -1277,7 +1277,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setExpBonus(boolean eb) {
-        this.expbonus = eb;
+        expbonus = eb;
     }
 
     public int getExpBonusMulti() {
@@ -1285,7 +1285,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setExpBonusMulti(int ebm) {
-        this.expbonusmulti = ebm;
+        expbonusmulti = ebm;
     }
 
     public long getExpBonusEnd() {
@@ -1293,7 +1293,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setExpBonusEnd(long ebe) {
-        this.expbonusend = ebe;
+        expbonusend = ebe;
     }
 
     public void reactivateExpBonus() {
@@ -1308,8 +1308,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void activateExpBonus(int timeinsec, int multi) {
         setExpBonus(true);
         setExpBonusMulti(multi);
-        setExpBonusEnd(System.currentTimeMillis() + (long) timeinsec * 1000);
-        TimerManager.getInstance().schedule(() -> setExpBonus(false), (long) timeinsec * 1000);
+        setExpBonusEnd(System.currentTimeMillis() + (long) timeinsec * 1000L);
+        TimerManager.getInstance().schedule(() -> setExpBonus(false), (long) timeinsec * 1000L);
     }
 
     public int getEventPoints() {
@@ -1317,7 +1317,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setEventPoints(int ep) {
-        this.eventpoints = ep;
+        eventpoints = ep;
     }
 
     public long getLastElanRecharge() {
@@ -1325,15 +1325,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setLastElanRecharge(long ler) {
-        this.lastelanrecharge = ler;
+        lastelanrecharge = ler;
     }
 
     public void updateLastElanRecharge() {
-        this.lastelanrecharge = System.currentTimeMillis();
+        lastelanrecharge = System.currentTimeMillis();
     }
 
     public boolean canElanRecharge() {
-        return System.currentTimeMillis() - getLastElanRecharge() >= 5 * 24 * 60 * 60 * 1000; // 5 days/120 hours
+        return System.currentTimeMillis() - getLastElanRecharge() >=
+            5L * 24L * 60L * 60L * 1000L; // 5 days/120 hours
     }
 
     public String getElanRechargeTimeString() {
@@ -1345,7 +1346,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             long minutes = time / 60000L;
             time %= 60000L;
             long seconds = time / 1000L;
-            return "You must wait another " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds to recharge your Elans Vital.";
+            return
+                "You must wait another " +
+                    hours +
+                    " hours, " +
+                    minutes +
+                    " minutes, and " +
+                    seconds +
+                    " seconds to recharge your Elans Vital.";
         } else {
             return "You may recharge your Elans Vital.";
         }

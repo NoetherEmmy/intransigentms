@@ -10,7 +10,7 @@ public class SpawnPoint {
     private final Point pos;
     private long nextPossibleSpawn;
     private final int mobTime;
-    private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
+    private final AtomicInteger spawnedMonsters = new AtomicInteger();
 
     /**
      * Whether the spawned monster is immobile or not
@@ -22,8 +22,8 @@ public class SpawnPoint {
         this.monster = monster;
         this.pos = new Point(pos);
         this.mobTime = mobTime;
-        this.immobile = !monster.isMobile();
-        this.nextPossibleSpawn = System.currentTimeMillis();
+        immobile = !monster.isMobile();
+        nextPossibleSpawn = System.currentTimeMillis();
     }
 
     public boolean shouldSpawn() {
@@ -37,7 +37,8 @@ public class SpawnPoint {
         }
         // Regular spawnpoints should spawn a maximum of 3 monsters: these are immobile spawnpoints
         // or spawnpoints with a maximum mobtime of 1
-        return !(((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) && nextPossibleSpawn <= now;
+        return !(((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) &&
+            nextPossibleSpawn <= now;
     }
 
     /**

@@ -192,7 +192,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 guardianSkill,
                                 false
                             );
-                        attacker.applyStatus(player, monsterStatusEffect, false, 2 * 1000);
+                        attacker.applyStatus(player, monsterStatusEffect, false, 2L * 1000L);
                     }
                 }
             }

@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class MapleItemInformationProvider {
-    private static MapleItemInformationProvider instance = null;
+    private static MapleItemInformationProvider instance;
     protected final MapleDataProvider itemData;
     protected final MapleDataProvider equipData;
     protected final MapleDataProvider stringData;
@@ -30,7 +30,7 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Double> priceCache = new HashMap<>();
     protected final Map<Integer, Integer> wholePriceCache = new HashMap<>();
     protected final Map<Integer, Integer> projectileWatkCache = new HashMap<>();
-    protected final Map<Integer, String> nameCache = new HashMap<>();
+    protected final Map<Integer, String> nameCache = new LinkedHashMap<>();
     protected final Map<Integer, String> descCache = new HashMap<>();
     protected final Map<Integer, String> msgCache = new HashMap<>();
     protected final Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
@@ -47,7 +47,7 @@ public class MapleItemInformationProvider {
     private static final List<List<Integer>> ungenderedHairCache = new ArrayList<>();
     private static boolean facesCached = false;
     private static boolean hairsCached = false;
-    private static final Map<String, Integer> cashEquips = new HashMap<>();
+    private static final Map<String, Integer> cashEquips = new LinkedHashMap<>();
     private static boolean cashEquipsCached = false;
     private boolean namesCached = false;
 
@@ -1250,8 +1250,8 @@ public class MapleItemInformationProvider {
 
         if (equip instanceof Equip) {
             Equip nEquip = (Equip) equip;
-            Map<String, Integer> stats = this.getEquipStats(scrollId);
-            Map<String, Integer> eqstats = this.getEquipStats(equip.getItemId());
+            Map<String, Integer> stats = getEquipStats(scrollId);
+            Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
             if (
                 (nEquip.getUpgradeSlots() > 0 || isCleanSlate(scrollId) || scrollId == 2049004) &&
                 Math.ceil(Math.random() * 100.0d) <= stats.get("success") ||
@@ -1418,12 +1418,15 @@ public class MapleItemInformationProvider {
     }
 
     public IItem getEquipById(int equipId, int ringId) {
+        if (equipCache.containsKey(equipId)) {
+            return equipCache.get(equipId).copy();
+        }
         Equip nEquip;
         nEquip = new Equip(equipId, (byte) 0, ringId);
         nEquip.setQuantity((short) 1);
-        Map<String, Integer> stats = this.getEquipStats(equipId);
+        Map<String, Integer> stats = getEquipStats(equipId);
         if (stats != null) {
-            for (Entry<String, Integer> stat : stats.entrySet()) {
+            for (Map.Entry<String, Integer> stat : stats.entrySet()) {
                 if (stat.getKey().equals("STR")) {
                     nEquip.setStr((short) stat.getValue().intValue());
                 } else if (stat.getKey().equals("DEX")) {

@@ -31,12 +31,16 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             legendarySpirit = true;
             toScroll = (IEquip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
         }
+        if (toScroll == null) {
+            c.getSession().write(MaplePacketCreator.getInventoryFull());
+            return;
+        }
         byte oldLevel = toScroll.getLevel();
 
         MapleInventory useInventory = c.getPlayer().getInventory(MapleInventoryType.USE);
         IItem scroll = useInventory.getItem(slot);
         IItem wscroll;
-        if (toScroll.getUpgradeSlots() < 1 && scroll.getItemId() != 2049004) {
+        if (scroll == null || (toScroll.getUpgradeSlots() < 1 && scroll.getItemId() != 2049004)) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
         }

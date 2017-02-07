@@ -82,7 +82,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             getPlayer().dropMessage(
                 6,
                 "!!! This NPC is broken. @gm someone and tell them you got this message. " +
-                        "If no one is online, just remember for later. !!!"
+                    "If no one is online, just remember for later. !!!"
             );
             dispose();
         } else {
@@ -103,11 +103,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void setGetText(String text) {
-        this.getText = text;
+        getText = text;
     }
 
     public String getText() {
-        return this.getText;
+        return getText;
     }
 
     public void openShop(int id) {
@@ -1233,11 +1233,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
 
-    public boolean createMarriage(String partner_) {
-        MapleCharacter partner = getCharByName(partner_);
-        if (partner == null) {
-            return false;
-        }
+    public boolean createMarriage(String partnerName) {
+        MapleCharacter partner = getCharByName(partnerName);
+        if (partner == null) return false;
         partner.setMarried(true);
         getPlayer().setMarried(true);
         partner.setPartnerId(getPlayer().getId());
@@ -1250,11 +1248,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return true;
     }
 
-    public boolean createEngagement(String partner_) {
-        MapleCharacter partner = getCharByName(partner_);
-        if (partner == null) {
-            return false;
-        }
+    public boolean createEngagement(String partnerName) {
+        MapleCharacter partner = getCharByName(partnerName);
+        if (partner == null) return false;
         if (partner.getGender() > 0) {
             Marriage.createEngagement(getPlayer(), partner);
         } else {
@@ -1274,7 +1270,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getPlayer().changeKeybinding(key, newbinding);
     }
 
-    public Equip getEquipById(int id) { // Can do getEquipById(2349823).setStr(545); etc.
+    /**
+     * @param id ID of the equipment item.
+     * @return The item, as an instance of {@link Equip}.
+     */
+    public Equip getEquipById(int id) {
         MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(id);
         return (Equip) getPlayer().getInventory(type).findById(id);
     }
@@ -1309,11 +1309,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void broadcastMessage(int type, String message) {
         try {
-            getPlayer().getClient()
-                       .getChannelServer()
-                       .getWorldInterface()
-                       .broadcastMessage(null, MaplePacketCreator.serverNotice(type, message).getBytes());
-        } catch (RemoteException e) {
+            getPlayer()
+                .getClient()
+                .getChannelServer()
+                .getWorldInterface()
+                .broadcastMessage(null, MaplePacketCreator.serverNotice(type, message).getBytes());
+        } catch (RemoteException re) {
             c.getChannelServer().reconnectWorld();
         }
     }
@@ -1321,14 +1322,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void setClan(int set) {
         getPlayer().setClan(set);
         try {
-            getPlayer().getClient()
-                       .getChannelServer()
-                       .getWorldInterface()
-                       .broadcastToClan(
-                           (getPlayer().getName() + " has entered the clan! Give them a nice welcome.").getBytes(),
-                           set
-                       );
-        } catch (RemoteException e) {
+            getPlayer()
+                .getClient()
+                .getChannelServer()
+                .getWorldInterface()
+                .broadcastToClan(
+                    (getPlayer().getName() + " has entered the clan! Give them a nice welcome.")
+                        .getBytes(),
+                    set
+                );
+        } catch (RemoteException re) {
             c.getChannelServer().reconnectWorld();
         }
         c.getChannelServer().addToClan(getPlayer());

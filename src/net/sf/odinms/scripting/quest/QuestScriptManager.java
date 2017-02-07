@@ -4,12 +4,12 @@ import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.scripting.AbstractScriptManager;
 
 import javax.script.Invocable;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class QuestScriptManager extends AbstractScriptManager {
-    private final Map<MapleClient, QuestActionManager> qms = new LinkedHashMap<>();
-    private final Map<MapleClient, QuestScript> scripts = new LinkedHashMap<>();
+    private final Map<MapleClient, QuestActionManager> qms = new HashMap<>();
+    private final Map<MapleClient, QuestScript> scripts = new HashMap<>();
     private static final QuestScriptManager instance = new QuestScriptManager();
 
     public static synchronized QuestScriptManager getInstance() {
@@ -99,5 +99,9 @@ public class QuestScriptManager extends AbstractScriptManager {
 
     public QuestActionManager getQM(MapleClient c) {
         return qms.get(c);
+    }
+
+    public void clearScripts() {
+        scripts.clear();
     }
 }

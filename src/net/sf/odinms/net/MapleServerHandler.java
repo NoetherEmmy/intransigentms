@@ -62,20 +62,19 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
         }
         byte key[] = {
-            0x13, 0x00, 0x00, 0x00,
-            0x08, 0x00, 0x00, 0x00,
-            0x06, 0x00, 0x00, 0x00,
-            (byte) 0xB4, 0x00, 0x00,
-            0x00, 0x1B, 0x00, 0x00,
-            0x00, 0x0F, 0x00, 0x00,
-            0x00, 0x33, 0x00, 0x00,
-            0x00, 0x52, 0x00, 0x00,
-            0x00
+            (byte)0x13, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0x08, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0x06, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0xB4, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0x1B, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0x0F, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0x33, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0x52, (byte)0x00, (byte)0x00, (byte)0x00
         };
-        byte ivRecv[] = {70, 114, 122, 82};
-        byte ivSend[] = {82, 48, 120, 115};
-        ivRecv[3] = (byte) (Math.random() * 255);
-        ivSend[3] = (byte) (Math.random() * 255);
+        byte ivRecv[] = {(byte)70, (byte)114, (byte)122, (byte)82};
+        byte ivSend[] = {(byte)82, (byte)48,  (byte)120, (byte)115};
+        ivRecv[3] = (byte) (Math.random() * 255.0d);
+        ivSend[3] = (byte) (Math.random() * 255.0d);
         MapleAESOFB sendCypher = new MapleAESOFB(key, ivSend, (short) (0xFFFF - MAPLE_VERSION));
         MapleAESOFB recvCypher = new MapleAESOFB(key, ivRecv, MAPLE_VERSION);
         MapleClient client = new MapleClient(sendCypher, recvCypher, session);

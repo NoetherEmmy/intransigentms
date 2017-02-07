@@ -667,7 +667,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (oldEffect != null) {
                 oldEffect.removeActiveStatus(stat);
                 if (oldEffect.getStati().isEmpty()) {
-                    oldEffect.getCancelTask().cancel(false);
+                    if (oldEffect.getCancelTask() != null) {
+                        oldEffect.getCancelTask().cancel(false);
+                    }
                     oldEffect.cancelPoisonSchedule();
                     activeEffects.remove(oldEffect);
                 }

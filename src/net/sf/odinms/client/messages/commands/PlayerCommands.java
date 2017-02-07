@@ -53,6 +53,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@expfix - | - Fixes your negative experience.");
             mc.dropMessage("@dispose - | - Unsticks you from any hanging NPC interactions.");
             mc.dropMessage("@mapfix - | - Fixes you if you've fallen off the map.");
+            mc.dropMessage("@engage <partner_name> - | - Begins the process of engagement for marriage.");
             mc.dropMessage("@questinfo - | - Gets the info for your current IntransigentQuest.");
             mc.dropMessage("@ria - | - Opens chat with Ria to get info about IntransigentQuests.");
             mc.dropMessage("@cancelquest - | - Cancels your current quest.");
@@ -1254,6 +1255,38 @@ public class PlayerCommands implements Command {
             }
             msg.append(", for a total of ").append(total).append('.');
             player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, msg.toString()));
+        } else if (splitted[0].equals("@engage")) {
+            if (splitted.length != 2) {
+                mc.dropMessage("Invalid syntax. Use: @engage <partner_name>");
+                return;
+            }
+            boolean hasUseItem = false;
+            for (int id = 2240000; id <= 2240003; ++id) {
+                if (player.getItemQuantity(id, false) > 0) {
+                    hasUseItem = true;
+                    break;
+                }
+            }
+            if (!hasUseItem) {
+                mc.dropMessage("You need an engagement ring from Moody to get engaged.");
+                return;
+            }
+            final String partnerName = splitted[1];
+            MapleCharacter partner = c.getChannelServer().getPlayerStorage().getCharacterByName(partnerName);
+            if (partnerName.equalsIgnoreCase(player.getName())) {
+                mc.dropMessage("You can't get engaged with yourself.");
+            } else if (partner == null) {
+                mc.dropMessage(
+                    partnerName +
+                        " was not found on this channel. " +
+                        "If you are both logged in, please make sure you are in the same channel, " +
+                        "and that you spelled your partner's name correctly."
+                );
+            } else if (!player.isMarried() && !partner.isMarried()) {
+                NPCScriptManager.getInstance().start(partner.getClient(), 9201002, "marriagequestion", player);
+            } else {
+                mc.dropMessage("It looks like you or your partner are already married!");
+            }
         }
     }
 
@@ -1355,7 +1388,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("magic", 0),
             new CommandDefinition("samsara", 0),
             new CommandDefinition("dailyprize", 0),
-            new CommandDefinition("roll", 0)
+            new CommandDefinition("roll", 0),
+            new CommandDefinition("engage", 0)
         };
     }
 }

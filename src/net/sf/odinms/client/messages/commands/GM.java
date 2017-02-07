@@ -492,12 +492,12 @@ public class GM implements Command {
                 if (victim.getHp() > damage) {
                     victim.setHp(victim.getHp() - damage);
                     victim.updateSingleStat(MapleStat.HP, victim.getHp());
-                    victim.dropMessage(5, player.getName() + " picked up a big fish and slapped you across the head. You've lost " + damage + " hp");
+                    victim.dropMessage(5, player.getName() + " picked up a big fish and slapped you across the head. You've lost " + damage + " HP.");
                     mc.dropMessage(victim.getName() + " has " + victim.getHp() + " HP left");
                 } else {
                     victim.setHp(0);
                     victim.updateSingleStat(MapleStat.HP, 0);
-                    victim.dropMessage(5, player.getName() + " gave you a headshot with a fish (:");
+                    victim.dropMessage(5, player.getName() + " headshot you with a fish.");
                 }
                 break;
             }
@@ -514,7 +514,6 @@ public class GM implements Command {
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8500001), player.getPosition());
                 }
-
                 break;
             case "!zakum":
                 for (int m = 8800003; m <= 8800010; ++m) {
@@ -660,14 +659,19 @@ public class GM implements Command {
                 double range = Double.POSITIVE_INFINITY;
                 if (splitted.length > 1) {
                     int irange = Integer.parseInt(splitted[1]);
-                    if (splitted.length <= 2) {
+                    if (splitted.length == 2) {
                         range = irange * irange;
                     } else {
                         map = cserv.getMapFactory().getMap(Integer.parseInt(splitted[2]));
                         mapMessage = " in " + map.getStreetName() + " : " + map.getMapName();
                     }
                 }
-                List<MapleMapObject> monsters = map.getMapObjectsInRange(player.getPosition(), range, Collections.singletonList(MapleMapObjectType.MONSTER));
+                List<MapleMapObject> monsters =
+                    map.getMapObjectsInRange(
+                        player.getPosition(),
+                        range,
+                        MapleMapObjectType.MONSTER
+                    );
                 for (MapleMapObject monstermo : monsters) {
                     MapleMonster monster = (MapleMonster) monstermo;
                     map.killMonster(monster, player, false);
@@ -1756,10 +1760,11 @@ public class GM implements Command {
                     }
                 }
                 break;
-            case "!mynpcpos":
+            case "!mynpcpos": {
                 Point pos = player.getPosition();
                 mc.dropMessage("X: " + pos.x + " | Y: " + pos.y + " | RX0: " + (pos.x + 50) + " | RX1: " + (pos.x - 50) + " | FH: " + player.getMap().getFootholds().findBelow(pos).getId());
                 break;
+            }
             case "!cleardrops": {
                 MapleMap map = player.getMap();
                 double range = Double.POSITIVE_INFINITY;
@@ -2124,7 +2129,7 @@ public class GM implements Command {
                     player.getMap().getPartyQuestInstance().reloadScript();
                 }
                 break;
-            case "!registerpqmi":
+            case "!registerpqmi": {
                 if (player.getMap().getPartyQuestInstance() != null) {
                     player.dropMessage(5, "Map instance is already registered for this map.");
                     break;
@@ -2144,6 +2149,7 @@ public class GM implements Command {
                     player.dropMessage(5, "You're not in a party.");
                 }
                 break;
+            }
             case "!toggledpm":
                 player.toggleDpm();
                 player.dropMessage("Showing DPM on death is now " + (player.doShowDpm() ? "on" : "off") + ".");
@@ -2295,7 +2301,7 @@ public class GM implements Command {
                 }
                 break;
             }
-            case "!givedeathitems":
+            case "!givedeathitems": {
                 if (splitted.length < 3) {
                     mc.dropMessage(
                         "Syntax: !givedeathitems <deceasedPlayer> <playerToGiveTo> [offset=0] [useCache=false]"
@@ -2345,6 +2351,7 @@ public class GM implements Command {
 
                 items.forEach(i -> gainItem(target.getClient(), i));
                 break;
+            }
             case "!stunall": {
                 final long stunTime;
                 if (splitted.length > 1) {
@@ -2402,6 +2409,408 @@ public class GM implements Command {
                     }
                 }
                 mc.dropMessage(i + " players muted, " + j + " players unmuted.");
+                break;
+            }
+            case "!drop": {
+                if (splitted.length < 2 || splitted.length > 3) {
+                    mc.dropMessage("Invalid syntax. Use: !drop <item_id> [quantity]");
+                    return;
+                }
+                int itemId;
+                short quantity;
+                try {
+                    itemId = Integer.parseInt(splitted[1]);
+                    if (splitted.length > 2) {
+                        quantity = Short.parseShort(splitted[2]);
+                    } else {
+                        quantity = 1;
+                    }
+                } catch (NumberFormatException nfe) {
+                    mc.dropMessage("Could not parse numeric argument. Use: !drop <item_id> [quantity]");
+                    return;
+                }
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final IItem item;
+                if (ii.getInventoryType(itemId).equals(MapleInventoryType.EQUIP)) {
+                    item = ii.getEquipById(itemId);
+                    item.setQuantity((short) 1);
+                    if (quantity == 1) {
+                        player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, true);
+                    } else {
+                        final Point pos = player.getPosition();
+                        for (short i = 0; i < quantity; ++i) {
+                            final int _i = i;
+                            TimerManager
+                                .getInstance()
+                                .schedule(() ->
+                                    player
+                                        .getMap()
+                                        .spawnItemDrop(
+                                            player,
+                                            player,
+                                            item,
+                                            new Point(
+                                                pos.x + (_i + 1) / 2 * 40 * (_i % 2 == 0 ? 1 : -1),
+                                                pos.y
+                                            ),
+                                            true,
+                                            true
+                                        ),
+                                    i * 150L
+                                );
+                        }
+                    }
+                } else {
+                    item = new Item(itemId, (byte) 0, quantity);
+                    player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, true);
+                }
+                break;
+            }
+            case "!makeeqp": {
+                if (splitted.length < 2 || splitted.length % 2 == 1) {
+                    mc.dropMessage("Invalid syntax. Use: !makeeqp <item_id> [val1 stat1] [val2 stat2]...");
+                    return;
+                }
+                if (player.getInventory(MapleInventoryType.EQUIP).isFull()) {
+                    mc.dropMessage("Your equipment inventory is full.");
+                    return;
+                }
+                try {
+                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    int itemId = Integer.parseInt(splitted[1]);
+                    if (
+                        ii.getInventoryType(itemId) != MapleInventoryType.EQUIP ||
+                        ii.isThrowingStar(itemId) ||
+                        ii.isBullet(itemId)
+                    ) {
+                        mc.dropMessage("That is not the ID of an equipment item.");
+                        return;
+                    }
+                    Equip item = ii.getEquipByIdAsEquip(itemId);
+                    for (int i = 2; i < splitted.length; ++i) {
+                        short val = Short.parseShort(splitted[i]);
+                        String stat = splitted[i + 1].toLowerCase();
+                        switch (stat) {
+                            case "accuracy":
+                            case "acc":
+                                item.setAcc(val);
+                                break;
+                            case "avoidability":
+                            case "eva":
+                            case "avoid":
+                                item.setAvoid(val);
+                                break;
+                            case "dex":
+                                item.setDex(val);
+                                break;
+                            case "str":
+                                item.setStr(val);
+                                break;
+                            case "hands":
+                                item.setHands(val);
+                                break;
+                            case "luck":
+                            case "luk":
+                                item.setLuk(val);
+                                break;
+                            case "int":
+                                item.setInt(val);
+                                break;
+                            case "watt":
+                            case "watk":
+                                item.setWatk(val);
+                                break;
+                            case "wdef":
+                                item.setWdef(val);
+                                break;
+                            case "matt":
+                            case "matk":
+                                item.setMatk(val);
+                                break;
+                            case "mdef":
+                                item.setMdef(val);
+                                break;
+                            case "maxhp":
+                            case "hp":
+                                item.setHp(val);
+                                break;
+                            case "maxmp":
+                            case "mp":
+                                item.setMp(val);
+                                break;
+                            case "speed":
+                                item.setSpeed(val);
+                                break;
+                            case "jump":
+                                item.setJump(val);
+                                break;
+                            case "upgradeslots":
+                            case "tuc":
+                            case "slots":
+                                item.setUpgradeSlots((byte) val);
+                                break;
+                            case "level":
+                            case "lvl":
+                            case "lv":
+                                item.setLevel((byte) val);
+                                break;
+                            default:
+                                mc.dropMessage("Unrecognized argument: " + stat);
+                                return;
+                        }
+                    }
+                    MapleInventoryManipulator.addFromDrop(c, item, true);
+                } catch (NumberFormatException nfe) {
+                    mc.dropMessage(
+                        "Error parsing numeric argument. " +
+                            "Use: !makeeqp <item_id> [val1 stat1] [val2 stat2]..."
+                    );
+                    return;
+                }
+                break;
+            }
+            case "!makeeqpperson": {
+                if (splitted.length < 3 || splitted.length % 2 == 0) {
+                    mc.dropMessage(
+                        "Invalid syntax. " +
+                            "Use: !makeeqpperson <player_name> <item_id> [val1 stat1] [val2 stat2]..."
+                    );
+                    return;
+                }
+                MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
+                if (victim == null) {
+                    mc.dropMessage("Cound not find the specified player on your channel.");
+                    return;
+                }
+                if (player.getInventory(MapleInventoryType.EQUIP).isFull()) {
+                    mc.dropMessage("Your equipment inventory is full.");
+                    return;
+                }
+                try {
+                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    int itemId = Integer.parseInt(splitted[2]);
+                    if (
+                        ii.getInventoryType(itemId) != MapleInventoryType.EQUIP ||
+                        ii.isThrowingStar(itemId) ||
+                        ii.isBullet(itemId)
+                    ) {
+                        mc.dropMessage("That is not the ID of an equipment item.");
+                        return;
+                    }
+                    Equip item = ii.getEquipByIdAsEquip(itemId);
+                    for (int i = 3; i < splitted.length; ++i) {
+                        short val = Short.parseShort(splitted[i]);
+                        String stat = splitted[i + 1].toLowerCase();
+                        switch (stat) {
+                            case "accuracy":
+                            case "acc":
+                                item.setAcc(val);
+                                break;
+                            case "avoidability":
+                            case "eva":
+                            case "avoid":
+                                item.setAvoid(val);
+                                break;
+                            case "dex":
+                                item.setDex(val);
+                                break;
+                            case "str":
+                                item.setStr(val);
+                                break;
+                            case "hands":
+                                item.setHands(val);
+                                break;
+                            case "luck":
+                            case "luk":
+                                item.setLuk(val);
+                                break;
+                            case "int":
+                                item.setInt(val);
+                                break;
+                            case "watt":
+                            case "watk":
+                                item.setWatk(val);
+                                break;
+                            case "wdef":
+                                item.setWdef(val);
+                                break;
+                            case "matt":
+                            case "matk":
+                                item.setMatk(val);
+                                break;
+                            case "mdef":
+                                item.setMdef(val);
+                                break;
+                            case "maxhp":
+                            case "hp":
+                                item.setHp(val);
+                                break;
+                            case "maxmp":
+                            case "mp":
+                                item.setMp(val);
+                                break;
+                            case "speed":
+                                item.setSpeed(val);
+                                break;
+                            case "jump":
+                                item.setJump(val);
+                                break;
+                            case "upgradeslots":
+                            case "tuc":
+                            case "slots":
+                                item.setUpgradeSlots((byte) val);
+                                break;
+                            case "level":
+                            case "lvl":
+                            case "lv":
+                                item.setLevel((byte) val);
+                                break;
+                            default:
+                                mc.dropMessage("Unrecognized argument: " + stat);
+                                return;
+                        }
+                    }
+                    MapleInventoryManipulator.addFromDrop(victim.getClient(), item, true);
+                } catch (NumberFormatException nfe) {
+                    mc.dropMessage(
+                        "Error parsing numeric argument. " +
+                            "Use: !makeeqpperson <player_name> <item_id> [val1 stat1] [val2 stat2]..."
+                    );
+                    return;
+                }
+                break;
+            }
+            case "!killmob": {
+                boolean withDrops = false;
+                if (splitted.length > 1) {
+                    withDrops = Boolean.parseBoolean(splitted[1]);
+                }
+                if (player.getMap().getAllMonsters().size() < 1) {
+                    mc.dropMessage("There are no mobs on this map to kill.");
+                    return;
+                }
+                player.getMap().killMonster(player.getMap().getAllMonsters().get(0), player, withDrops);
+                break;
+            }
+            case "!killallanddrop": {
+                MapleMap map = player.getMap();
+                List<MapleMapObject> monsters =
+                    map.getMapObjectsInRange(
+                        player.getPosition(),
+                        Double.POSITIVE_INFINITY,
+                        MapleMapObjectType.MONSTER
+                    );
+                for (MapleMapObject monstermo : monsters) {
+                    MapleMonster monster = (MapleMonster) monstermo;
+                    map.killMonster(monster, player, true);
+                }
+                mc.dropMessage("Killed " + monsters.size() + " monsters.");
+                break;
+            }
+            case "!itemquantity": {
+                if (splitted.length != 3) {
+                    mc.dropMessage("Invalid syntax. Use: !itemquantity <player_name> <item_id>");
+                    return;
+                }
+                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                if (victim == null) {
+                    mc.dropMessage("Could not find that player on your channel.");
+                    return;
+                }
+                int itemId;
+                try {
+                    itemId = Integer.parseInt(splitted[2]);
+                } catch (NumberFormatException nfe) {
+                    mc.dropMessage("Could not parse integer argument for item ID.");
+                    return;
+                }
+                int q = victim.getItemQuantity(itemId, false);
+                mc.dropMessage(victim.getName() + " has " + q + " of item " + itemId + ".");
+                break;
+            }
+            case "!listinv": {
+                if (splitted.length != 3) {
+                    mc.dropMessage("Invalid syntax. Use: !listinv <player_name> <inv_type>");
+                    return;
+                }
+                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                if (victim == null) {
+                    mc.dropMessage("Could not find that player on your channel.");
+                    return;
+                }
+                MapleInventoryType type;
+                switch (splitted[2].toLowerCase()) {
+                    case "use":
+                    case "consume":
+                        type = MapleInventoryType.USE;
+                        break;
+                    case "eq":
+                    case "eqp":
+                    case "equip":
+                    case "equipment":
+                        type = MapleInventoryType.EQUIP;
+                        break;
+                    case "equipped":
+                        type = MapleInventoryType.EQUIPPED;
+                        break;
+                    case "etc":
+                        type = MapleInventoryType.ETC;
+                        break;
+                    case "cash":
+                    case "nx":
+                        type = MapleInventoryType.CASH;
+                        break;
+                    case "setup":
+                        type = MapleInventoryType.SETUP;
+                        break;
+                    default:
+                        mc.dropMessage("Unrecognized inventory type.");
+                        return;
+                }
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                MapleInventory inv = victim.getInventory(type);
+                StringBuilder sb = new StringBuilder();
+                for (IItem item : inv) {
+                    sb.append(ii.getName(item.getItemId()));
+                    if (item.getQuantity() > 1) {
+                        sb.append(" x")
+                          .append(item.getQuantity());
+                    }
+                    sb.append(", ");
+                }
+                mc.dropMessage(type.name() + " items for " + victim.getName() + ":");
+                mc.dropMessage(sb.toString());
+                break;
+            }
+            case "!forcenpc": {
+                if (splitted.length != 3) {
+                    mc.dropMessage("Invalid syntax. Use: !forcenpc <player_name> <npc_id>");
+                    return;
+                }
+                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                if (victim == null) {
+                    mc.dropMessage("Could not find that player on your channel.");
+                    return;
+                }
+                int npcId;
+                try {
+                    npcId = Integer.parseInt(splitted[2]);
+                } catch (NumberFormatException nfe) {
+                    mc.dropMessage("Could not parse integer argument for NPC ID.");
+                    return;
+                }
+                try {
+                    if (victim.getClient().getCM() != null) {
+                        victim.getClient().getCM().dispose();
+                    }
+                    NPCScriptManager
+                        .getInstance()
+                        .start(victim.getClient(), npcId);
+                } catch (Exception e) {
+                    mc.dropMessage("There was an error forcing the NPC conversation: " + e);
+                    return;
+                }
+                mc.dropMessage("Success.");
                 break;
             }
         }
@@ -2562,7 +2971,15 @@ public class GM implements Command {
             new CommandDefinition("stunall", 3),
             new CommandDefinition("muteall", 3),
             new CommandDefinition("unmuteall", 3),
-            new CommandDefinition("togglemuteall", 3)
+            new CommandDefinition("togglemuteall", 3),
+            new CommandDefinition("drop", 3),
+            new CommandDefinition("makeeqp", 3),
+            new CommandDefinition("makeeqpperson", 3),
+            new CommandDefinition("killmob", 3),
+            new CommandDefinition("killallanddrop", 3),
+            new CommandDefinition("itemquantity", 3),
+            new CommandDefinition("listinv", 3),
+            new CommandDefinition("forcenpc", 3)
         };
     }
 

@@ -66,7 +66,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
         final Point dropPos = reactor.getPosition();
 
-        dropPos.x -= (12 * numItems);
+        dropPos.x -= 12 * numItems;
 
         for (DropEntry d : items) {
             if (d.itemId == 0) {
