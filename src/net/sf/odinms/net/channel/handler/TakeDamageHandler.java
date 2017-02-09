@@ -161,7 +161,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             player.getMap()
                                   .getMapObjectsInRect(
                                       mist.getBox(),
-                                      Collections.singletonList(MapleMapObjectType.PLAYER)
+                                      MapleMapObjectType.PLAYER
                                   );
                         for (MapleMapObject mmoPlayer : mmoPlayers) {
                             if (player == mmoPlayer) {

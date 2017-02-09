@@ -364,9 +364,7 @@ public class MapleMap {
     }
 
     private void dropFromMonster(MapleCharacter dropOwner, MapleMonster monster) {
-        if (dropsDisabled || monster.dropsDisabled()) {
-            return;
-        }
+        if (dropsDisabled || monster.dropsDisabled()) return;
         boolean partyevent = false;
         int maxDrops;
         final boolean explosive = monster.isExplosive();
@@ -379,7 +377,7 @@ public class MapleMap {
         }
         List<Integer> toDrop = new ArrayList<>();
         for (int i = 0; i < maxDrops; ++i) {
-            toDrop.add(monster.getDrop());
+            toDrop.add(monster.getDrop(dropOwner));
         }
         //
         if (dropOwner != null && dropOwner.getEventInstance() == null && dropOwner.getPartyQuest() == null) {
@@ -396,7 +394,11 @@ public class MapleMap {
                 if (chance < 1) {
                     toDrop.add(4031013); // Dark marble
                 }
-            } else if (dropOwner.getQuest(MapleQuest.getInstance(7104 /* A Piece of Crack */)).getStatus() == MapleQuestStatus.Status.STARTED && (monster.getId() == 8141100 || monster.getId() == 8143000)) {
+            } else if (
+                dropOwner.getQuest(MapleQuest.getInstance(7104 /* A Piece of Crack */)).getStatus() ==
+                    MapleQuestStatus.Status.STARTED &&
+                (monster.getId() == 8141100 || monster.getId() == 8143000)
+            ) {
                 chance = (int) (Math.random() * 180.0d); // 1/180 droprate
                 switch (chance) {
                     case 1:
@@ -937,7 +939,7 @@ public class MapleMap {
             getMapObjectsInRange(
                 new Point(0, 0),
                 Double.POSITIVE_INFINITY,
-                Collections.singletonList(MapleMapObjectType.MONSTER)
+                MapleMapObjectType.MONSTER
             );
         for (MapleMapObject monstermo : monsters) {
             MapleMonster monster = (MapleMonster) monstermo;
@@ -972,15 +974,15 @@ public class MapleMap {
 
     public List<MapleMapObject> getAllPlayers() {
         return getMapObjectsInRange(
-            new Point(0, 0),
+            new Point(),
             Double.POSITIVE_INFINITY,
-            Collections.singletonList(MapleMapObjectType.PLAYER)
+            MapleMapObjectType.PLAYER
         );
     }
 
     public List<MapleMonster> getAllMonsters() {
         return getMapObjectsInRange(
-            new Point(0, 0),
+            new Point(),
             Double.POSITIVE_INFINITY,
             MapleMapObjectType.MONSTER
         )
@@ -991,7 +993,7 @@ public class MapleMap {
 
     public List<MapleReactor> getAllReactors() {
         return getMapObjectsInRange(
-            new Point(0, 0),
+            new Point(),
             Double.POSITIVE_INFINITY,
             MapleMapObjectType.REACTOR
         )
@@ -1002,7 +1004,7 @@ public class MapleMap {
 
     public List<MapleNPC> getAllNPCs() {
         return getMapObjectsInRange(
-            new Point(0, 0),
+            new Point(),
             Double.POSITIVE_INFINITY,
             MapleMapObjectType.NPC
         )
@@ -1013,9 +1015,9 @@ public class MapleMap {
 
     public MapleNPC getNPCById(int npcId) {
         return getMapObjectsInRange(
-            new Point(0, 0),
+            new Point(),
             Double.POSITIVE_INFINITY,
-            Collections.singletonList(MapleMapObjectType.NPC)
+            MapleMapObjectType.NPC
         )
         .stream()
         .map(mmo -> (MapleNPC) mmo)
@@ -1355,7 +1357,7 @@ public class MapleMap {
                 List<MapleMapObject> affectedMonsters =
                     getMapObjectsInRect(
                         mist.getBox(),
-                        Collections.singletonList(MapleMapObjectType.MONSTER)
+                        MapleMapObjectType.MONSTER
                     );
                 for (MapleMapObject mo : affectedMonsters) {
                     if (mist.makeChanceResult()) {
@@ -1579,7 +1581,7 @@ public class MapleMap {
 
     public int clearDrops() {
         double range = Double.POSITIVE_INFINITY;
-        List<MapleMapObject> items = getMapObjectsInRange(new Point(0, 0), range, Collections.singletonList(MapleMapObjectType.ITEM));
+        List<MapleMapObject> items = getMapObjectsInRange(new Point(), range, MapleMapObjectType.ITEM);
         for (MapleMapObject itemmo : items) {
             removeMapObject(itemmo);
             broadcastMessage(MaplePacketCreator.removeItemFromMap(itemmo.getObjectId(), 0, 0));
@@ -2700,27 +2702,27 @@ public class MapleMap {
     public int playerCount() {
         return
             getMapObjectsInRange(
-                new Point(0, 0),
+                new Point(),
                 Double.POSITIVE_INFINITY,
-                Collections.singletonList(MapleMapObjectType.PLAYER)
+                MapleMapObjectType.PLAYER
             ).size();
     }
 
     public int mobCount() {
         return
             getMapObjectsInRange(
-                new Point(0, 0),
+                new Point(),
                 Double.POSITIVE_INFINITY,
-                Collections.singletonList(MapleMapObjectType.MONSTER)
+                MapleMapObjectType.MONSTER
             ).size();
     }
 
     public int reactorCount() {
         return
             getMapObjectsInRange(
-                new Point(0, 0),
+                new Point(),
                 Double.POSITIVE_INFINITY,
-                Collections.singletonList(MapleMapObjectType.REACTOR)
+                MapleMapObjectType.REACTOR
             ).size();
     }
 

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class Marriage {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Marriage.class);
 
-    public static void createMarriage(MapleCharacter player, MapleCharacter partner) {
+    public static boolean createMarriage(MapleCharacter player, MapleCharacter partner) {
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps =
@@ -23,10 +23,12 @@ public class Marriage {
             ps.close();
         } catch (SQLException sqle) {
             log.warn("Problem marrying " + player.getName() + " and " + partner.getName(), sqle);
+            return false;
         }
+        return true;
     }
 
-    public static void createEngagement(MapleCharacter player, MapleCharacter partner) {
+    public static boolean createEngagement(MapleCharacter player, MapleCharacter partner) {
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps =
@@ -45,7 +47,9 @@ public class Marriage {
                     partner.getName(),
                 sqle
             );
+            return false;
         }
+        return true;
     }
 
     public static void divorceEngagement(MapleCharacter player) {

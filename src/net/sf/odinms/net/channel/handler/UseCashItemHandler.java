@@ -445,7 +445,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         if (victim == null) {
                             int channel = c.getChannelServer().getWorldInterface().find(name);
                             if (channel == -1) {
-                                player.dropMessage(1, "This player is not online.");
+                                player.dropMessage(1, "That player is not online.");
                                 break;
                             }
                             ChangeChannelHandler.changeChannel(channel, player.getClient());
@@ -478,11 +478,13 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                     player.leaveParty();
                                 }
                                 player.changeMap(map, map.findClosestSpawnpoint(victim.getPosition()));
-                                    /*System.out.print("Good player TP, map: " + map.getId() + " spawn: " + map.findClosestSpawnpoint(victim.getPosition()).getName());
+                                /*
+                                System.out.print("Good player TP, map: " + map.getId() + " spawn: " + map.findClosestSpawnpoint(victim.getPosition()).getName());
                                 } else {
                                     player.dropMessage(1, "You cannot warp to this player because they are not on the same continent.");
                                     break;
-                                }*/
+                                }
+                                */
                             } else {
                                 player.dropMessage(1, "You cannot use VIP teleport rocks on a GM.");
                                 break;
@@ -515,7 +517,10 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                     canGo = true;
                     break;
                 }
-                player.dropMessage(1, "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane.");
+                player.dropMessage(
+                    1,
+                    "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane."
+                );
                 break;
             case 270010500:
                 if (player.getQuestCompletion(questNums[1])) {
@@ -552,7 +557,10 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         canGo = true;
                         break;
                     }
-                    player.dropMessage(1, "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane.");
+                    player.dropMessage(
+                        1,
+                        "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane."
+                    );
                     break;
                 } else if (mapStage == 2) {
                     if (player.getQuestCompletion(questNums[1])) {

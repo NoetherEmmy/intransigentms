@@ -16,13 +16,12 @@ import java.util.*;
 public class MapleQuest {
     private static final Map<Integer, MapleQuest> quests = new HashMap<>();
     protected int id;
-    protected List<MapleQuestRequirement> startReqs;
-    protected List<MapleQuestRequirement> completeReqs;
-    protected List<MapleQuestAction> startActs;
-    protected List<MapleQuestAction> completeActs;
+    protected List<MapleQuestRequirement> startReqs, completeReqs;
+    protected List<MapleQuestAction> startActs, completeActs;
     protected final List<Integer> relevantMobs = new ArrayList<>();
     private boolean autoStart, autoPreComplete;
     private boolean repeatable = false;
+    private String name = "MISSINGNO";
     private static final MapleDataProvider questData =
         MapleDataProviderFactory.getDataProvider(
             new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz")
@@ -101,6 +100,7 @@ public class MapleQuest {
         MapleData questInfo = info.getChildByPath(String.valueOf(id));
         autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
         autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
+        name = MapleDataTool.getString("name", questInfo, "MISSINGNO");
     }
 
     public static void clearQuests() {
@@ -206,6 +206,10 @@ public class MapleQuest {
 
     public int getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<Integer> getRelevantMobs() {

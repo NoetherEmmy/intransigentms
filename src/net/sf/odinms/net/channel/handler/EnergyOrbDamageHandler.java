@@ -68,7 +68,7 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                         player.getMap()
                               .getMapObjectsInRect(
                                   bounds,
-                                  Collections.singletonList(MapleMapObjectType.PLAYER)
+                                  MapleMapObjectType.PLAYER
                               );
                     List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
 

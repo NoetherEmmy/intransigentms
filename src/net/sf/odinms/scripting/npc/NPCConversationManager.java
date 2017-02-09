@@ -1241,22 +1241,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         partner.setPartnerId(getPlayer().getId());
         getPlayer().setPartnerId(partner.getId());
         if (partner.getGender() > 0) {
-            Marriage.createMarriage(getPlayer(), partner);
-        } else {
-            Marriage.createMarriage(partner, getPlayer());
+            return Marriage.createMarriage(getPlayer(), partner);
         }
-        return true;
+        return Marriage.createMarriage(partner, getPlayer());
     }
 
     public boolean createEngagement(String partnerName) {
         MapleCharacter partner = getCharByName(partnerName);
         if (partner == null) return false;
         if (partner.getGender() > 0) {
-            Marriage.createEngagement(getPlayer(), partner);
-        } else {
-            Marriage.createEngagement(partner, getPlayer());
+            return Marriage.createEngagement(getPlayer(), partner);
         }
-        return true;
+        return Marriage.createEngagement(partner, getPlayer());
     }
 
     public void divorceMarriage() {
@@ -1758,46 +1754,37 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String whoDrops(int searchid) {
-        String dropString = "";
+        StringBuilder dropString_ = new StringBuilder();
         try {
-            List<String> retMobs = new ArrayList<>();
-            MapleData data;
-            MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(
-                new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
-            );
-            data = dataProvider.getData("Mob.img");
-            List<Pair<Integer, String>> mobPairList = new ArrayList<>();
+            Set<String> retMobs = new LinkedHashSet<>();
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
             ps.setInt(1, searchid);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                int mobn = rs.getInt("monsterid");
-                for (MapleData mobIdData : data.getChildren()) {
-                    int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                    String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
-                    mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
-                }
-                for (Pair<Integer, String> mobPair : mobPairList) {
-                    if (mobPair.getLeft() == (mobn) && !retMobs.contains(mobPair.getRight())) {
-                        retMobs.add(mobPair.getRight());
-                    }
+                int mobId = rs.getInt("monsterid");
+                MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                if (mob != null) {
+                    retMobs.add(mob.getName());
                 }
             }
             rs.close();
             ps.close();
             if (!retMobs.isEmpty()) {
                 for (String singleRetMob : retMobs) {
-                    dropString += singleRetMob + "\r\n";
+                    dropString_.append(singleRetMob).append("\r\n");
                 }
             } else {
                 return "No mobs drop this item.";
             }
         } catch (SQLException sqle) {
             System.err.print("NPCConversationManager#whoDrops failed: " + sqle);
-            dropString = "NPCConversationManager#whoDrops failed:\r\n\r\n#r" + sqle + "#k";
+            dropString_ =
+                new StringBuilder("NPCConversationManager#whoDrops failed:\r\n\r\n#r")
+                    .append(sqle)
+                    .append("#k");
         }
-        return dropString;
+        return dropString_.toString();
     }
 
     public boolean canGetDailyPrizes() {
@@ -1844,16 +1831,20 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         currenttime.setTimeInMillis(System.currentTimeMillis());
         if (validtime.compareTo(currenttime) > 0) {
             // Valid time is in the future
-            if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
-                    validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
+            if (
+                validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
+                validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)
+            ) {
                 return 0;
             } else {
                 return 1;
             }
         } else if (validtime.compareTo(currenttime) < 0) {
             // Valid time is in the past
-            if (validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
-                    validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)) {
+            if (
+                validtime.get(Calendar.DAY_OF_MONTH) == currenttime.get(Calendar.DAY_OF_MONTH) &&
+                validtime.get(Calendar.MONTH) == currenttime.get(Calendar.MONTH)
+            ) {
                 return 0;
             } else {
                 return -1;

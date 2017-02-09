@@ -709,7 +709,7 @@ public class MapleStatEffect implements Serializable {
                                    .getMapObjectsInRange(
                                        applyFrom.getPosition(),
                                        200000 + applyFrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 10000,
-                                       Collections.singletonList(MapleMapObjectType.MONSTER)
+                                       MapleMapObjectType.MONSTER
                                    );
             for (MapleMapObject _mob : mobsInRange) {
                 MapleMonster mob = (MapleMonster) _mob;
@@ -891,7 +891,7 @@ public class MapleStatEffect implements Serializable {
                     .getMap()
                     .getMapObjectsInRect(
                         bounds,
-                        Collections.singletonList(MapleMapObjectType.PLAYER)
+                        MapleMapObjectType.PLAYER
                     );
             List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
             MapleCharacter closestPlayer = null;
@@ -1041,7 +1041,7 @@ public class MapleStatEffect implements Serializable {
                      .getMapObjectsInRange(
                          applyFrom.getPosition(),
                          300000.0d,
-                         Collections.singletonList(MapleMapObjectType.PLAYER)
+                         MapleMapObjectType.PLAYER
                      )
                      .stream()
                      .map(mmo -> (MapleCharacter) mmo)
@@ -1060,7 +1060,7 @@ public class MapleStatEffect implements Serializable {
                 .getMap()
                 .getMapObjectsInRect(
                     bounds,
-                    Collections.singletonList(MapleMapObjectType.MONSTER)
+                    MapleMapObjectType.MONSTER
                 );
         final ISkill skill_ = SkillFactory.getSkill(sourceid);
         Map<MonsterStatus, Integer> localMonsterStatus = getMonsterStati();

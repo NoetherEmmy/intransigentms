@@ -1752,7 +1752,14 @@ public class GM implements Command {
                 break;
             }
             case "!removenpcs":
-                List<MapleMapObject> npcs = player.getMap().getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.NPC));
+                List<MapleMapObject> npcs =
+                    player
+                        .getMap()
+                        .getMapObjectsInRange(
+                            player.getPosition(),
+                            Double.POSITIVE_INFINITY,
+                            MapleMapObjectType.NPC
+                        );
                 for (MapleMapObject npcmo : npcs) {
                     MapleNPC npc = (MapleNPC) npcmo;
                     if (npc.isCustom()) {
@@ -1768,7 +1775,8 @@ public class GM implements Command {
             case "!cleardrops": {
                 MapleMap map = player.getMap();
                 double range = Double.POSITIVE_INFINITY;
-                List<MapleMapObject> items = map.getMapObjectsInRange(player.getPosition(), range, Collections.singletonList(MapleMapObjectType.ITEM));
+                List<MapleMapObject> items =
+                    map.getMapObjectsInRange(player.getPosition(), range, MapleMapObjectType.ITEM);
                 for (MapleMapObject itemmo : items) {
                     map.removeMapObject(itemmo);
                     map.broadcastMessage(MaplePacketCreator.removeItemFromMap(itemmo.getObjectId(), 0, player.getId()));
@@ -1918,7 +1926,12 @@ public class GM implements Command {
                 if (splitted.length == 2) {
                     MapleMap map = c.getPlayer().getMap();
                     int targetId = Integer.parseInt(splitted[1]);
-                    List<MapleMapObject> monsters = map.getMapObjectsInRange(c.getPlayer().getPosition(), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER));
+                    List<MapleMapObject> monsters =
+                        map.getMapObjectsInRange(
+                            c.getPlayer().getPosition(),
+                            Double.POSITIVE_INFINITY,
+                            MapleMapObjectType.MONSTER
+                        );
                     for (MapleMapObject monsterm : monsters) {
                         MapleMonster monster = (MapleMonster) monsterm;
                         if (monster.getId() == targetId) {
@@ -2164,7 +2177,7 @@ public class GM implements Command {
                               .getMapObjectsInRange(
                                   player.getPosition(),
                                   Double.POSITIVE_INFINITY,
-                                  Collections.singletonList(MapleMapObjectType.MONSTER)
+                                  MapleMapObjectType.MONSTER
                               )
                               .stream()
                               .map(mmo -> (MapleMonster) mmo)
@@ -2195,7 +2208,7 @@ public class GM implements Command {
                               .getMapObjectsInRange(
                                   player.getPosition(),
                                   Double.POSITIVE_INFINITY,
-                                  Collections.singletonList(MapleMapObjectType.MONSTER)
+                                  MapleMapObjectType.MONSTER
                               )
                               .stream()
                               .map(mmo -> (MapleMonster) mmo)

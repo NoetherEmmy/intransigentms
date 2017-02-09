@@ -32,7 +32,19 @@ public class EventInstanceManager {
     public EventInstanceManager(EventManager em, String name) {
         this.em = em;
         this.name = name;
-        mapFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")));
+        mapFactory =
+            new MapleMapFactory(
+                MapleDataProviderFactory.getDataProvider(
+                    new File(
+                        System.getProperty("net.sf.odinms.wzpath") + "/Map.wz"
+                    )
+                ),
+                MapleDataProviderFactory.getDataProvider(
+                    new File(
+                        System.getProperty("net.sf.odinms.wzpath") + "/String.wz"
+                    )
+                )
+            );
         mapFactory.setChannel(em.getChannelServer().getChannel());
     }
 
@@ -191,7 +203,10 @@ public class EventInstanceManager {
     public void saveWinner(MapleCharacter chr) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)"
+                );
             ps.setString(1, em.getName());
             ps.setString(2, getName());
             ps.setInt(3, chr.getId());

@@ -123,7 +123,7 @@ public class MapleItemInformationProvider {
         if (Character.isLetter(initial)) {
             initial = Character.toUpperCase(initial);
             for (MapleData itemFolder : itemsData.getChildren()) {
-                boolean hasicon = false;
+                boolean hasIcon = false;
                 String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
                 if (Character.toUpperCase(itemName.charAt(0)) == initial) {
                     int itemId = Integer.parseInt(itemFolder.getName());
@@ -137,11 +137,11 @@ public class MapleItemInformationProvider {
                     }
                     for (MapleData data : info.getChildren()) {
                         if (data.getName().equalsIgnoreCase("icon")) {
-                            hasicon = true;
+                            hasIcon = true;
                             break;
                         }
                     }
-                    if (hasicon) {
+                    if (hasIcon) {
                         itemPairs.add(new Pair<>(itemId, itemName));
                     }
                 }
@@ -1466,12 +1466,10 @@ public class MapleItemInformationProvider {
     }
 
     private short getRandStat(short defaultValue, int maxRange, short additionalStats) {
-        if (defaultValue == 0) {
-            return 0;
-        }
-        // vary no more than ceil of 10% of stat
+        if (defaultValue == 0) return 0;
+        // Vary no more than ceil of 10% of stat
         int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1d), maxRange);
-        return (short) ((defaultValue - lMaxRange) + Math.floor(rand.nextDouble() * (lMaxRange * 2 + additionalStats)));
+        return (short) (defaultValue - lMaxRange + Math.floor(rand.nextDouble() * (lMaxRange * 2 + additionalStats)));
     }
 
     public Equip randomizeStats(MapleClient c, Equip equip) {

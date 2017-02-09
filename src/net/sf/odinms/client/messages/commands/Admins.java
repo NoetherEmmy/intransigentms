@@ -67,7 +67,7 @@ public class Admins implements Command {
                 List<MapleMapObject> players = map.getMapObjectsInRange(
                     player.getPosition(),
                     50000.0d,
-                    Collections.singletonList(MapleMapObjectType.PLAYER)
+                    MapleMapObjectType.PLAYER
                 );
                 for (MapleMapObject closeplayers : players) {
                     MapleCharacter playernear = (MapleCharacter) closeplayers;
@@ -552,7 +552,8 @@ public class Admins implements Command {
                         map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
                     }
                 }
-                List<MapleMapObject> monsters = map.getMapObjectsInRange(player.getPosition(), range, Collections.singletonList(MapleMapObjectType.MONSTER));
+                List<MapleMapObject> monsters =
+                    map.getMapObjectsInRange(player.getPosition(), range, MapleMapObjectType.MONSTER);
                 for (MapleMapObject monstermo : monsters) {
                     MapleMonster monster = (MapleMonster) monstermo;
                     mc.dropMessage("Monster " + monster.toString());
@@ -606,7 +607,14 @@ public class Admins implements Command {
                 }
                 break;
             case "!itemvac":
-                List<MapleMapObject> items = player.getMap().getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.ITEM));
+                List<MapleMapObject> items =
+                    player
+                        .getMap()
+                        .getMapObjectsInRange(
+                            player.getPosition(),
+                            Double.POSITIVE_INFINITY,
+                            MapleMapObjectType.ITEM
+                        );
                 for (MapleMapObject item : items) {
                     MapleMapItem mapItem = (MapleMapItem) item;
                     if (mapItem.getMeso() > 0) {
@@ -646,7 +654,12 @@ public class Admins implements Command {
                             rs.close();
                         } else {
                             rs.close();
-                            ps = con.prepareStatement("INSERT INTO playernpcs (name, hair, face, skin, x, cy, map, ScriptId, Foothold, rx0, rx1, gender, dir) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                            ps = con.prepareStatement(
+                                "INSERT INTO playernpcs " +
+                                    "(name, hair, face, skin, x, cy, map, " +
+                                    "ScriptId, Foothold, rx0, rx1, gender, dir) " +
+                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                            );
                             ps.setString(1, victim.getName());
                             ps.setInt(2, victim.getHair());
                             ps.setInt(3, victim.getFace());
@@ -665,7 +678,9 @@ public class Admins implements Command {
                             rs.next();
                             npcId = rs.getInt(1);
                             ps.close();
-                            ps = con.prepareStatement("INSERT INTO playernpcs_equip (NpcId, equipid, equippos) VALUES (?, ?, ?)");
+                            ps = con.prepareStatement(
+                                "INSERT INTO playernpcs_equip (NpcId, equipid, equippos) VALUES (?, ?, ?)"
+                            );
                             ps.setInt(1, npcId);
                             for (IItem equip : victim.getInventory(MapleInventoryType.EQUIPPED)) {
                                 ps.setInt(2, equip.getItemId());
@@ -697,8 +712,17 @@ public class Admins implements Command {
             }
             case "!removeplayernpcs": {
                 for (ChannelServer channel : ChannelServer.getAllInstances()) {
-                    for (MapleMapObject object : channel.getMapFactory().getMap(player.getMapId()).getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.PLAYER_NPC))) {
-                        channel.getMapFactory().getMap(player.getMapId()).removeMapObject(object);
+                    List<MapleMapObject> pnpcs =
+                        channel
+                            .getMapFactory()
+                            .getMap(player.getMapId())
+                            .getMapObjectsInRange(
+                                new Point(),
+                                Double.POSITIVE_INFINITY,
+                                MapleMapObjectType.PLAYER_NPC
+                            );
+                    for (MapleMapObject mmo : pnpcs) {
+                        channel.getMapFactory().getMap(player.getMapId()).removeMapObject(mmo);
                     }
                 }
                 Connection con = DatabaseConnection.getConnection();
@@ -726,7 +750,11 @@ public class Admins implements Command {
                     mob.setFh(fh);
                     try {
                         Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, y, mid, mobtime ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+                        PreparedStatement ps =
+                            con.prepareStatement(
+                                "INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type, x, y, mid, mobtime) " +
+                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                            );
                         ps.setInt(1, npcId);
                         ps.setInt(2, 0);
                         ps.setInt(3, fh);
@@ -749,7 +777,11 @@ public class Admins implements Command {
                 break;
             }
             case "!reinitdiscord":
-                mc.dropMessage("Reinitialization of discord bot " + (DeathBot.reInit() ? "succeeded" : "failed") + ".");
+                mc.dropMessage(
+                    "Reinitialization of discord bot " +
+                        (DeathBot.reInit() ? "succeeded" : "failed") +
+                        "."
+                );
                 break;
             case "!disposediscord":
                 DeathBot.getInstance().dispose();
@@ -757,7 +789,7 @@ public class Admins implements Command {
                 break;
             case "!clearquests":
                 MapleQuest.clearQuests();
-                mc.dropMessage("Quest cache has bene cleared.");
+                mc.dropMessage("Quest cache has been cleared.");
                 break;
         }
     }

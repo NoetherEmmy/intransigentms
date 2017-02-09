@@ -14,6 +14,7 @@ import net.sf.odinms.server.life.MapleMonsterInformationProvider.DropEntry;
 import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
+import net.sf.odinms.server.quest.MapleQuest;
 import net.sf.odinms.tools.ArrayMap;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
     private MapleMonsterStats stats, overrideStats;
@@ -73,7 +75,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void disableDrops() {
-        this.dropsDisabled = true;
+        dropsDisabled = true;
     }
 
     public boolean dropsDisabled() {
@@ -84,11 +86,20 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         this.map = map;
     }
 
-    public int getDrop() {
+    public int getDrop(final MapleCharacter owner) {
         MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
         int lastAssigned = -1;
         int minChance = 1;
-        List<DropEntry> dl = mi.retrieveDropChances(getId());
+        List<DropEntry> dl =
+            mi.retrieveDropChances(getId())
+              .stream()
+              .filter(de ->
+                  de.questId < 1 ||
+                  owner.getQuest(MapleQuest.getInstance(de.questId))
+                       .getStatus()
+                       .equals(MapleQuestStatus.Status.STARTED)
+              )
+              .collect(Collectors.toCollection(ArrayList::new));
         for (DropEntry d : dl) {
             if (d.chance > minChance) {
                 minChance = d.chance;
@@ -102,7 +113,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         Random r = new Random();
         int c = r.nextInt(minChance);
         for (DropEntry d : dl) {
-            if (c >= d.assignedRangeStart && c < (d.assignedRangeStart + d.assignedRangeLength)) {
+            if (c >= d.assignedRangeStart && c < d.assignedRangeStart + d.assignedRangeLength) {
                 return d.itemId;
             }
         }

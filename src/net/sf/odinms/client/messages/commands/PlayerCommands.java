@@ -16,9 +16,10 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.life.MapleLifeFactory;
 import net.sf.odinms.server.life.MapleMonster;
+import net.sf.odinms.server.life.MapleMonsterStats;
 import net.sf.odinms.server.maps.MapleMap;
-import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
+import net.sf.odinms.server.quest.MapleQuest;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
@@ -90,6 +91,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@whodrops - | - Allows selection of an item and lists monsters who drop the selected item.");
             mc.dropMessage("@whodrops <itemid> - | - Lists monsters who drop the item with that ID.");
             mc.dropMessage("@whodrops <searchstring> - | - Lists monsters who drop the item with the name that is the closest fit for <searchstring>.");
+            mc.dropMessage("@whoquestdrops <searchstring> - | - Lists monsters who drop as a quest drop the item with the name that is the closest fit for <searchstring>.");
             mc.dropMessage("@monsterdrops <monsterid> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
             mc.dropMessage("@monsterdrops <searchstring> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
             mc.dropMessage("@pqpoints - | - Displays your current PQ point total.");
@@ -197,7 +199,7 @@ public class PlayerCommands implements Command {
                 return;
             }
             int max = 30000;
-            if (x > 0 && x <= player.getRemainingAp() && x < Short.MAX_VALUE) {
+            if (x > 0 && x <= player.getRemainingAp() && x < max) {
                 if (splitted[0].equals("@str") && x + player.getStr() < max) {
                     player.addAP(c, 1, x);
                 } else if (splitted[0].equals("@dex") && x + player.getDex() < max) {
@@ -209,7 +211,7 @@ public class PlayerCommands implements Command {
                 } else {
                     mc.dropMessage(
                         "Make sure the stat you are trying to raise will not be over " +
-                            Short.MAX_VALUE +
+                            max +
                             "."
                     );
                 }
@@ -307,12 +309,16 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("Incorrect Syntax.");
             }
         } else if (splitted[0].equals("@monstertrialtime")) {
-            if (System.currentTimeMillis() - player.getLastTrialTime() < 2 * 60 * 60 * 1000) {
+            if (System.currentTimeMillis() - player.getLastTrialTime() < 2L * 60L * 60L * 1000L) {
                 long timesincelast = System.currentTimeMillis() - player.getLastTrialTime();
-                double inminutes = timesincelast / 60000.0;
+                double inminutes = timesincelast / 60000.0d;
                 inminutes = Math.floor(inminutes);
                 int cooldown = 120 - (int) inminutes;
-                mc.dropMessage("You must wait " + cooldown + " more minute(s) before you may enter the Monster Trials again.");
+                mc.dropMessage(
+                    "You must wait " +
+                        cooldown +
+                        " more minute(s) before you may enter the Monster Trials again."
+                );
             } else {
                 mc.dropMessage("You may enter the Monster Trials.");
             }
@@ -324,46 +330,51 @@ public class PlayerCommands implements Command {
             double rx;
             int absxp = player.getAbsoluteXp();
             absxp *= c.getChannelServer().getExpRate();
-            for (MapleMapObject mmo : player.getMap().getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
-                MapleMonster monster = (MapleMonster) mmo;
+            for (MapleMonster monster : player.getMap().getAllMonsters()) {
                 if (!monsterids.contains(monster.getId())) {
                     monsterids.add(monster.getId());
                     rx = player.getRelativeXp(monster.getLevel());
                     BigDecimal rxbd = new BigDecimal(rx);
                     rxbd = rxbd.setScale(2, RoundingMode.HALF_UP);
-                    mc.dropMessage(monster.getName() + " | Level: " + monster.getLevel() + " Relative XP: " + rxbd.toString() + "x" + " Total XP: " + rxbd.multiply(BigDecimal.valueOf(absxp)).toString() + "x");
+                    mc.dropMessage(
+                        monster.getName() +
+                            " | Level: " +
+                            monster.getLevel() +
+                            " Relative XP: " +
+                            rxbd.toString() +
+                            "x Total XP: " +
+                            rxbd.multiply(BigDecimal.valueOf(absxp)) +
+                            "x"
+                    );
                 }
             }
         } else if (splitted[0].equals("@absolutexprate")) {
-            mc.dropMessage("Your total absolute XP multiplier: " + (player.getAbsoluteXp() * c.getChannelServer().getExpRate()));
+            mc.dropMessage(
+                "Your total absolute XP multiplier: " +
+                    (player.getAbsoluteXp() * c.getChannelServer().getExpRate())
+            );
         } else if (splitted[0].equalsIgnoreCase("@whodrops")) {
             if (splitted.length < 2) {
                 NPCScriptManager npc = NPCScriptManager.getInstance();
                 npc.start(c, 9201094);
             } else {
                 try {
-                    int searchid = Integer.parseInt(splitted[1]);
-                    List<String> retMobs = new ArrayList<>();
-                    MapleData data;
-                    MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
-                    data = dataProvider.getData("Mob.img");
-                    mc.dropMessage("Item " + searchid + " is dropped by the following mobs:");
-                    List<Pair<Integer, String>> mobPairList = new ArrayList<>();
+                    int searchId = Integer.parseInt(splitted[1]);
+                    Set<String> retMobs = new LinkedHashSet<>();
+                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    mc.dropMessage(ii.getName(searchId) + " (" + searchId + ") is dropped by the following mobs:");
                     Connection con = DatabaseConnection.getConnection();
-                    PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
-                    ps.setInt(1, searchid);
+                    PreparedStatement ps =
+                        con.prepareStatement(
+                            "SELECT monsterid FROM monsterdrops WHERE itemid = ?"
+                        );
+                    ps.setInt(1, searchId);
                     ResultSet rs = ps.executeQuery();
-                    for (MapleData mobIdData : data.getChildren()) {
-                        int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                        String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
-                        mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
-                    }
                     while (rs.next()) {
-                        int mobn = rs.getInt("monsterid");
-                        for (Pair<Integer, String> mobPair : mobPairList) {
-                            if (mobPair.getLeft() == (mobn) && !retMobs.contains(mobPair.getRight())) {
-                                retMobs.add(mobPair.getRight());
-                            }
+                        int mobId = rs.getInt("monsterid");
+                        MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                        if (mob != null) {
+                            retMobs.add(mob.getName());
                         }
                     }
                     rs.close();
@@ -411,15 +422,8 @@ public class PlayerCommands implements Command {
                                 mc.dropMessage("No item could be found with the search string provided.");
                                 return;
                             }
-                            List<String> retMobs = new ArrayList<>();
-                            MapleData data;
-                            MapleDataProvider dataProvider =
-                                MapleDataProviderFactory.getDataProvider(
-                                    new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
-                                );
-                            data = dataProvider.getData("Mob.img");
+                            Set<String> retMobs = new LinkedHashSet<>();
                             mc.dropMessage(candidate.getRight() + " is dropped by the following mobs:");
-                            List<Pair<Integer, String>> mobPairList = new ArrayList<>();
                             Connection con = DatabaseConnection.getConnection();
                             PreparedStatement ps =
                                 con.prepareStatement(
@@ -427,21 +431,11 @@ public class PlayerCommands implements Command {
                                 );
                             ps.setInt(1, searchid);
                             ResultSet rs = ps.executeQuery();
-                            for (MapleData mobIdData : data.getChildren()) {
-                                int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                                String mobNameFromData =
-                                    MapleDataTool.getString(
-                                        mobIdData.getChildByPath("name"),
-                                        "NO-NAME"
-                                    );
-                                mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
-                            }
                             while (rs.next()) {
-                                int mobn = rs.getInt("monsterid");
-                                for (Pair<Integer, String> mobPair : mobPairList) {
-                                    if (mobPair.getLeft() == (mobn) && !retMobs.contains(mobPair.getRight())) {
-                                        retMobs.add(mobPair.getRight());
-                                    }
+                                int mobId = rs.getInt("monsterid");
+                                MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                                if (mob != null) {
+                                    retMobs.add(mob.getName());
                                 }
                             }
                             rs.close();
@@ -469,22 +463,22 @@ public class PlayerCommands implements Command {
                 );
             } else {
                 try {
-                    int searchid = Integer.parseInt(splitted[1]);
-                    MapleInventoryType itemtype = null;
-                    String itemtypestring = null;
+                    int searchId = Integer.parseInt(splitted[1]);
+                    MapleInventoryType itemType = null;
+                    String itemTypeString = null;
                     if (splitted.length > 2) {
                         switch (splitted[2].toLowerCase()) {
                             case "eqp":
-                                itemtypestring = "equip";
-                                itemtype = MapleInventoryType.EQUIP;
+                                itemTypeString = "equip";
+                                itemType = MapleInventoryType.EQUIP;
                                 break;
                             case "use":
-                                itemtypestring = "use";
-                                itemtype = MapleInventoryType.USE;
+                                itemTypeString = "use";
+                                itemType = MapleInventoryType.USE;
                                 break;
                             case "etc":
-                                itemtypestring = "etc";
-                                itemtype = MapleInventoryType.ETC;
+                                itemTypeString = "etc";
+                                itemType = MapleInventoryType.ETC;
                                 break;
                             default:
                                 mc.dropMessage(
@@ -494,37 +488,49 @@ public class PlayerCommands implements Command {
                                 return;
                         }
                     }
-                    List<String> retItems = new ArrayList<>();
-                    if (itemtypestring != null) {
-                        mc.dropMessage("Monster ID " + searchid + " drops the following " + itemtypestring + " items:");
+                    Set<String> retItems = new LinkedHashSet<>();
+                    MapleMonster mob = MapleLifeFactory.getMonster(searchId);
+                    if (mob == null) {
+                        mc.dropMessage("There is no such monster with that ID.");
+                        return;
+                    }
+                    if (itemTypeString != null) {
+                        mc.dropMessage(
+                            mob.getName() +
+                                " (" +
+                                searchId +
+                                ") drops the following " +
+                                itemTypeString +
+                                " items:"
+                        );
                     } else {
-                        mc.dropMessage("Monster ID " + searchid + " drops the following items:");
+                        mc.dropMessage(mob.getName() + " (" + searchId + ") drops the following items:");
                     }
                     Connection con = DatabaseConnection.getConnection();
-                    PreparedStatement ps = con.prepareStatement("SELECT itemid FROM monsterdrops WHERE monsterid = ?");
-                    ps.setInt(1, searchid);
+                    PreparedStatement ps =
+                        con.prepareStatement(
+                            "SELECT itemid FROM monsterdrops WHERE monsterid = ?"
+                        );
+                    ps.setInt(1, searchId);
                     ResultSet rs = ps.executeQuery();
                     MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     while (rs.next()) {
-                        int itemid = rs.getInt("itemid");
-                        if (itemtype == null) {
-                            retItems.add(ii.getName(itemid));
-                        } else {
-                            if (itemtype == ii.getInventoryType(itemid)) {
-                                retItems.add(ii.getName(itemid));
-                            }
+                        int itemId = rs.getInt("itemid");
+                        if (itemType == null || itemType == ii.getInventoryType(itemId)) {
+                            retItems.add(ii.getName(itemId));
                         }
                     }
                     rs.close();
                     ps.close();
                     if (!retItems.isEmpty()) {
-                        String retitemstring = "";
+                        StringBuilder retItemString_ = new StringBuilder();
                         for (String singleRetItem : retItems) {
-                            retitemstring += singleRetItem + ", ";
+                            retItemString_.append(singleRetItem).append(", ");
                         }
-                        mc.dropMessage(retitemstring.substring(0, retitemstring.length() - 2));
+                        String retItemString = retItemString_.toString();
+                        mc.dropMessage(retItemString.substring(0, retItemString.length() - 2));
                     } else {
-                        if (itemtypestring != null) {
+                        if (itemTypeString != null) {
                             mc.dropMessage("This mob does not drop any items of the specified kind.");
                         } else {
                             mc.dropMessage("This mob does not drop any items.");
@@ -534,80 +540,65 @@ public class PlayerCommands implements Command {
                     System.err.print("@monsterdrops failed: " + sqle);
                 } catch (NumberFormatException nfe) {
                     try {
-                        int searchid = 0;
-                        String searchstring = null;
-                        MapleInventoryType itemtype = null;
-                        String itemtypestring = null;
+                        int searchId = 0;
+                        String searchString = null;
+                        MapleInventoryType itemType = null;
+                        String itemTypeString = null;
                         for (int i = 1; i < splitted.length; ++i) {
                             if (i == 1) {
-                                searchstring = splitted[i];
+                                searchString = splitted[i];
                             } else {
                                 switch (splitted[i].toLowerCase()) {
                                     case "eqp":
-                                        itemtypestring = "equip";
-                                        itemtype = MapleInventoryType.EQUIP;
+                                        itemTypeString = "equip";
+                                        itemType = MapleInventoryType.EQUIP;
                                         break;
                                     case "use":
-                                        itemtypestring = "use";
-                                        itemtype = MapleInventoryType.USE;
+                                        itemTypeString = "use";
+                                        itemType = MapleInventoryType.USE;
                                         break;
                                     case "etc":
-                                        itemtypestring = "etc";
-                                        itemtype = MapleInventoryType.ETC;
+                                        itemTypeString = "etc";
+                                        itemType = MapleInventoryType.ETC;
                                         break;
                                     default:
-                                        itemtype = null;
-                                        searchstring += " " + splitted[i];
+                                        itemType = null;
+                                        searchString += " " + splitted[i];
                                         break;
                                 }
                             }
                         }
-                        if (searchstring == null) {
+                        if (searchString == null) {
                             mc.dropMessage(
                                 "Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] " +
                                     "or @monsterdrops <searchstring> [eqp/use/etc] instead."
                             );
                             return;
                         }
-                        searchstring = searchstring.toUpperCase();
-                        List<String> retItems = new ArrayList<>();
-                        MapleData data;
-                        MapleDataProvider dataProvider =
-                            MapleDataProviderFactory.getDataProvider(
-                                new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
-                            );
-                        data = dataProvider.getData("Mob.img");
-                        List<Pair<Integer, String>> mobPairList = new ArrayList<>();
-                        for (MapleData mobIdData : data.getChildren()) {
-                            int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                            String mobNameFromData =
-                                MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
-                            mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
-                        }
-                        String bestmatch = null;
-                        for (Pair<Integer, String> mobPair : mobPairList) {
-                            if (mobPair.getRight().toUpperCase().startsWith(searchstring)) {
-                                if (bestmatch == null) {
-                                    bestmatch = mobPair.getRight();
-                                    searchid = mobPair.getLeft();
-                                } else {
-                                    if (mobPair.getRight().length() < bestmatch.length()) {
-                                        bestmatch = mobPair.getRight();
-                                        searchid = mobPair.getLeft();
-                                    }
+                        searchString = searchString.toUpperCase();
+                        Set<String> retItems = new LinkedHashSet<>();
+                        String bestMatch = null;
+                        Set<Map.Entry<Integer, MapleMonsterStats>> monsterStats =
+                            MapleLifeFactory.readMonsterStats().entrySet();
+                        for (Map.Entry<Integer, MapleMonsterStats> ms : monsterStats) {
+                            String name = ms.getValue().getName();
+                            if (name.toUpperCase().startsWith(searchString)) {
+                                if (bestMatch == null || name.length() < bestMatch.length()) {
+                                    bestMatch = name;
+                                    searchId = ms.getKey();
                                 }
                             }
                         }
-                        if (bestmatch != null) {
-                            if (itemtypestring != null) {
-                                mc.dropMessage(bestmatch + " drops the following " + itemtypestring + " items:");
+                        if (bestMatch != null) {
+                            if (itemTypeString != null) {
+                                mc.dropMessage(bestMatch + " drops the following " + itemTypeString + " items:");
                             } else {
-                                mc.dropMessage(bestmatch + " drops the following items:");
+                                mc.dropMessage(bestMatch + " drops the following items:");
                             }
                         } else {
                             mc.dropMessage(
                                 "No mobs were found that start with \"" +
-                                    searchstring.toLowerCase() +
+                                    searchString.toLowerCase() +
                                     "\"."
                             );
                             return;
@@ -617,29 +608,26 @@ public class PlayerCommands implements Command {
                             con.prepareStatement(
                                 "SELECT itemid FROM monsterdrops WHERE monsterid = ?"
                             );
-                        ps.setInt(1, searchid);
+                        ps.setInt(1, searchId);
                         ResultSet rs = ps.executeQuery();
                         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                         while (rs.next()) {
-                            int itemid = rs.getInt("itemid");
-                            if (itemtype == null) {
-                                retItems.add(ii.getName(itemid));
-                            } else {
-                                if (itemtype == ii.getInventoryType(itemid)) {
-                                    retItems.add(ii.getName(itemid));
-                                }
+                            int itemId = rs.getInt("itemid");
+                            if (itemType == null || itemType == ii.getInventoryType(itemId)) {
+                                retItems.add(ii.getName(itemId));
                             }
                         }
                         rs.close();
                         ps.close();
                         if (!retItems.isEmpty()) {
-                            String retitemstring = "";
+                            StringBuilder retItemString_ = new StringBuilder();
                             for (String singleRetItem : retItems) {
-                                retitemstring += singleRetItem + ", ";
+                                retItemString_.append(singleRetItem).append(", ");
                             }
-                            mc.dropMessage(retitemstring.substring(0, retitemstring.length() - 2));
+                            String retItemString = retItemString_.toString();
+                            mc.dropMessage(retItemString.substring(0, retItemString.length() - 2));
                         } else {
-                            if (itemtypestring != null) {
+                            if (itemTypeString != null) {
                                 mc.dropMessage("This mob does not drop any items of the specified kind.");
                             } else {
                                 mc.dropMessage("This mob does not drop any items.");
@@ -987,7 +975,7 @@ public class PlayerCommands implements Command {
             player.getMap().getMapObjectsInRange(
                 new Point(0, 0),
                 Double.POSITIVE_INFINITY,
-                Collections.singletonList(MapleMapObjectType.MONSTER)
+                MapleMapObjectType.MONSTER
             )
             .stream()
             .map(mmo -> (MapleMonster) mmo)
@@ -1033,7 +1021,7 @@ public class PlayerCommands implements Command {
                 player.getMap().getMapObjectsInRange(
                     new Point(0, 0),
                     Double.POSITIVE_INFINITY,
-                    Collections.singletonList(MapleMapObjectType.MONSTER)
+                    MapleMapObjectType.MONSTER
                 )
                 .stream()
                 .map(mmo -> (MapleMonster) mmo)
@@ -1164,6 +1152,7 @@ public class PlayerCommands implements Command {
                     name +
                         "'s total overflow EXP: " +
                         digitGroupings.stream()
+                                      .filter(s -> !s.isEmpty())
                                       .reduce((accu, grouping) -> accu + "," + grouping)
                                       .orElse("0")
                 );
@@ -1243,8 +1232,8 @@ public class PlayerCommands implements Command {
                     return;
                 }
                 String[] nfSplit = splitted[i].split("(?i)d");
-                final int n = Integer.parseInt(nfSplit[0]);
-                final int f = Integer.parseInt(nfSplit[1]);
+                final int n = Integer.parseInt(nfSplit[0]),
+                          f = Integer.parseInt(nfSplit[1]);
                 if (i > 1) {
                     msg.append(" + ");
                 }
@@ -1286,6 +1275,76 @@ public class PlayerCommands implements Command {
                 NPCScriptManager.getInstance().start(partner.getClient(), 9201002, "marriagequestion", player);
             } else {
                 mc.dropMessage("It looks like you or your partner are already married!");
+            }
+        } else if (splitted[0].equals("@whoquestdrops")) {
+            try {
+                String searchString = "";
+                for (int i = 1; i < splitted.length; ++i) {
+                    if (i == 1) {
+                        searchString += splitted[i];
+                    } else {
+                        searchString += " " + splitted[i];
+                    }
+                }
+                if (searchString.isEmpty()) {
+                    mc.dropMessage("Invalid syntax. Use @whoquestdrops <searchstring> instead.");
+                    return;
+                }
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchString);
+                Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchString);
+                Pair<Integer, String> etccandidate = ii.getEtcByName(searchString);
+                Pair<Integer, String> candidate = consumecandidate;
+                if (etccandidate != null && (candidate == null || etccandidate.getRight().length() < candidate.getRight().length())) {
+                    candidate = etccandidate;
+                }
+                if (eqpcandidate != null && (candidate == null || eqpcandidate.getRight().length() < candidate.getRight().length())) {
+                    candidate = eqpcandidate;
+                }
+
+                try {
+                    int searchid;
+                    if (candidate != null) {
+                        searchid = candidate.getLeft();
+                    } else {
+                        mc.dropMessage("No item could be found with the search string provided.");
+                        return;
+                    }
+                    List<Pair<String, Integer>> retMobs = new ArrayList<>();
+                    mc.dropMessage(candidate.getRight() + " is dropped as a quest drop by the following mobs:");
+                    Connection con = DatabaseConnection.getConnection();
+                    PreparedStatement ps =
+                        con.prepareStatement(
+                            "SELECT monsterid, questid FROM monsterquestdrops WHERE itemid = ?"
+                        );
+                    ps.setInt(1, searchid);
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        int mobId = rs.getInt("monsterid");
+                        int questId = rs.getInt("questid");
+                        MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                        if (mob != null) {
+                            retMobs.add(new Pair<>(mob.getName(), questId));
+                        }
+                    }
+                    rs.close();
+                    ps.close();
+                    if (!retMobs.isEmpty()) {
+                        for (Pair<String, Integer> singleRetMob : retMobs) {
+                            mc.dropMessage(
+                                singleRetMob.getLeft() +
+                                    ", quest: " +
+                                    MapleQuest.getInstance(singleRetMob.getRight()).getName()
+                            );
+                        }
+                    } else {
+                        mc.dropMessage("No mobs drop this item as a quest drop.");
+                    }
+                } catch (SQLException sqle) {
+                    System.err.print("@whoquestdrops failed: " + sqle);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -1389,7 +1448,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("samsara", 0),
             new CommandDefinition("dailyprize", 0),
             new CommandDefinition("roll", 0),
-            new CommandDefinition("engage", 0)
+            new CommandDefinition("engage", 0),
+            new CommandDefinition("whoquestdrops", 0)
         };
     }
 }

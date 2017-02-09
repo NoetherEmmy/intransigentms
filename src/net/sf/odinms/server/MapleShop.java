@@ -105,17 +105,14 @@ public class MapleShop {
     }
 
     public void sell(MapleClient c, MapleInventoryType type, byte slot, short quantity) {
-        if (quantity == 0) {
-            quantity = 1;
-        }
+        if (quantity == 0) quantity = 1;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         IItem item = c.getPlayer().getInventory(type).getItem(slot);
+        if (item == null) return;
         if (ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId())) {
             quantity = item.getQuantity();
         }
-        if (quantity < 0) {
-            return;
-        }
+        if (quantity < 0) return;
         short iQuant = item.getQuantity();
         if (quantity <= iQuant && iQuant > 0) {
             MapleInventoryManipulator.removeFromSlot(c, type, slot, quantity, false);
