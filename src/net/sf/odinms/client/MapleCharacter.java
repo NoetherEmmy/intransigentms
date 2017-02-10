@@ -5072,7 +5072,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setPartyQuest(PartyQuest pq) {
-        this.partyQuest = pq;
+        partyQuest = pq;
     }
 
     public void addDoor(MapleDoor door) {

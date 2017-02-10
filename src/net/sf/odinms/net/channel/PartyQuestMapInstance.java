@@ -93,6 +93,8 @@ public class PartyQuestMapInstance {
             System.err.println("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
             se.printStackTrace();
         } catch (NoSuchMethodException ignored) {
+        } catch (Exception e) {
+            throw new RuntimeException("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
         }
         return null;
     }
@@ -101,9 +103,25 @@ public class PartyQuestMapInstance {
         try {
             return invocable.invokeFunction(name, args);
         } catch (ScriptException se) {
-            System.err.println("Error invoking " + name + "(...) in PartyQuestMapInstance at path " + path);
+            System.err.println(
+                "Error invoking " +
+                    name +
+                    "(" +
+                    Arrays.deepToString(args) +
+                    ") in PartyQuestMapInstance at path " +
+                    path
+            );
             se.printStackTrace();
         } catch (NoSuchMethodException ignored) {
+        } catch (Exception e) {
+            throw new RuntimeException(
+                "Error invoking " +
+                    name +
+                    "(" +
+                    Arrays.deepToString(args) +
+                    ") in PartyQuestMapInstance at path " +
+                    path
+            );
         }
         return null;
     }

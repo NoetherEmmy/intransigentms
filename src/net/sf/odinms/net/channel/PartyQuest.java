@@ -225,8 +225,8 @@ public class PartyQuest {
     }
 
     public void dispose() {
-        try {
-            players.forEach(p -> {
+        players.forEach(p -> {
+            try {
                 if (p == null) return;
                 pqItems.forEach(itemId ->
                     MapleInventoryManipulator.removeAllById(
@@ -237,23 +237,35 @@ public class PartyQuest {
                 );
                 p.setPartyQuest(null);
                 if (p.getMapId() != exitMapId) p.changeMap(exitMapId);
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        players.clear();
-        registeredPlayerIds.clear();
-        try {
-            while (!mapInstances.isEmpty()) {
-                mapInstances.get(0).dispose();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        });
+
+        registeredPlayerIds.clear();
+
+        while (!mapInstances.isEmpty()) {
+            try {
+                mapInstances.get(0).dispose();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
         pqItems.clear();
         ChannelServer.getInstance(channel).unregisterPartyQuest(name);
         if (disposeTask != null) disposeTask.cancel(false);
         disposeTask = null;
+        players.forEach(p -> {
+            try {
+                if (p == null) return;
+                p.setPartyQuest(null);
+                if (p.getMapId() != exitMapId) p.changeMap(exitMapId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        players.clear();
     }
 
     public void startTimer(long time) {
