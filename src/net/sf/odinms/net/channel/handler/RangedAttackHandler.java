@@ -183,10 +183,15 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
         } else {
             MapleInventory equip = player.getInventory(MapleInventoryType.EQUIPPED);
             IItem weapon = equip.getItem((byte) -11);
+            if (weapon == null) return;
             MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
             MapleWeaponType type = mii.getWeaponType(weapon.getItemId());
             if (type == MapleWeaponType.NOT_A_WEAPON) {
-                throw new RuntimeException("[h4x] Player " + player.getName() + " is attacking with something that's not a weapon");
+                throw new RuntimeException(
+                    "[h4x] Player " +
+                        player.getName() +
+                        " is attacking with something that's not a weapon."
+                );
             }
             MapleInventory use = player.getInventory(MapleInventoryType.USE);
             int projectile = 0;

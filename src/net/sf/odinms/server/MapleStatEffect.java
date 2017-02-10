@@ -572,11 +572,25 @@ public class MapleStatEffect implements Serializable {
 
         if (primary) {
             if (itemConNo != 0) {
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 if (sourceid != 2321006) {
-                    MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(itemCon);
+                    if (applyFrom.getItemQuantity(itemCon, false) < itemConNo) {
+                        String skillName = SkillFactory.getSkillName(sourceid);
+                        applyFrom.dropMessage(
+                            5,
+                            "You do not have enough " +
+                                ii.getName(itemCon) +
+                                " to use " +
+                                (skillName != null ? skillName : "that") +
+                                "."
+                        );
+                        applyFrom.getClient().getSession().write(MaplePacketCreator.enableActions());
+                        return false;
+                    }
+                    MapleInventoryType type = ii.getInventoryType(itemCon);
                     MapleInventoryManipulator.removeById(applyTo.getClient(), type, itemCon, itemConNo, false, true);
                 } else {
-                    MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(itemCon);
+                    MapleInventoryType type = ii.getInventoryType(itemCon);
                     if (applyFrom.getItemQuantity(itemCon, false) >= itemConNo) {
                         MapleInventoryManipulator.removeById(
                             applyTo.getClient(),
@@ -747,7 +761,7 @@ public class MapleStatEffect implements Serializable {
             hpMpUpdate.add(new Pair<>(MapleStat.HP, applyTo.getHp()));
         }
         if (mpChange != 0) {
-            if (mpChange < 0 && (-mpChange) > applyTo.getMp()) {
+            if (mpChange < 0 && -mpChange > applyTo.getMp()) {
                 if (applyFrom != null) {
                     applyFrom.getClient().getSession().write(MaplePacketCreator.enableActions());
                 }
@@ -869,8 +883,18 @@ public class MapleStatEffect implements Serializable {
             }
         }
         if (sourceid == 5111005) {
-            List<Pair<MapleBuffStat, Integer>> pMorphStatup = Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, getMorph(applyTo)));
-            applyTo.getClient().getSession().write(MaplePacketCreator.giveBuff(sourceid, getDuration(), pMorphStatup));
+            List<Pair<MapleBuffStat, Integer>> pMorphStatup =
+                Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, getMorph(applyTo)));
+            applyTo
+                .getClient()
+                .getSession()
+                .write(
+                    MaplePacketCreator.giveBuff(
+                        sourceid,
+                        getDuration(),
+                        pMorphStatup
+                    )
+                );
         }
         return true;
     }

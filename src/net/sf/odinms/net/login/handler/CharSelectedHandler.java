@@ -41,8 +41,8 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
                 String[] socket = LoginServer.getInstance().getIP(c.getChannel()).split(":");
                 c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName(channelServerIP), Integer.parseInt(socket[1]), charId));
             }
-        } catch (UnknownHostException e) {
-            log.error("Host not found", e);
+        } catch (UnknownHostException uhe) {
+            log.error("Host not found. ", uhe);
         }
     }
 }
