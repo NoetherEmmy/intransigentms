@@ -722,7 +722,7 @@ public class MapleStatEffect implements Serializable {
             mobsInRange = applyFrom.getMap()
                                    .getMapObjectsInRange(
                                        applyFrom.getPosition(),
-                                       200000 + applyFrom.getSkillLevel(SkillFactory.getSkill(sourceid)) * 10000,
+                                       200000 + applyFrom.getSkillLevel(sourceid) * 10000,
                                        MapleMapObjectType.MONSTER
                                    );
             for (MapleMapObject _mob : mobsInRange) {
@@ -1197,14 +1197,14 @@ public class MapleStatEffect implements Serializable {
                     if (statup.getLeft() == MapleBuffStat.WATK) {
                         alreadyHasWatk = true;
                         // 3 * skillLevel + casterLevel / 1.3d
-                        int watt = (int) ((3.0d * applyFrom.getSkillLevel(SkillFactory.getSkill(localSourceId))) + (applyFrom.getLevel() / 1.3d));
+                        int watt = (int) ((3.0d * applyFrom.getSkillLevel(localSourceId)) + (applyFrom.getLevel() / 1.3d));
                         localStatups.set(i, new Pair<>(MapleBuffStat.WATK, watt));
                         break;
                     }
                 }
                 */
             if (applyFrom.getId() == applyTo.getId()) {
-                int watt = (int) ((3.0d * applyFrom.getSkillLevel(SkillFactory.getSkill(localSourceId))) + (applyFrom.getLevel() / 1.3d));
+                int watt = (int) ((3.0d * applyFrom.getSkillLevel(localSourceId)) + (applyFrom.getLevel() / 1.3d));
                 localStatups.add(0, new Pair<>(MapleBuffStat.WATK, watt));
             }
             //}
@@ -1212,11 +1212,11 @@ public class MapleStatEffect implements Serializable {
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                 if (localStatup.getLeft() == MapleBuffStat.WDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getWdef();
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(getSourceId())).getWdef();
                     int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / defScaleFactor));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(SkillFactory.getSkill(getSourceId()))).getMdef();
+                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(getSourceId())).getMdef();
                     int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / defScaleFactor));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }

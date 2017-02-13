@@ -108,14 +108,22 @@ public class MapleQuest {
     }
 
     public static MapleQuest getInstance(int id) {
-        MapleQuest ret = quests.get(id);
-        if (ret == null) {
-            if (id > 99999) {
-                ret = new MapleCustomQuest(id);
-            } else {
-                ret = new MapleQuest(id);
+        MapleQuest ret;
+        if (!quests.containsKey(id)) {
+            try {
+                if (id > 99999) {
+                    ret = new MapleCustomQuest(id);
+                } else {
+                    ret = new MapleQuest(id);
+                }
+            } catch (NullPointerException npe) {
+                log.info("Bad quest data or no quest data at all for ID " + id, npe);
+                quests.put(id, null);
+                return null;
             }
             quests.put(id, ret);
+        } else {
+            ret = quests.get(id);
         }
         return ret;
     }

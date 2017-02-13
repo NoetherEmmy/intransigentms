@@ -93,12 +93,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         List<DropEntry> dl =
             mi.retrieveDropChances(getId())
               .stream()
-              .filter(de ->
-                  de.questId < 1 ||
-                  owner.getQuest(MapleQuest.getInstance(de.questId))
-                       .getStatus()
-                       .equals(MapleQuestStatus.Status.STARTED)
-              )
+              .filter(de -> {
+                  if (de.questId < 1) {
+                      return true;
+                  }
+                  MapleQuest quest = MapleQuest.getInstance(de.questId);
+                  return quest == null || owner.getQuest(quest).getStatus().equals(MapleQuestStatus.Status.STARTED);
+              })
               .collect(Collectors.toCollection(ArrayList::new));
         for (DropEntry d : dl) {
             if (d.chance > minChance) {
@@ -1189,8 +1190,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     private final class PoisonTask implements Runnable {
-        private final int minPoisonDamage;
-        private final int maxPoisonDamage;
+        private final int minPoisonDamage, maxPoisonDamage;
         private final MapleCharacter chr;
         private final MonsterStatusEffect status;
         private final Runnable cancelTask;
@@ -1216,9 +1216,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         public void run() {
             int damage;
             if (minPoisonDamage == maxPoisonDamage) {
-                damage = maxPoisonDamage;
+                damage = (int) (minPoisonDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
             } else {
-                damage = (int) (minPoisonDamage + Math.random() * (maxPoisonDamage - minPoisonDamage + 1.0d));
+                int localMinDmg = (int) (minPoisonDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                int localMaxDmg = (int) (maxPoisonDamage - MapleMonster.this.getMdef() * 0.5d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                damage = (int) (localMinDmg + Math.random() * (localMaxDmg - localMinDmg + 1.0d));
             }
             if (damage >= hp) {
                 damage = hp - 1;
@@ -1263,9 +1265,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             int damage;
             boolean docancel = false;
             if (minFlameDamage == maxFlameDamage) {
-                damage = maxFlameDamage;
+                damage = (int) (minFlameDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
             } else {
-                damage = (int) (minFlameDamage + Math.random() * (maxFlameDamage - minFlameDamage + 1));
+                int localMinDmg = (int) (minFlameDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                int localMaxDmg = (int) (maxFlameDamage - MapleMonster.this.getMdef() * 0.5d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                damage = (int) (localMinDmg + Math.random() * (localMaxDmg - localMinDmg + 1));
             }
             if (damage >= hp) {
                 docancel = true;
@@ -1292,17 +1296,21 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private class AttackingMapleCharacter {
         private final MapleCharacter attacker;
         private long lastAttackTime;
+
         public AttackingMapleCharacter(MapleCharacter attacker, long lastAttackTime) {
             super();
             this.attacker = attacker;
             this.lastAttackTime = lastAttackTime;
         }
+
         public long getLastAttackTime() {
             return lastAttackTime;
         }
+
         public void setLastAttackTime(long lastAttackTime) {
             this.lastAttackTime = lastAttackTime;
         }
+
         public MapleCharacter getAttacker() {
             return attacker;
         }
@@ -1327,7 +1335,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         private final ChannelServer cserv;
 
         public SingleAttackerEntry(MapleCharacter from, ChannelServer cserv) {
-            this.chrid = from.getId();
+            chrid = from.getId();
             this.cserv = cserv;
         }
 

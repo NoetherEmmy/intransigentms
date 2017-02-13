@@ -81,7 +81,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 }
             } else if (
                 (player.getJob().equals(MapleJob.BUCCANEER) || player.getJob().equals(MapleJob.MARAUDER)) &&
-                player.getSkillLevel(SkillFactory.getSkill(5110001)) > 0
+                player.getSkillLevel(5110001) > 0
             ) {
                 for (int i = 0; i < attack.numAttacked; ++i) {
                     player.handleEnergyChargeGain();
@@ -468,7 +468,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         if (weapon == MapleWeaponType.BLUNT1H || weapon == MapleWeaponType.BLUNT2H) {
             if (player.hasMagicGuard()) { // If player has Magic Guard on them currently.
                 final double magicGuardRadius = 70000.0d; // Squared distance
-                int magicGuardLevel = player.getSkillLevel(SkillFactory.getSkill(2001002));
+                int magicGuardLevel = player.getSkillLevel(2001002);
                 if (magicGuardLevel > 0) { // Their Magic Guard level should be greater than 0 if they have the buff on, but this is to make absolutely sure.
                     int splashedMonsterCount = (magicGuardLevel / 10) + 1; // Magic Guard strikes 1 additional mob at lvls 1 - 9, 2 at lvls 10 - 19, and 3 at lvl 20.
                     double maxDmgMulti = ((double) magicGuardLevel * 0.01d) + 0.8d; // The maximum damage (% of original strike) that splash damage can do.

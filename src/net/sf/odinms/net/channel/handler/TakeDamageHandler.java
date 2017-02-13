@@ -151,7 +151,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
         boolean smokescreened = false;
         try {
-            Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
+            final Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
             while (mmoiter.hasNext()) {
                 MapleMapObject mmo = mmoiter.next();
                 if (mmo instanceof MapleMist) {
@@ -165,6 +165,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                   );
                         for (MapleMapObject mmoPlayer : mmoPlayers) {
                             if (player == mmoPlayer) {
+                                removedDamage += damage;
                                 damage = -1;
                                 smokescreened = true;
                             }
@@ -285,7 +286,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                               );
                         player.checkMonsterAggro(attacker);
                     }
-                    if (damageFrom == -1 && player.getSkillLevel(SkillFactory.getSkill(2310000)) != 0) {
+                    if (damageFrom == -1 && player.getSkillLevel(2310000) != 0) {
                         boolean isWearingShield = false;
                         for (IItem item : player.getInventory(MapleInventoryType.EQUIPPED)) {
                             IEquip equip = (IEquip) item;
@@ -295,7 +296,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                             }
                         }
                         if (isWearingShield) {
-                            int bounceDamage = (int) ((double) damage * ((10.0d * (double) player.getSkillLevel(SkillFactory.getSkill(2310000))) / 100.0d));
+                            int bounceDamage = (int) ((double) damage * ((10.0d * (double) player.getSkillLevel(2310000)) / 100.0d));
                             bounceDamage = Math.min(bounceDamage, attacker.getMaxHp() / 2);
                             player.getMap().damageMonster(player, attacker, bounceDamage);
                             player.getMap().broadcastMessage(

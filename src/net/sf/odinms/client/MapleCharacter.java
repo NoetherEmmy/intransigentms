@@ -1662,7 +1662,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getBattleshipMaxHp() {
-        return (getSkillLevel(SkillFactory.getSkill(5221006)) * 4000) + ((getLevel() - 120) * 2000);
+        return (getSkillLevel(5221006) * 4000) + ((getLevel() - 120) * 2000);
     }
 
     public int decrementBattleshipHp(int decrement) {

@@ -97,7 +97,7 @@ public class MapleMap {
                 this.monsterRate = 1.0f - this.monsterRate;
             }
             if (hasElevatedSpawn(mapid)) {
-                this.monsterRate /= 2.0f;
+                this.monsterRate /= 8.0f;
             }
             respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5000L);
         }
@@ -1342,7 +1342,7 @@ public class MapleMap {
 
     public void spawnSummon(final MapleSummon summon) {
         spawnAndAddRangedMapObject(summon, c -> {
-            int skillLevel = summon.getOwner().getSkillLevel(SkillFactory.getSkill(summon.getSkill()));
+            int skillLevel = summon.getOwner().getSkillLevel(summon.getSkill());
             c.getSession().write(MaplePacketCreator.spawnSpecialMapObject(summon, skillLevel, true));
         }, null);
     }

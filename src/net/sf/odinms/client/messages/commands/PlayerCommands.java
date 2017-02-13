@@ -1069,12 +1069,26 @@ public class PlayerCommands implements Command {
                 player.dropMessage("It doesn't look like you're reading at the moment.");
             }
         } else if (splitted[0].equals("@defense") || splitted[0].equals("@defence")) {
-            player.dropMessage(
-                "Weapon defense: " +
-                    player.getTotalWdef() +
-                    ", magic defense: " +
-                    player.getTotalMdef()
-            );
+            int wdef = player.getTotalWdef();
+            int mdef = player.getTotalMdef();
+            double dodgeChance;
+            if (wdef > 1999) {
+                dodgeChance = 100.0d * (Math.log1p(wdef - 1999.0d) / Math.log(2.0d)) / 25.0d;
+            } else {
+                dodgeChance = 0.0d;
+            }
+            int wAtkReduce = Math.max(wdef - 1999, 0);
+            int mAtkReduce;
+            if (mdef > 1999) {
+                mAtkReduce = (int) Math.ceil(Math.pow(mdef - 1999.0d, 1.2d));
+            } else {
+                mAtkReduce = 0;
+            }
+            DecimalFormat df = new DecimalFormat("#.000");
+            player.dropMessage("Weapon defense: " + wdef + ", magic defense: " + mdef);
+            player.dropMessage("Chance to dodge weapon attacks based on defense: " + df.format(dodgeChance) + "%");
+            player.dropMessage("Absolute damage reduction vs. weapon attacks: " + wAtkReduce);
+            player.dropMessage("Absolute damage reduction vs. magic attacks: " + mAtkReduce);
         } else if (splitted[0].equals("@ria")) {
             NPCScriptManager.getInstance().start(c, 9010003);
         } else if (splitted[0].equals("@pqpoints")) {

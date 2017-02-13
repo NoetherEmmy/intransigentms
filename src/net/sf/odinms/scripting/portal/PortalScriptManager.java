@@ -43,7 +43,7 @@ public class PortalScriptManager {
             CompiledScript compiled = ((Compilable) portal).compile(fr);
             compiled.eval();
         } catch (ScriptException | IOException e) {
-            log.error("THROW", e);
+            log.error("THROW from script " + scriptName + ".js ", e);
         } finally {
             if (fr != null) {
                 try {

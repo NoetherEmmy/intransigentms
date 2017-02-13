@@ -32,7 +32,7 @@ public abstract class AbstractScriptManager {
                     System.err.println("path0: " + path);
                     return null;
                 }
-                engine = sem.getEngineByName("javascript");
+                engine = sem.getEngineByName("nashorn");
                 if (c != null) {
                     c.setScriptEngine(path, engine);
                 }

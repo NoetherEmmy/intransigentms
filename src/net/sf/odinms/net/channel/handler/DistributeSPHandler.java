@@ -38,9 +38,9 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
             case 1000:
             case 1001:
             case 1002:
-                int snailsLevel = player.getSkillLevel(SkillFactory.getSkill(1000));
-                int recoveryLevel = player.getSkillLevel(SkillFactory.getSkill(1001));
-                int nimbleFeetLevel = player.getSkillLevel(SkillFactory.getSkill(1002));
+                int snailsLevel = player.getSkillLevel(1000);
+                int recoveryLevel = player.getSkillLevel(1001);
+                int nimbleFeetLevel = player.getSkillLevel(1002);
                 remainingSp = Math.min((player.getLevel() - 1), 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
         }
 

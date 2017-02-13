@@ -89,6 +89,9 @@ public class PartyOperationHandler extends AbstractMaplePacketHandler {
             case 4: { // Invite.
                 String name = slea.readMapleAsciiString();
                 MapleCharacter invited = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+                if (party == null || party.getMembers() == null) {
+                    return;
+                }
                 if (invited != null) {
                     if (invited.getParty() == null) {
                         if (party.getMembers().size() < 6) {

@@ -16,12 +16,18 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        //final String channelHost = "78.47.155.10"; //dual sailr
-        //final String channelHost = "127.0.0.1";
-        //final String channelHost = "209.160.33.9";
         //String channelHost = System.getProperty("net.sf.odinms.channelserver.host");
         int charId = slea.readInt();
-        String macs = slea.readMapleAsciiString();
+        String macs;
+        try {
+            macs = slea.readMapleAsciiString();
+        } catch (ArrayIndexOutOfBoundsException aioobe) {
+            System.err.println(
+                c.getSession().getRemoteAddress() +
+                    " sending bad packets at CharSelectedHandler#handlePacket"
+            );
+            return;
+        }
         c.updateMacs(macs);
         if (c.hasBannedMac()) {
             c.getSession().close();
@@ -33,13 +39,42 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
             }
             //c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName("127.0.0.1"), 7575, charId));
             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
-            String channelServerIP = MapleClient.getChannelServerIPFromSubnet(c.getSession().getRemoteAddress().toString().replace("/", "").split(":")[0], c.getChannel());
+            String channelServerIP =
+                MapleClient
+                    .getChannelServerIPFromSubnet(
+                        c.getSession().getRemoteAddress().toString().replace("/", "").split(":")[0],
+                        c.getChannel()
+                    );
             if (channelServerIP.equals("0.0.0.0")) {
-                String[] socket = LoginServer.getInstance().getIP(c.getChannel()).split(":");
-                c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
+                String[] socket =
+                    LoginServer
+                        .getInstance()
+                        .getIP(c.getChannel())
+                        .split(":");
+                c.getSession()
+                 .write(
+                     MaplePacketCreator
+                         .getServerIP(
+                             InetAddress.getByName(socket[0]),
+                             Integer.parseInt(socket[1]),
+                             charId
+                         )
+                 );
             } else {
-                String[] socket = LoginServer.getInstance().getIP(c.getChannel()).split(":");
-                c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName(channelServerIP), Integer.parseInt(socket[1]), charId));
+                String[] socket =
+                    LoginServer
+                        .getInstance()
+                        .getIP(c.getChannel())
+                        .split(":");
+                c.getSession()
+                 .write(
+                     MaplePacketCreator
+                         .getServerIP(
+                             InetAddress.getByName(channelServerIP),
+                             Integer.parseInt(socket[1]),
+                             charId
+                         )
+                 );
             }
         } catch (UnknownHostException uhe) {
             log.error("Host not found. ", uhe);

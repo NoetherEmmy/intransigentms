@@ -126,6 +126,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     //}
                 //log.info("Got Message {}handled by {} ({}) {}\n{}", new Object[] { from, packetHandler.getClass().getSimpleName(), content.length, HexTool.toString(content), HexTool.toStringFromAscii(content) });
                 //}
+                //System.out.println(packetHandler.getClass().getSimpleName());
                 packetHandler.handlePacket(slea, client);
             } catch (Throwable t) {
                 if (!packetHandler.getClass().getName().contains("ItemPickupHandler")) {
