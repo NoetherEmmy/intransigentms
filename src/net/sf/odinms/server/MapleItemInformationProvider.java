@@ -50,7 +50,7 @@ public class MapleItemInformationProvider {
     private static final Map<String, Integer> cashEquips = new LinkedHashMap<>();
     private static boolean cashEquipsCached = false;
     private boolean namesCached = false;
-    private static final Set<Integer> chairCache = new LinkedHashSet<>();
+    private static final List<Integer> chairCache = new ArrayList<>();
     private static boolean chairsCached = false;
 
     /** Creates a new instance of MapleItemInformationProvider */
@@ -663,7 +663,7 @@ public class MapleItemInformationProvider {
         return null;
     }
 
-    public Set<Integer> getChairIds() {
+    public List<Integer> getChairIds() {
         if (!chairsCached) {
             MapleDataDirectoryEntry root = itemData.getRoot();
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
