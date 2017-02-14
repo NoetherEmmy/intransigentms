@@ -850,6 +850,7 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@morgue")) {
             if (splitted.length != 2) {
                 mc.dropMessage("Incorrect syntax. Use: @morgue <playername>");
+                return;
             }
             String name = splitted[1];
             MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);

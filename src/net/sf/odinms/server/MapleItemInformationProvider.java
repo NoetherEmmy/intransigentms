@@ -50,6 +50,8 @@ public class MapleItemInformationProvider {
     private static final Map<String, Integer> cashEquips = new LinkedHashMap<>();
     private static boolean cashEquipsCached = false;
     private boolean namesCached = false;
+    private static final Set<Integer> chairCache = new LinkedHashSet<>();
+    private static boolean chairsCached = false;
 
     /** Creates a new instance of MapleItemInformationProvider */
     protected MapleItemInformationProvider() {
@@ -661,6 +663,27 @@ public class MapleItemInformationProvider {
         return null;
     }
 
+    public Set<Integer> getChairIds() {
+        if (!chairsCached) {
+            MapleDataDirectoryEntry root = itemData.getRoot();
+            for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
+                if (!topDir.getName().equals("Install")) continue;
+                for (MapleDataFileEntry iFile : topDir.getFiles()) {
+                    if (!iFile.getName().equals("0301.img.xml")) continue;
+                    MapleData chairData = itemData.getData(topDir.getName() + "/" + iFile.getName());
+                    chairData
+                        .getChildren()
+                        .stream()
+                        .map(child -> Integer.parseInt(child.getName()))
+                        .sorted()
+                        .forEachOrdered(chairCache::add);
+                }
+            }
+            chairsCached = true;
+        }
+        return chairCache;
+    }
+
     /** Called by Coco NPC the first time someone starts a conversation with them. */
     public void cacheFaceData() {
         if (!facesCached) {
@@ -973,7 +996,7 @@ public class MapleItemInformationProvider {
         }
         MapleData item = getItemData(itemId);
         if (item == null) {
-            return -1;
+            return -1.0d;
         }
 
         double pEntry;
@@ -987,7 +1010,7 @@ public class MapleItemInformationProvider {
         } else {
             pData = item.getChildByPath("info/price");
             if (pData == null) {
-                return -1;
+                return -1.0d;
             }
             pEntry = (double) MapleDataTool.getInt(pData);
         }

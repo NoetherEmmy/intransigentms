@@ -58,7 +58,15 @@ public class XMLWZFile implements MapleDataProvider {
                 domMapleData = new XMLDomMapleData(fis, imageDataDir.getParentFile());
             } else {
                 domMapleData = null;
-                //System.err.print("Datafile " + path + " does not exist in " + root.getAbsolutePath() + ". exists = false in XMLWZFile.getData()\n");
+                /*
+                System.err.println(
+                    "Datafile " +
+                        path +
+                        " does not exist in " +
+                        root.getAbsolutePath() +
+                        ". exists = false in XMLWZFile.getData()"
+                );
+                */
             }
         } finally {
             try {

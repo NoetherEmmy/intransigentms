@@ -2595,8 +2595,8 @@ public class GM implements Command {
                     mc.dropMessage("Cound not find the specified player on your channel.");
                     return;
                 }
-                if (player.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                    mc.dropMessage("Your equipment inventory is full.");
+                if (victim.getInventory(MapleInventoryType.EQUIP).isFull()) {
+                    mc.dropMessage("Their equipment inventory is full.");
                     return;
                 }
                 try {
