@@ -669,7 +669,7 @@ public class MapleItemInformationProvider {
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (!topDir.getName().equals("Install")) continue;
                 for (MapleDataFileEntry iFile : topDir.getFiles()) {
-                    if (!iFile.getName().equals("0301.img.xml")) continue;
+                    if (!iFile.getName().contains("301")) continue;
                     MapleData chairData = itemData.getData(topDir.getName() + "/" + iFile.getName());
                     chairData
                         .getChildren()
