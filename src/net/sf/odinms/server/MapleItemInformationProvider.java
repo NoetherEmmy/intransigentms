@@ -12,15 +12,9 @@ import java.util.stream.Collectors;
 
 public class MapleItemInformationProvider {
     private static MapleItemInformationProvider instance;
-    protected final MapleDataProvider itemData;
-    protected final MapleDataProvider equipData;
-    protected final MapleDataProvider stringData;
-    protected final MapleData cashStringData;
-    protected final MapleData consumeStringData;
-    protected final MapleData eqpStringData;
-    protected final MapleData etcStringData;
-    protected final MapleData insStringData;
-    protected final MapleData petStringData;
+    protected final MapleDataProvider itemData, equipData, stringData;
+    protected final MapleData cashStringData, consumeStringData, eqpStringData,
+                              etcStringData,  insStringData,     petStringData;
     protected final Map<Integer, MapleInventoryType> inventoryTypeCache = new HashMap<>();
     protected final Map<Integer, Short> slotMaxCache = new HashMap<>();
     protected final Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
@@ -96,7 +90,7 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        // Not found? maybe it's an equip
+        // Not found? Maybe it's an equip
         root = equipData.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {

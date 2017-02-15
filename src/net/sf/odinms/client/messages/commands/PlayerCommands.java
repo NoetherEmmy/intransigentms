@@ -219,9 +219,7 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("Please make sure your AP is valid.");
             }
         } else if (splitted[0].equals("@gm")) {
-            if (splitted.length < 2) {
-                return;
-            }
+            if (splitted.length < 2) return;
             try {
                 c.getChannelServer()
                  .getWorldInterface()

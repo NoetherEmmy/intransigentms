@@ -265,7 +265,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 for (int i = 0; i < 5; ++i) {
                                     String message = slea.readMapleAsciiString();
                                     if (megassenger) {
-                                        builder.append(" ");
+                                        builder.append(' ');
                                         builder.append(message); // builder.append(" "+message);
                                     }
                                     messages.add(message);
@@ -320,10 +320,25 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         MaplePet pet = player.getPet(i);
                         if (player.getInventory(MapleInventoryType.CASH).getItem(slot) != null) {
                             int petID = pet.getItemId();
-                            if (itemId == 5240012 && petID >= 5000028 && petID <= 5000033 ||
-                                itemId == 5240021 && petID >= 5000047 && petID <= 5000053 ||
-                                itemId == 5240004 && (petID == 5000007 || petID == 5000023) ||
-                                itemId == 5240006 && (petID == 5000003 || petID == 5000007 || petID >= 5000009 && petID <= 5000010 || petID == 5000012 || petID == 5000044)) {
+                            if (
+                                itemId == 5240012 &&
+                                petID >= 5000028 &&
+                                petID <= 5000033 ||
+                                itemId == 5240021 &&
+                                petID >= 5000047 &&
+                                petID <= 5000053 ||
+                                itemId == 5240004 &&
+                                (petID == 5000007 || petID == 5000023) ||
+                                itemId == 5240006 &&
+                                (
+                                    petID == 5000003 ||
+                                    petID == 5000007 ||
+                                    petID >= 5000009 &&
+                                    petID <= 5000010 ||
+                                    petID == 5000012 ||
+                                    petID == 5000044
+                                )
+                            ) {
                                 pet.setFullness(100);
                                 int closeGain = 100 * c.getChannelServer().getPetExpRate();
                                 if (pet.getCloseness() + closeGain > 30000) {
@@ -397,7 +412,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             player.getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.changePetName(c.getPlayer(), newName), true);
                             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                         } else {
-                            cm.dropMessage("Names must be 2 - 14 characters.");
+                            cm.dropMessage("Names must be 3 ~ 13 characters.");
                         }
                     } else {
                         c.getSession().write(MaplePacketCreator.enableActions());
@@ -432,6 +447,9 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                             break;
                         }
+                        if (isZipanguMap(mapId) && !isZipanguMap(player.getMapId())) {
+                            player.setReturnMap(player.getMapId());
+                        }
                         if (mapId / 10000000 == 27 && !canGoToTimeLaneMap(player, mapId)) {
                             break;
                         }
@@ -451,7 +469,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             ChangeChannelHandler.changeChannel(channel, player.getClient());
                             victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
                         }
-                        if (victim == null) { // Player dcs / ccs while you cc
+                        if (victim == null) { // Player dcs/ccs while you cc
                             player.dropMessage("System error!");
                             break;
                         } else {
@@ -468,6 +486,9 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                             ) {
                                 player.dropMessage(1, "The map you are trying to teleport to is forbidden.");
                                 break;
+                            }
+                            if (isZipanguMap(map.getId()) && !isZipanguMap(player.getMapId())) {
+                                player.setReturnMap(player.getMapId());
                             }
                             if (map.getId() / 10000000 == 27 && !canGoToTimeLaneMap(player, map.getId())) {
                                 break;
@@ -508,7 +529,15 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
         return MapleCharacter.rand(lbound, ubound);
     }
 
-    public boolean canGoToTimeLaneMap(MapleCharacter player, int mapId) {
+    public static boolean isZipanguMap(int mapId) {
+        return
+            mapId / 1000000 == 800 ||
+            mapId / 1000000 == 801 ||
+            mapId == 809000101 ||
+            mapId == 809000201;
+    }
+
+    public static boolean canGoToTimeLaneMap(MapleCharacter player, int mapId) {
         int questNums[] = {6, 7, 8};
         boolean canGo = false;
         switch (mapId) {

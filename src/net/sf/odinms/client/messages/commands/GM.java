@@ -37,6 +37,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static net.sf.odinms.client.messages.CommandProcessor.*;
@@ -2826,6 +2827,64 @@ public class GM implements Command {
                 mc.dropMessage("Success.");
                 break;
             }
+            case "!reverselookup": {
+                try {
+                    mc.dropMessage(
+                        MapleItemInformationProvider
+                            .getInstance()
+                            .getName(
+                                Integer.parseInt(splitted[1])
+                            )
+                    );
+                } catch (Exception e) {
+                    mc.dropMessage("An error occured: " + e.getLocalizedMessage());
+                }
+            }
+            case "!warpmy": {
+                if (splitted.length != 3) {
+                    mc.dropMessage(
+                        "Invalid syntax. Use !warpmy <left/right> <map_id> or !warpmy <left/right> preevent"
+                    );
+                    return;
+                }
+                Predicate<MapleCharacter> toBeWarped;
+                if (splitted[1].equalsIgnoreCase("left")) {
+                    toBeWarped = p -> !p.isGM() && p.getPosition().x < player.getPosition().x;
+                } else if (splitted[1].equalsIgnoreCase("right")) {
+                    toBeWarped = p -> !p.isGM() && p.getPosition().x > player.getPosition().x;
+                } else {
+                    mc.dropMessage(
+                        "Invalid syntax. Use !warpmy <left/right> <map_id> or !warpmy <left/right> preevent"
+                    );
+                    return;
+                }
+                boolean preEvent_ = false;
+                int mapId_ = 0;
+                if (splitted[2].equalsIgnoreCase("preevent")) {
+                    preEvent_ = true;
+                } else {
+                    try {
+                        mapId_ = Integer.parseInt(splitted[1]);
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage("Could not parse integer for map ID.");
+                        return;
+                    }
+                }
+                final boolean preEvent = preEvent_;
+                final int mapId = mapId_;
+                player
+                    .getMap()
+                    .getCharacters()
+                    .stream()
+                    .filter(toBeWarped)
+                    .forEach(p -> {
+                        if (preEvent) {
+                            p.changeMap(p.getPreEventMap());
+                        } else {
+                            p.changeMap(mapId);
+                        }
+                    });
+            }
         }
     }
 
@@ -2992,7 +3051,9 @@ public class GM implements Command {
             new CommandDefinition("killallanddrop", 3),
             new CommandDefinition("itemquantity", 3),
             new CommandDefinition("listinv", 3),
-            new CommandDefinition("forcenpc", 3)
+            new CommandDefinition("forcenpc", 3),
+            new CommandDefinition("reverselookup", 3),
+            new CommandDefinition("warpmy", 3)
         };
     }
 

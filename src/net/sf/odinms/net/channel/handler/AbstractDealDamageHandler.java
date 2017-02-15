@@ -192,10 +192,13 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 switch (attack.skill) {
                     case 1221011: // Sanctuary
                         if (attack.isHH) {
-                            // TODO: Min damage still needs calculation. Using -20% as minimum damage in the meantime... seems to work.
-                            int HHDmg = (int) ((double) player.calculateMaxBaseDamage() * (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() / 100.0d));
-                            HHDmg = (int) (Math.random() * (HHDmg - HHDmg * 0.8d) + HHDmg * 0.8d);
-                            map.damageMonster(player, monster, HHDmg);
+                            int hpMargin = (int) Math.pow((double) monster.getHp(), 0.4d);
+                            double skillMulti =
+                                (double) (theSkill.getEffect(player.getSkillLevel(theSkill)).getDamage() + hpMargin) / 100.0d;
+                            int hhMaxDmg = (int) ((double) player.calculateMaxBaseDamage() * skillMulti);
+                            int hhMinDmg = (int) ((double) player.calculateMinBaseDamage() * skillMulti);
+                            int hhDmg = (int) (hhMinDmg + Math.random() * (hhMaxDmg - hhMinDmg + 1));
+                            map.damageMonster(player, monster, hhDmg);
                         }
                         break;
                     case 4101005: // Drain

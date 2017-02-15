@@ -94,11 +94,15 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             mi.retrieveDropChances(getId())
               .stream()
               .filter(de -> {
-                  if (de.questId < 1) {
-                      return true;
+                  if (de.questId < 1) return true;
+                  try {
+                      MapleQuest quest = MapleQuest.getInstance(de.questId);
+                      return
+                          quest == null ||
+                          owner.getQuest(quest).getStatus().equals(MapleQuestStatus.Status.STARTED);
+                  } catch (Exception e) {
+                      return false;
                   }
-                  MapleQuest quest = MapleQuest.getInstance(de.questId);
-                  return quest == null || owner.getQuest(quest).getStatus().equals(MapleQuestStatus.Status.STARTED);
               })
               .collect(Collectors.toCollection(ArrayList::new));
         for (DropEntry d : dl) {
@@ -108,7 +112,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
         for (DropEntry d : dl) {
             d.assignedRangeStart = lastAssigned + 1;
-            d.assignedRangeLength = (int) Math.ceil((1.0d / (double) d.chance) * minChance);
+            d.assignedRangeLength = (int) Math.ceil((1.0d / (double) d.chance) * (double) minChance);
             lastAssigned += d.assignedRangeLength;
         }
         Random r = new Random();

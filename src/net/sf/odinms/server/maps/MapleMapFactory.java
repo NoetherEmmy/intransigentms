@@ -93,7 +93,12 @@ public class MapleMapFactory {
                             int y1 = MapleDataTool.getInt(footHold.getChildByPath("y1"));
                             int x2 = MapleDataTool.getInt(footHold.getChildByPath("x2"));
                             int y2 = MapleDataTool.getInt(footHold.getChildByPath("y2"));
-                            MapleFoothold fh = new MapleFoothold(new Point(x1, y1), new Point(x2, y2), Integer.parseInt(footHold.getName()));
+                            MapleFoothold fh =
+                                new MapleFoothold(
+                                    new Point(x1, y1),
+                                    new Point(x2, y2),
+                                    Integer.parseInt(footHold.getName())
+                                );
                             fh.setPrev(MapleDataTool.getInt(footHold.getChildByPath("prev")));
                             fh.setNext(MapleDataTool.getInt(footHold.getChildByPath("next")));
 
@@ -211,8 +216,20 @@ public class MapleMapFactory {
                 }
 
                 try {
-                    map.setMapName(MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid)), ""));
-                    map.setStreetName(MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid)), ""));
+                    map.setMapName(
+                        MapleDataTool.getString(
+                            "mapName",
+                            nameData.getChildByPath(getMapStringName(omapid)),
+                            ""
+                        )
+                    );
+                    map.setStreetName(
+                        MapleDataTool.getString(
+                            "streetName",
+                            nameData.getChildByPath(getMapStringName(omapid)),
+                            ""
+                        )
+                    );
                 } catch (Exception e) {
                     map.setMapName("");
                     map.setStreetName("");
@@ -222,17 +239,33 @@ public class MapleMapFactory {
                 map.setTown(mapData.getChildByPath("town") != null);
                 map.setHPDec(MapleDataTool.getIntConvert("decHP", mapData, 0));
                 map.setHPDecProtect(MapleDataTool.getIntConvert("protectItem", mapData, 0));
-                map.setForcedReturnMap(MapleDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), 999999999));
+                map.setForcedReturnMap(
+                    MapleDataTool.getInt(
+                        mapData.getChildByPath("info/forcedReturn"),
+                        999999999
+                    )
+                );
                 map.setFieldLimit(MapleDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0));
                 if (mapData.getChildByPath("shipObj") != null) {
                     map.setBoat(true);
                 } else {
                     map.setBoat(false);
                 }
-                map.setTimeLimit(MapleDataTool.getIntConvert("timeLimit", mapData.getChildByPath("info"), -1));
+                map.setTimeLimit(
+                    MapleDataTool.getIntConvert(
+                        "timeLimit",
+                        mapData.getChildByPath("info"),
+                        -1
+                    )
+                );
                 maps.put(omapid, map);
 
-                if (channel > 0 && Boolean.parseBoolean(ChannelServer.getInstance(channel).getProperty("net.sf.odinms.world.faekchar"))) {
+                if (
+                    channel > 0 &&
+                    Boolean.parseBoolean(
+                        ChannelServer.getInstance(channel).getProperty("net.sf.odinms.world.faekchar")
+                    )
+                ) {
                     MapleClient faek = new MapleClient(null, null, new MockIOSession());
                     try {
                         MapleCharacter faekchar = MapleCharacter.loadCharFromDB(30000, faek, true);
@@ -253,7 +286,16 @@ public class MapleMapFactory {
         return maps.size();
     }
 
-    private AbstractLoadedMapleLife loadLife(int id, int f, boolean hide, int fh, int cy, int rx0, int rx1, int x, int y, String type) {
+    private AbstractLoadedMapleLife loadLife(int id,
+                                             int f,
+                                             boolean hide,
+                                             int fh,
+                                             int cy,
+                                             int rx0,
+                                             int rx1,
+                                             int x,
+                                             int y,
+                                             String type) {
         AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(id, type);
         myLife.setCy(cy);
         myLife.setF(f);
@@ -294,7 +336,11 @@ public class MapleMapFactory {
     }
 
     private MapleReactor loadReactor(MapleData reactor, String id) {
-        MapleReactor myReactor = new MapleReactor(MapleReactorFactory.getReactor(Integer.parseInt(id)), Integer.parseInt(id));
+        MapleReactor myReactor =
+            new MapleReactor(
+                MapleReactorFactory.getReactor(Integer.parseInt(id)),
+                Integer.parseInt(id)
+            );
 
         int x = MapleDataTool.getInt(reactor.getChildByPath("x"));
         int y = MapleDataTool.getInt(reactor.getChildByPath("y"));

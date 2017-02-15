@@ -423,7 +423,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         }
         instances.put(channel, this);
         this.channel = channel;
-        this.mapFactory.setChannel(channel);
+        mapFactory.setChannel(channel);
     }
 
     public static Collection<ChannelServer> getAllInstances() {
@@ -470,7 +470,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 0,
                 "The world will be shut down in " +
                     (time / 60000) +
-                    " minutes, please log off safely"
+                    " minutes, please log off safely."
             )
         );
         TimerManager.getInstance().schedule(new ShutdownServer(getChannel()), time);

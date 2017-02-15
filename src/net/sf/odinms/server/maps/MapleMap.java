@@ -44,7 +44,7 @@ public class MapleMap {
             MapleMapObjectType.REACTOR
         );
     private final Map<Integer, MapleMapObject> mapObjects = new ConcurrentHashMap<>(15, 0.7f, 2);
-    private final Collection<SpawnPoint> monsterSpawn = new ArrayList<>();
+    private final List<SpawnPoint> monsterSpawn = new ArrayList<>();
     private final AtomicInteger spawnedMonstersOnMap = new AtomicInteger();
     private final Collection<MapleCharacter> characters = new LinkedHashSet<>();
     private final Map<Integer, MaplePortal> portals = new LinkedHashMap<>();
@@ -1229,8 +1229,12 @@ public class MapleMap {
 
     public void spawnRevives(final MapleMonster monster) {
         monster.setMap(this);
-        synchronized (this.mapObjects) {
-            spawnAndAddRangedMapObject(monster, c -> c.getSession().write(MaplePacketCreator.spawnMonster(monster, false)), null);
+        synchronized (mapObjects) {
+            spawnAndAddRangedMapObject(
+                monster,
+                c -> c.getSession().write(MaplePacketCreator.spawnMonster(monster, false)),
+                null
+            );
             updateMonsterController(monster);
         }
         spawnedMonstersOnMap.incrementAndGet();
@@ -1596,18 +1600,21 @@ public class MapleMap {
         while (mmoiter.hasNext()) {
             MapleMapObject o = mmoiter.next();
             if (o.getType() == MapleMapObjectType.REACTOR) {
-                if (((MapleReactor) o).getReactorType() == 100) {
-                    if (((MapleReactor) o).getReactItem().getLeft() == item.getItemId() && ((MapleReactor) o).getReactItem().getRight() <= item.getQuantity()) {
-                        Rectangle area = ((MapleReactor) o).getArea();
+                MapleReactor reactor = (MapleReactor) o;
+                if (reactor.getReactorType() == 100) {
+                    if (
+                        reactor.getReactItem().getLeft() == item.getItemId() &&
+                        reactor.getReactItem().getRight() <= item.getQuantity()
+                    ) {
+                        Rectangle area = reactor.getArea();
 
                         if (area.contains(drop.getPosition())) {
                             MapleClient ownerClient = null;
                             if (drop.getOwner() != null) {
                                 ownerClient = drop.getOwner().getClient();
                             }
-                            MapleReactor reactor = (MapleReactor) o;
                             if (!reactor.isTimerActive()) {
-                                tMan.schedule(new ActivateItemReactor(drop, reactor, ownerClient), 5000);
+                                tMan.schedule(new ActivateItemReactor(drop, reactor, ownerClient), 5000L);
                                 reactor.setTimerActive(true);
                             }
                         }
@@ -1621,10 +1628,28 @@ public class MapleMap {
         int i = 1;
         for (MapleCharacter chars2 : this.getCharacters()) {
             broadcastMessage(MaplePacketCreator.updateAriantPQRanking(chars2.getName(), 0, false));
-            broadcastMessage(MaplePacketCreator.serverNotice(0, MaplePacketCreator.updateAriantPQRanking(chars2.getName(), 0, false).toString()));
+            broadcastMessage(
+                MaplePacketCreator.serverNotice(
+                    0,
+                    MaplePacketCreator.updateAriantPQRanking(
+                        chars2.getName(),
+                        0,
+                        false
+                    ).toString()
+                )
+            );
             if (this.getCharacters().size() > i) {
                 broadcastMessage(MaplePacketCreator.updateAriantPQRanking(null, 0, true));
-                broadcastMessage(MaplePacketCreator.serverNotice(0, MaplePacketCreator.updateAriantPQRanking(chars2.getName(), 0, true).toString()));
+                broadcastMessage(
+                    MaplePacketCreator.serverNotice(
+                        0,
+                        MaplePacketCreator.updateAriantPQRanking(
+                            chars2.getName(),
+                            0,
+                            true
+                        ).toString()
+                    )
+                );
             }
             i++;
         }
@@ -1728,7 +1753,8 @@ public class MapleMap {
         }
         MapleStatEffect morphStat = chr.getStatForBuff(MapleBuffStat.MORPH);
         if (morphStat != null && morphStat.isPirateMorph()) {
-            List<Pair<MapleBuffStat, Integer>> pmorphstatup = Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, morphStat.getMorph(chr)));
+            List<Pair<MapleBuffStat, Integer>> pmorphstatup =
+                Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, morphStat.getMorph(chr)));
             chr.getClient().getSession().write(MaplePacketCreator.giveBuff(morphStat.getSourceId(), 100, pmorphstatup));
         }
         if (mapEffect != null) {
@@ -2687,15 +2713,15 @@ public class MapleMap {
 
     public void addBotPlayer(MapleCharacter chr) {
         synchronized (characters) {
-            this.characters.add(chr);
+            characters.add(chr);
         }
-        synchronized (this.mapObjects) {
+        synchronized (mapObjects) {
             if (!chr.isHidden()) {
                 broadcastMessage(chr, (MaplePacketCreator.spawnPlayerMapobject(chr)), false);
             } else {
                 broadcastGMMessage(chr, (MaplePacketCreator.spawnPlayerMapobject(chr)), false);
             }
-            this.mapObjects.put(chr.getObjectId(), chr);
+            mapObjects.put(chr.getObjectId(), chr);
         }
     }
 
@@ -2727,13 +2753,14 @@ public class MapleMap {
     }
 
     public void setReactorState() {
-        synchronized (this.mapObjects) {
+        synchronized (mapObjects) {
             Iterator<MapleMapObject> mmoiter = mapObjects.values().iterator();
             while (mmoiter.hasNext()) {
                 MapleMapObject o = mmoiter.next();
                 if (o.getType() == MapleMapObjectType.REACTOR) {
-                    ((MapleReactor) o).setState((byte) 1);
-                    broadcastMessage(MaplePacketCreator.triggerReactor((MapleReactor) o, 1));
+                    MapleReactor reactor = (MapleReactor) o;
+                    reactor.setState((byte) 1);
+                    broadcastMessage(MaplePacketCreator.triggerReactor(reactor, 1));
                 }
             }
         }
@@ -2800,5 +2827,9 @@ public class MapleMap {
             default:
                 return false;
         }
+    }
+
+    public List<SpawnPoint> getMonsterSpawns() {
+        return Collections.unmodifiableList(monsterSpawn);
     }
 }
