@@ -316,12 +316,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ret.exp.set(0);
         }
         ret.hp = rs.getInt("hp");
-        if (ret.hp < 50) {
+        if (ret.hp < 50 && ret.hp > 0) {
             ret.hp = 50;
         }
         ret.maxhp = rs.getInt("maxhp");
         ret.mp = rs.getInt("mp");
-        if (ret.mp < 50) {
+        if (ret.mp < 50 && ret.mp > 0) {
             ret.mp = 50;
         }
         ret.maxmp = rs.getInt("maxmp");
@@ -2966,11 +2966,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     private void doHurtHp() {
-        if (this.getInventory(MapleInventoryType.EQUIPPED).findById(getMap().getHPDecProtect()) != null) {
+        if (getInventory(MapleInventoryType.EQUIPPED).findById(getMap().getHPDecProtect()) != null) {
             return;
         }
         addHP(-getMap().getHPDec());
-        hpDecreaseTask = TimerManager.getInstance().schedule(this::doHurtHp, 10000);
+        hpDecreaseTask = TimerManager.getInstance().schedule(this::doHurtHp, 10L * 1000L);
     }
 
     private void setDefaultCoreSkillMasterLevels() {
@@ -3099,6 +3099,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void gainAp(int ap) {
         remainingAp += ap;
         updateSingleStat(MapleStat.AVAILABLEAP, remainingAp);
+    }
+
+    public void changeSkillLevel(int skillId, int newLevel, int newMasterLevel) {
+        changeSkillLevel(SkillFactory.getSkill(skillId), newLevel, newMasterLevel);
     }
 
     public void changeSkillLevel(ISkill skill, int newLevel, int newMasterlevel) {
@@ -3517,6 +3521,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             updateSingleStat(MapleStat.EXP, exp.addAndGet(gain));
         } else {
             addOverflowExp((long) gain);
+            if (show && gain != 0) {
+                client.getSession().write(MaplePacketCreator.getShowExpGain(gain, inChat, white));
+            }
             return;
         }
         if (show && gain != 0) {
@@ -3616,7 +3623,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void gainMeso(int gain, boolean show, boolean enableActions, boolean inChat) {
         int newVal;
-        long total = ((long) meso.get() + (long) gain);
+        long total = (long) meso.get() + (long) gain;
         if (total >= Integer.MAX_VALUE) {
             meso.set(Integer.MAX_VALUE);
             newVal = Integer.MAX_VALUE;
@@ -4239,7 +4246,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         client.getSession().write(MaplePacketCreator.sendGMPolice(0, reason, 1000000));
         TimerManager.getInstance().schedule(() -> client.getSession().close(), 10000);
-
     }
 
     public static boolean ban(String id, String reason, boolean accountId) {
@@ -4375,7 +4381,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public boolean isDead() {
-        return this.hp <= 0;
+        return hp <= 0;
     }
 
     @Override
@@ -4385,7 +4391,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        if (!this.isHidden() || client.getPlayer().isGM()) {
+        if (!isHidden() || client.getPlayer().isGM()) {
             client.getSession().write(MaplePacketCreator.spawnPlayerMapobject(this));
             for (int i = 0; i < 3; ++i) {
                 if (pets[i] != null) {

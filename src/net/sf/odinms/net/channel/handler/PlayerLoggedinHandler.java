@@ -30,6 +30,17 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
         int cid = slea.readInt();
+        for (ChannelServer cs : ChannelServer.getAllInstances()) {
+            MapleCharacter dChar = cs.getPlayerStorage().getCharacterById(cid);
+            if (dChar != null) {
+                dChar.getMap().removePlayer(dChar);
+                cs.removePlayer(dChar);
+                dChar.saveToDB(true, true);
+                dChar.getClient().disconnect();
+                dChar.getClient().getSession().close();
+                System.err.println(dChar.getName() + ": Attempting to double login with: " + dChar.getName());
+            }
+        }
         final MapleCharacter player;
         try {
             player = MapleCharacter.loadCharFromDB(cid, c, true);

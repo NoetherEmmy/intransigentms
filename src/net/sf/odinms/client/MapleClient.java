@@ -97,7 +97,6 @@ public class MapleClient {
     }
 
     public List<MapleCharacter> loadCharacters(int serverId) {
-
         List<MapleCharacter> chars = new ArrayList<>();
         for (CharNameAndId cni : loadCharactersInternal(serverId)) {
             try {
@@ -123,7 +122,7 @@ public class MapleClient {
         List<CharNameAndId> chars = new ArrayList<>();
         try {
             ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
-            ps.setInt(1, this.accId);
+            ps.setInt(1, accId);
             ps.setInt(2, serverId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -569,7 +568,10 @@ public class MapleClient {
                 Connection con = DatabaseConnection.getConnection();
                 for (PlayerCoolDownValueHolder cooling : cooldowns) {
                     try {
-                        PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)");
+                        PreparedStatement ps =
+                            con.prepareStatement(
+                                "INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)"
+                            );
                         ps.setInt(1, chr.getId());
                         ps.setInt(2, cooling.skillId);
                         ps.setLong(3, cooling.startTime);
@@ -627,9 +629,6 @@ public class MapleClient {
                 getChannelServer().reconnectWorld();
             }
             chr.unequipAllPets();
-            if (!chr.isAlive()) {
-                chr.setHp(50, true);
-            }
             chr.setMessenger(null);
             chr.getCheatTracker().dispose();
             if (!isGuest()) {
@@ -656,7 +655,12 @@ public class MapleClient {
                     wci.setGuildMemberOnline(chr.getMGC(), false, -1);
                     int allianceId = chr.getGuild().getAllianceId();
                     if (allianceId > 0) {
-                        wci.allianceMessage(allianceId, MaplePacketCreator.allianceMemberOnline(chr, false), chr.getId(), -1);
+                        wci.allianceMessage(
+                            allianceId,
+                            MaplePacketCreator.allianceMemberOnline(chr, false),
+                            chr.getId(),
+                            -1
+                        );
                     }
                 }
             } catch (RemoteException e) {
@@ -674,8 +678,8 @@ public class MapleClient {
                 deleteAllCharacters();
             }
         }
-        if (!this.serverTransition && isLoggedIn()) {
-            this.updateLoginState(LOGIN_NOTLOGGEDIN);
+        if (!serverTransition && isLoggedIn()) {
+            updateLoginState(LOGIN_NOTLOGGEDIN);
         }
         NPCScriptManager npcsm = NPCScriptManager.getInstance();
         if (npcsm != null) {

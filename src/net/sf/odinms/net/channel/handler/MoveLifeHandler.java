@@ -34,8 +34,13 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         if (mmo == null || mmo.getType() != MapleMapObjectType.MONSTER) {
             /*
             if (mmo != null) {
-            log.warn("[dc] Player {} is trying to move something which is not a monster. It is a {}.", new Object[] {
-            c.getPlayer().getName(), map.getMapObject(objectid).getClass().getCanonicalName() });
+                log.warn(
+                    "[dc] Player {} is trying to move something which is not a monster. It is a {}.",
+                    new Object[] {
+                        c.getPlayer().getName(),
+                        map.getMapObject(objectid).getClass().getCanonicalName()
+                    }
+                );
             }
             */
             return;
@@ -55,8 +60,18 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
             int random = rand.nextInt(monster.getNoSkills());
             Pair<Integer, Integer> skillToUse = monster.getSkills().get(random);
             toUse = MobSkillFactory.getMobSkill(skillToUse.getLeft(), skillToUse.getRight());
-            int percHpLeft = (monster.getHp() / monster.getMaxHp()) * 100;
-            if (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) {
+            if (toUse == null) {
+                System.err.println(
+                    "Failed to get mob skill with ID " +
+                        skillToUse.getLeft() +
+                        " and level " +
+                        skillToUse.getRight() +
+                        ". Mob ID: " +
+                        monster.getId()
+                );
+            }
+            int percHpLeft = monster.getHp() / monster.getMaxHp() * 100;
+            if (toUse == null || toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) {
                 toUse = null;
             }
         }
@@ -79,7 +94,12 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
                 return;
             }
         } else {
-            if (skill == -1 && monster.isControllerKnowsAboutAggro() && !monster.isMobile() && !monster.isFirstAttack()) {
+            if (
+                skill == -1 &&
+                monster.isControllerKnowsAboutAggro() &&
+                !monster.isMobile() &&
+                !monster.isFirstAttack()
+            ) {
                 monster.setControllerHasAggro(false);
                 monster.setControllerKnowsAboutAggro(false);
             }
@@ -87,9 +107,25 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         boolean aggro = monster.isControllerHasAggro();
 
         if (toUse != null) {
-            c.getSession().write(MaplePacketCreator.moveMonsterResponse(objectid, moveid, monster.getMp(), aggro, toUse.getSkillId(), toUse.getSkillLevel()));
+            c.getSession().write(
+                MaplePacketCreator.moveMonsterResponse(
+                    objectid,
+                    moveid,
+                    monster.getMp(),
+                    aggro,
+                    toUse.getSkillId(),
+                    toUse.getSkillLevel()
+                )
+            );
         } else {
-            c.getSession().write(MaplePacketCreator.moveMonsterResponse(objectid, moveid, monster.getMp(), aggro));
+            c.getSession().write(
+                MaplePacketCreator.moveMonsterResponse(
+                    objectid,
+                    moveid,
+                    monster.getMp(),
+                    aggro
+                )
+            );
         }
         if (aggro) {
             monster.setControllerKnowsAboutAggro(true);
@@ -107,7 +143,8 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
                 try {
                     c.getChannelServer()
                      .getWorldInterface()
-                     .broadcastGMMessage(null,
+                     .broadcastGMMessage(
+                         null,
                          MaplePacketCreator.serverNotice(6,
                              "WARNING: It appears that the player with name " +
                              MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
@@ -122,7 +159,17 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
                 }
                 return;
             }
-            MaplePacket packet = MaplePacketCreator.moveMonster(skillByte, skill, skill_1, skill_2, skill_3, objectid, startPos, res);
+            MaplePacket packet =
+                MaplePacketCreator.moveMonster(
+                    skillByte,
+                    skill,
+                    skill_1,
+                    skill_2,
+                    skill_3,
+                    objectid,
+                    startPos,
+                    res
+                );
             map.broadcastMessage(c.getPlayer(), packet, monster.getPosition());
             updatePosition(res, monster, -1);
             map.moveMonster(monster, monster.getPosition());

@@ -460,6 +460,7 @@ public class MapleStatEffect implements Serializable {
                     ret.x = tempduration;
                     break;
                 case 2121006: // Paralyze
+                    break;
                 case 2101003: // F/P Slow
                 case 2201003: // I/L Slow
                     monsterStatus.put(MonsterStatus.SPEED, ret.x);

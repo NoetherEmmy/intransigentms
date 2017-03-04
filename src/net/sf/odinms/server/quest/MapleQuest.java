@@ -117,7 +117,7 @@ public class MapleQuest {
                     ret = new MapleQuest(id);
                 }
             } catch (NullPointerException npe) {
-                log.info("Bad quest data or no quest data at all for ID " + id, npe);
+                System.err.println("Bad quest data or no quest data at all for ID " + id);
                 quests.put(id, null);
                 return null;
             }

@@ -2286,7 +2286,7 @@ public class GM implements Command {
                 break;
             case "!giftvp": {
                 if (splitted.length != 3) {
-                    mc.dropMessage("Syntax: !giftvp <playerName> <votePointCount>");
+                    mc.dropMessage("Syntax: !giftvp <player_name> <vote_point_count>");
                     return;
                 }
                 MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);

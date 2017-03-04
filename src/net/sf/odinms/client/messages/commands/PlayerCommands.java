@@ -661,7 +661,7 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@online")) {
             for (ChannelServer cs : ChannelServer.getAllInstances()) {
-                if (!cs.getPlayerStorage().getAllCharacters().isEmpty()) {
+                if (cs.getPlayerStorage().getAllCharacters().stream().anyMatch(p -> !p.isGM())) {
                     StringBuilder sb = new StringBuilder();
                     mc.dropMessage("Channel " + cs.getChannel());
                     for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {

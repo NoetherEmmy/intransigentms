@@ -50,7 +50,7 @@ public class MapleQuestRequirement {
                         MapleData iddata = questEntry.getChildByPath("id");
                         MapleData statedata = questEntry.getChildByPath("state");
                         if (iddata == null) {
-                            System.err.println("Getting quest ID failed in MapleQuestRequirement.check(): " + questEntry.getName());
+                            //System.err.println("Getting quest ID failed in MapleQuestRequirement.check(): " + questEntry.getName());
                             return false;
                         }
                         if (statedata == null) {

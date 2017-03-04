@@ -43,7 +43,7 @@ import java.util.Map.Entry;
 
 public class MaplePacketCreator {
     private static final Logger log = LoggerFactory.getLogger(MaplePacketCreator.class);
-    private static final byte[] CHAR_INFO_MAGIC = new byte[]{(byte) 0xff, (byte) 0xc9, (byte) 0x9a, 0x3b};
+    private static final byte[] CHAR_INFO_MAGIC = new byte[] {(byte) 0xff, (byte) 0xc9, (byte) 0x9a, (byte) 0x3b};
     private static final byte[] ITEM_MAGIC = new byte[]{(byte) 0x80, 5};
     public static final List<Pair<MapleStat, Integer>> EMPTY_STATUPDATE = Collections.emptyList();
     private static final long FT_UT_OFFSET = 116444592000000000L; // EDT

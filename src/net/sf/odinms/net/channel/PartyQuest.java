@@ -18,11 +18,8 @@ public class PartyQuest {
     private final Set<Integer> registeredPlayerIds = new LinkedHashSet<>(8, 0.8f);
     private final List<PartyQuestMapInstance> mapInstances = new ArrayList<>(3);
     private final String name;
-    private long timeStarted = 0;
-    private long eventTime = 0;
-    private final int minPlayers;
-    private final int exitMapId;
-    private final int channel;
+    private long timeStarted, eventTime;
+    private final int minPlayers, exitMapId, channel;
     private final AtomicInteger points = new AtomicInteger();
     private final Set<Integer> pqItems = new HashSet<>(4, 0.8f);
     private ScheduledFuture<?> disposeTask = null;

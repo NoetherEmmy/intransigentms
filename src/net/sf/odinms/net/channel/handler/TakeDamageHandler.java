@@ -369,7 +369,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 if (
                     !belowLevelLimit &&
                     (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null ||
-                        player.getSkillLevel(5100000) > 0) &&
+                        (player.getSkillLevel(5100000) > 0 && player.isBareHanded())) &&
                     mpAttack == 0
                 ) {
                     int mpLoss;

@@ -629,6 +629,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         if (attack.skill > 0) {
             ISkill skill = SkillFactory.getSkill(attack.skill);
             int skillLevel = c.getPlayer().getSkillLevel(skill);
+            if (skillLevel < 1) return;
             MapleStatEffect effect_ = skill.getEffect(skillLevel);
             if (effect_.getCooldown() > 0) {
                 if (player.skillIsCooling(attack.skill)) {

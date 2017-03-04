@@ -1645,14 +1645,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void resetMaxHpMp(MapleClient c) {
-        c.getPlayer().updateSingleStat(MapleStat.HP, 50);
-        c.getPlayer().updateSingleStat(MapleStat.MP, 5);
-        c.getPlayer().updateSingleStat(MapleStat.MAXHP, 50);
-        c.getPlayer().updateSingleStat(MapleStat.MAXMP, 5);
         c.getPlayer().setHp(50);
+        c.getPlayer().updateSingleStat(MapleStat.HP, 50);
         c.getPlayer().setMp(5);
+        c.getPlayer().updateSingleStat(MapleStat.MP, 5);
         c.getPlayer().setMaxHp(50);
+        c.getPlayer().updateSingleStat(MapleStat.MAXHP, 50);
         c.getPlayer().setMaxMp(5);
+        c.getPlayer().updateSingleStat(MapleStat.MAXMP, 5);
     }
 
     public void spawnMonster(int mobid) {
