@@ -34,7 +34,11 @@ public final class DeathLogger {
      * @return <code>true</code> upon successful write,
      * <code>false</code> otherwise.
      */
-    public static boolean logDeath(MapleCharacter p, int deathMap) {
+    public static boolean logDeath(MapleCharacter p,
+                                   int deathMap,
+                                   int questCompletion,
+                                   int monsterTrialPoints,
+                                   StringBuilder fourthJobSkills) {
         final List<String> toWrite = new ArrayList<>();
         Optional<List<Integer>> life = p.getLastPastLife();
 
@@ -71,17 +75,7 @@ public final class DeathLogger {
             " buffstory: " +
             p.getBuffStory()
         );
-        final StringBuilder fourthJobSkills = new StringBuilder();
-        if (p.getJob().getId() % 10 == 2) { // Fourth job
-            for (int skillId : MapleCharacter.SKILL_IDS) {
-                if (skillId / 10000 == p.getJob().getId()) {
-                    fourthJobSkills.append(skillId)
-                                   .append(", ")
-                                   .append(p.getMasterLevelById(skillId))
-                                   .append("; ");
-                }
-            }
-        }
+        toWrite.add("Quest completion: " + questCompletion + ", monster trial points: " + monsterTrialPoints);
         toWrite.add("Fourth job skills: " + fourthJobSkills.toString());
         toWrite.add("");
 

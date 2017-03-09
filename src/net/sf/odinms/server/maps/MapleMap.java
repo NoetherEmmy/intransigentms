@@ -535,23 +535,22 @@ public class MapleMap {
                 curX -= 25;
             }
             for (int i = 0; i < toDrop.size(); ++i) {
-                MapleFoothold wall = footholds.findWall(new Point(curX, curY), new Point(curX + toDrop.size() * 25, curY));
+                MapleFoothold wall =
+                    footholds.findWall(new Point(curX, curY), new Point(curX + toDrop.size() * 25, curY));
                 if (wall != null) {
                     if (wall.getX1() < curX) {
                         shiftDirection = 1;
                         shiftCount++;
-                        break;
                     } else if (wall.getX1() == curX) {
                         if (shiftDirection == 0) {
                             shiftDirection = 1;
                         }
                         shiftCount++;
-                        break;
                     } else {
                         shiftDirection = 2;
                         shiftCount++;
-                        break;
                     }
+                    break;
                 } else if (i == toDrop.size() - 1) {
                     shiftDirection = 3;
                 }
@@ -759,38 +758,28 @@ public class MapleMap {
         if (monster.getId() == 8800000) {
             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
             for (MapleMapObject object : objects) {
-                if (object == null) {
-                    continue;
-                }
+                if (object == null) continue;
                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
-                if (mons != null) {
-                    if (mons.getId() >= 8800003 && mons.getId() <= 8800010) {
-                        return true;
-                    }
+                if (mons != null && mons.getId() >= 8800003 && mons.getId() <= 8800010) {
+                    return true;
                 }
             }
         }
         if (monster.isAlive()) {
             synchronized (monster) {
-                if (!monster.isAlive()) {
-                    return false;
-                }
+                if (!monster.isAlive()) return false;
                 if (damage > 0) {
-                    int monsterhp = monster.getHp();
+                    int monsterHp = monster.getHp();
                     monster.damage(chr, damage, true);
                     if (!monster.isAlive()) {
                         killMonster(monster, chr, withDrops);
                         if (monster.getId() >= 8810002 && monster.getId() <= 8810009) {
                             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
                             for (MapleMapObject object : objects) {
-                                if (object == null) {
-                                    continue;
-                                }
+                                if (object == null) continue;
                                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
-                                if (mons != null) {
-                                    if (mons.getId() == 8810018) {
-                                        damageMonster(chr, mons, monsterhp);
-                                    }
+                                if (mons != null && mons.getId() == 8810018) {
+                                    damageMonster(chr, mons, monsterHp);
                                 }
                             }
                         }
@@ -798,14 +787,10 @@ public class MapleMap {
                         if (monster.getId() >= 8810002 && monster.getId() <= 8810009) {
                             Collection<MapleMapObject> objects = chr.getMap().getMapObjects();
                             for (MapleMapObject object : objects) {
-                                if (object == null) {
-                                    continue;
-                                }
+                                if (object == null) continue;
                                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
-                                if (mons != null) {
-                                    if (mons.getId() == 8810018) {
-                                        damageMonster(chr, mons, damage);
-                                    }
+                                if (mons != null && mons.getId() == 8810018) {
+                                    damageMonster(chr, mons, damage);
                                 }
                             }
                         }

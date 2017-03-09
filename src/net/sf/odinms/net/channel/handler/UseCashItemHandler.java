@@ -229,7 +229,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 break;
                             case 3: // Heart megaphone
                             case 4: // Skull megaphone
-                                System.err.println("Unhandled Megaphone Packet: " + slea);
+                                System.err.println("Unhandled megaphone packet: " + slea.getBytesRead());
                                 System.err.println("Megaphone ID: " + itemId);
                                 break;
                             case 5: // Maple TV

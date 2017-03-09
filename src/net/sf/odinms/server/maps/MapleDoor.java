@@ -21,22 +21,22 @@ public class MapleDoor extends AbstractMapleMapObject {
     public MapleDoor(MapleCharacter owner, Point targetPosition) {
         super();
         this.owner = owner;
-        this.target = owner.getMap();
+        target = owner.getMap();
         this.targetPosition = targetPosition;
         setPosition(this.targetPosition);
-        this.town = this.target.getReturnMap();
-        this.townPortal = getFreePortal();
+        town = target.getReturnMap();
+        townPortal = getFreePortal();
     }
 
     public MapleDoor(MapleDoor origDoor) {
         super();
-        this.owner = origDoor.owner;
-        this.town = origDoor.town;
-        this.townPortal = origDoor.townPortal;
-        this.target = origDoor.target;
-        this.targetPosition = origDoor.targetPosition;
-        this.townPortal = origDoor.townPortal;
-        setPosition(this.townPortal.getPosition());
+        owner = origDoor.owner;
+        town = origDoor.town;
+        townPortal = origDoor.townPortal;
+        target = origDoor.target;
+        targetPosition = origDoor.targetPosition;
+        townPortal = origDoor.townPortal;
+        setPosition(townPortal.getPosition());
     }
 
     private MaplePortal getFreePortal() {
@@ -62,28 +62,81 @@ public class MapleDoor extends AbstractMapleMapObject {
             }
         }
 
+        if (freePortals.size() < 1) {
+            System.err.println("No free portals on map " + town.getId());
+        }
+
         return freePortals.iterator().next();
     }
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        if (target.getId() == client.getPlayer().getMapId() ||
-            owner == client.getPlayer() && owner.getParty() == null) {
-            client.getSession().write(MaplePacketCreator.spawnDoor(owner.getId(),
-            town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : targetPosition, true));
-            if (owner.getParty() != null && (owner == client.getPlayer() || owner.getParty().containsMembers(new MaplePartyCharacter(client.getPlayer())))) {
-                client.getSession().write(MaplePacketCreator.partyPortal(town.getId(), target.getId(), targetPosition));
+        if (
+            target.getId() == client.getPlayer().getMapId() ||
+            owner == client.getPlayer() &&
+            owner.getParty() == null
+        ) {
+            client
+                .getSession()
+                .write(
+                    MaplePacketCreator.spawnDoor(
+                        owner.getId(),
+                        town.getId() == client.getPlayer().getMapId() ?
+                            townPortal.getPosition() :
+                            targetPosition,
+                        true
+                    )
+                );
+            if (
+                owner.getParty() != null &&
+                (owner == client.getPlayer() ||
+                    owner.getParty().containsMembers(new MaplePartyCharacter(client.getPlayer()))
+                )
+            ) {
+                client
+                    .getSession()
+                    .write(
+                        MaplePacketCreator.partyPortal(
+                            town.getId(),
+                            target.getId(),
+                            targetPosition
+                        )
+                    );
             }
-            client.getSession().write(MaplePacketCreator.spawnPortal(town.getId(), target.getId(), targetPosition));
+            client
+                .getSession()
+                .write(
+                    MaplePacketCreator.spawnPortal(
+                        town.getId(),
+                        target.getId(),
+                        targetPosition
+                    )
+                );
         }
     }
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        if (target.getId() == client.getPlayer().getMapId() || owner == client.getPlayer() ||
-            owner.getParty() != null && owner.getParty().containsMembers(new MaplePartyCharacter(client.getPlayer()))) {
-            if (owner.getParty() != null && (owner == client.getPlayer() || owner.getParty().containsMembers(new MaplePartyCharacter(client.getPlayer())))) {
-                client.getSession().write(MaplePacketCreator.partyPortal(999999999, 999999999, new Point(-1, -1)));
+        if (
+            target.getId() == client.getPlayer().getMapId() ||
+            owner == client.getPlayer() ||
+            owner.getParty() != null &&
+            owner.getParty().containsMembers(new MaplePartyCharacter(client.getPlayer()))
+        ) {
+            if (
+                owner.getParty() != null &&
+                (owner == client.getPlayer() ||
+                    owner.getParty().containsMembers(new MaplePartyCharacter(client.getPlayer())))
+            ) {
+                client
+                    .getSession()
+                    .write(
+                        MaplePacketCreator.partyPortal(
+                            999999999,
+                            999999999,
+                            new Point(-1, -1)
+                        )
+                    );
             }
             client.getSession().write(MaplePacketCreator.removeDoor(owner.getId(), false));
             client.getSession().write(MaplePacketCreator.removeDoor(owner.getId(), true));
@@ -91,11 +144,16 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     public void warp(MapleCharacter chr, boolean toTown) {
-        if (chr == owner || owner.getParty() != null && owner.getParty().containsMembers(new MaplePartyCharacter(chr))) {
-            if (!toTown)
+        if (
+            chr == owner ||
+            owner.getParty() != null &&
+            owner.getParty().containsMembers(new MaplePartyCharacter(chr))
+        ) {
+            if (!toTown) {
                 chr.changeMap(target, targetPosition);
-            else
+            } else {
                 chr.changeMap(town, townPortal);
+            }
         } else {
             chr.getClient().getSession().write(MaplePacketCreator.enableActions());
         }

@@ -6,6 +6,7 @@ import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.AutobanManager;
+import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.life.Element;
@@ -248,6 +249,38 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                 false,
                                 1000L
                             );
+                        }
+                        break;
+                    case 4201004: // Steal
+                        ISkill stealSkill = SkillFactory.getSkill(4201004);
+                        boolean stealSuccess =
+                            stealSkill
+                                .getEffect(player.getSkillLevel(stealSkill))
+                                .makeChanceResult();
+                        if (stealSuccess) {
+                            int drop = monster.thieve(player.getId());
+                            if (drop < 1) break;
+                            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                            IItem iDrop;
+                            MapleInventoryType type = ii.getInventoryType(drop);
+                            if (type.equals(MapleInventoryType.EQUIP)) {
+                                final MapleClient c = player.getClient();
+                                if (c != null) {
+                                    iDrop = ii.randomizeStats(c, (Equip) ii.getEquipById(drop));
+                                } else {
+                                    iDrop = ii.getEquipById(drop);
+                                }
+                            } else {
+                                iDrop = new Item(drop, (byte) 0, (short) 1);
+                                if ((ii.isArrowForBow(drop) || ii.isArrowForCrossBow(drop)) && player != null) {
+                                    if (player.getJob().getId() / 100 == 3) {
+                                        iDrop.setQuantity((short) (1.0d + 100.0d * Math.random()));
+                                    }
+                                } else if (ii.isThrowingStar(drop) || ii.isBullet(drop)) {
+                                    iDrop.setQuantity((short) 1);
+                                }
+                            }
+                            player.getMap().spawnItemDrop(monster, player, iDrop, monster.getPosition(), false, true);
                         }
                         break;
                     case 3221007: // Snipe

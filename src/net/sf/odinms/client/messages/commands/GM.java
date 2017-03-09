@@ -2839,6 +2839,7 @@ public class GM implements Command {
                 } catch (Exception e) {
                     mc.dropMessage("An error occured: " + e.getLocalizedMessage());
                 }
+                break;
             }
             case "!warpmy": {
                 if (splitted.length != 3) {
@@ -2884,6 +2885,152 @@ public class GM implements Command {
                             p.changeMap(mapId);
                         }
                     });
+                break;
+            }
+            case "!hackcheck": {
+                StringBuilder builder = new StringBuilder();
+                final String victimName = splitted[1];
+                MapleCharacter victim =
+                    ChannelServer
+                        .getAllInstances()
+                        .stream()
+                        .map(cs -> cs.getPlayerStorage().getCharacterByName(victimName))
+                        .filter(Objects::nonNull)
+                        .findAny()
+                        .orElse(null);
+                if (victim == null) break;
+                builder.append(MapleCharacterUtil.makeMapleReadable(victim.getName()));
+                builder.append(", ID: ");
+                builder.append(victim.getId());
+                builder.append(", Account: ");
+                builder.append(MapleCharacterUtil.makeMapleReadable(victim.getClient().getAccountName()));
+                mc.dropMessage(builder.toString());
+
+                builder = new StringBuilder();
+                builder.append("Account ID: ");
+                builder.append(victim.getAccountID());
+                builder.append(", Remote addr.: ");
+                builder.append(victim.getClient().getSession().getRemoteAddress());
+                mc.dropMessage(builder.toString());
+                mc.dropMessage("MACs:");
+                victim.getClient().getMacs().stream().map(m -> "    " + m).forEach(mc::dropMessage);
+
+                Set<Integer> accounts = new LinkedHashSet<>();
+                mc.dropMessage("Accounts with same password:");
+                Connection con = DatabaseConnection.getConnection();
+                try {
+                    PreparedStatement ps;
+                    ResultSet rs;
+                    ps = con.prepareStatement("SELECT id, name FROM accounts WHERE password = ? AND id != ?");
+                    ps.setString(1, victim.getClient().getAccountPass());
+                    ps.setInt(2, victim.getAccountID());
+                    rs = ps.executeQuery();
+                    while (rs.next()) {
+                        accounts.add(rs.getInt("id"));
+                        mc.dropMessage("    " + MapleCharacterUtil.makeMapleReadable(rs.getString("name")));
+                    }
+                    rs.close();
+                    ps.close();
+
+                    mc.dropMessage("Accounts with same MAC(s):");
+                    for (String mac : victim.getClient().getMacs()) {
+                        mc.dropMessage("    " + mac + ":");
+                        ps = con.prepareStatement("SELECT id, name FROM accounts WHERE macs LIKE ? AND id != ?");
+                        ps.setString(1, "%" + mac + "%");
+                        ps.setInt(2, victim.getAccountID());
+                        rs = ps.executeQuery();
+                        while (rs.next()) {
+                            accounts.add(rs.getInt("id"));
+                            mc.dropMessage("        " + MapleCharacterUtil.makeMapleReadable(rs.getString("name")));
+                        }
+                        rs.close();
+                        ps.close();
+                    }
+
+                    mc.dropMessage("Accounts with same IP:");
+                    ps = con.prepareStatement("SELECT id, name FROM accounts WHERE lastknownip = ? AND id != ?");
+                    String sockAddr = victim.getClient().getSession().getRemoteAddress().toString();
+                    ps.setString(1, sockAddr.substring(1, sockAddr.lastIndexOf(':')));
+                    ps.setInt(2, victim.getAccountID());
+                    rs = ps.executeQuery();
+                    while (rs.next()) {
+                        accounts.add(rs.getInt("id"));
+                        mc.dropMessage("    " + MapleCharacterUtil.makeMapleReadable(rs.getString("name")));
+                    }
+                    rs.close();
+                    ps.close();
+
+                    mc.dropMessage("Accounts with similar names:");
+                    ps = con.prepareStatement("SELECT id, name FROM accounts WHERE id != ?");
+                    ps.setInt(1, victim.getAccountID());
+                    rs = ps.executeQuery();
+                    final String acctName = victim.getClient().getAccountName();
+                    while (rs.next()) {
+                        final String foreignAcctName = rs.getString("name");
+                        float nameDist = distance(acctName, foreignAcctName);
+                        nameDist /= Math.sqrt(floatMin((float) acctName.length(), (float) foreignAcctName.length()));
+                        if (nameDist < 1.5f) {
+                            accounts.add(rs.getInt("id"));
+                            mc.dropMessage("    " + MapleCharacterUtil.makeMapleReadable(foreignAcctName));
+                        }
+                    }
+                    rs.close();
+                    ps.close();
+
+                    mc.dropMessage("Suspicious account info:");
+                    for (Integer aid : accounts) {
+                        ps = con.prepareStatement(
+                            "SELECT name, lastlogin, banned, banreason FROM accounts WHERE id = ?"
+                        );
+                        ps.setInt(1, aid);
+                        rs = ps.executeQuery();
+                        if (rs.next()) {
+                            mc.dropMessage(
+                                "    " +
+                                    MapleCharacterUtil.makeMapleReadable(
+                                        rs.getString("name")
+                                    ) +
+                                    ":"
+                            );
+                            boolean banned = rs.getInt("banned") > 0;
+                            mc.dropMessage("        Banned: " + banned);
+                            if (banned) {
+                                mc.dropMessage(
+                                    "        Ban reason: " +
+                                        rs.getString("banreason")
+                                );
+                            }
+                            mc.dropMessage("        Last login: " + rs.getTimestamp("lastlogin"));
+                        }
+                        rs.close();
+                        ps.close();
+
+                        mc.dropMessage("        Characters:");
+                        ps = con.prepareStatement(
+                            "SELECT name, level, job FROM characters WHERE accountid = ?"
+                        );
+                        ps.setInt(1, aid);
+                        rs = ps.executeQuery();
+                        while (rs.next()) {
+                            mc.dropMessage(
+                                "            " +
+                                    rs.getString("name") +
+                                    ", level " +
+                                    rs.getInt("level") +
+                                    " " +
+                                    MapleJob.getJobName(rs.getInt("job")) +
+                                    "."
+                            );
+                        }
+                        rs.close();
+                        ps.close();
+                    }
+                } catch (SQLException sqle) {
+                    mc.dropMessage(sqle.getLocalizedMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             }
         }
     }
@@ -3053,7 +3200,8 @@ public class GM implements Command {
             new CommandDefinition("listinv", 3),
             new CommandDefinition("forcenpc", 3),
             new CommandDefinition("reverselookup", 3),
-            new CommandDefinition("warpmy", 3)
+            new CommandDefinition("warpmy", 3),
+            new CommandDefinition("hackcheck", 3)
         };
     }
 
@@ -3103,5 +3251,58 @@ public class GM implements Command {
         }
 
         return true;
+    }
+
+    public static float distance(final String s, final String t) {
+        if (s.isEmpty()) return t.length();
+        if (t.isEmpty()) return s.length();
+        if (s.equals(t)) return 0.0f;
+
+        final int tLength = t.length();
+        final int sLength = s.length();
+
+        float[] swap;
+        float[] v0 = new float[tLength + 1];
+        float[] v1 = new float[tLength + 1];
+
+        // Initialize v0 (the previous row of distances).
+        // This row is A[0][i]: edit distance for an empty s.
+        // The distance is just the number of characters to delete from t.
+        for (int i = 0; i < v0.length; ++i) {
+            v0[i] = i;
+        }
+
+        for (int i = 0; i < sLength; ++i) {
+            // First element of v1 is A[i+1][0].
+            // Edit distance is delete (i+1) chars from s to match empty t.
+            v1[0] = i + 1;
+
+            for (int j = 0; j < tLength; ++j) {
+                v1[j + 1] =
+                    floatMin(
+                        v1[j] + 1.0f,
+                        v0[j + 1] + 1.0f,
+                        v0[j] +
+                            (s.charAt(i) == t.charAt(j)
+                                ? 0.0f
+                                : 1.0f)
+                    );
+            }
+
+            swap = v0;
+            v0 = v1;
+            v1 = swap;
+        }
+
+        // Latest results was in v1 which was swapped with v0.
+        return v0[tLength];
+    }
+
+    private static float floatMin(float... floats) {
+        float min = floats[0];
+        for (int i = 1; i < floats.length; ++i) {
+            if (floats[i] < min) min = floats[i];
+        }
+        return min;
     }
 }

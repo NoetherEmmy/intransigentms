@@ -29,10 +29,12 @@ public class MapleQuestAction {
     public boolean check(MapleCharacter c) {
         switch (type) {
             case MESO:
-                int mesos = MapleDataTool.getInt(data);
-                if (c.getMeso() + mesos < 0) {
-                    return false;
-                }
+                int mesos =
+                    MapleDataTool.getInt(data) *
+                        ChannelServer
+                            .getInstance(c.getClient().getChannel())
+                            .getMesoRate();
+                if (c.getMeso() + mesos < 0) return false;
                 break;
         }
         return true;
@@ -41,9 +43,7 @@ public class MapleQuestAction {
     private boolean canGetItem(MapleData item, MapleCharacter c) {
         if (item.getChildByPath("gender") != null) {
             int gender = MapleDataTool.getInt(item.getChildByPath("gender"));
-            if (gender != 2 && gender != c.getGender()) {
-                return false;
-            }
+            if (gender >= 0 && gender <= 1 && gender != c.getGender()) return false;
         }
         if (item.getChildByPath("job") != null) {
             int job = MapleDataTool.getInt(item.getChildByPath("job"));
@@ -52,9 +52,7 @@ public class MapleQuestAction {
                     return false;
                 }
             } else {
-                if (job != c.getJob().getId()) {
-                    return false;
-                }
+                if (job != c.getJob().getId()) return false;
             }
         }
         return true;
@@ -91,26 +89,21 @@ public class MapleQuestAction {
                         }
                     }
                 }
-                int selection = 0;
-                int extNum = 0;
+                int selection = 0, extNum = 0;
                 if (!props.isEmpty()) {
                     Random r = new Random();
                     selection = props.get(r.nextInt(props.size()));
                 }
                 for (MapleData iEntry : data.getChildren()) {
-                    if (!canGetItem(iEntry, c)) {
-                        continue;
-                    }
+                    if (!canGetItem(iEntry, c)) continue;
                     if (iEntry.getChildByPath("prop") != null) {
                         if (MapleDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
-                            if (extSelection != extNum++) {
-                                continue;
-                            }
+                            if (extSelection != extNum++) continue;
                         } else if (MapleDataTool.getInt(iEntry.getChildByPath("id")) != selection) {
                             continue;
                         }
                     }
-                    if (MapleDataTool.getInt(iEntry.getChildByPath("count")) < 0) { // remove items
+                    if (MapleDataTool.getInt(iEntry.getChildByPath("count")) < 0) { // Remove items
                         int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
                         MapleInventoryType iType = ii.getInventoryType(itemId);
                         short quantity = (short) (MapleDataTool.getInt(iEntry.getChildByPath("count")) * -1);
@@ -118,7 +111,7 @@ public class MapleQuestAction {
                             MapleInventoryManipulator.removeById(c.getClient(), iType, itemId, quantity, true, false);
                         } catch (InventoryException ie) {
                             // It's better to catch this here so we'll at least try to remove the other items
-                            log.warn("[h4x] Completing a quest without meeting the requirements", ie);
+                            log.warn("[h4x] Completing " + quest + " without meeting the requirements", ie);
                         }
                         c.getClient()
                          .getSession()
@@ -129,7 +122,7 @@ public class MapleQuestAction {
                                  true
                              )
                          );
-                    } else { // add items
+                    } else { // Add items
                         int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
                         short quantity = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"));
                         MapleInventoryManipulator.addById(c.getClient(), itemId, quantity, null, -1);
@@ -148,7 +141,9 @@ public class MapleQuestAction {
                 }
                 c.gainMeso(
                     MapleDataTool.getInt(data) *
-                        ChannelServer.getInstance(c.getClient().getChannel()).getMesoRate(),
+                        ChannelServer
+                            .getInstance(c.getClient().getChannel())
+                            .getMesoRate(),
                     true,
                     false,
                     true
@@ -181,9 +176,7 @@ public class MapleQuestAction {
                             break;
                         }
                     }
-                    if (skillObject.isBeginnerSkill()) {
-                        shouldLearn = true;
-                    }
+                    if (skillObject.isBeginnerSkill()) shouldLearn = true;
                     skillLevel = Math.max(skillLevel, c.getSkillLevel(skillObject));
                     masterLevel = Math.max(masterLevel, c.getMasterLevel(skillObject));
                     if (shouldLearn) {
@@ -194,7 +187,8 @@ public class MapleQuestAction {
                                 " with level " +
                                 skillLevel +
                                 " and with max level " +
-                                masterLevel
+                                masterLevel +
+                                "."
                         );
                     }
                 }
@@ -217,7 +211,6 @@ public class MapleQuestAction {
                 MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
                 mii.getItemEffect(MapleDataTool.getInt(data)).applyTo(c);
                 break;
-            default:
         }
     }
 
@@ -227,6 +220,6 @@ public class MapleQuestAction {
 
     @Override
     public String toString() {
-        return type + ": " + data;
+        return type + ": " + data.getName();
     }
 }

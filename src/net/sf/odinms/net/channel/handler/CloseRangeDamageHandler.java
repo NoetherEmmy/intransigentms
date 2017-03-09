@@ -584,14 +584,18 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         }
         // Handle charged blow.
         if (attack.numAttacked > 0 && attack.skill == 1211002) {
-            boolean advcharge_prob = false;
-            int advcharge_level = player.getSkillLevel(1220010);
-            if (advcharge_level > 0) {
-                MapleStatEffect advcharge_effect = SkillFactory.getSkill(1220010).getEffect(advcharge_level);
-                advcharge_prob = advcharge_effect != null && advcharge_effect.makeChanceResult();
+            boolean advchargeProb = false;
+            int advchargeLevel = player.getSkillLevel(1220010);
+            if (advchargeLevel > 0) {
+                MapleStatEffect advchargeEffect = SkillFactory.getSkill(1220010).getEffect(advchargeLevel);
+                advchargeProb = advchargeEffect != null && advchargeEffect.makeChanceResult();
             }
-            if (!advcharge_prob) {
-                player.cancelEffectFromBuffStat(MapleBuffStat.WK_CHARGE);
+            if (!advchargeProb) {
+                try {
+                    player.cancelEffectFromBuffStat(MapleBuffStat.WK_CHARGE);
+                } catch (NullPointerException npe) {
+                    return; // Player did not have the buff stat somehow
+                }
             }
         }
         //int maxdamage = c.getPlayer().getCurrentMaxBaseDamage();

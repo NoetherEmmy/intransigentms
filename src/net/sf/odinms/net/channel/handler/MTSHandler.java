@@ -518,7 +518,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     log.error("Err8: " + e);
                 }
             } else {
-                log.info("Unhandled OP(MTS): " + op + " Packet: " + slea.toString());
+                log.info("Unhandled OP(MTS): " + op + " Packet: " + slea.getBytesRead());
             }
         } else {
             c.getSession().write(MaplePacketCreator.showMTSCash(c.getPlayer()));

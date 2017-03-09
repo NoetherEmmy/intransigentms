@@ -7,8 +7,8 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 public final class LoginRequiringNoOpHandler implements MaplePacketHandler {
     private static final LoginRequiringNoOpHandler instance = new LoginRequiringNoOpHandler();
 
+    /** Singleton class */
     private LoginRequiringNoOpHandler() {
-        // singleton
     }
 
     public static LoginRequiringNoOpHandler getInstance() {

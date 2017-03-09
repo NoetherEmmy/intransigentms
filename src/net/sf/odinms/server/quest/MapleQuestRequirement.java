@@ -82,13 +82,16 @@ public class MapleQuestRequirement {
                 try {
                     for (MapleData itemEntry : getData().getChildren()) {
                         int itemId = MapleDataTool.getInt(itemEntry.getChildByPath("id"));
-
                         short quantity = 0;
                         MapleInventoryType iType = ii.getInventoryType(itemId);
                         for (IItem item : c.getInventory(iType).listById(itemId)) {
                             quantity += item.getQuantity();
                         }
-                        if (quantity < MapleDataTool.getInt(itemEntry.getChildByPath("count")) || MapleDataTool.getInt(itemEntry.getChildByPath("count")) <= 0 && quantity > 0) {
+                        if (
+                            quantity < MapleDataTool.getInt(itemEntry.getChildByPath("count")) ||
+                            MapleDataTool.getInt(itemEntry.getChildByPath("count")) <= 0 &&
+                            quantity > 0
+                        ) {
                             return false;
                         }
                     }

@@ -13,7 +13,7 @@ public class HealOvertimeHandler extends AbstractMaplePacketHandler {
         slea.readByte();
         int healHP = slea.readShort();
         if (healHP != 0) {
-            if (healHP > 1000) {
+            if (healHP > 5000) {
                 AutobanManager
                     .getInstance()
                     .autoban(
@@ -31,7 +31,7 @@ public class HealOvertimeHandler extends AbstractMaplePacketHandler {
         }
         int healMP = slea.readShort();
         if (healMP != 0) {
-            if (healMP > 1000) {
+            if (healMP > 5000) {
                 AutobanManager
                     .getInstance()
                     .autoban(

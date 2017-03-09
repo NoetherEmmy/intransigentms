@@ -10,7 +10,6 @@ import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
-import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.server.TimerManager;

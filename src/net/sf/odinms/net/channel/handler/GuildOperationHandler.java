@@ -288,7 +288,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                 }
                 break;
             default:
-                System.err.println("Unhandled GUILD_OPERATION packet:\n" + slea);
+                System.err.println("Unhandled GUILD_OPERATION packet:\n" + slea.getBytesRead());
                 break;
         }
     }

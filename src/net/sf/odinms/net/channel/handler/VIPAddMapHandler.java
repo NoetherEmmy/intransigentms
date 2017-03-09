@@ -51,7 +51,7 @@ public class VIPAddMapHandler extends AbstractMaplePacketHandler {
                 }
                 break;
             default:
-                log.info("Unhandled VIP Rock operation: " + slea.toString());
+                log.info("Unhandled VIP Rock operation: " + slea.getBytesRead());
                 break;
         }
         c.getSession().write(MaplePacketCreator.refreshVIPRockMapList(player.getVIPRockMaps(type), type));

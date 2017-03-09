@@ -61,7 +61,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
             visitors[slot] = null;
             broadcast(MaplePacketCreator.shopVisitorLeave(slot + 1), true);
             if (shouldUpdate) {
-                if (getShopType() == 2) {
+                if (getShopType() == 1) {
                     ((HiredMerchant) this).getMap().broadcastMessage(MaplePacketCreator.updateHiredMerchant((HiredMerchant) this));
                 } else {
                     ((MaplePlayerShop) this).getMCOwner().getMap().broadcastMessage(MaplePacketCreator.sendInteractionBox(((MaplePlayerShop) this).getMCOwner()));

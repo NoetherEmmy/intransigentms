@@ -942,7 +942,7 @@ public class MapleStatEffect implements Serializable {
                     isHeal() &&
                     affected != applyFrom &&
                     affected.getParty() != null &&
-                    affected.getParty() == applyFrom.getParty() &&
+                    affected.getParty().equals(applyFrom.getParty()) &&
                     affected.isAlive()
                 ) {
                     int expadd = (int)
@@ -983,7 +983,7 @@ public class MapleStatEffect implements Serializable {
                     (isGmBuff() || applyFrom.getParty().equals(affected.getParty()))
                 ) {
                     boolean isResurrection = isResurrection();
-                    if ((isResurrection && !affected.isAlive()) || (!isResurrection && affected.isAlive())) {
+                    if (((isResurrection || sourceid == 5121000) && !affected.isAlive()) || (!isResurrection && affected.isAlive())) {
                         if (isResurrection) {
                             if (applyFrom.getPosition().distanceSq(affected.getPosition()) < closestDistance && affected.getLevel() >= 110) {
                                 closestDistance = applyFrom.getPosition().distanceSq(affected.getPosition());
@@ -1024,7 +1024,7 @@ public class MapleStatEffect implements Serializable {
 
                     final MapleCharacter closestPlayer_ = closestPlayer;
                     closestPlayer_.setInvincible(true); // 10 second invincibility
-                    TimerManager.getInstance().schedule(() -> closestPlayer_.setInvincible(false), 10 * 1000);
+                    TimerManager.getInstance().schedule(() -> closestPlayer_.setInvincible(false), 10L * 1000L);
                     closestPlayer_.incrementDeathPenaltyAndRecalc(5);
                     closestPlayer_.setExp(0);
                     closestPlayer_.updateSingleStat(MapleStat.EXP, 0);
@@ -1209,7 +1209,7 @@ public class MapleStatEffect implements Serializable {
                 localStatups.add(0, new Pair<>(MapleBuffStat.WATK, watt));
             }
             //}
-        } else if (defScaleFactor != -1 && applyFrom.getLevel() > 100) { // Making certain defense skills scale with level
+        } else if (defScaleFactor != -1 && applyFrom.getLevel() > 100 && applyFrom.getSkillLevel(getSourceId()) > 0) { // Making certain defense skills scale with level
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                 if (localStatup.getLeft() == MapleBuffStat.WDEF) {
@@ -1242,7 +1242,7 @@ public class MapleStatEffect implements Serializable {
             }
         } else if (getSourceId() == 2321002 && isSkill() && applyFrom.getTotalStr() >= 200) { // Adding magic defense for Battle Priest's Mana Reflection
             manaReflectionDef = Collections.singletonList(new Pair<>(MapleBuffStat.MDEF, applyFrom.getTotalStr()));
-        } else if (getSourceId() == 5101005 && isSkill() && applyFrom.getTotalInt() >= 250 && applyFrom.isBareHanded()) {
+        } else if (getSourceId() == 5101005 && isSkill() && applyFrom.getInt() >= 250 && applyFrom.isBareHanded()) {
             // MP Recovery
             localStatups.add(new Pair<>(MapleBuffStat.RECOVERY, 1));
         }

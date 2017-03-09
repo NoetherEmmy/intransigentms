@@ -26,9 +26,10 @@ public class MapleQuest {
         MapleDataProviderFactory.getDataProvider(
             new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz")
         );
-    private static final MapleData actions = questData.getData("Act.img");
-    private static final MapleData requirements = questData.getData("Check.img");
-    private static final MapleData info = questData.getData("QuestInfo.img");
+    private static final MapleData
+        actions = questData.getData("Act.img"),
+        requirements = questData.getData("Check.img"),
+        info = questData.getData("QuestInfo.img");
     protected static final Logger log = LoggerFactory.getLogger(MapleQuest.class);
 
     protected MapleQuest() {
@@ -173,15 +174,13 @@ public class MapleQuest {
     public void complete(MapleCharacter c, int npc, Integer selection) {
         if ((autoPreComplete || checkNPCOnMap(c, npc)) && canComplete(c, npc)) {
             for (MapleQuestAction a : completeActs) {
-                if (!a.check(c)) {
-                    return;
-                }
+                if (!a.check(c)) return;
             }
             for (MapleQuestAction a : completeActs) {
                 a.run(c, selection);
             }
-            // we save forfeits only for logging purposes, they shouldn't matter anymore
-            // completion time is set by the constructor
+            // We save forfeits only for logging purposes, they shouldn't matter anymore.
+            // Completion time is set by the constructor.
             MapleQuestStatus oldStatus = c.getQuest(this);
             MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.COMPLETED, npc);
             newStatus.setForfeited(oldStatus.getForfeited());
@@ -236,5 +235,10 @@ public class MapleQuest {
         }
         List<Integer> returnThis = new ArrayList<>(delta);
         return Collections.unmodifiableList(returnThis);
+    }
+
+    @Override
+    public String toString() {
+        return "quest \"" + getName() + "\", id: " + getId();
     }
 }

@@ -164,6 +164,7 @@ public final class PacketProcessor {
             registerHandler(RecvPacketOpcode.USE_SOLOMAN_ITEM, new useSolomonHandler());
             registerHandler(RecvPacketOpcode.ALLIANCE_OPERATION, new AllianceOperationHandler());
             registerHandler(RecvPacketOpcode.HIRED_MERCHANT_REQUEST, new HiredMerchantRequest());
+            registerHandler(RecvPacketOpcode.SPOUSE_CHAT, new SpouseChatHandler());
         } else {
             throw new RuntimeException("Unknown packet processor mode");
         }

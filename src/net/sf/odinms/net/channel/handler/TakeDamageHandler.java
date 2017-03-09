@@ -97,7 +97,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 try {
                     c.getChannelServer()
                      .getWorldInterface()
-                     .broadcastGMMessage(null,
+                     .broadcastGMMessage(
+                         null,
                          MaplePacketCreator.serverNotice(
                              6,
                              "WARNING: The player with name " +
@@ -123,11 +124,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 if (attackInfo != null && attackInfo.isDeadlyAttack()) {
                     deadlyAttack = true;
                     mpAttack = 0; // mpAttack = player.getMp() - 1;
-                    if (damage != 0) {
-                        damage = 0;
-                    } else {
-                        return;
-                    }
+                    if (damage != 0) damage = 0; else return;
                 } else {
                     if (attackInfo != null) {
                         mpAttack += attackInfo.getMpBurn();

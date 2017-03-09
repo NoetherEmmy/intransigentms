@@ -5,10 +5,6 @@ import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.world.MaplePartyCharacter;
 import net.sf.odinms.net.world.guild.MapleGuild;
-import net.sf.odinms.provider.MapleData;
-import net.sf.odinms.provider.MapleDataProvider;
-import net.sf.odinms.provider.MapleDataProviderFactory;
-import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.scripting.AbstractPlayerInteraction;
 import net.sf.odinms.scripting.event.EventManager;
 import net.sf.odinms.server.*;
@@ -22,7 +18,6 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 
 import java.awt.*;
-import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

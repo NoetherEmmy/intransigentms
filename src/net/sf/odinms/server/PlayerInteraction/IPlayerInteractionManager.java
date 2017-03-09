@@ -7,7 +7,6 @@ import net.sf.odinms.net.MaplePacket;
 import java.util.List;
 
 public interface IPlayerInteractionManager {
-
     byte HIRED_MERCHANT = 1;
     byte PLAYER_SHOP = 2;
     byte MATCH_CARD = 3;

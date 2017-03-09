@@ -56,6 +56,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private long lastHit;
     private double vulnerability = 1.0d;
     private ScheduledFuture<?> cancelVulnerabilityTask;
+    private final Set<Integer> thieves = new HashSet<>(3);
 
     public MapleMonster(int id, MapleMonsterStats stats) {
         super(id);
@@ -88,8 +89,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public int getDrop(final MapleCharacter owner) {
         MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
-        int lastAssigned = -1;
-        int minChance = 1;
+        int lastAssigned = -1, minChance = 1;
         List<DropEntry> dl =
             mi.retrieveDropChances(getId())
               .stream()
@@ -106,9 +106,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
               })
               .collect(Collectors.toCollection(ArrayList::new));
         for (DropEntry d : dl) {
-            if (d.chance > minChance) {
-                minChance = d.chance;
-            }
+            if (d.chance > minChance) minChance = d.chance;
         }
         for (DropEntry d : dl) {
             d.assignedRangeStart = lastAssigned + 1;
@@ -123,6 +121,26 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
         }
         return -1;
+    }
+
+    public int getSingleDrop() {
+        MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
+        long cumulativeChances = 0L;
+        List<DropEntry> dropEntries = mi.retrieveDropChances(getId());
+        for (DropEntry d : dropEntries) {
+            if (d.questId > 0) continue;
+            cumulativeChances += (long) (Integer.MAX_VALUE / d.chance);
+        }
+        long roll = (long) (Math.random() * cumulativeChances);
+        long chanceLadder = 0L;
+        for (DropEntry d : dropEntries) {
+            if (d.questId > 0) continue;
+            chanceLadder += (long) (Integer.MAX_VALUE / d.chance);
+            if (chanceLadder > roll) {
+                return d.itemId;
+            }
+        }
+        return dropEntries.get(dropEntries.size() - 1).itemId;
     }
 
     public int getHp() {
@@ -176,6 +194,20 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (otherMobHitCheckTask == null) return;
         otherMobHitCheckTask.cancel(false);
         otherMobHitCheckTask = null;
+    }
+
+    public boolean hasThieved(int charId) {
+        return thieves.contains(charId);
+    }
+
+    public int thieve(int charId) {
+        if (hasThieved(charId)) return -1;
+        thieves.add(charId);
+        return getSingleDrop();
+    }
+
+    public Set<Integer> readThieves() {
+        return new HashSet<>(thieves);
     }
 
     public int getLevel() {

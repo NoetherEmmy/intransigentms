@@ -37,10 +37,11 @@ import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 
 public class MapleClient {
-    public static final int LOGIN_NOTLOGGEDIN = 0;
-    public static final int LOGIN_SERVER_TRANSITION = 1;
-    public static final int LOGIN_LOGGEDIN = 2;
-    public static final int LOGIN_WAITING = 3;
+    public static final int
+        LOGIN_NOTLOGGEDIN = 0,
+        LOGIN_SERVER_TRANSITION = 1,
+        LOGIN_LOGGEDIN = 2,
+        LOGIN_WAITING = 3;
     public static final String CLIENT_KEY = "CLIENT";
     private static final Logger log = LoggerFactory.getLogger(MapleClient.class);
     private final MapleAESOFB send;
@@ -51,8 +52,8 @@ public class MapleClient {
     private int accId = 1;
     private boolean loggedIn = false;
     private boolean serverTransition = false;
-    private Calendar birthday = null;
-    private Calendar tempban = null;
+    private Calendar birthday;
+    private Calendar tempban;
     private String accountName;
     private String accountPass;
     private int world;
@@ -60,11 +61,11 @@ public class MapleClient {
     private boolean gm = false;
     private byte greason = 1;
     private boolean guest;
-    private final Map<Pair<MapleCharacter, Integer>, Integer> timesTalked = new LinkedHashMap<>(); // NPC ID, times
+    private final Map<Pair<MapleCharacter, Integer>, Integer> timesTalked = new HashMap<>(); // NPC ID, times
     private final Set<String> macs = new LinkedHashSet<>();
-    private final Map<String, ScriptEngine> engines = new LinkedHashMap<>();
-    private ScheduledFuture<?> idleTask = null;
-    private int attemptedLogins = 0;
+    private final Map<String, ScriptEngine> engines = new HashMap<>();
+    private ScheduledFuture<?> idleTask;
+    private int attemptedLogins;
 
     public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
         this.send = send;
@@ -485,7 +486,10 @@ public class MapleClient {
     public void updateLoginState(int newstate) {
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "UPDATE accounts SET loggedin = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?"
+                );
             ps.setInt(1, newstate);
             ps.setInt(2, getAccID());
             ps.executeUpdate();
@@ -509,7 +513,9 @@ public class MapleClient {
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps;
-            ps = con.prepareStatement("SELECT loggedin, lastlogin, UNIX_TIMESTAMP(birthday) as birthday FROM accounts WHERE id = ?");
+            ps = con.prepareStatement(
+                "SELECT loggedin, lastlogin, UNIX_TIMESTAMP(birthday) as birthday FROM accounts WHERE id = ?"
+            );
             ps.setInt(1, getAccID());
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -527,7 +533,7 @@ public class MapleClient {
                 Timestamp ts = rs.getTimestamp("lastlogin");
                 long t = ts.getTime();
                 long now = System.currentTimeMillis();
-                if (t + 30000 < now) { // Connecting to chanserver timeout.
+                if (t + 30000 < now) { // Connecting to channel server timeout.
                     state = LOGIN_NOTLOGGEDIN;
                     updateLoginState(LOGIN_NOTLOGGEDIN);
                     if (isGuest()) {

@@ -59,6 +59,7 @@ public class Marriage {
             if (player.getGender() != 0) {
                 ps = con.prepareStatement("DELETE FROM engagements WHERE wifeid = ?");
             }
+            ps.setInt(1, player.getId());
             ps.executeUpdate();
             PreparedStatement ps1 =
                 con.prepareStatement(
@@ -69,7 +70,7 @@ public class Marriage {
             ps1.close();
             ps.close();
         } catch (SQLException sqle) {
-            log.warn("Problem divorcing" + player.getName() + " and his or her partner", sqle);
+            log.warn("Problem divorcing " + player.getName() + " and his or her partner", sqle);
         }
     }
 
@@ -98,7 +99,7 @@ public class Marriage {
             ps1.close();
             ps2.close();
         } catch (SQLException sqle) {
-            log.warn("Problem divorcing" + player.getName() + " and his or her partner", sqle);
+            log.warn("Problem divorcing " + player.getName() + " and his or her partner", sqle);
         }
     }
 }

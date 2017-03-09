@@ -1398,29 +1398,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getDeathPenalty() {
-        return this.deathpenalty;
+        return deathpenalty;
     }
 
     public void setDeathPenalty(int dp) {
-        this.deathpenalty = dp;
+        deathpenalty = dp;
     }
 
     public int incrementDeathPenalty(int increment) {
-        this.deathpenalty += increment;
-        return this.deathpenalty;
+        deathpenalty += increment;
+        return deathpenalty;
     }
 
     public int getDeathFactor() {
-        return this.deathfactor;
+        return deathfactor;
     }
 
     public void setDeathFactor(int df) {
-        this.deathfactor = df;
+        deathfactor = df;
     }
 
     public int incrementDeathFactor(int increment) {
-        this.deathfactor += increment;
-        return this.deathfactor;
+        deathfactor += increment;
+        return deathfactor;
     }
 
     public int incrementDeathPenaltyAndRecalc(int increment) {
@@ -2411,7 +2411,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             for (MapleBuffStat mbs : buffstats) {
                 if (mbs == MapleBuffStat.WDEF) {
                     setMagicGuard(false);
-                    this.cancelMagicGuardCancelTask();
+                    cancelMagicGuardCancelTask();
                 }
             }
             recalcLocalStats();
@@ -2430,7 +2430,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
         setMagicGuard(false);
-        this.cancelMagicGuardCancelTask();
+        cancelMagicGuardCancelTask();
     }
 
     public void cancelAllBuffs() {
@@ -3185,6 +3185,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public synchronized void permadeath() {
         final MapleMapObject lds = getLastDamageSource();
         final int deathMap = getMap().getId();
+        final int _questCompletion = getQuestCompletion();
+        final int monsterTrialPoints = getMonsterTrialPoints();
         changeMap(100);
         setMap(100);
         cancelAllBuffs();
@@ -3209,6 +3211,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setQuestId(0);
         resetQuestKills();
         setCompletedAllQuests(false);
+        setQuestCompletion(0);
         setScpqFlag(false);
         overflowExp = 0L;
         lastSamsara = 0L;
@@ -3216,6 +3219,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setMonsterTrialTier(0);
         setLastTrialTime(0L);
         resetAllQuestProgress();
+        final StringBuilder fourthJobSkills = new StringBuilder();
+        if (getJob().getId() % 10 == 2) { // Fourth job
+            for (int skillId : MapleCharacter.SKILL_IDS) {
+                if (
+                    skillId / 10000 == getJob().getId() &&
+                    (getMasterLevelById(skillId) > 10 || skillId == 2321006 || skillId == 2321008)
+                ) {
+                    fourthJobSkills
+                        .append(skillId)
+                        .append(", ")
+                        .append(getMasterLevelById(skillId))
+                        .append("; ");
+                }
+            }
+        }
         for (int s : SKILL_IDS) {
             changeSkillLevel(SkillFactory.getSkill(s), 0, 0);
         }
@@ -3256,7 +3274,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         addNewPastLife(levelAchieved, jobAchieved.getId(), lds);
         incrementDeathCount();
         new Thread(() -> {
-            if (!DeathLogger.logDeath(this, deathMap)) {
+            if (!DeathLogger.logDeath(this, deathMap, _questCompletion, monsterTrialPoints, fourthJobSkills)) {
                 System.err.println("There was an error logging " + getName() + "'s death.");
             }
             /*
@@ -5987,7 +6005,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public MapleCharacter getPartner() {
-        return client.getChannelServer().getPlayerStorage().getCharacterById(partnerid);
+        return
+            ChannelServer
+                .getAllInstances()
+                .stream()
+                .map(cs -> cs.getPlayerStorage().getCharacterById(getPartnerId()))
+                .filter(Objects::nonNull)
+                .findAny()
+                .orElse(null);
     }
 
     public void dispelDebuffs() {
@@ -6161,7 +6186,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setMarried(boolean status) {
-        this.married = status;
+        married = status;
     }
 
     public int getMarriageQuestLevel() {
@@ -6181,23 +6206,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void setZakumLevel(int level) {
-        this.zakumLvl = level;
+        zakumLvl = level;
     }
 
     public int getZakumLevel() {
-        return this.zakumLvl;
+        return zakumLvl;
     }
 
     public void addZakumLevel() {
-        this.zakumLvl += 1;
+        zakumLvl += 1;
     }
 
     public void subtractZakumLevel() {
-        this.zakumLvl -= 1;
+        zakumLvl -= 1;
     }
 
     public void setPartnerId(int pem) {
-        this.partnerid = pem;
+        partnerid = pem;
     }
 
     public int getPartnerId() {
