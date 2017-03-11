@@ -154,8 +154,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
                         dbProp.load(fileReader);
                         fileReader.close();
                         DatabaseConnection.setProps(dbProp);
-                        Connection con = DatabaseConnection.getConnection();
-                        con.close();
+                        DatabaseConnection.getConnection();
                         prop = wli.getWorldProperties();
                         userLimit = Integer.parseInt(prop.getProperty("net.sf.odinms.login.userlimit", "150"));
                         serverName = prop.getProperty("net.sf.odinms.world.serverName", "IntransigentMS");
@@ -204,8 +203,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
             dbProp.load(fileReader);
             fileReader.close();
             DatabaseConnection.setProps(dbProp);
-            Connection con = DatabaseConnection.getConnection();
-            con.close();
+            DatabaseConnection.getConnection();
             prop = wli.getWorldProperties();
             userLimit = Integer.parseInt(prop.getProperty("net.sf.odinms.login.userlimit", "150"));
             serverName = prop.getProperty("net.sf.odinms.world.serverName", "IntransigentMS");
