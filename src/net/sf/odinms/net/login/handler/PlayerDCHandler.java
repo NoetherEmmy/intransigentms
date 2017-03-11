@@ -16,7 +16,6 @@ public class PlayerDCHandler extends AbstractMaplePacketHandler {
             ps.close();
         } catch (SQLException ignored) {
         }
-        con.close();
         */
     }
 }

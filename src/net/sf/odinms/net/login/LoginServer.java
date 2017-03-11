@@ -109,7 +109,6 @@ public class LoginServer implements Runnable, LoginServerMBean {
             }
             rs.close();
             limitCheck.close();
-            con.close();
         } catch (Exception ex) {
             System.err.println("loginlimit error: " + ex);
         }

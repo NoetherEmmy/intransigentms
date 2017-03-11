@@ -29,7 +29,6 @@ public class RankingWorker implements Runnable {
             con.commit();
             con.setAutoCommit(true);
             lastUpdate = System.currentTimeMillis();
-            con.close();
         } catch (SQLException sqle) {
             try {
                 con.rollback();

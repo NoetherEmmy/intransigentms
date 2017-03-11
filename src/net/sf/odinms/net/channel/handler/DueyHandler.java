@@ -281,10 +281,6 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
-        try {
-            con.close();
-        } catch (SQLException ignored) {
-        }
     }
 
     public static List<DueyPackages> loadItems(MapleCharacter chr) {
@@ -306,14 +302,9 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             }
             rs.close();
             ps.close();
-            con.close();
             return packages;
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-            try {
-                con.close();
-            } catch (SQLException ignored) {
-            }
             return null;
         }
     }
@@ -338,14 +329,9 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             }
             rs.close();
             ps.close();
-            con.close();
             return dueypack;
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-            try {
-                con.close();
-            } catch (SQLException ignored) {
-            }
             return null;
         }
     }
@@ -363,10 +349,6 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
-        try {
-            con.close();
-        } catch (SQLException ignored) {
-        }
         c.getSession().write(MaplePacketCreator.sendDueyMSG(Actions.TOCLIENT_PACKAGE_MSG.getCode()));
     }
 
@@ -383,14 +365,9 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             int size = rs.getInt("dueySize");
             rs.close();
             ps.close();
-            con.close();
             return size;
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-            try {
-                con.close();
-            } catch (SQLException ignored) {
-            }
             return 0;
         }
 
@@ -450,10 +427,6 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             ps.close();
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-        }
-        try {
-            con.close();
-        } catch (SQLException ignored) {
         }
     }
 

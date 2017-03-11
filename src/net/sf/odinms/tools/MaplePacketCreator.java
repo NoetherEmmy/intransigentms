@@ -2683,7 +2683,6 @@ public class MaplePacketCreator {
             }
             rs.close();
             ps.close();
-            con.close();
         } catch (SQLException e) {
             log.info("Error getting wishlist data:", e);
         }
@@ -5099,10 +5098,6 @@ public class MaplePacketCreator {
         } catch (SQLException se) {
             log.info("Error getting wishlist data:", se);
         }
-        try {
-            con.close();
-        } catch (SQLException ignored) {
-        }
         while (i > 0) {
             mplew.writeInt(0);
             i--;
@@ -5480,7 +5475,6 @@ public class MaplePacketCreator {
         ps.setLong(4, System.currentTimeMillis());
         ps.executeUpdate();
         ps.close();
-        con.close();
     }
 
     public static MaplePacket updateAriantPQRanking(String name, int score, boolean empty) {

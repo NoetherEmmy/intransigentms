@@ -40,7 +40,6 @@ public class MapleStorage {
             ps.setInt(3, 0);
             ps.executeUpdate();
             ps.close();
-            con.close();
         } catch (SQLException sqle) {
             log.error("Error creating storage. ", sqle);
         }
@@ -112,7 +111,6 @@ public class MapleStorage {
                 rs.close();
                 ps.close();
             }
-            con.close();
         } catch (SQLException sqle) {
             log.error("Error loading storage. ", sqle);
         }
@@ -190,7 +188,6 @@ public class MapleStorage {
             }
             ps.close();
             pse.close();
-            con.close();
         } catch (SQLException sqle) {
             log.error("Error saving storage. ", sqle);
         }

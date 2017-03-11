@@ -215,7 +215,6 @@ public class MapleShop {
             }
             rs.close();
             ps.close();
-            con.close();
         } catch (SQLException sqle) {
             log.error("Could not load shop. ", sqle);
         }

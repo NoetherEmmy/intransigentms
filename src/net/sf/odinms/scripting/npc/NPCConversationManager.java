@@ -806,7 +806,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             rs.close();
             ps.close();
-            con.close();
         } catch (SQLException ex) {
             Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
         }

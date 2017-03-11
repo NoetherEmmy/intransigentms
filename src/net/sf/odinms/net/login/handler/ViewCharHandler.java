@@ -56,9 +56,5 @@ public class ViewCharHandler extends AbstractMaplePacketHandler {
         } catch (Exception e) {
             log.error("Viewing all chars failed", e);
         }
-        try {
-            con.close();
-        } catch (SQLException ignored) {
-        }
     }
 }
