@@ -73,6 +73,10 @@ public class CheatingOffensePersister {
             } catch (SQLException sqle) {
                 sqle.printStackTrace();
             }
+            try {
+                con.close();
+            } catch (SQLException ignored) {
+            }
         }
     }
 }

@@ -1,11 +1,10 @@
 package net.sf.odinms.client;
 
 public class Equip extends Item implements IEquip {
-    private byte upgradeSlots;
-    private byte level;
-    private byte locked;
+    private byte upgradeSlots, level, locked;
     private MapleJob job;
-    private short str, dex, _int, luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump;
+    private short str, dex, _int, luk, hp, mp, watk, matk, wdef,
+                  mdef, acc, avoid, hands, speed, jump;
     private int ringid;
 
     public Equip(int id, byte position) {
@@ -222,7 +221,13 @@ public class Equip extends Item implements IEquip {
     @Override
     public void setQuantity(short quantity) {
         if (quantity < 0 || quantity > 1) {
-            throw new RuntimeException("Setting the quantity to " + quantity + " on an equip (itemid: " + getItemId() + ")");
+            throw new RuntimeException(
+                "Setting the quantity to " +
+                    quantity +
+                    " on an equip (itemid: " +
+                    getItemId() +
+                    ")"
+            );
         }
         super.setQuantity(quantity);
     }

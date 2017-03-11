@@ -97,7 +97,7 @@ public class MapleRing implements Comparable<MapleRing> {
                 partner2.getClient().getSession().write(MaplePacketCreator.getCharInfo(partner2));
                 partner2.getMap().removePlayer(partner2);
                 partner2.getMap().addPlayer(partner2);
-            }, 1000);
+            }, 1000L);
             partner1.dropMessage(5, "Congratulations to you and " + partner2.getName() + ".");
             partner1.dropMessage(5, "Please log off and log back in if the rings do not work.");
             partner2.dropMessage(5, "Congratulations to you and " + partner1.getName() + ".");

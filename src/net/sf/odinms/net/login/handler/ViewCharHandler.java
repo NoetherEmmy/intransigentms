@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +32,10 @@ public class ViewCharHandler extends AbstractMaplePacketHandler {
             while (rs.next()) {
                 int cworld = rs.getInt("world");
                 boolean inside = false;
-                for (int w : worlds)
-                    if (w == cworld)
-                        inside = true;
-
-                    if (!inside)
-                        worlds.add(cworld);
-
+                for (int w : worlds) {
+                    if (w == cworld) inside = true;
+                }
+                if (!inside) worlds.add(cworld);
                 MapleCharacter chr = MapleCharacter.loadCharFromDB(rs.getInt("id"), c, false);
                 chars.add(chr);
                 charsNum++;
@@ -48,13 +46,19 @@ public class ViewCharHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.showAllCharacter(charsNum, unk));
             for (int w : worlds) {
                 List<MapleCharacter> chrsinworld = new ArrayList<>();
-                for (MapleCharacter chr : chars)
-                    if (chr.getWorld() == w)
+                for (MapleCharacter chr : chars) {
+                    if (chr.getWorld() == w) {
                         chrsinworld.add(chr);
+                    }
+                }
                 c.getSession().write(MaplePacketCreator.showAllCharacterInfo(w, chrsinworld));
             }
         } catch (Exception e) {
-                log.error("Viewing all chars failed", e);
+            log.error("Viewing all chars failed", e);
+        }
+        try {
+            con.close();
+        } catch (SQLException ignored) {
         }
     }
 }

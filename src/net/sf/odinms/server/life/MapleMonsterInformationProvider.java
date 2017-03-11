@@ -94,6 +94,7 @@ public class MapleMonsterInformationProvider {
             }
             rs2.close();
             ps2.close();
+            con.close();
         } catch (Exception e) {
             log.error("Error retrieving drops for monster " + monsterId, e);
         }

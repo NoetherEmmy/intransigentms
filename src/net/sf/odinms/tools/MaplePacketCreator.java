@@ -49,13 +49,13 @@ public class MaplePacketCreator {
     private static final long FT_UT_OFFSET = 116444592000000000L; // EDT
 
     private static long getKoreanTimestamp(long realTimestamp) {
-        long time = (realTimestamp / 1000 / 60); // convert to minutes
-        return ((time * 600000000) + FT_UT_OFFSET);
+        long time = realTimestamp / 1000L / 60L; // Convert to minutes
+        return time * 600000000L + FT_UT_OFFSET;
     }
 
     private static long getTime(long realTimestamp) {
-        long time = (realTimestamp / 1000); // convert to seconds
-        return ((time * 10000000) + FT_UT_OFFSET);
+        long time = realTimestamp / 1000L; // Convert to seconds
+        return time * 10000000L + FT_UT_OFFSET;
     }
 
     //
@@ -512,14 +512,14 @@ public class MaplePacketCreator {
                 maskedEquip.put(pos, item.getItemId());
             }
         }
-        for (Entry<Byte, Integer> entry : myEquip.entrySet()) {
+        for (Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
             mplew.write(entry.getKey());
             mplew.writeInt(entry.getValue());
         }
         mplew.write(0xFF); // end of visible itens
         // masked itens
 
-        for (Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
+        for (Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
             mplew.write(entry.getKey());
             mplew.writeInt(entry.getValue());
         }
@@ -537,7 +537,7 @@ public class MaplePacketCreator {
 
         }
         mplew.writeInt(0);
-        mplew.writeLong(0);
+        mplew.writeLong(0L);
     }
 
     /**
@@ -602,7 +602,7 @@ public class MaplePacketCreator {
         mplew.write(1);
         mplew.write(1);
         mplew.writeShort(0);
-        mplew.writeInt(new Random().nextInt()); // seed the maplestory rng with a random number <3
+        mplew.writeInt(new Random().nextInt()); // Seed the Maplestory RNG with a random number
 
         mplew.write(HexTool.getByteArrayFromHexString("F8 17 D7 13 CD C5 AD 78"));
         addCharWarp(mplew, chr);
@@ -628,7 +628,7 @@ public class MaplePacketCreator {
         00 00 00 00
         E0 FA 10 00
         00 00
-         */
+        */
         /*
         01 00
         77 6B 2E 00
@@ -638,7 +638,8 @@ public class MaplePacketCreator {
         3B 13 32 00
         00 00 00 00
         E0 FA 10 00
-        00 00*/
+        00 00
+        */
         MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
         Collection<IItem> equippedC = iv.list();
         List<Item> equipped = new ArrayList<>(equippedC.size());
@@ -661,7 +662,16 @@ public class MaplePacketCreator {
         Collections.sort(rings);
         boolean FR_last = false;
         for (MapleRing ring : rings) {
-            if ((ring.getItemId() >= 1112800 && ring.getItemId() <= 1112803 || ring.getItemId() <= 1112806 || ring.getItemId() <= 1112807 || ring.getItemId() <= 1112809) && rings.indexOf(ring) == 0) {
+            if (
+                (
+                    ring.getItemId() >= 1112800 &&
+                    ring.getItemId() <= 1112803 ||
+                    ring.getItemId() <= 1112806 ||
+                    ring.getItemId() <= 1112807 ||
+                    ring.getItemId() <= 1112809
+                ) &&
+                rings.indexOf(ring) == 0
+            ) {
                 mplew.writeShort(0);
             }
             mplew.writeShort(0);
@@ -671,7 +681,13 @@ public class MaplePacketCreator {
             mplew.writeInt(ring.getRingId());
             mplew.writeInt(0);
             mplew.writeInt(ring.getPartnerRingId());
-            if (ring.getItemId() >= 1112800 && ring.getItemId() <= 1112803 || ring.getItemId() <= 1112806 || ring.getItemId() <= 1112807 || ring.getItemId() <= 1112809) {
+            if (
+                ring.getItemId() >= 1112800 &&
+                ring.getItemId() <= 1112803 ||
+                ring.getItemId() <= 1112806 ||
+                ring.getItemId() <= 1112807 ||
+                ring.getItemId() <= 1112809
+            ) {
                 FR_last = true;
                 mplew.writeInt(0);
                 mplew.writeInt(ring.getItemId());
@@ -720,7 +736,7 @@ public class MaplePacketCreator {
     /**
      * Gets an empty stat update.
      *
-     * @return The empy stat update packet.
+     * @return The empty stat update packet.
      */
     public static MaplePacket enableActions() {
         return updatePlayerStats(EMPTY_STATUPDATE, true);
@@ -757,10 +773,10 @@ public class MaplePacketCreator {
             updateMask |= statupdate.getLeft().getValue();
         }
         if (stats.size() > 1) {
-            Collections.sort(stats, (o1, o2) -> {
+            stats.sort((o1, o2) -> {
                 int val1 = o1.getLeft().getValue();
                 int val2 = o2.getLeft().getValue();
-                return (val1 < val2 ? -1 : (val1 == val2 ? 0 : 1));
+                return val1 < val2 ? -1 : (val1 == val2 ? 0 : 1);
             });
         }
         mplew.writeInt(updateMask);
@@ -836,7 +852,6 @@ public class MaplePacketCreator {
      *
      * @param oid The door's object ID.
      * @param pos The position of the door.
-     * @param town
      * @return The remove door packet.
      */
     public static MaplePacket spawnDoor(int oid, Point pos, boolean town) {
@@ -856,7 +871,6 @@ public class MaplePacketCreator {
      * Gets a packet to remove a door.
      *
      * @param oid The door's ID.
-     * @param town
      * @return The remove door packet.
      */
     public static MaplePacket removeDoor(int oid, boolean town) {
@@ -878,7 +892,6 @@ public class MaplePacketCreator {
     /**
      * Gets a packet to spawn a special map object.
      *
-     * @param summon
      * @param skillLevel The level of the skill used.
      * @param animated Animated spawn?
      * @return The spawn packet for the map object.
@@ -914,7 +927,6 @@ public class MaplePacketCreator {
     /**
      * Gets a packet to remove a special map object.
      *
-     * @param summon
      * @param animated Animated removal?
      * @return The packet removing the object.
      */
@@ -1216,7 +1228,11 @@ public class MaplePacketCreator {
      * @param ear
      * @return The avatar mega packet.
      */
-    public static MaplePacket getAvatarMega(MapleCharacter chr, int channel, int itemId, List<String> message, boolean ear) {
+    public static MaplePacket getAvatarMega(MapleCharacter chr,
+                                            int channel,
+                                            int itemId,
+                                            List<String> message,
+                                            boolean ear) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.AVATAR_MEGA.getValue());
@@ -2667,6 +2683,7 @@ public class MaplePacketCreator {
             }
             rs.close();
             ps.close();
+            con.close();
         } catch (SQLException e) {
             log.info("Error getting wishlist data:", e);
         }
@@ -5082,6 +5099,10 @@ public class MaplePacketCreator {
         } catch (SQLException se) {
             log.info("Error getting wishlist data:", se);
         }
+        try {
+            con.close();
+        } catch (SQLException ignored) {
+        }
         while (i > 0) {
             mplew.writeInt(0);
             i--;
@@ -5450,13 +5471,16 @@ public class MaplePacketCreator {
 
     public static void sendUnkwnNote(String to, String msg, String from) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`) VALUES (?, ?, ?, ?)");
+        PreparedStatement ps = con.prepareStatement(
+            "INSERT INTO notes (`to`, `from`, `message`, `timestamp`) VALUES (?, ?, ?, ?)"
+        );
         ps.setString(1, to);
         ps.setString(2, from);
         ps.setString(3, msg);
         ps.setLong(4, System.currentTimeMillis());
         ps.executeUpdate();
         ps.close();
+        con.close();
     }
 
     public static MaplePacket updateAriantPQRanking(String name, int score, boolean empty) {

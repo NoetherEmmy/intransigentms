@@ -73,6 +73,7 @@ public class GuestLoginHandler implements MaplePacketHandler {
         c.setAccountName("GUEST" + guestid);
         c.setGuest(true);
         LoginWorker.getInstance().registerClient(c);
+        con.close();
         */
     }
 

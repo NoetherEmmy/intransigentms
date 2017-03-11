@@ -17,9 +17,7 @@ public class MapleInventoryManipulator {
         IItem nEquip = ii.getEquipById(itemId, ringId);
 
         byte newSlot = chr.getInventory(type).addItem(nEquip);
-        if (newSlot == -1) {
-            return false;
-        }
+        if (newSlot == -1) return false;
         chr.getClient().getSession().write(MaplePacketCreator.addInventorySlot(type, nEquip));
         return true;
     }

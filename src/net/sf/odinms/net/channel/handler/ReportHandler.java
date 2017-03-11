@@ -72,6 +72,7 @@ public class ReportHandler extends AbstractMaplePacketHandler {
             ps.setString(4, chatlog);
             ps.executeUpdate();
             ps.close();
+            dcon.close();
         } catch (SQLException sqle) {
             return false;
         }

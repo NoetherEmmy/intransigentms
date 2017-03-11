@@ -109,6 +109,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
             }
             rs.close();
             limitCheck.close();
+            con.close();
         } catch (Exception ex) {
             System.err.println("loginlimit error: " + ex);
         }
@@ -153,7 +154,8 @@ public class LoginServer implements Runnable, LoginServerMBean {
                         dbProp.load(fileReader);
                         fileReader.close();
                         DatabaseConnection.setProps(dbProp);
-                        DatabaseConnection.getConnection();
+                        Connection con = DatabaseConnection.getConnection();
+                        con.close();
                         prop = wli.getWorldProperties();
                         userLimit = Integer.parseInt(prop.getProperty("net.sf.odinms.login.userlimit", "150"));
                         serverName = prop.getProperty("net.sf.odinms.world.serverName", "IntransigentMS");
@@ -202,7 +204,8 @@ public class LoginServer implements Runnable, LoginServerMBean {
             dbProp.load(fileReader);
             fileReader.close();
             DatabaseConnection.setProps(dbProp);
-            DatabaseConnection.getConnection();
+            Connection con = DatabaseConnection.getConnection();
+            con.close();
             prop = wli.getWorldProperties();
             userLimit = Integer.parseInt(prop.getProperty("net.sf.odinms.login.userlimit", "150"));
             serverName = prop.getProperty("net.sf.odinms.world.serverName", "IntransigentMS");

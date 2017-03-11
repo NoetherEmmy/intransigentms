@@ -43,9 +43,7 @@ public class MapleDoor extends AbstractMapleMapObject {
         List<MaplePortal> freePortals = new ArrayList<>();
 
         for (MaplePortal port : town.getPortals()) {
-            if (port.getType() == 6) {
-                freePortals.add(port);
-            }
+            if (port.getType() == 6) freePortals.add(port);
         }
 
         freePortals.sort(Comparator.comparingInt(MaplePortal::getId));

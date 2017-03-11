@@ -172,6 +172,7 @@ public class MapleMapFactory {
                     }
                     rs2.close();
                     ps2.close();
+                    con.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

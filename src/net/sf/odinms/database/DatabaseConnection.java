@@ -46,7 +46,7 @@ public class DatabaseConnection {
             String user = props.getProperty("user");
             String password = props.getProperty("password");
             try {
-                Class.forName(driver); // Touch the mysql driver.
+                Class.forName(driver); // Touch the MySQL driver.
             } catch (ClassNotFoundException e) {
                 log.error("ERROR", e);
             }

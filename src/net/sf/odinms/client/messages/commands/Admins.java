@@ -282,6 +282,7 @@ public class Admins implements Command {
                         PreparedStatement ps = con.prepareStatement("INSERT INTO shopitems (shopid, itemid, price, position) VALUES (" + Integer.parseInt(splitted[1]) + ", " + Integer.parseInt(splitted[2]) + ", " + Integer.parseInt(splitted[3]) + ", " + Integer.parseInt(splitted[4]) + ");");
                         ps.executeUpdate();
                         ps.close();
+                        con.close();
                         MapleShopFactory.getInstance().clear();
                         mc.dropMessage("Done adding shop item.");
                     } catch (SQLException e) {
@@ -318,6 +319,7 @@ public class Admins implements Command {
                         ps.setInt(9, ypos);
                         ps.setInt(10, player.getMapId());
                         ps.executeUpdate();
+                        con.close();
                     } catch (SQLException e) {
                         mc.dropMessage("Failed to save NPC to the database");
                     }
@@ -596,6 +598,7 @@ public class Admins implements Command {
                     rs.close();
                 } catch (SQLException ignored) {
                 }
+                con.close();
                 break;
             }
             case "!servercheck":
@@ -703,6 +706,7 @@ public class Admins implements Command {
                         }
                         ps.close();
                         rs.close();
+                        con.close();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -729,6 +733,7 @@ public class Admins implements Command {
                 ps.setInt(1, player.getMapId());
                 ps.executeUpdate();
                 ps.close();
+                con.close();
                 break;
             }
             case "!pmob": {
@@ -766,6 +771,7 @@ public class Admins implements Command {
                         ps.setInt(10, player.getMapId());
                         ps.setInt(11, mobTime);
                         ps.executeUpdate();
+                        con.close();
                     } catch (SQLException e) {
                         mc.dropMessage("Failed to save MOB to the database");
                     }
