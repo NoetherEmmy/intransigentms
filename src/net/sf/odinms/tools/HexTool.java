@@ -102,30 +102,30 @@ public class HexTool {
      * Turns an hexadecimal string into a byte array.
      *
      * @param hex The string to convert.
-     * @return The byte array representation of <code>hex</code>
+     * @return The byte array representation of {@code hex}
      */
     public static byte[] getByteArrayFromHexString(String hex) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int nexti = 0;
-        int nextb = 0;
+        int nexti = 0, nextb = 0;
         boolean highoc = true;
         outer: for (;;) {
-        int number = -1;
-        while (number == -1) {
-            if (nexti == hex.length()) {
-                break outer;
-            }
-            char chr = hex.charAt(nexti);
-            if (chr >= '0' && chr <= '9') {
-                number = chr - '0';
-            } else if (chr >= 'a' && chr <= 'f') {
-                number = chr - 'a' + 10;
-            } else if (chr >= 'A' && chr <= 'F') {
-                number = chr - 'A' + 10;
-            } else {
-                number = -1;
-            }
-            nexti++;
+            int number = -1;
+            while (number == -1) {
+                if (nexti == hex.length()) {
+                    break outer;
+                }
+                char chr = hex.charAt(nexti);
+                if (chr >= '0' && chr <= '9') {
+                    number = chr - '0';
+
+                } else if (chr >= 'a' && chr <= 'f') {
+                    number = chr - 'a' + 10;
+                } else if (chr >= 'A' && chr <= 'F') {
+                    number = chr - 'A' + 10;
+                } else {
+                    number = -1;
+                }
+                nexti++;
             }
             if (highoc) {
                 nextb = number << 4;

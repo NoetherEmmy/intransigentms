@@ -53,8 +53,6 @@ public class MonsterStatusEffect {
     }
 
     public void cancelPoisonSchedule() {
-        if (poisonSchedule != null) {
-            poisonSchedule.cancel(false);
-        }
+        if (poisonSchedule != null) poisonSchedule.cancel(false);
     }
 }

@@ -18,9 +18,7 @@ public class ExternalCodeTableGetter {
 
     private static <T extends Enum<? extends IntValueHolder> & IntValueHolder> T valueOf(String name, T[] values) {
         for (T val : values) {
-            if (val.name().equals(name)) {
-                return val;
-            }
+            if (val.name().equals(name)) return val;
         }
         return null;
     }

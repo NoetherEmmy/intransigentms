@@ -6,8 +6,7 @@ import java.awt.*;
 
 public class JumpDownMovement extends AbstractLifeMovement {
     private Point pixelsPerSecond;
-    private int unk;
-    private int fh;
+    private int unk, fh;
 
     public JumpDownMovement(int type, Point position, int duration, int newstate) {
         super(type, position, duration, newstate);

@@ -29,9 +29,7 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
         //log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
         final List<LifeMovementFragment> res = parseMovement(slea);
         if (res == null) return;
-        if (slea.available() != 18) {
-            return;
-        }
+        if (slea.available() != 18) return;
         MaplePacket packet = MaplePacketCreator.movePlayer(player.getId(), res);
         if (!player.isHidden()) {
             player.getMap().broadcastMessage(player, packet, false);

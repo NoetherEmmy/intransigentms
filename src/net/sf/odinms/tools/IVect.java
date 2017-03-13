@@ -68,8 +68,8 @@ public interface IVect {
 
     String toString();
 
-    /** Returns a(n ordered) list (<code>ArrayList</code>) of <code>Vect</code>s representing the basis vectors for the given
-     ** <code>dimension</code> */
+    /** Returns a(n ordered) list (<code>ArrayList</code>) of <code>Vect</code>s representing
+     ** the basis vectors for the given <code>dimension</code> */
     static List<Vect> basis(int dimension) {
         List<Vect> basis = new ArrayList<>(dimension);
         for (int i = 0; i < dimension; ++i) {
@@ -80,8 +80,8 @@ public interface IVect {
         return basis;
     }
 
-    /** Returns a(n ordered) list (<code>ArrayList</code>) of <code>VectR</code>s representing the basis vectors for the given
-     ** <code>dimension</code> */
+    /** Returns a(n ordered) list (<code>ArrayList</code>) of <code>VectR</code>s representing
+     ** the basis vectors for the given <code>dimension</code> */
     static List<VectR> basisR(int dimension) {
         List<VectR> basis = new ArrayList<>(dimension);
         for (int i = 0; i < dimension; ++i) {

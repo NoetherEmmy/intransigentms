@@ -75,7 +75,7 @@ public class WZFile implements MapleDataProvider {
         int entries = WZTool.readValue(lea);
         for (int i = 0; i < entries; ++i) {
             byte marker = lea.readByte();
-            String name = null;
+            String name;
             @SuppressWarnings("unused")
             int dummyInt;
             int size, checksum;
@@ -105,7 +105,7 @@ public class WZFile implements MapleDataProvider {
         }
 
         for (MapleDataDirectoryEntry idir : dir.getSubdirectories()) {
-                parseDirectory((WZDirectoryEntry) idir);
+            parseDirectory((WZDirectoryEntry) idir);
         }
     }
 

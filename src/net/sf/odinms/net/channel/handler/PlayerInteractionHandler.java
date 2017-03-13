@@ -72,14 +72,12 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             if (createType == 3) { // Trade
                 MapleTrade.startTrade(c.getPlayer());
             } else {
-                if (c.getPlayer().getChalkboard() != null) {
-                    return;
-                }
+                if (c.getPlayer().getChalkboard() != null) return;
                 if (createType == 1 || createType == 2) {
                     String desc = slea.readMapleAsciiString();
-                    String pass = null;
+                    String pass = null; // ???
                     if (slea.readByte() == 1) {
-                        pass = slea.readMapleAsciiString();
+                        pass = slea.readMapleAsciiString(); // ???
                     }
                     int type = slea.readByte();
                     IPlayerInteractionManager game = new MapleMiniGame(c.getPlayer(), type, desc);
@@ -100,7 +98,7 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
                     c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.sendInteractionBox(c.getPlayer()));
                 } else if (createType == 4 || createType == 5) { // Shops
                     if (!c.getPlayer().hasMerchant() && c.getPlayer().tempHasItems()) {
-                        c.getPlayer().dropMessage(1, "Speak with Fredrick to gain your saved items");
+                        c.getPlayer().dropMessage(1, "Speak with Frederick to get your saved items.");
                         return;
                     }
                     if (
@@ -139,7 +137,12 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
                             );
                     }
                 } else {
-                    System.err.println("Unhandled PLAYER_INTERACTION packet:\n" + slea.getBytesRead());
+                    System.err.println(
+                        "Unhandled PLAYER_INTERACTION packet:\n" +
+                            slea.getBytesRead() +
+                            "\n" +
+                            createType
+                    );
                 }
             }
         } else if (mode == Action.INVITE.getCode()) {

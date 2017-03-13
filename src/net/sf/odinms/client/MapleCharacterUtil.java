@@ -1,5 +1,7 @@
 package net.sf.odinms.client;
 
+import java.util.regex.Pattern;
+
 public class MapleCharacterUtil {
     private MapleCharacterUtil() {
     }
@@ -9,18 +11,19 @@ public class MapleCharacterUtil {
     }
 
     public static boolean isNameLegal(String name) {
-        if (name.length() < 3 || name.length() > 12) {
-            return false;
-        }
-        return java.util.regex.Pattern.compile("[a-zA-Z0-9_-]{3,12}").matcher(name).matches();
+        return !(name.length() < 3 || name.length() > 12) &&
+               Pattern.compile("[a-zA-Z0-9_-]{3,12}").matcher(name).matches();
     }
 
     public static boolean hasSymbols(String name) {
-        String[] symbols = {"`","~","!","@","#","$","%","^","&","*","(",")","_","-","=","+","{","[","]","}","|",";",":","'",",","<",">",".","?","/"};
+        String[] symbols =
+        {
+            "`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
+            "_", "-", "=", "+", "{", "[", "]", "}", "|", ";", ":", "'",
+            ",", "<", ">", ".", "?", "/"
+        };
         for (byte s = 0; s < symbols.length; ++s) {
-            if (name.contains(symbols[s])) {
-                return true;
-            }
+            if (name.contains(symbols[s])) return true;
         }
         return false;
     }

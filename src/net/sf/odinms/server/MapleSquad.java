@@ -12,7 +12,7 @@ public class MapleSquad {
     private final List<MapleCharacter> members = new ArrayList<>();
     private final List<MapleCharacter> bannedMembers = new ArrayList<>();
     private final int ch;
-    private int status = 0;
+    private int status;
 
     public MapleSquad(int ch, MapleCharacter leader) {
         this.leader = leader;
@@ -27,18 +27,14 @@ public class MapleSquad {
 
     public boolean containsMember(MapleCharacter member) {
         for (MapleCharacter mmbr : members) {
-            if (mmbr.getId() == member.getId()) {
-                return true;
-            }
+            if (mmbr.getId() == member.getId()) return true;
         }
         return false;
     }
 
     public boolean isBanned(MapleCharacter member) {
         for (MapleCharacter banned : bannedMembers) {
-            if (banned.getId() == member.getId()) {
-                return true;
-            }
+            if (banned.getId() == member.getId()) return true;
         }
         return false;
     }
@@ -52,14 +48,11 @@ public class MapleSquad {
     }
 
     public boolean addMember(MapleCharacter member) {
-        if (isBanned(member)) {
-            return false;
-        } else {
-            members.add(member);
-            MaplePacket packet = MaplePacketCreator.serverNotice(5, member.getName() + " has joined the fight!");
-            getLeader().getClient().getSession().write(packet);
-            return true;
-        }
+        if (isBanned(member)) return false;
+        members.add(member);
+        MaplePacket packet = MaplePacketCreator.serverNotice(5, member.getName() + " has joined the fight!");
+        getLeader().getClient().getSession().write(packet);
+        return true;
     }
 
     public void banMember(MapleCharacter member, boolean ban) {
@@ -70,9 +63,7 @@ public class MapleSquad {
             }
         }
         members.remove(index);
-        if (ban) {
-            bannedMembers.add(member);
-        }
+        if (ban) bannedMembers.add(member);
     }
 
     public void setStatus(int status) {
@@ -90,9 +81,7 @@ public class MapleSquad {
 
     public boolean equals(MapleSquad other) {
         if (other.ch == ch) {
-            if (other.leader.getId() == leader.getId()) {
-                return true;
-            }
+            if (other.leader.getId() == leader.getId()) return true;
         }
         return false;
     }

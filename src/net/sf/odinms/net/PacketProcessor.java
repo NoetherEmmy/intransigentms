@@ -25,13 +25,9 @@ public final class PacketProcessor {
     }
 
     public MaplePacketHandler getHandler(short packetId) {
-        if (packetId > handlers.length) {
-            return null;
-        }
+        if (packetId > handlers.length) return null;
         MaplePacketHandler handler = handlers[packetId];
-        if (handler != null) {
-            return handler;
-        }
+        if (handler != null) return handler;
         return null;
     }
 
@@ -39,7 +35,7 @@ public final class PacketProcessor {
         try {
             handlers[code.getValue()] = handler;
         } catch (ArrayIndexOutOfBoundsException aiobe) {
-            System.err.println("Check your Recv Packet Opcodes -- something is wrong.");
+            System.err.println("Check your Recv packet opcodes -- something is wrong.");
         }
     }
 

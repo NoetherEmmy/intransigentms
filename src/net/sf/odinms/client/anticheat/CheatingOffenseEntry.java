@@ -75,27 +75,17 @@ public class CheatingOffenseEntry {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final CheatingOffenseEntry other = (CheatingOffenseEntry) obj;
         if (chrfor == null) {
-            if (other.chrfor != null) {
-                return false;
-            }
+            if (other.chrfor != null) return false;
         } else if (chrfor.getId() != other.chrfor.getId()) {
             return false;
         }
         if (offense == null) {
-            if (other.offense != null) {
-                return false;
-            }
+            if (other.offense != null) return false;
         } else if (!offense.equals(other.offense)) {
             return false;
         }

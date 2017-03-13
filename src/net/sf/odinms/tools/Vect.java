@@ -500,7 +500,7 @@ public class Vect implements IVect {
         for (int i = 0; i < elems.size() - 1; ++i) {
             sb.append(elems.get(i)).append(", ");
         }
-        sb.append(elems.get(elems.size() - 1)).append(">");
+        sb.append(elems.get(elems.size() - 1)).append('>');
         return sb.toString();
     }
 }

@@ -8,16 +8,11 @@ import java.io.Serializable;
 public class MaplePartyCharacter implements Serializable {
     private static final long serialVersionUID = 6215463252132450750L;
     private final String name;
-    private int id;
-    private int level;
-    private int channel;
-    private int jobid;
-    private int mapid;
-    private int gender;
-    private boolean married;
+    private final int id, level, channel, jobid, mapid, gender;
+    private final boolean married;
     private int doorTown = 999999999;
     private int doorTarget = 999999999;
-    private Point doorPosition = new Point(0, 0);
+    private Point doorPosition = new Point();
     private boolean online;
     private boolean scpqFlag = false;
     private boolean isGM = false;
@@ -52,7 +47,7 @@ public class MaplePartyCharacter implements Serializable {
         this.married = false;
         this.doorTown = 999999999;
         this.doorTarget = 999999999;
-        this.doorPosition = new Point(0, 0);
+        this.doorPosition = new Point();
         this.online = false;
         this.scpqFlag = false;
         this.isGM = false;
@@ -128,20 +123,12 @@ public class MaplePartyCharacter implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final MaplePartyCharacter other = (MaplePartyCharacter) obj;
         if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
+            if (other.name != null) return false;
         } else if (!name.equals(other.name)) {
             return false;
         }

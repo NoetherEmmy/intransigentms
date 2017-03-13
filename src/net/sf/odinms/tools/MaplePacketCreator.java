@@ -3831,7 +3831,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket cancelMonsterStatus(int oid, Map<MonsterStatus, Integer> stats) {
+    public static MaplePacket cancelMonsterStatus(int oid, final Map<MonsterStatus, Integer> stats) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.CANCEL_MONSTER_STATUS.getValue());

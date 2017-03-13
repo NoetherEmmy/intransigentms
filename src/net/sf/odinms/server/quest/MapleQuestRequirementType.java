@@ -1,7 +1,20 @@
 package net.sf.odinms.server.quest;
 
 public enum MapleQuestRequirementType {
-    UNDEFINED(-1), JOB(0), ITEM(1), QUEST(2), MIN_LEVEL(3), MAX_LEVEL(4), END_DATE(5), MOB(6), NPC(7), FIELD_ENTER(8), INTERVAL(9), SCRIPT(10), PET(11), MIN_PET_TAMENESS(12);
+    UNDEFINED(-1),
+    JOB(0),
+    ITEM(1),
+    QUEST(2),
+    MIN_LEVEL(3),
+    MAX_LEVEL(4),
+    END_DATE(5),
+    MOB(6),
+    NPC(7),
+    FIELD_ENTER(8),
+    INTERVAL(9),
+    SCRIPT(10),
+    PET(11),
+    MIN_PET_TAMENESS(12);
 
     public MapleQuestRequirementType getITEM() {
         return ITEM;
@@ -19,9 +32,7 @@ public enum MapleQuestRequirementType {
 
     public static MapleQuestRequirementType getByType(byte type) {
         for (MapleQuestRequirementType l : MapleQuestRequirementType.values()) {
-            if (l.getType() == type) {
-                return l;
-            }
+            if (l.getType() == type) return l;
         }
         return null;
     }

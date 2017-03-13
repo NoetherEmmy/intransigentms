@@ -7,8 +7,7 @@ import java.util.concurrent.ScheduledFuture;
 
 public class BossMapMonitor {
     private final MaplePortal portal;
-    private final MapleMap map;
-    private final MapleMap pMap;
+    private final MapleMap map, pMap;
     private final ScheduledFuture<?> schedule;
 
     public BossMapMonitor(final MapleMap map, MapleMap pMap, MaplePortal portal) {
@@ -16,10 +15,8 @@ public class BossMapMonitor {
         this.pMap = pMap;
         this.portal = portal;
         schedule = TimerManager.getInstance().register(() -> {
-            if (map.playerCount() <= 0) {
-                BossMapMonitor.this.run();
-            }
-        }, 10000);
+            if (map.playerCount() <= 0) BossMapMonitor.this.run();
+        }, 10L * 1000L);
     }
 
     private void run() {

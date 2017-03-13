@@ -16,11 +16,12 @@ import java.util.List;
 
 public class GuildOperationHandler extends AbstractMaplePacketHandler {
     private boolean isGuildNameAcceptable(String name) {
-        if (name.length() < 3 || name.length() > 12)
-            return false;
-        for (int i = 0; i < name.length(); ++i)
-            if (!Character.isLowerCase(name.charAt(i)) && !Character.isUpperCase(name.charAt(i)))
+        if (name.length() < 3 || name.length() > 12) return false;
+        for (int i = 0; i < name.length(); ++i) {
+            if (!Character.isLowerCase(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
                 return false;
+            }
+        }
         return true;
     }
 
@@ -42,20 +43,19 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
         public Invited(String n, int id) {
             name = n.toLowerCase();
             gid = id;
-            expiration = System.currentTimeMillis() + 60 * 60 * 1000; // 1 hr Expiration.
+            expiration = System.currentTimeMillis() + 60L * 60L * 1000L; // 1 hr. expiration
         }
 
         @Override
         public boolean equals(Object other) {
-            if (!(other instanceof Invited))
-                return false;
+            if (!(other instanceof Invited)) return false;
             Invited oth = (Invited) other;
             return (gid == oth.gid && name.equals(oth.name));
         }
     }
 
     private final List<Invited> invited = new ArrayList<>();
-    private long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
+    private long nextPruneTime = System.currentTimeMillis() + 20L * 60L * 1000L;
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -66,11 +66,10 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
             Invited inv;
             while (itr.hasNext()) {
                 inv = itr.next();
-                if (System.currentTimeMillis() >= inv.expiration)
-                    itr.remove();
+                if (System.currentTimeMillis() >= inv.expiration) itr.remove();
             }
 
-            nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
+            nextPruneTime = System.currentTimeMillis() + 20L * 60L * 1000L;
         }
         MapleCharacter mc = c.getPlayer();
         byte type = slea.readByte();
@@ -277,8 +276,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 String notice = slea.readMapleAsciiString();
-                if (notice.length() > 100)
-                    return;
+                if (notice.length() > 100) return;
                 try {
                     c.getChannelServer().getWorldInterface().setGuildNotice(mc.getGuildId(), notice);
                 } catch (RemoteException re) {

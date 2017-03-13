@@ -10,9 +10,9 @@ public class CPUSampler {
     private final List<String> included = new LinkedList<>();
     private static final CPUSampler instance = new CPUSampler();
     private long interval = 5;
-    private SamplerThread sampler = null;
+    private SamplerThread sampler;
     private final Map<StackTrace, Integer> recorded = new LinkedHashMap<>();
-    private int totalSamples = 0;
+    private int totalSamples;
 
     private CPUSampler() {
     }
@@ -27,9 +27,7 @@ public class CPUSampler {
 
     public void addIncluded(String include) {
         for (String alreadyIncluded : included) {
-            if (include.startsWith(alreadyIncluded)) {
-                return;
-            }
+            if (include.startsWith(alreadyIncluded)) return;
         }
         included.add(include);
     }
@@ -55,8 +53,8 @@ public class CPUSampler {
 
     public SampledStacktraces getTopConsumers() {
         List<StacktraceWithCount> ret = new ArrayList<>();
-        Set<Entry<StackTrace, Integer>> entrySet = recorded.entrySet();
-        for (Entry<StackTrace, Integer> entry : entrySet) {
+        Set<Map.Entry<StackTrace, Integer>> entrySet = recorded.entrySet();
+        for (Map.Entry<StackTrace, Integer> entry : entrySet) {
             ret.add(new StacktraceWithCount(entry.getValue(), entry.getKey()));
         }
         Collections.sort(ret);
@@ -77,7 +75,7 @@ public class CPUSampler {
     }
 
     private void consumeStackTraces(Map<Thread, StackTraceElement[]> traces) {
-        for (Entry<Thread, StackTraceElement[]> trace : traces.entrySet()) {
+        for (Map.Entry<Thread, StackTraceElement[]> trace : traces.entrySet()) {
             int relevant = findRelevantElement(trace.getValue());
             if (relevant != -1) {
                 StackTrace st = new StackTrace(trace.getValue(), relevant, trace.getKey().getState());
@@ -110,7 +108,7 @@ public class CPUSampler {
                 }
             }
         }
-        if (firstIncluded >= 0 && trace[firstIncluded].getClassName().equals("net.sf.odinms.tools.performance.CPUSampler$SamplerThread")) { // don't sample us
+        if (firstIncluded >= 0 && trace[firstIncluded].getClassName().equals("net.sf.odinms.tools.performance.CPUSampler$SamplerThread")) { // Don't sample us.
             return -1;
         }
         return firstIncluded;
@@ -132,20 +130,12 @@ public class CPUSampler {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof StackTrace)) {
-                return false;
-            }
+            if (!(obj instanceof StackTrace)) return false;
             StackTrace other = (StackTrace) obj;
-            if (other.trace.length !=  trace.length) {
-                return false;
-            }
-            if (!(other.state == this.state)) {
-                return false;
-            }
+            if (other.trace.length !=  trace.length) return false;
+            if (!(other.state == this.state)) return false;
             for (int i = 0; i < trace.length; ++i) {
-                if (!trace[i].equals(other.trace[i])) {
-                    return false;
-                }
+                if (!trace[i].equals(other.trace[i])) return false;
             }
             return true;
         }
@@ -172,18 +162,16 @@ public class CPUSampler {
             StringBuilder ret = new StringBuilder("State: ");
             ret.append(state.name());
             if (traceLength > 1) {
-                ret.append("\n");
+                ret.append('\n');
             } else {
-                ret.append(" ");
+                ret.append(' ');
             }
             int i = 0;
             for (StackTraceElement ste : trace) {
                 i++;
-                if (i > traceLength) {
-                    break;
-                }
+                if (i > traceLength) break;
                 ret.append(ste.getClassName());
-                ret.append("#");
+                ret.append('#');
                 ret.append(ste.getMethodName());
                 ret.append(" (Line: ");
                 ret.append(ste.getLineNumber());
@@ -194,8 +182,7 @@ public class CPUSampler {
     }
 
     private class SamplerThread implements Runnable {
-        private boolean running = false;
-        private boolean shouldRun = false;
+        private boolean running = false, shouldRun = false;
         private Thread rthread;
 
         public void start() {
@@ -295,7 +282,7 @@ public class CPUSampler {
             for (StacktraceWithCount swc : topConsumers) {
                 if (swc.getCount() >= minInvocation) {
                     ret.append(swc.toString(totalInvocations, Integer.MAX_VALUE));
-                    ret.append("\n");
+                    ret.append('\n');
                 }
             }
             return ret.toString();

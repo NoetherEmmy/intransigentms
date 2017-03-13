@@ -71,9 +71,7 @@ public class MapleDataTool {
 
     public static int getIntConvert(String path, MapleData data) {
         MapleData d = data.getChildByPath(path);
-        if (d == null) {
-            return -1;
-        }
+        if (d == null) return -1;
         if (d.getType() == MapleDataType.STRING) {
             try {
                 return Integer.parseInt(getString(d));

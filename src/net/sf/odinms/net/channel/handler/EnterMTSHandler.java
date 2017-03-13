@@ -41,11 +41,10 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
             } else if (c.getPlayer().getMap().isPQMap()) {
                 c.getPlayer().dropMessage("You can't enter the FM while in a party quest.");
             } else if (c.getPlayer().getMapId() == 105) {
-            } else {
-                if (c.getPlayer().getMapId() != 910000000) {
-                    c.getPlayer().saveLocation(SavedLocationType.FREE_MARKET);
-                    c.getPlayer().changeMap(910000000);
-                }
+                c.getPlayer().dropMessage("You can't enter the FM while in someone's mind.");
+            } else if (c.getPlayer().getMapId() != 910000000) {
+                c.getPlayer().saveLocation(SavedLocationType.FREE_MARKET);
+                c.getPlayer().changeMap(910000000);
             }
             c.getSession().write(MaplePacketCreator.enableActions());
         } else {

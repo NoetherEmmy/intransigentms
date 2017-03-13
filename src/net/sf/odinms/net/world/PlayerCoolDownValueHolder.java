@@ -5,8 +5,7 @@ import java.io.Serializable;
 public class PlayerCoolDownValueHolder implements Serializable {
     static final long serialVersionUID = 9179541993413738569L;
     public final int skillId;
-    public final long startTime;
-    public final long length;
+    public final long startTime, length;
     private final int id;
 
     public PlayerCoolDownValueHolder(int skillId, long startTime, long length) {
@@ -26,12 +25,9 @@ public class PlayerCoolDownValueHolder implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final PlayerCoolDownValueHolder other = (PlayerCoolDownValueHolder) obj;
         return id == other.id;
     }

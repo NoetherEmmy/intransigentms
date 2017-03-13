@@ -15,7 +15,7 @@ public class AfterLoginHandler extends AbstractMaplePacketHandler {
         byte c2 = slea.readByte();
         byte c3 = slea.readByte();
         if (c2 == 1 && c3 == 1) {
-            // Official requests the pin here - but pins suck so we just accept
+            // Official GMS requests the pin here -- but pins suck, so we just accept.
             c.getSession().write(MaplePacketCreator.pinAccepted());
         } else if (c2 == 1 && c3 == 0) {
             slea.seek(8);
@@ -26,8 +26,6 @@ public class AfterLoginHandler extends AbstractMaplePacketHandler {
             } else {
                 c.getSession().write(MaplePacketCreator.requestPinAfterFailure());
             }
-        } else {
-            // abort login attempt
-        }
+        } // Else, abort login attempt.
     }
 }

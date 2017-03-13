@@ -124,9 +124,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
             }
             synchronized (lwi) {
                 synchronized (worldReady) {
-                    if (worldReady) {
-                        return;
-                    }
+                    if (worldReady) return;
                 }
                 System.err.println("Reconnecting to world server");
                 synchronized (wli) {

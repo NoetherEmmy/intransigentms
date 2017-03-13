@@ -6,11 +6,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
     private final int id;
     private int f;
     private boolean hide;
-    private int fh;
-    private int start_fh;
-    private int cy;
-    private int rx0;
-    private int rx1;
+    private int fh, start_fh, cy, rx0, rx1;
 
     public AbstractLoadedMapleLife(int id) {
         this.id = id;

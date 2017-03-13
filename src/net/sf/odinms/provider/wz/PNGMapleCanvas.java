@@ -8,7 +8,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 public class PNGMapleCanvas implements MapleCanvas {
-    private static final int[] ZAHLEN = new int[] { 2, 1, 0, 3 };
+    private static final int[] ZAHLEN = new int[] {2, 1, 0, 3};
     private final int height;
     private final int width;
     private final int dataLength;
@@ -17,12 +17,12 @@ public class PNGMapleCanvas implements MapleCanvas {
     private final byte[] data;
 
     public PNGMapleCanvas(int width, int height, int dataLength, int format, byte[] data) {
-            super();
-            this.height = height;
-            this.width = width;
-            this.dataLength = dataLength;
-            this.format = format;
-            this.data = data;
+        super();
+        this.height = height;
+        this.width = width;
+        this.dataLength = dataLength;
+        this.format = format;
+        this.data = data;
     }
 
     public int getHeight() {
@@ -44,7 +44,7 @@ public class PNGMapleCanvas implements MapleCanvas {
     @Override
     public BufferedImage getImage() {
         int sizeUncompressed = 0;
-        int size8888 = 0;
+        int size8888;
         int maxWriteBuf = 2;
         int maxHeight = 3;
         byte[] writeBuf = new byte[maxWriteBuf];
@@ -69,11 +69,11 @@ public class PNGMapleCanvas implements MapleCanvas {
         }
         if (getHeight() > maxHeight) {
             maxHeight = getHeight();
-            rowPointers = new byte[maxHeight];
+            rowPointers = new byte[maxHeight]; // ???
         }
         Inflater dec = new Inflater();
         dec.setInput(getData(), 0, dataLength);
-        int declen = 0;
+        int declen;
         byte[] uc = new byte[sizeUncompressed];
         try {
             declen = dec.inflate(uc);
@@ -116,7 +116,6 @@ public class PNGMapleCanvas implements MapleCanvas {
                 }
             }
         }
-
         DataBufferByte imgData = new DataBufferByte(writeBuf, sizeUncompressed);
 
         //SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, c.getWidth(), c.getHeight(), 4, c.getWidth() * 4, new int[] {2, 1, 0, 3});

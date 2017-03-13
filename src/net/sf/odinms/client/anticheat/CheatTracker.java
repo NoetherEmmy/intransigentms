@@ -13,7 +13,9 @@ import java.util.concurrent.ScheduledFuture;
 
 public class CheatTracker {
     private final Map<CheatingOffense, CheatingOffenseEntry> offenses =
-            Collections.synchronizedMap(new LinkedHashMap<CheatingOffense, CheatingOffenseEntry>());
+        Collections.synchronizedMap(
+            new LinkedHashMap<CheatingOffense, CheatingOffenseEntry>()
+        );
     private final WeakReference<MapleCharacter> chr;
     private long regenHPSince;
     private long regenMPSince;
@@ -21,19 +23,19 @@ public class CheatTracker {
     private int numMPRegens;
     private int numSequentialAttacks;
     private long lastAttackTime;
-    private long lastDamage = 0;
+    private long lastDamage;
     private long takingDamageSince;
-    private int numSequentialDamage = 0;
-    private long lastDamageTakenTime = 0;
-    private int numSequentialSummonAttack = 0;
-    private long summonSummonTime = 0;
-    private int numSameDamage = 0;
+    private int numSequentialDamage;
+    private long lastDamageTakenTime;
+    private int numSequentialSummonAttack;
+    private long summonSummonTime;
+    private int numSameDamage;
     private long attackingSince;
     private Point lastMonsterMove;
     private int monsterMoveCount;
-    private int attacksWithoutHit = 0;
-    private int numGotMissed = 0;
-    private int vac = 0;
+    private int attacksWithoutHit;
+    private int numGotMissed;
+    private int vac;
     private Boolean pickupComplete = Boolean.TRUE;
     private final long[] lastTime = new long[6];
     private final ScheduledFuture<?> invalidationTask;
@@ -222,23 +224,22 @@ public class CheatTracker {
 
     public void registerOffense(CheatingOffense offense, String param) {
         MapleCharacter chrhardref = chr.get();
-        if (chrhardref == null || !offense.isEnabled()) {
-            return;
-        }
+        if (chrhardref == null || !offense.isEnabled()) return;
         CheatingOffenseEntry entry = offenses.get(offense);
         if (entry != null && entry.isExpired()) {
             expireEntry(entry);
             entry = null;
         }
-        if (entry == null) {
-            entry = new CheatingOffenseEntry(offense, chrhardref);
-        }
-        if (param != null) {
-            entry.setParam(param);
-        }
+        if (entry == null) entry = new CheatingOffenseEntry(offense, chrhardref);
+        if (param != null) entry.setParam(param);
         entry.incrementCount();
         if (offense.shouldAutoban(entry.getCount())) {
-            AutobanManager.getInstance().autoban(chrhardref.getClient(), StringUtil.makeEnumHumanReadable(offense.name()));
+            AutobanManager
+                .getInstance()
+                .autoban(
+                    chrhardref.getClient(),
+                    StringUtil.makeEnumHumanReadable(offense.name())
+                );
         }
         offenses.put(offense, entry);
         CheatingOffensePersister.getInstance().persistEntry(entry);
@@ -250,11 +251,11 @@ public class CheatTracker {
 
     public int getPoints() {
         int ret = 0;
-        CheatingOffenseEntry[] offenses_copy;
+        CheatingOffenseEntry[] offensesCopy;
         synchronized (offenses) {
-            offenses_copy = offenses.values().toArray(new CheatingOffenseEntry[offenses.size()]);
+            offensesCopy = offenses.values().toArray(new CheatingOffenseEntry[offenses.size()]);
         }
-        for (CheatingOffenseEntry entry : offenses_copy) {
+        for (CheatingOffenseEntry entry : offensesCopy) {
             if (entry.isExpired()) {
                 expireEntry(entry);
             } else {
@@ -273,9 +274,7 @@ public class CheatTracker {
         List<CheatingOffenseEntry> offenseList = new ArrayList<>();
         synchronized (offenses) {
             for (CheatingOffenseEntry entry : offenses.values()) {
-                if (!entry.isExpired()) {
-                    offenseList.add(entry);
-                }
+                if (!entry.isExpired()) offenseList.add(entry);
             }
         }
         offenseList.sort((o1, o2) -> {
@@ -288,9 +287,7 @@ public class CheatTracker {
             ret.append(StringUtil.makeEnumHumanReadable(offenseList.get(x).getOffense().name()));
             ret.append(": ");
             ret.append(offenseList.get(x).getCount());
-            if (x != to - 1) {
-                ret.append(" ");
-            }
+            if (x != to - 1) ret.append(' ');
         }
         return ret.toString();
     }
@@ -315,14 +312,9 @@ public class CheatTracker {
                 offenses_copy = offenses.values().toArray(new CheatingOffenseEntry[offenses.size()]);
             }
             for (CheatingOffenseEntry offense : offenses_copy) {
-                if (offense.isExpired()) {
-                    expireEntry(offense);
-                }
+                if (offense.isExpired()) expireEntry(offense);
             }
-
-            if (chr.get() == null) {
-                dispose();
-            }
+            if (chr.get() == null) dispose();
         }
     }
 }

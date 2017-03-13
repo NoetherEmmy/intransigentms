@@ -82,9 +82,7 @@ public class EventInstanceManager {
 
     public void unregisterPlayer(MapleCharacter chr) {
         chars.remove(chr);
-        if (chr != null) {
-            chr.setEventInstance(null);
-        }
+        if (chr != null) chr.setEventInstance(null);
     }
 
     public int getPlayerCount() {

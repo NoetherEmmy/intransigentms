@@ -25,7 +25,9 @@ import java.util.*;
 
 public class CommandProcessor implements CommandProcessorMBean {
     private static final List<Pair<MapleCharacter, String>> gmlog =
-        Collections.synchronizedList(new ArrayList<Pair<MapleCharacter, String>>());
+        Collections.synchronizedList(
+            new ArrayList<Pair<MapleCharacter, String>>()
+        );
     private final Map<String, DefinitionCommandPair> commands = new LinkedHashMap<>();
     private static CommandProcessor instance = new CommandProcessor();
     private static final Runnable persister;
@@ -117,9 +119,7 @@ public class CommandProcessor implements CommandProcessorMBean {
 
     public static int getNamedIntArg(String splitted[], int startpos, String name, int def) {
         Integer ret = getNamedIntArg(splitted, startpos, name);
-        if (ret == null) {
-            return def;
-        }
+        if (ret == null) return def;
         return ret;
     }
 
@@ -154,9 +154,7 @@ public class CommandProcessor implements CommandProcessorMBean {
         try {
             processCommandInternal(c, mc, command);
         } finally {
-            if (map != null) {
-                map.removePlayer(chr);
-            }
+            if (map != null) map.removePlayer(chr);
             cserv.removePlayer(chr);
         }
         return mc.toString();

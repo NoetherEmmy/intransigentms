@@ -15,26 +15,31 @@ import java.util.Map;
 public class CashItemFactory {
     private static final Map<Integer, Integer> snLookup = new LinkedHashMap<>();
     private static final Map<Integer, CashItemInfo> itemStats = new LinkedHashMap<>();
-    private static final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
-    private static final MapleData commodities = data.getData(StringUtil.getLeftPaddedStr("Commodity.img", '0', 11));
+    private static final MapleDataProvider data =
+        MapleDataProviderFactory.getDataProvider(
+            new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz")
+        );
+    private static final MapleData commodities =
+        data.getData(
+            StringUtil.getLeftPaddedStr("Commodity.img", '0', 11)
+        );
 
     public static CashItemInfo getItem(int sn) {
-        if (itemStats.containsKey(sn)) {
-            return itemStats.get(sn);
-        }
+        if (itemStats.containsKey(sn)) return itemStats.get(sn);
         CashItemInfo stats = itemStats.get(sn);
-        int cid = getCommodityFromSN(sn);
-        int itemId = MapleDataTool.getIntConvert(cid + "/ItemId", commodities);
-        int count = MapleDataTool.getIntConvert(cid + "/Count", commodities, 1);
-        int price = MapleDataTool.getIntConvert(cid + "/Price", commodities, 0);
-        stats = new CashItemInfo(itemId, count, price);
-        itemStats.put(sn, stats);
+        if (stats == null) {
+            int cid = getCommodityFromSN(sn);
+            int itemId = MapleDataTool.getIntConvert(cid + "/ItemId", commodities);
+            int count = MapleDataTool.getIntConvert(cid + "/Count", commodities, 1);
+            int price = MapleDataTool.getIntConvert(cid + "/Price", commodities, 0);
+            stats = new CashItemInfo(itemId, count, price);
+            itemStats.put(sn, stats);
+        }
         return stats;
     }
 
     private static int getCommodityFromSN(int sn) {
-        if (snLookup.containsKey(sn))
-            return snLookup.get(sn);
+        if (snLookup.containsKey(sn)) return snLookup.get(sn);
         int curr = snLookup.size() - 1;
         int currSN = 0;
         if (curr == -1) {
@@ -54,8 +59,7 @@ public class CashItemFactory {
         List<Integer> packageItems = new ArrayList<>();
         MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File("wz/Etc.wz"));
         MapleData a = dataProvider.getData("CashPackage.img");
-        if (packageItems.contains(itemId))
-            return packageItems;
+        if (packageItems.contains(itemId)) return packageItems;
         for (MapleData b : a.getChildren()) {
             if (itemId == Integer.parseInt(b.getName())) {
                 for (MapleData c : b.getChildren()) {

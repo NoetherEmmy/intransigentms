@@ -49,9 +49,10 @@ public class WorldLoginInterfaceImpl extends UnicastRemoteObject implements Worl
         // Ensure it's loaded on world server.
         wr.setGuildMemberOnline(mgc, false, -1);
 
-        if (mgc.getGuildRank() > 1) // Not leader.
+        if (mgc.getGuildRank() > 1) { // Not leader.
             wr.leaveGuild(mgc);
-        else
+        } else {
             wr.disbandGuild(mgc.getGuildId());
+        }
     }
 }

@@ -381,7 +381,7 @@ public class MapleMapFactory {
         } else {
             builder.append("etc");
         }
-        builder.append("/");
+        builder.append('/');
         builder.append(mapid);
 
         return builder.toString();

@@ -86,8 +86,8 @@ public class SpawnPetHandler extends AbstractMaplePacketHandler {
             player.getMap().broadcastMessage(player, MaplePacketCreator.showPet(player, pet, false), true);
             int uniqueid = pet.getUniqueId();
 
-            List<Pair<MapleStat, Integer>> stats = new ArrayList<>();
-            stats.add(new Pair<>(MapleStat.PET, uniqueid));
+            //List<Pair<MapleStat, Integer>> stats = new ArrayList<>();
+            //stats.add(new Pair<>(MapleStat.PET, uniqueid));
             c.getSession().write(MaplePacketCreator.petStatUpdate(player));
             c.getSession().write(MaplePacketCreator.enableActions());
             int hunger = PetDataFactory.getHunger(pet.getItemId());

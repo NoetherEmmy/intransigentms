@@ -27,7 +27,8 @@ public class MapleMiniGame extends PlayerInteractionManager {
     private int firstslot, visitorpoints, ownerpoints, matchestowin;
 
     public enum MiniGameType {
-        OMOK, MATCH_CARDS
+        OMOK,
+        MATCH_CARDS
     }
 
     public MapleMiniGame(MapleCharacter owner, int type, String desc) {
@@ -177,7 +178,12 @@ public class MapleMiniGame extends PlayerInteractionManager {
         int points = 0;
 
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT matchcard" + type + " FROM characters WHERE name = ?");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "SELECT matchcard" +
+                        type +
+                        " FROM characters WHERE name = ?"
+                );
             ps.setString(1, owner.getName());
             ResultSet rs = ps.executeQuery();
             rs.next();

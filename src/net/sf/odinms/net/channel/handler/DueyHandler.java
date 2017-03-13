@@ -187,18 +187,21 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                         dp.getItem().getOwner()
                     )
                 ) {
-                    c.getPlayer().dropMessage(1, "Your inventory is full");
+                    c.getPlayer().dropMessage(1, "Your inventory is full.");
                     c.getSession().write(MaplePacketCreator.enableActions());
                     return;
                 } else {
                     MapleInventoryManipulator.addFromDrop(c, dp.getItem(), false);
                 }
             }
-            int gainmesos = 0;
+            int gainmesos;
             long totalmesos = (long) dp.getMesos() + (long) c.getPlayer().getMeso();
             if (totalmesos >= Integer.MAX_VALUE) {
-                gainmesos = c.getPlayer().getMeso() - Integer.MAX_VALUE;
-            } else if (totalmesos < 0 || dp.getMesos() < 0) {
+                gainmesos = Integer.MAX_VALUE - c.getPlayer().getMeso();
+            } else {
+                gainmesos = (int) totalmesos;
+            }
+            if (totalmesos < 0L || dp.getMesos() < 0) {
                 c.getPlayer().setMeso(0);
             } else {
                 c.getPlayer().gainMeso(gainmesos, false);
@@ -310,7 +313,6 @@ public class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     public static DueyPackages loadSingleItem(int packageid) {
-        List<DueyPackages> packages = new ArrayList<>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps =
@@ -325,7 +327,6 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                 dueypack.setSender(rs.getString("SenderName"));
                 dueypack.setMesos(rs.getInt("Mesos"));
                 dueypack.setSentTime(rs.getString("TimeStamp"));
-                packages.add(dueypack);
             }
             rs.close();
             ps.close();

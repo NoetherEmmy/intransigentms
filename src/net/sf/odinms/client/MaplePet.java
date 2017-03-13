@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class MaplePet extends Item {
     private String name;
     private int uniqueid;
-    private int closeness = 0;
+    private int closeness;
     private int level = 1;
     private int fullness = 100;
     private int Fh;
@@ -166,9 +166,7 @@ public class MaplePet extends Item {
     public boolean canConsume(int itemId) {
         MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
         for (int petId : mii.petsCanConsume(itemId)) {
-            if (petId == this.getItemId()) {
-                return true;
-            }
+            if (petId == this.getItemId()) return true;
         }
         return false;
     }

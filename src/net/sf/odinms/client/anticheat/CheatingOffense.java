@@ -1,7 +1,6 @@
 package net.sf.odinms.client.anticheat;
 
 public enum CheatingOffense {
-
     FASTATTACK(1, 60000, 300),
     MOVE_MONSTERS,
     TUBI,
@@ -29,7 +28,7 @@ public enum CheatingOffense {
     EXPLODING_NONEXISTANT,
     SUMMON_HACK,
     HEAL_ATTACKING_UNDEAD(1, 60000, 5),
-    COOLDOWN_HACK(10, 300000, 10),;
+    COOLDOWN_HACK(10, 300000, 10);
     private final int points;
     private final long validityDuration;
     private final int autobancount;
@@ -44,10 +43,7 @@ public enum CheatingOffense {
     }
 
     public boolean shouldAutoban(int count) {
-        if (autobancount == -1) {
-            return false;
-        }
-        return count > autobancount;
+        return autobancount != -1 && count > autobancount;
     }
 
     public void setEnabled(boolean enabled) {

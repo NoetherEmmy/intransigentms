@@ -35,9 +35,7 @@ public enum MapleStat implements IntValueHolder {
 
     public static MapleStat getByValue(int value) {
         for (MapleStat stat : MapleStat.values()) {
-            if (stat.getValue() == value) {
-                return stat;
-            }
+            if (stat.getValue() == value) return stat;
         }
         return null;
     }

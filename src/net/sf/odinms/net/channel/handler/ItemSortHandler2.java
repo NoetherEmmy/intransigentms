@@ -24,11 +24,12 @@ public class ItemSortHandler2 extends AbstractMaplePacketHandler {
         final MapleInventoryType invType = MapleInventoryType.getByType(mode);
         MapleInventory inv = c.getPlayer().getInventory(invType);
 
-        List<IItem> itemStatMap = inv.list()
-                                     .stream()
-                                     .filter(i -> i.getPetId() == -1)
-                                     .map(IItem::copy)
-                                     .collect(Collectors.toCollection(ArrayList::new));
+        List<IItem> itemStatMap =
+            inv.list()
+               .stream()
+               .filter(i -> i.getPetId() == -1)
+               .map(IItem::copy)
+               .collect(Collectors.toCollection(ArrayList::new));
 
         itemStatMap.forEach(itemStats ->
             MapleInventoryManipulator.removeById(
@@ -43,7 +44,14 @@ public class ItemSortHandler2 extends AbstractMaplePacketHandler {
 
         itemStatMap.sort(Comparator.comparingInt(IItem::getItemId));
 
-        itemStatMap.forEach(item -> MapleInventoryManipulator.addFromDrop(c, item, false, item.getOwner()));
+        itemStatMap.forEach(
+            item -> MapleInventoryManipulator.addFromDrop(
+                c,
+                item,
+                false,
+                item.getOwner()
+            )
+        );
 
         c.getSession().write(MaplePacketCreator.finishedSort2(mode));
         c.getSession().write(MaplePacketCreator.enableActions());

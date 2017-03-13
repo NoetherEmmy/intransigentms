@@ -77,12 +77,10 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                         // player.getCheatTracker().pickupComplete();
                         player.getMap().removeMapObject(ob);
                     } else {
-                        if (mapitem.getItem().getItemId() == 3992027) {
-                            if (player.getItemQuantity(3992027, false) > 0) {
-                                c.getSession().write(MaplePacketCreator.getInventoryFull());
-                                c.getSession().write(MaplePacketCreator.getShowInventoryFull());
-                                return;
-                            }
+                        if (mapitem.getItem().getItemId() == 3992027 && player.getItemQuantity(3992027, false) > 0) {
+                            c.getSession().write(MaplePacketCreator.getInventoryFull());
+                            c.getSession().write(MaplePacketCreator.getShowInventoryFull());
+                            return;
                         }
                         if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true)) {
                             player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, player.getId()), mapitem.getPosition());
@@ -95,10 +93,8 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                     }
                 }
                 mapitem.setPickedUp(true);
-                if (player.getQuestId() > 0) {
-                    if (player.getCQuest().requiresItem(mapitem.getItem().getItemId())) {
-                        player.makeQuestProgress(0, mapitem.getItem().getItemId());
-                    }
+                if (player.isOnCQuest()) {
+                    player.makeQuestProgress(0, mapitem.getItem().getItemId(), null);
                 }
             }
         }

@@ -27,9 +27,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        if (!c.getPlayer().inMTS()) {
-            return;
-        }
+        if (!c.getPlayer().inMTS()) return;
         if (slea.available() > 0) {
             byte op = slea.readByte();
             if (op == 2) { // Place item for sale.
@@ -194,14 +192,14 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     c.getSession().write(MaplePacketCreator.TransferInventory(getTransfer(c.getPlayer().getId())));
                     c.getSession().write(MaplePacketCreator.NotYetSoldInv(getNotYetSold(c.getPlayer().getId())));
                 }
-            } else if (op == 3) { //send offer for wanted item
-            } else if (op == 4) { //list wanted item
+            } else if (op == 3) { // send offer for wanted item
+            } else if (op == 4) { // list wanted item
                 int itemid = slea.readInt();
                 int price = slea.readInt();
                 int quantity = slea.readInt();
                 slea.readShort();
                 String message = slea.readMapleAsciiString();
-            } else if (op == 5) { //change page/tab
+            } else if (op == 5) { // change page/tab
                 //tabs
                 //1 = for sale
                 //2 = wanted
@@ -797,9 +795,17 @@ public class MTSHandler extends AbstractMaplePacketHandler {
         int pages = 0;
         try {
             if (type != 0) {
-                ps = con.prepareStatement("SELECT * FROM mts_items WHERE tab = ? " + listaitems + " AND type = ? AND transfer = 0 ORDER BY id DESC LIMIT ?, 16");
+                ps = con.prepareStatement(
+                    "SELECT * FROM mts_items WHERE tab = ? " +
+                        listaitems +
+                        " AND type = ? AND transfer = 0 ORDER BY id DESC LIMIT ?, 16"
+                );
             } else {
-                ps = con.prepareStatement("SELECT * FROM mts_items WHERE tab = ? " + listaitems + " AND transfer = 0 ORDER BY id DESC LIMIT ?, 16");
+                ps = con.prepareStatement(
+                    "SELECT * FROM mts_items WHERE tab = ? " +
+                        listaitems +
+                        " AND transfer = 0 ORDER BY id DESC LIMIT ?, 16"
+                );
             }
             ps.setInt(1, tab);
             if (type != 0) {
@@ -813,7 +819,16 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                 if (rs.getInt("type") != 1) {
                     Item i = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
                     i.setOwner(rs.getString("owner"));
-                    items.add(new MTSItemInfo(i, rs.getInt("price"), rs.getInt("id"), rs.getInt("seller"), rs.getString("sellername"), rs.getString("sell_ends")));
+                    items.add(
+                        new MTSItemInfo(
+                            i,
+                            rs.getInt("price"),
+                            rs.getInt("id"),
+                            rs.getInt("seller"),
+                            rs.getString("sellername"),
+                            rs.getString("sell_ends")
+                        )
+                    );
                 } else {
                     Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"), -1);
                     equip.setOwner(rs.getString("owner"));
@@ -836,29 +851,42 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     equip.setUpgradeSlots((byte) rs.getInt("upgradeslots"));
                     equip.setLocked((byte) rs.getInt("locked"));
                     equip.setLevel((byte) rs.getInt("level"));
-                    items.add(new MTSItemInfo(equip, rs.getInt("price"), rs.getInt("id"), rs.getInt("seller"), rs.getString("sellername"), rs.getString("sell_ends")));
+                    items.add(
+                        new MTSItemInfo(
+                            equip,
+                            rs.getInt("price"),
+                            rs.getInt("id"),
+                            rs.getInt("seller"),
+                            rs.getString("sellername"),
+                            rs.getString("sell_ends")
+                        )
+                    );
                 }
             }
             rs.close();
             ps.close();
             if (type != 0) {
-                ps = con.prepareStatement("SELECT COUNT(*) FROM mts_items WHERE tab = ? " + listaitems + " AND type = ? AND transfer = 0");
+                ps = con.prepareStatement(
+                    "SELECT COUNT(*) FROM mts_items WHERE tab = ? " +
+                        listaitems +
+                        " AND type = ? AND transfer = 0"
+                );
             } else {
-                ps = con.prepareStatement("SELECT COUNT(*) FROM mts_items WHERE tab = ? " + listaitems + " AND transfer = 0");
-                ps.setInt(1, tab);
-                if (type != 0) {
-                    ps.setInt(2, type);
-                }
-                rs = ps.executeQuery();
-                if (rs.next()) {
-                    pages = rs.getInt(1) / 16;
-                    if (rs.getInt(1) % 16 > 0) {
-                        pages += 1;
-                    }
-                }
-                rs.close();
-                ps.close();
+                ps = con.prepareStatement(
+                    "SELECT COUNT(*) FROM mts_items WHERE tab = ? " +
+                        listaitems +
+                        " AND transfer = 0"
+                );
             }
+            ps.setInt(1, tab);
+            if (type != 0) ps.setInt(2, type);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                pages = rs.getInt(1) / 16;
+                if (rs.getInt(1) % 16 > 0) pages += 1;
+            }
+            rs.close();
+            ps.close();
         } catch (SQLException e) {
             log.error("Err6: " + e);
         }

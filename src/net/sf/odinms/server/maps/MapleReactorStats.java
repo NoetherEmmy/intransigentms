@@ -3,12 +3,12 @@ package net.sf.odinms.server.maps;
 import net.sf.odinms.tools.Pair;
 
 import java.awt.*;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MapleReactorStats {
     private Point tl, br;
-    private final Map<Byte, StateData> stateInfo = new LinkedHashMap<>();
+    private final Map<Byte, StateData> stateInfo = new HashMap<>();
 
     /*
     public int getInfoId() {
@@ -51,26 +51,20 @@ public class MapleReactorStats {
 
     public byte getNextState(byte state) {
         StateData nextState = stateInfo.get(state);
-        if (nextState != null)
-            return nextState.getNextState();
-        else
-            return -1;
+        if (nextState != null) return nextState.getNextState();
+        return -1;
     }
 
     public int getType(byte state) {
         StateData nextState = stateInfo.get(state);
-        if (nextState != null)
-            return nextState.getType();
-        else
-            return -1;
+        if (nextState != null) return nextState.getType();
+        return -1;
     }
 
     public Pair<Integer, Integer> getReactItem(byte state) {
         StateData nextState = stateInfo.get(state);
-        if (nextState != null)
-            return nextState.getReactItem();
-        else
-            return null;
+        if (nextState != null) return nextState.getReactItem();
+        return null;
     }
 
     private class StateData {

@@ -71,9 +71,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     private int getFreeChannelId() {
         for (int i = 0; i < 30; ++i) {
-            if (!channelServer.containsKey(i)) {
-                return i;
-            }
+            if (!channelServer.containsKey(i)) return i;
         }
         return -1;
     }
@@ -193,9 +191,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     public int getHighestChannelId() {
         int highest = 0;
         for (Integer channel : channelServer.keySet()) {
-            if (channel != null && channel > highest) {
-                highest = channel;
-            }
+            if (channel != null && channel > highest) highest = channel;
         }
         return highest;
     }
@@ -237,7 +233,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
         }
         ret.append("Total users online: ");
         ret.append(totalUsers);
-        ret.append("\n");
+        ret.append('\n');
         Properties props = new Properties(WorldServer.getInstance().getWorldProp());
         int loginInterval = Integer.parseInt(props.getProperty("net.sf.odinms.login.interval"));
         for (LoginWorldInterface lwi : loginServer) {

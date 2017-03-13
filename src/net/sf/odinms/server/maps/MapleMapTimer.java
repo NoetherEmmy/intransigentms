@@ -10,7 +10,7 @@ import java.util.concurrent.ScheduledFuture;
 public class MapleMapTimer {
     private final Calendar predictedStopTime;
     private int mapToWarpTo = -1;
-    private int minLevelToWarp = 0;
+    private int minLevelToWarp;
     private int maxLevelToWarp = 256;
     private final ScheduledFuture<?> sf0F;
 

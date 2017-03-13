@@ -15,14 +15,17 @@ import java.util.Map;
 
 public class MobSkillFactory {
     private static final Map<Pair<Integer, Integer>, MobSkill> mobSkills = new LinkedHashMap<>();
-    private static final MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
+    private static final MapleDataProvider dataSource =
+        MapleDataProviderFactory.getDataProvider(
+            new File(
+                System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"
+            )
+        );
     private static final MapleData skillRoot = dataSource.getData("MobSkill.img");
 
     public static MobSkill getMobSkill(int skillId, int level) {
         MobSkill ret = mobSkills.get(new Pair<>(skillId, level));
-        if (ret != null) {
-            return ret;
-        }
+        if (ret != null) return ret;
         synchronized (mobSkills) {
             // see if someone else that's also synchronized has loaded the skill by now
             ret = mobSkills.get(new Pair<>(skillId, level));
@@ -32,23 +35,20 @@ public class MobSkillFactory {
                     int mpCon = MapleDataTool.getInt(skillData.getChildByPath("mpCon"), 0);
                     List<Integer> toSummon = new ArrayList<>();
                     for (int i = 0; i > -1; ++i) {
-                        if (skillData.getChildByPath(String.valueOf(i)) == null) {
-                            break;
-                        }
+                        if (skillData.getChildByPath(String.valueOf(i)) == null) break;
                         toSummon.add(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
                     }
                     int effect = MapleDataTool.getInt("summonEffect", skillData, 0);
                     int hp = MapleDataTool.getInt("hp", skillData, 100);
                     int x = MapleDataTool.getInt("x", skillData, 1);
                     int y = MapleDataTool.getInt("y", skillData, 1);
-                    long duration = MapleDataTool.getInt("time", skillData, 0) * 1000;
-                    long cooltime = MapleDataTool.getInt("interval", skillData, 0) * 1000;
+                    long duration = (long) MapleDataTool.getInt("time", skillData, 0) * 1000L;
+                    long cooltime = (long) MapleDataTool.getInt("interval", skillData, 0) * 1000L;
                     int iprop = MapleDataTool.getInt("prop", skillData, 100);
-                    float prop = iprop / 100;
+                    float prop = (float) iprop / 100.0f;
                     int limit = MapleDataTool.getInt("limit", skillData, 0);
                     MapleData ltd = skillData.getChildByPath("lt");
-                    Point lt = null;
-                    Point rb = null;
+                    Point lt = null, rb = null;
                     if (ltd != null) {
                         lt = (Point) ltd.getData();
                         rb = (Point) skillData.getChildByPath("rb").getData();

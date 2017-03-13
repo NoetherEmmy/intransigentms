@@ -127,10 +127,18 @@ public class AbstractPlayerInteraction {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             IItem item = ii.getEquipById(id);
             MapleInventoryType type = ii.getInventoryType(id);
-            if (type.equals(MapleInventoryType.EQUIP) && !ii.isThrowingStar(item.getItemId()) && !ii.isBullet(item.getItemId())) {
+            if (
+                type.equals(MapleInventoryType.EQUIP) &&
+                !ii.isThrowingStar(item.getItemId()) &&
+                !ii.isBullet(item.getItemId())
+            ) {
                 if (!getPlayer().getInventory(type).isFull()) {
                     if (randomStats) {
-                        MapleInventoryManipulator.addFromDrop(c, ii.randomizeStats(getClient(), (Equip) item), false);
+                        MapleInventoryManipulator.addFromDrop(
+                            c,
+                            ii.randomizeStats(getClient(), (Equip) item),
+                            false
+                        );
                     } else {
                         MapleInventoryManipulator.addFromDrop(c, item, false);
                     }
@@ -158,7 +166,12 @@ public class AbstractPlayerInteraction {
                     MapleInventoryManipulator.addById(c, id, quantity);
                 }
             } else {
-                c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + type.name().toLowerCase() + " inventory, and then type @mapleadmin into chat to claim the item.");
+                c.getPlayer().dropMessage(
+                    1,
+                    "Your inventory is full. Please remove an item from your " +
+                        type.name().toLowerCase() +
+                        " inventory, and then type @mapleadmin into chat to claim the item."
+                );
                 c.getPlayer().addUnclaimedItem(id, quantity);
                 return false;
             }
@@ -166,7 +179,14 @@ public class AbstractPlayerInteraction {
                 c.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity, true));
             }
         } else {
-            MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(id), id, -quantity, true, false);
+            MapleInventoryManipulator.removeById(
+                c,
+                MapleItemInformationProvider.getInstance().getInventoryType(id),
+                id,
+                -quantity,
+                true,
+                false
+            );
         }
         return true;
     }
@@ -264,8 +284,17 @@ public class AbstractPlayerInteraction {
         removeAll(id, false);
     }
 
-    //remove all items of type from character
-    //combination of haveItem and gainItem
+    /**
+     * <p>
+     * Remove all items of specified ID from character.
+     * </p>
+     *
+     * <p>
+     * Used to replace a combination of
+     * {@link AbstractPlayerInteraction#haveItem} and
+     * {@link AbstractPlayerInteraction#gainItem}.
+     * </p>
+     */
     public void removeAll(int id, boolean checkEquipped) {
         MapleInventoryManipulator.removeAllById(c, id, checkEquipped);
     }
@@ -317,7 +346,7 @@ public class AbstractPlayerInteraction {
     }
 
     /**
-     * Spawns an NPC at a custom position
+     * Spawns an NPC at a custom position.
      */
     public void spawnNpc(int npcId, Point pos) {
         MapleNPC npc = MapleLifeFactory.getNPC(npcId);

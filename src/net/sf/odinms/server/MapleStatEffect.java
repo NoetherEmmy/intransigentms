@@ -25,26 +25,21 @@ import java.util.stream.Collectors;
 public class MapleStatEffect implements Serializable {
     static final long serialVersionUID = 9179541993413738569L;
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleStatEffect.class);
-    private short watk, matk, wdef, mdef, acc, avoid, hands, speed, jump;
-    private short hp, mp;
+    private short watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, hp, mp;
     private double hpR, mpR;
     private short mpCon, hpCon;
     private int duration;
     private boolean overTime;
-    private int sourceid;
-    private int moveTo;
+    private int sourceid, moveTo;
     private boolean skill;
     private List<Pair<MapleBuffStat, Integer>> statups;
     private Map<MonsterStatus, Integer> monsterStatus;
     private int x, y, z;
     private double prop;
-    private int iProp;
-    private int itemCon, itemConNo;
+    private int iProp, itemCon, itemConNo;
     private int damage, attackCount, bulletCount, bulletConsume;
     private Point lt, rb;
-    private int mobCount;
-    private int moneyCon;
-    private int cooldown;
+    private int mobCount, moneyCon, cooldown;
     private boolean isMorph = false;
     private int morphId;
     private List<MapleDisease> cureDebuffs;
@@ -1912,9 +1907,7 @@ public class MapleStatEffect implements Serializable {
         int skillIds[] =     {2001003, 2301004, 5111005, 5121003, 1301006, 1320009, 5221006};
         int scaleFactors[] = {60,      80,      200,     200,     200,     250,     60};
         for (int i = 0; i < skillIds.length; ++i) {
-            if (skillIds[i] == getSourceId()) {
-                return scaleFactors[i];
-            }
+            if (skillIds[i] == getSourceId()) return scaleFactors[i];
         }
         return -1;
     }

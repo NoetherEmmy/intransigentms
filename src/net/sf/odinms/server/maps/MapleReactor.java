@@ -18,7 +18,7 @@ public class MapleReactor extends AbstractMapleMapObject {
     private boolean alive;
     private String name;
     private boolean timerActive;
-    private Integer trigger = null;
+    private Integer trigger;
     //private static Logger log = LoggerFactory.getLogger(MapleReactor.class);
 
     public MapleReactor(MapleReactorStats stats, int rid) {
@@ -183,15 +183,16 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     @Override
     public String toString() {
-        return "Reactor " +
-               getObjectId() +
-               " of id " +
-               rid +
-               " at position " +
-               getPosition() +
-               ", with state " +
-               state +
-               ", and type " +
-               stats.getType(state);
+        return
+            "Reactor " +
+                getObjectId() +
+                " of id " +
+                rid +
+                " at position " +
+                getPosition() +
+                ", with state " +
+                state +
+                ", and type " +
+                stats.getType(state);
     }
 }

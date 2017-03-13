@@ -32,13 +32,11 @@ public class SpawnPoint {
 
     // Intentionally package private
     boolean shouldSpawn(long now) {
-        if (mobTime < 0) {
-            return false;
-        }
+        if (mobTime < 0) return false;
         // Regular spawnpoints should spawn a maximum of 3 monsters: these are immobile spawnpoints
         // or spawnpoints with a maximum mobtime of 1
         return !(((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) &&
-            nextPossibleSpawn <= now;
+               nextPossibleSpawn <= now;
     }
 
     /**

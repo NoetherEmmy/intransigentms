@@ -1,7 +1,6 @@
 package net.sf.odinms.net.world.guild;
 
 public class MapleGuildSummary implements java.io.Serializable {
-
     public static final long serialVersionUID = 3565477792085301248L;
     private final String name;
     private final short logoBG;

@@ -22,7 +22,7 @@ public class PartyQuest {
     private final int minPlayers, exitMapId, channel;
     private final AtomicInteger points = new AtomicInteger();
     private final Set<Integer> pqItems = new HashSet<>(4, 0.8f);
-    private ScheduledFuture<?> disposeTask = null;
+    private ScheduledFuture<?> disposeTask;
 
     public PartyQuest(int channel, String name, int minPlayers, int exitMapId) {
         this.channel = channel;
@@ -310,9 +310,7 @@ public class PartyQuest {
         PartyQuestMapInstance pqmiMinPlayers = mapInstances.stream().reduce(null, (min, mi) -> {
             if (mi.getMap().playerCount() > 0) {
                 if (min != null) {
-                    if (mi.getMap().playerCount() < min.getMap().playerCount()) {
-                        return mi;
-                    }
+                    if (mi.getMap().playerCount() < min.getMap().playerCount()) return mi;
                 } else {
                     return mi;
                 }
@@ -320,7 +318,11 @@ public class PartyQuest {
             return min;
         });
 
-        if (pqmiMinPlayers == null || pqmiMinPlayers.getMap().playerCount() == 0 || pqmiMinPlayers.getPlayers().get(0).getId() == player.getId()) {
+        if (
+            pqmiMinPlayers == null ||
+            pqmiMinPlayers.getMap().playerCount() == 0 ||
+            pqmiMinPlayers.getPlayers().get(0).getId() == player.getId()
+        ) {
             dispose();
             if (player.getMapId() != exitMapId) {
                 player.changeMap(exitMapId, 0);

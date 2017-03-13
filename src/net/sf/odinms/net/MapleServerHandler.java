@@ -29,9 +29,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
         Runnable r = ((MaplePacket) message).getOnSend();
-        if (r != null) {
-            r.run();
-        }
+        if (r != null) r.run();
         super.messageSent(session, message);
     }
 
@@ -101,7 +99,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
         byte[] content = (byte[]) message;
-        SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new ByteArrayByteStream(content));
+        SeekableLittleEndianAccessor slea =
+            new GenericSeekableLittleEndianAccessor(
+                new ByteArrayByteStream(content)
+            );
         short packetId = slea.readShort();
         MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         MaplePacketHandler packetHandler = processor.getHandler(packetId);
@@ -149,9 +150,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             System.out.println("Player " + client.getPlayer().getName() + " went idle.");
         }
         */
-        if (client != null) {
-            client.sendPing();
-        }
+        if (client != null) client.sendPing();
         super.sessionIdle(session, status);
     }
 }

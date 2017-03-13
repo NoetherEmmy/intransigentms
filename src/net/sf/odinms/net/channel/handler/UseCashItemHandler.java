@@ -538,11 +538,11 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
     }
 
     public static boolean canGoToTimeLaneMap(MapleCharacter player, int mapId) {
-        int questNums[] = {6, 7, 8};
+        int questNums[] = {12000, 12001, 12002};
         boolean canGo = false;
         switch (mapId) {
             case 270010000:
-                if (player.getQuestCompletion(questNums[0])) {
+                if (player.completedCQuest(questNums[0])) {
                     canGo = true;
                     break;
                 }
@@ -552,28 +552,28 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                 );
                 break;
             case 270010500:
-                if (player.getQuestCompletion(questNums[1])) {
+                if (player.completedCQuest(questNums[1])) {
                     canGo = true;
                     break;
                 }
                 player.dropMessage(1, "You may not go to that map prior to completing Regrets Run Rampant.");
                 break;
             case 270020500:
-                if (player.getQuestCompletion(questNums[2])) {
+                if (player.completedCQuest(questNums[2])) {
                     canGo = true;
                     break;
                 }
                 player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
                 break;
             case 270030500:
-                if (player.getQuestCompletion(questNums[2])) {
+                if (player.completedCQuest(questNums[2])) {
                     canGo = true;
                     break;
                 }
                 player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
                 break;
             case 270040000:
-                if (player.getQuestCompletion(questNums[2])) {
+                if (player.completedCQuest(questNums[2])) {
                     canGo = true;
                     break;
                 }
@@ -582,7 +582,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
             default:
                 int mapStage = (mapId / 10000) % 10;
                 if (mapStage == 1) {
-                    if (player.getQuestCompletion(questNums[0])) {
+                    if (player.completedCQuest(questNums[0])) {
                         canGo = true;
                         break;
                     }
@@ -592,14 +592,14 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                     );
                     break;
                 } else if (mapStage == 2) {
-                    if (player.getQuestCompletion(questNums[1])) {
+                    if (player.completedCQuest(questNums[1])) {
                         canGo = true;
                         break;
                     }
                     player.dropMessage(1, "You may not go to that map prior to completing Regrets Run Rampant.");
                     break;
                 } else if (mapStage > 2) {
-                    if (player.getQuestCompletion(questNums[2])) {
+                    if (player.completedCQuest(questNums[2])) {
                         canGo = true;
                         break;
                     }

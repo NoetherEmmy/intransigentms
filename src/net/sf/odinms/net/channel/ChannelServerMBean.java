@@ -1,7 +1,6 @@
 package net.sf.odinms.net.channel;
 
 public interface ChannelServerMBean {
-
     void shutdown(int time);
 
     void shutdownWorld(int time);

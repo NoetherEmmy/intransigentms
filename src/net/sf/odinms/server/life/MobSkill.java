@@ -26,7 +26,7 @@ public class MobSkill {
     private long duration;
     private long cooltime;
     private float prop;
-    private Point lt,  rb;
+    private Point lt, rb;
     private int limit;
 
     public MobSkill(int skillId, int level) {

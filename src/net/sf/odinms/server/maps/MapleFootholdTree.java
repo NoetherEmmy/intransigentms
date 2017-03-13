@@ -26,18 +26,10 @@ public class MapleFootholdTree {
 
     public void insert(MapleFoothold f) {
         if (depth == 0) {
-            if (f.getX1() > maxDropX) {
-                maxDropX = f.getX1();
-            }
-            if (f.getX1() < minDropX) {
-                minDropX = f.getX1();
-            }
-            if (f.getX2() > maxDropX) {
-                maxDropX = f.getX2();
-            }
-            if (f.getX2() < minDropX) {
-                minDropX = f.getX2();
-            }
+            if (f.getX1() > maxDropX) maxDropX = f.getX1();
+            if (f.getX1() < minDropX) minDropX = f.getX1();
+            if (f.getX2() > maxDropX) maxDropX = f.getX2();
+            if (f.getX2() < minDropX) minDropX = f.getX2();
         }
         int maxDepth = 8;
         if (/*footholds.size() == 0 || */
@@ -72,14 +64,10 @@ public class MapleFootholdTree {
     private List<MapleFoothold> getRelevants(Point p, List<MapleFoothold> list) {
         list.addAll(footholds);
         if (nw != null) {
-            if (p.x <= center.x && p.y <= center.y)
-                nw.getRelevants(p, list);
-            else if (p.x > center.x && p.y <= center.y)
-                ne.getRelevants(p, list);
-            else if (p.x <= center.x && p.y > center.y)
-                sw.getRelevants(p, list);
-            else
-                se.getRelevants(p, list);
+            if (p.x <= center.x && p.y <= center.y) nw.getRelevants(p, list);
+            else if (p.x > center.x && p.y <= center.y) ne.getRelevants(p, list);
+            else if (p.x <= center.x && p.y > center.y) sw.getRelevants(p, list);
+            else se.getRelevants(p, list);
         }
         return list;
     }

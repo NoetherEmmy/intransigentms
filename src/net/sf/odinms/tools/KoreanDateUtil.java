@@ -1,10 +1,10 @@
 package net.sf.odinms.tools;
 
 public class KoreanDateUtil {
-private static final int ITEM_YEAR2000 = -1085019342;
+    private static final int ITEM_YEAR2000 = -1085019342;
     private static final long REAL_YEAR2000 = 946681229830L;
-//    private final static long FT_UT_OFFSET2 = 116444484000000000L; // PDT
-private static final long FT_UT_OFFSET2 = 116444448000000000L; // PST
+    //private final static long FT_UT_OFFSET2 = 116444484000000000L; // PDT
+    private static final long FT_UT_OFFSET2 = 116444448000000000L; // PST
     private static final long FT_UT_OFFSET = 116444736000000000L; // 100 nsseconds from 1/1/1601 -> 1/1/1970
 
     /**
@@ -20,8 +20,8 @@ private static final long FT_UT_OFFSET2 = 116444448000000000L; // PST
      * @return A 64-bit long giving a filetime timestamp
      */
     public static long getTempBanTimestamp(long realTimestamp) {
-        // long time = (realTimestamp / 1000);//seconds
-        return ((realTimestamp * 10000) + FT_UT_OFFSET);
+        //long time = (realTimestamp / 1000); // Seconds
+        return ((realTimestamp * 10000L) + FT_UT_OFFSET);
     }
 
     /**
@@ -31,7 +31,7 @@ private static final long FT_UT_OFFSET2 = 116444448000000000L; // PST
      * @return The Korean timestamp for the real timestamp.
      */
     public static int getItemTimestamp(long realTimestamp) {
-        int time = (int) ((realTimestamp - REAL_YEAR2000) / 1000 / 60); // convert to minutes
+        int time = (int) ((realTimestamp - REAL_YEAR2000) / 1000L / 60L); // Convert to minutes
         return (int) (time * 35.762787d) + ITEM_YEAR2000;
     }
 
@@ -43,7 +43,7 @@ private static final long FT_UT_OFFSET2 = 116444448000000000L; // PST
      */
 
     public static long getQuestTimestamp(long realTimestamp) {
-        long time = (realTimestamp / 1000); // convert to seconds
-        return ((time * 10000000) + FT_UT_OFFSET2);
+        long time = (realTimestamp / 1000L); // convert to seconds
+        return ((time * 10000000L) + FT_UT_OFFSET2);
     }
 }

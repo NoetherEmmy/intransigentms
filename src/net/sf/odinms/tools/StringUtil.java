@@ -60,9 +60,7 @@ public class StringUtil {
         StringBuilder builder = new StringBuilder();
         for (int i = start; i < arr.length; ++i) {
             builder.append(arr[i]);
-            if (i != arr.length - 1) {
-                builder.append(sep);
-            }
+            if (i != arr.length - 1) builder.append(sep);
         }
         return builder.toString();
     }
@@ -98,9 +96,7 @@ public class StringUtil {
     public static int countCharacters(String str, char chr) {
         int ret = 0;
         for (int i = 0; i < str.length(); ++i) {
-            if (str.charAt(i) == chr) {
-                ret++;
-            }
+            if (str.charAt(i) == chr) ret++;
         }
         return ret;
     }

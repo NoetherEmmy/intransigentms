@@ -139,37 +139,128 @@ public class PlayerCommands implements Command {
                 e.printStackTrace();
             }
         } else if (splitted[0].equals("@questinfo")) {
-            MapleCQuests q = player.getCQuest();
-            String complete;
-            if (q.getId() > 0) {
-                if (player.canComplete()) {
-                    complete = "[Quest is ready to turn in]";
-                } else {
-                    complete = "[Quest still in progress]";
+            if (splitted.length == 1) {
+                mc.dropMessage(
+                    "Active quest slots (" +
+                        player.getQuestSlots() +
+                        " available slot" +
+                        (player.getQuestSlots() < 2 ? "" : "s") +
+                        "):"
+                );
+                boolean onAQuest = false;
+                byte currSlot = (byte) 1;
+                for (CQuest cQuest : player.getCQuests()) {
+                    if (cQuest != null && cQuest.getQuest().getId() != 0) {
+                        mc.dropMessage("    " + currSlot + ". " + cQuest.getQuest().getTitle());
+                        onAQuest = true;
+                    }
+                    currSlot++;
                 }
-                mc.dropMessage("Quest: " + q.getTitle());
-                mc.dropMessage("-----------------------------");
-                q.readMonsterTargets().entrySet().forEach(e ->
-                    mc.dropMessage(
-                          e.getValue().getRight()
-                        + "s killed: "
-                        + player.getQuestKills(e.getKey())
-                        + "/"
-                        + e.getValue().getLeft()
-                    )
-                );
-                q.readItemsToCollect().entrySet().forEach(e ->
-                    mc.dropMessage(
-                          e.getValue().getRight()
-                        + "s collected: "
-                        + player.getQuestCollected(e.getKey())
-                        + "/"
-                        + e.getValue().getLeft()
-                    )
-                );
-                mc.dropMessage(complete);
+                if (!onAQuest) {
+                    mc.dropMessage("    You don't have any quests currently underway.");
+                }
+            } else if (splitted[1].equalsIgnoreCase("all")) {
+                boolean onAQuest = false;
+                byte currSlot = (byte) 1;
+                for (final CQuest cQuest : player.getCQuests()) {
+                    if (cQuest != null && cQuest.getQuest().getId() != 0) {
+                        mc.dropMessage("--------------------------------------------");
+                        mc.dropMessage("Slot " + currSlot + ": " + cQuest.getQuest().getTitle());
+                        cQuest.getQuest().readMonsterTargets().entrySet().forEach(e ->
+                            mc.dropMessage(
+                                "    " +
+                                    e.getValue().getRight() +
+                                    "s killed: " +
+                                    cQuest.getQuestKills(e.getKey()) +
+                                    "/" +
+                                    e.getValue().getLeft()
+                            )
+                        );
+                        cQuest.getQuest().readItemsToCollect().entrySet().forEach(e ->
+                            mc.dropMessage(
+                                "    " +
+                                    e.getValue().getRight() +
+                                    "s collected: " +
+                                    player.getQuestCollected(e.getKey()) +
+                                    "/" +
+                                    e.getValue().getLeft()
+                            )
+                        );
+                        cQuest.getQuest().readOtherObjectives().entrySet().forEach(e ->
+                            mc.dropMessage(
+                                "    " +
+                                    e.getKey() +
+                                    ": " +
+                                    cQuest.getObjectiveProgress(e.getKey()) +
+                                    "/" +
+                                    e.getValue()
+                            )
+                        );
+                        if (cQuest.canComplete()) {
+                            mc.dropMessage("    [Quest is ready to turn in]");
+                        } else {
+                            mc.dropMessage("    [Quest still in progress]");
+                        }
+                        onAQuest = true;
+                    }
+                    currSlot++;
+                }
+                if (!onAQuest) {
+                    mc.dropMessage("You don't have any quests currently underway.");
+                }
             } else {
-                mc.dropMessage("You don't have a quest currently underway.");
+                byte questSlot;
+                try {
+                    questSlot = Byte.parseByte(splitted[1]);
+                } catch (NumberFormatException nfe) {
+                    mc.dropMessage("Invalid syntax. Use: @questinfo | @questinfo all | @questinfo <quest_slot>");
+                    return;
+                }
+                if (questSlot < 1 || questSlot > player.getQuestSlots()) {
+                    mc.dropMessage("You don't have that slot.");
+                    return;
+                }
+                CQuest cQuest = player.getCQuest(questSlot);
+                if (cQuest == null || cQuest.getQuest().getId() == 0) {
+                    mc.dropMessage("You don't currently have an active quest in that slot.");
+                    return;
+                }
+                mc.dropMessage(cQuest.getQuest().getTitle());
+                cQuest.getQuest().readMonsterTargets().entrySet().forEach(e ->
+                    mc.dropMessage(
+                        "    " +
+                            e.getValue().getRight() +
+                            "s killed: " +
+                            cQuest.getQuestKills(e.getKey()) +
+                            "/" +
+                            e.getValue().getLeft()
+                    )
+                );
+                cQuest.getQuest().readItemsToCollect().entrySet().forEach(e ->
+                    mc.dropMessage(
+                        "    " +
+                            e.getValue().getRight() +
+                            "s collected: " +
+                            player.getQuestCollected(e.getKey()) +
+                            "/" +
+                            e.getValue().getLeft()
+                    )
+                );
+                cQuest.getQuest().readOtherObjectives().entrySet().forEach(e ->
+                    mc.dropMessage(
+                        "    " +
+                            e.getKey() +
+                            ": " +
+                            cQuest.getObjectiveProgress(e.getKey()) +
+                            "/" +
+                            e.getValue()
+                    )
+                );
+                if (cQuest.canComplete()) {
+                    mc.dropMessage("    [Quest is ready to turn in]");
+                } else {
+                    mc.dropMessage("    [Quest still in progress]");
+                }
             }
         } else if (splitted[0].equals("@togglesmega")) {
             player.setSmegaEnabled(!player.getSmegaEnabled());
@@ -272,7 +363,7 @@ public class PlayerCommands implements Command {
                     mc.dropMessage(sb.toString());
                 }
             } else {
-                mc.dropMessage("Incorrect Syntax.");
+                mc.dropMessage("Invalid syntax. Use: @afk <player_name>");
             }
         } else if (splitted[0].equals("@onlinetime")) {
             if (splitted.length >= 2) {
@@ -303,7 +394,7 @@ public class PlayerCommands implements Command {
                 compareTime(sb, blahblah);
                 mc.dropMessage(sb.toString());
             } else {
-                mc.dropMessage("Incorrect Syntax.");
+                mc.dropMessage("Invalid syntax. Use: @onlinetime <player_name>");
             }
         } else if (splitted[0].equals("@monstertrialtime")) {
             if (System.currentTimeMillis() - player.getLastTrialTime() < 2L * 60L * 60L * 1000L) {
@@ -396,7 +487,9 @@ public class PlayerCommands implements Command {
                             }
                         }
                         if (searchstring.isEmpty()) {
-                            mc.dropMessage("Invalid syntax. Use @whodrops or @whodrops <searchstring> instead.");
+                            mc.dropMessage(
+                                "Invalid syntax. Use: @whodrops | @whodrops <search_string> | @whodrops <item_id>"
+                            );
                             return;
                         }
                         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -455,8 +548,8 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@monsterdrops")) {
             if (splitted.length < 2) {
                 mc.dropMessage(
-                    "Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] or " +
-                        "@monsterdrops <searchstring> [eqp/use/etc] instead."
+                    "Invalid syntax. Use: @monsterdrops <monster_id> [eqp/use/etc] | " +
+                        "@monsterdrops <search_string> [eqp/use/etc]"
                 );
             } else {
                 try {
@@ -479,8 +572,8 @@ public class PlayerCommands implements Command {
                                 break;
                             default:
                                 mc.dropMessage(
-                                    "Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] or " +
-                                        "@monsterdrops <searchstring> [eqp/use/etc] instead."
+                                    "Invalid syntax. Use: @monsterdrops <monster_id> [eqp/use/etc] | " +
+                                        "@monsterdrops <search_string> [eqp/use/etc]"
                                 );
                                 return;
                         }
@@ -567,8 +660,8 @@ public class PlayerCommands implements Command {
                         }
                         if (searchString == null) {
                             mc.dropMessage(
-                                "Invalid syntax. Use @monsterdrops <monsterid> [eqp/use/etc] " +
-                                    "or @monsterdrops <searchstring> [eqp/use/etc] instead."
+                                "Invalid syntax. Use: @monsterdrops <monsterid> [eqp/use/etc] " +
+                                    "| @monsterdrops <searchstring> [eqp/use/etc]"
                             );
                             return;
                         }
@@ -679,9 +772,9 @@ public class PlayerCommands implements Command {
             int upperrange, lowerrange;
             boolean sortbylevel = false;
             String incorrectsyntax =
-                "Incorrect syntax; instead use (where [] means optional): " +
-                    "@monstersinrange [[lowerRange, upperRange], [sortBy (\"level\"/\"xphpratio\")]]";
-            String note = "Note that if exactly one integer argument is present, it is parsed as upperRange.";
+                "Invalid syntax. Use: @monstersinrange [[lowerRange, upperRange], " +
+                    "[sortBy (\"level\"/\"xphpratio\")]]";
+            String note = "Note that if exactly one integer argument is present, it is parsed as `upperRange`.";
             switch (splitted.length) {
                 case 1:
                     upperrange = 5;
@@ -846,7 +939,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("Your current vote point count: " + player.getVotePoints());
         } else if (splitted[0].equals("@morgue")) {
             if (splitted.length != 2) {
-                mc.dropMessage("Incorrect syntax. Use: @morgue <playername>");
+                mc.dropMessage("Invalid syntax. Use: @morgue <player_name>");
                 return;
             }
             String name = splitted[1];
@@ -881,7 +974,7 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@deathinfo")) {
             if (splitted.length != 2) {
-                mc.dropMessage("Incorrect syntax. Use: @deathinfo <playername>");
+                mc.dropMessage("Incorrect syntax. Use: @deathinfo <player_name>");
             }
             String name = splitted[1];
             MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
@@ -1006,18 +1099,18 @@ public class PlayerCommands implements Command {
                     }
                     break;
                 default:
-                    mc.dropMessage("Wrong syntax. Try: @bosshp <repeat_time_in_milliseconds>");
+                    mc.dropMessage("Invalid syntax. Use: @bosshp <repeat_time_in_milliseconds>");
                     return;
             }
             if (repeatTime > 0) {
-                player.setBossHpTask(repeatTime, 1000 * 60 * 60);
+                player.setBossHpTask(repeatTime, 1000L * 60L * 60L);
             } else {
                 if (player.cancelBossHpTask()) {
                     mc.dropMessage("@bosshp display has been stopped.");
                 }
                 final DecimalFormat df = new DecimalFormat("#.00");
                 player.getMap().getMapObjectsInRange(
-                    new Point(0, 0),
+                    new Point(),
                     Double.POSITIVE_INFINITY,
                     MapleMapObjectType.MONSTER
                 )
@@ -1033,10 +1126,29 @@ public class PlayerCommands implements Command {
             NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9010010);
         } else if (splitted[0].equals("@cancelquest")) {
-            player.getCQuest().loadQuest(0);
-            player.setQuestId(0);
-            player.resetQuestKills();
-            player.sendHint("#eQuest canceled.");
+            if (splitted.length != 2) {
+                mc.dropMessage("Invalid syntax. Use: @cancelquest <quest_slot>");
+                return;
+            }
+            byte questSlot;
+            try {
+                questSlot = Byte.parseByte(splitted[1]);
+            } catch (NumberFormatException nfe) {
+                mc.dropMessage("Invalid input for quest slot.");
+                return;
+            }
+            if (questSlot > player.getQuestSlots()) {
+                mc.dropMessage("You don't have that many quest slots!");
+                return;
+            }
+            CQuest cQuest = player.getCQuest(questSlot);
+            if (cQuest == null || cQuest.getQuest().getId() == 0) {
+                mc.dropMessage("You don't currently have a quest active in that slot.");
+                return;
+            }
+            final String questName = cQuest.getQuest().getTitle();
+            player.forfeitCQuest(questSlot);
+            player.sendHint("#eQuest #b" + questName + "#k canceled.");
         } else if (splitted[0].equals("@vote")) {
             player.dropVoteTime();
         } else if (splitted[0].equals("@sell")) {
@@ -1097,7 +1209,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("Current PQ point total: " + player.getPartyQuest().getPoints());
         } else if (splitted[0].equals("@overflowexp")) {
             if (splitted.length != 2 || !Pattern.matches("[A-Za-z][A-Za-z0-9]+", splitted[1])) {
-                mc.dropMessage("Incorrect syntax. Use: @overflowexp <playername>");
+                mc.dropMessage("Incorrect syntax. Use: @overflowexp <player_name>");
                 return;
             }
             String name = splitted[1];
@@ -1225,8 +1337,8 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@roll")) {
             final String invalidSyntax =
                 "Invalid syntax. Use: @roll <dice> [dice...], " +
-                    "where dice is $Nd$F, " +
-                    "where $N is the number of dice and $F is the number of faces on each die.";
+                    "where `dice` is #d$, " +
+                    "where # is the number of dice and $ is the number of faces on each die.";
             if (splitted.length < 2) {
                 mc.dropMessage(invalidSyntax);
                 return;
@@ -1299,7 +1411,7 @@ public class PlayerCommands implements Command {
                     }
                 }
                 if (searchString.isEmpty()) {
-                    mc.dropMessage("Invalid syntax. Use @whoquestdrops <searchstring> instead.");
+                    mc.dropMessage("Invalid syntax. Use: @whoquestdrops <search_string>");
                     return;
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -1377,7 +1489,7 @@ public class PlayerCommands implements Command {
         boolean hours = false;
         boolean minutes = false;
         if (hoursAway > 0.0d) {
-            sb.append(" ");
+            sb.append(' ');
             sb.append((int) hoursAway);
             sb.append(" hours");
             hours = true;
@@ -1386,7 +1498,7 @@ public class PlayerCommands implements Command {
             if (hours) {
                 sb.append(" -");
             }
-            sb.append(" ");
+            sb.append(' ');
             sb.append((int) minutesAway);
             sb.append(" minutes");
             minutes = true;
@@ -1395,7 +1507,7 @@ public class PlayerCommands implements Command {
             if (minutes) {
                 sb.append(" and");
             }
-            sb.append(" ");
+            sb.append(' ');
             sb.append((int) secondsAway);
             sb.append(" seconds.");
         }

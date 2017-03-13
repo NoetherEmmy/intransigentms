@@ -63,9 +63,7 @@ public class MaplePlayerShop extends PlayerInteractionManager {
         owner.getMap().removeMapObject(this);
         try {
             tempItems(false, false);
-            if (saveItems) {
-                saveItems();
-            }
+            if (saveItems) saveItems();
         } catch (SQLException ignored) {
         }
         owner.setInteraction(null);

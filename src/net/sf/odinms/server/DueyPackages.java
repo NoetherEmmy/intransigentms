@@ -8,10 +8,8 @@ public class DueyPackages {
     private String sender;
     private IItem item;
     private int mesos;
-    private int day;
     private int quantity = 1;
-    private int month;
-    private int year;
+    private int day, month, year;
     private final int packageId;
 
     public DueyPackages(int pId, IItem item) {

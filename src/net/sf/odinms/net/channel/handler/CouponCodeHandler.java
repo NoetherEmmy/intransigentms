@@ -23,9 +23,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
             int type = getNXCodeType(code);
             int item = getNXCodeItem(code);
 
-            if (type != 5) {
-                setNXCodeUsed(code, c.getPlayer().getName());
-            }
+            if (type != 5) setNXCodeUsed(code, c.getPlayer().getName());
             /*
              * Explanation of type!
              * Basically, this makes coupon codes do
@@ -74,10 +72,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
             PreparedStatement ps = con.prepareStatement("SELECT `valid` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                valid = rs.getInt("valid") != 0;
-            }
-
+            if (rs.next()) valid = rs.getInt("valid") != 0;
             rs.close();
             ps.close();
         } catch (SQLException ignored) {
@@ -92,10 +87,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
             PreparedStatement ps = con.prepareStatement("SELECT `type` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                type = rs.getInt("type");
-            }
-
+            if (rs.next()) type = rs.getInt("type");
             rs.close();
             ps.close();
         } catch (SQLException ignored) {
@@ -110,9 +102,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
             PreparedStatement ps = con.prepareStatement("SELECT `item` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                item = rs.getInt("item");
-            }
+            if (rs.next()) item = rs.getInt("item");
             rs.close();
             ps.close();
         } catch (SQLException ignored) {

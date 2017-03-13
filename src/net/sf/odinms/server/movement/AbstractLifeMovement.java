@@ -4,9 +4,7 @@ import java.awt.*;
 
 public abstract class AbstractLifeMovement implements LifeMovement {
     private final Point position;
-    private final int duration;
-    private final int newstate;
-    private final int type;
+    private final int duration, newstate, type;
 
     public AbstractLifeMovement(int type, Point position, int duration, int newstate) {
         super();

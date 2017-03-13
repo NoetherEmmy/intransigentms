@@ -1,8 +1,15 @@
 package net.sf.odinms.server.quest;
 
 public enum MapleQuestActionType {
-    UNDEFINED(-1), EXP(0), ITEM(1), NEXTQUEST(2), MESO(3), QUEST(4), SKILL(5), FAME(6), BUFF(7);
-
+    UNDEFINED(-1),
+    EXP(0),
+    ITEM(1),
+    NEXTQUEST(2),
+    MESO(3),
+    QUEST(4),
+    SKILL(5),
+    FAME(6),
+    BUFF(7);
     final byte type;
 
     MapleQuestActionType(int type) {
@@ -15,9 +22,7 @@ public enum MapleQuestActionType {
 
     public static MapleQuestActionType getByType(byte type) {
         for (MapleQuestActionType l : MapleQuestActionType.values()) {
-            if (l.getType() == type) {
-                return l;
-            }
+            if (l.getType() == type) return l;
         }
         return null;
     }

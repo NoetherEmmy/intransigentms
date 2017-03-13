@@ -209,33 +209,39 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         player.addHP(gainHp);
                         break;
                     case 2121003: { // Fire Demon
-                        ISkill fireDemon = SkillFactory.getSkill(2121003);
-                        MapleStatEffect fireDemonEffect = fireDemon.getEffect(player.getSkillLevel(fireDemon));
-                        monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, fireDemonEffect.getDuration());
-                        monster.applyFlame(player, fireDemon, fireDemonEffect.getDuration(), false);
+                        if (totDamageToOneMonster > 0) {
+                            ISkill fireDemon = SkillFactory.getSkill(2121003);
+                            MapleStatEffect fireDemonEffect = fireDemon.getEffect(player.getSkillLevel(fireDemon));
+                            monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, fireDemonEffect.getDuration());
+                            monster.applyFlame(player, fireDemon, fireDemonEffect.getDuration(), false);
+                        }
                         break;
                     }
                     case 2221003: { // Ice Demon
-                        ISkill iceDemon = SkillFactory.getSkill(2221003);
-                        MapleStatEffect iceDemonEffect = iceDemon.getEffect(player.getSkillLevel(iceDemon));
-                        monster.setTempEffectiveness(Element.FIRE, ElementalEffectiveness.WEAK, iceDemonEffect.getX());
+                        if (totDamageToOneMonster > 0) {
+                            ISkill iceDemon = SkillFactory.getSkill(2221003);
+                            MapleStatEffect iceDemonEffect = iceDemon.getEffect(player.getSkillLevel(iceDemon));
+                            monster.setTempEffectiveness(Element.FIRE, ElementalEffectiveness.WEAK, iceDemonEffect.getX());
+                        }
                         break;
                     }
                     case 5211004: // Flamethrower
-                        ISkill flamethrower = SkillFactory.getSkill(5211004);
-                        MapleStatEffect flameEffect = flamethrower.getEffect(player.getSkillLevel(flamethrower));
-                        for (int i = 0; i < attackCount; ++i) {
-                            monster.applyFlame(player, flamethrower, flameEffect.getDuration() * 2L, attack.charge == 1);
+                        if (totDamageToOneMonster > 0) {
+                            ISkill flamethrower = SkillFactory.getSkill(5211004);
+                            MapleStatEffect flameEffect = flamethrower.getEffect(player.getSkillLevel(flamethrower));
+                            for (int i = 0; i < attackCount; ++i) {
+                                monster.applyFlame(player, flamethrower, flameEffect.getDuration() * 2L, attack.charge == 1);
+                            }
                         }
                         break;
                     case 5111006: // Shockwave
-                        if (player.isBareHanded()) {
+                        if (player.isBareHanded() && totDamageToOneMonster > 0) {
                             ISkill shockwave = SkillFactory.getSkill(5111006);
                             monster.applyFlame(player, shockwave, 20L * 1000L, false);
                         }
                         break;
                     case 5121001: // Dragon Strike
-                        if (player.isBareHanded()) {
+                        if (player.isBareHanded() && totDamageToOneMonster > 0) {
                             monster.applyStatus(
                                 player,
                                 new MonsterStatusEffect(
@@ -252,35 +258,37 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         }
                         break;
                     case 4201004: // Steal
-                        ISkill stealSkill = SkillFactory.getSkill(4201004);
-                        boolean stealSuccess =
-                            stealSkill
-                                .getEffect(player.getSkillLevel(stealSkill))
-                                .makeChanceResult();
-                        if (stealSuccess) {
-                            int drop = monster.thieve(player.getId());
-                            if (drop < 1) break;
-                            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                            IItem iDrop;
-                            MapleInventoryType type = ii.getInventoryType(drop);
-                            if (type.equals(MapleInventoryType.EQUIP)) {
-                                final MapleClient c = player.getClient();
-                                if (c != null) {
-                                    iDrop = ii.randomizeStats(c, (Equip) ii.getEquipById(drop));
-                                } else {
-                                    iDrop = ii.getEquipById(drop);
-                                }
-                            } else {
-                                iDrop = new Item(drop, (byte) 0, (short) 1);
-                                if ((ii.isArrowForBow(drop) || ii.isArrowForCrossBow(drop)) && player != null) {
-                                    if (player.getJob().getId() / 100 == 3) {
-                                        iDrop.setQuantity((short) (1.0d + 100.0d * Math.random()));
+                        if (totDamageToOneMonster > 0) {
+                            ISkill stealSkill = SkillFactory.getSkill(4201004);
+                            boolean stealSuccess =
+                                stealSkill
+                                    .getEffect(player.getSkillLevel(stealSkill))
+                                    .makeChanceResult();
+                            if (stealSuccess) {
+                                int drop = monster.thieve(player.getId());
+                                if (drop < 1) break;
+                                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                                IItem iDrop;
+                                MapleInventoryType type = ii.getInventoryType(drop);
+                                if (type.equals(MapleInventoryType.EQUIP)) {
+                                    final MapleClient c = player.getClient();
+                                    if (c != null) {
+                                        iDrop = ii.randomizeStats(c, (Equip) ii.getEquipById(drop));
+                                    } else {
+                                        iDrop = ii.getEquipById(drop);
                                     }
-                                } else if (ii.isThrowingStar(drop) || ii.isBullet(drop)) {
-                                    iDrop.setQuantity((short) 1);
+                                } else {
+                                    iDrop = new Item(drop, (byte) 0, (short) 1);
+                                    if ((ii.isArrowForBow(drop) || ii.isArrowForCrossBow(drop)) && player != null) {
+                                        if (player.getJob().getId() / 100 == 3) {
+                                            iDrop.setQuantity((short) (1.0d + 100.0d * Math.random()));
+                                        }
+                                    } else if (ii.isThrowingStar(drop) || ii.isBullet(drop)) {
+                                        iDrop.setQuantity((short) 1);
+                                    }
                                 }
+                                player.getMap().spawnItemDrop(monster, player, iDrop, monster.getPosition(), false, true);
                             }
-                            player.getMap().spawnItemDrop(monster, player, iDrop, monster.getPosition(), false, true);
                         }
                         break;
                     case 3221007: // Snipe

@@ -3,13 +3,12 @@ package net.sf.odinms.net.world.guild;
 import net.sf.odinms.client.MapleCharacter;
 
 public class MapleGuildCharacter implements java.io.Serializable {
-
     public static final long serialVersionUID = 2058609046116597760L;
     private int level;
     private final int id;
     private int channel;
     private int jobid;
-    private int guildrank,  guildid;
+    private int guildrank, guildid;
     private int allianceRank;
     private boolean online;
     private final String name;
@@ -30,10 +29,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
         this.level = lv;
         this.id = id;
         this.name = name;
-        if (on) {
-            this.channel = channel;
-        }
-
+        if (on) this.channel = channel;
         jobid = job;
         online = on;
         guildrank = rank;
@@ -103,10 +99,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof MapleGuildCharacter)) {
-            return false;
-        }
-
+        if (!(other instanceof MapleGuildCharacter)) return false;
         MapleGuildCharacter o = (MapleGuildCharacter) other;
         return (o.getId() == id && o.getName().equals(name));
     }

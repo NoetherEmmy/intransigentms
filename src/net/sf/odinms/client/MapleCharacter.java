@@ -194,10 +194,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private int ringRequest;
     private boolean hasMerchant;
     //
-    private final MapleCQuests quest = new MapleCQuests();
-    private int story, storypoints, offensestory, buffstory;
-    private final Map<Integer, Integer> questKills = new LinkedHashMap<>(4, 0.8f);
-    private int questidd, queststatus;
     private int returnmap;
     private int trialreturnmap;
     private int monstertrialpoints;
@@ -237,8 +233,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private boolean hasMagicGuard = false;
     private ScheduledFuture<?> magicGuardCancelTask;
 
-    private boolean completedallquests = false;
-
     private boolean scpqflag = false;
     private boolean showPqPoints = true;
 
@@ -250,7 +244,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     private ScheduledFuture<?> forcedWarp;
     private long overflowExp;
-    private int questCompletion;
     private boolean invincible = false;
 
     private ScheduledFuture<?> bossHpTask;
@@ -266,6 +259,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private long lastSamsara;
     public static final long SAMSARA_COOLDOWN = 3L * 60L * 60L * 1000L;
 
+    // New quest apparatus:
+    private byte questSlots = (byte) 1;
+    private final List<CQuest> cQuests = new ArrayList<>(4);
+    private final Map<Integer, Integer> completedCQuests = new LinkedHashMap<>();
+
     public MapleCharacter() {
         setStance(0);
         inventory = new MapleInventory[MapleInventoryType.values().length];
@@ -279,7 +277,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         quests = new LinkedHashMap<>();
         anticheat = new CheatTracker(this);
         afkTime = System.currentTimeMillis();
-        setPosition(new Point(0, 0));
+        setPosition(new Point());
     }
 
     public MapleCharacter getThis() {
@@ -357,14 +355,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.guildrank = rs.getInt("guildrank");
         ret.allianceRank = rs.getInt("allianceRank");
         //
-        ret.story = rs.getInt("story");
-        ret.storypoints = rs.getInt("storypoints");
-        ret.offensestory = rs.getInt("offensestory");
-        ret.buffstory = rs.getInt("buffstory");
-        ret.questidd = rs.getInt("questidd");
-        if (ret.questidd > 0) {
-            ret.getCQuest().loadQuest(ret.questidd);
-        }
         ret.returnmap = rs.getInt("returnmap");
         ret.trialreturnmap = rs.getInt("trialreturnmap");
         ret.monstertrialpoints = rs.getInt("monstertrialpoints");
@@ -388,12 +378,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.deathpenalty = rs.getInt("deathpenalty");
         ret.deathfactor = rs.getInt("deathfactor");
         ret.truedamage = rs.getInt("truedamage") != 0;
-        ret.completedallquests = rs.getInt("completedallquests") != 0;
         ret.scpqflag = rs.getInt("scpqflag") != 0;
         ret.overflowExp = rs.getLong("overflowexp");
-        ret.questCompletion = rs.getInt("questcompletion");
         ret.zakDc = rs.getInt("zakdc") == 1;
         ret.lastSamsara = rs.getLong("lastsamsara");
+        ret.questSlots = (byte) rs.getInt("questslots");
         ret.battleshiphp = 0;
         //
         if (ret.guildid > 0) {
@@ -515,14 +504,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         rs.close();
         ps.close();
-        ps = con.prepareStatement("SELECT * FROM questkills WHERE characterid = ?");
-        ps.setInt(1, charid);
-        rs = ps.executeQuery();
-        while (rs.next()) {
-            ret.setQuestKills(rs.getInt("monsterid"), rs.getInt("killcount"));
-        }
-        rs.close();
-        ps.close();
         if (channelserver) {
             ps = con.prepareStatement("SELECT * FROM queststatus WHERE characterid = ?");
             ps.setInt(1, charid);
@@ -618,12 +599,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps = con.prepareStatement("SELECT * FROM pastlives WHERE characterid = ? ORDER BY death DESC");
             ps.setInt(1, ret.id);
             rs = ps.executeQuery();
-            ret.pastlives = new ArrayList<>();
+            ret.pastlives = new ArrayList<>(5);
             int pastlifecount = -1;
             while (rs.next()) {
                 pastlifecount++;
                 if (pastlifecount < 5) {
-                    List<Integer> temppastlife = new ArrayList<>();
+                    List<Integer> temppastlife = new ArrayList<>(3);
                     temppastlife.add(rs.getInt("level"));
                     temppastlife.add(rs.getInt("job"));
                     temppastlife.add(rs.getInt("lastdamagesource"));
@@ -634,6 +615,67 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
             rs.close();
             ps.close();
+
+            ps = con.prepareStatement(
+                "SELECT questid, queststatus FROM cqueststatus WHERE characterid = ? AND queststatus != -1"
+            );
+            ps.setInt(1, ret.id);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int questStatus = rs.getInt("queststatus");
+                int questId = rs.getInt("questid");
+                if (questId == 0) continue;
+                if (questStatus == 0) { // In progress
+                    if (ret.cQuests.size() < ret.questSlots) {
+                        CQuest cQuest = new CQuest(ret);
+                        cQuest.loadQuest(questId);
+                        if (cQuest.getQuest().requiresMonsterTargets()) {
+                            PreparedStatement ps1 =
+                                con.prepareStatement(
+                                    "SELECT monsterid, killcount FROM questkills " +
+                                        "WHERE characterid = ? AND questid = ?"
+                                );
+                            ps1.setInt(1, ret.id);
+                            ps1.setInt(2, questId);
+                            ResultSet rs1 = ps1.executeQuery();
+                            while (rs1.next()) {
+                                int monsterId = rs1.getInt("monsterid");
+                                int killCount = rs1.getInt("killcount");
+                                cQuest.setQuestKill(monsterId, killCount);
+                            }
+                            rs1.close();
+                            ps1.close();
+                        }
+                        if (cQuest.getQuest().requiresOtherObjectives()) {
+                            PreparedStatement ps1 =
+                                con.prepareStatement(
+                                    "SELECT objname, completedcount FROM questobjs " +
+                                        "WHERE characterid = ? AND questid = ?"
+                                );
+                            ps1.setInt(1, ret.id);
+                            ps1.setInt(2, questId);
+                            ResultSet rs1 = ps1.executeQuery();
+                            while (rs1.next()) {
+                                String objName = rs1.getString("objname");
+                                int completedCount = rs1.getInt("completedcount");
+                                cQuest.setObjectiveProgress(objName, completedCount);
+                            }
+                            rs1.close();
+                            ps1.close();
+                        }
+                        ret.cQuests.add(cQuest);
+                    }
+                } else { // Completed
+                    ret.completedCQuests.put(questId, questStatus);
+                }
+            }
+            rs.close();
+            ps.close();
+            while (ret.cQuests.size() < ret.questSlots) {
+                CQuest newQuest = new CQuest(ret);
+                newQuest.loadQuest(0);
+                ret.cQuests.add(newQuest);
+            }
             //
         }
         if (ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18) != null) {
@@ -720,11 +762,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         ret.inmts = false;
         ret.APQScore = 0;
         ret.maplemount = null;
-        ret.completedallquests = false;
         ret.scpqflag = false;
         ret.overflowExp = 0L;
         ret.lastSamsara = 0L;
-        ret.questCompletion = 0;
         ret.preEventMap = 0;
         ret.setDefaultKeyMap();
         ret.recalcLocalStats();
@@ -738,9 +778,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             con.setAutoCommit(false);
             PreparedStatement ps;
             if (update) {
-                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, story = ?, storypoints = ?, questkills = ?, questkills2 = ?, questidd = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, offensestory = ?, buffstory = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, completedallquests = ?, scpqflag = ?, overflowexp = ?, questcompletion = ?, zakdc = ?, lastsamsara = ? WHERE id = ?");
+                ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, mpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, reborns = ?, pvpkills = ?, pvpdeaths = ?, clan = ?, mountlevel = ?, mountexp = ?, mounttiredness = ?, married = ?, partnerid = ?, zakumlvl = ?, marriagequest = ?, returnmap = ?, trialreturnmap = ?, monstertrialpoints = ?, monstertrialtier = ?, lasttrialtime = ?, deathcount = ?, highestlevelachieved = ?, suicides = ?, paragonlevel = ?, bossreturnmap = ?, totalparagonlevel = ?, expbonusend = ?, eventpoints = ?, lastelanrecharge = ?, laststrengthening = ?, deathpenalty = ?, deathfactor = ?, truedamage = ?, expmulti = ?, scpqflag = ?, overflowexp = ?, zakdc = ?, lastsamsara = ?, questslots = ? WHERE id = ?");
             } else {
-                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, story, storypoints, questkills, questkills2, questidd, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, offensestory, buffstory, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, completedallquests, scpqflag, overflowexp, questcompletion, zakdc, lastsamsara, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, mpApUsed, spawnpoint, party, buddyCapacity, messengerid, messengerposition, reborns, pvpkills, pvpdeaths, clan, mountlevel, mountexp, mounttiredness, married, partnerid, zakumlvl, marriagequest, returnmap, trialreturnmap, monstertrialpoints, monstertrialtier, lasttrialtime, deathcount, highestlevelachieved, suicides, paragonlevel, bossreturnmap, totalparagonlevel, expbonusend, eventpoints, lastelanrecharge, laststrengthening, deathpenalty, deathfactor, truedamage, expmulti, scpqflag, overflowexp, zakdc, lastsamsara, questslots, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -815,48 +855,40 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             ps.setInt(37, partnerid);
             ps.setInt(38, zakumLvl > 2 ? 2 : zakumLvl);
             ps.setInt(39, marriageQuestLevel);
-            ps.setInt(40, story);
-            ps.setInt(41, storypoints);
-            ps.setInt(42, 0);
-            ps.setInt(43, 0);
-            ps.setInt(44, questidd);
-            ps.setInt(45, returnmap);
-            ps.setInt(46, trialreturnmap);
-            ps.setInt(47, monstertrialpoints);
-            ps.setInt(48, monstertrialtier);
-            ps.setLong(49, lasttrialtime);
-            ps.setInt(50, deathcount);
-            ps.setInt(51, highestlevelachieved);
-            ps.setInt(52, suicides);
-            ps.setInt(53, paragonlevel);
-            ps.setInt(54, bossreturnmap);
-            ps.setInt(55, offensestory);
-            ps.setInt(56, buffstory);
-            ps.setInt(57, totalparagonlevel);
-            ps.setLong(58, expbonusend);
-            ps.setInt(59, eventpoints);
-            ps.setLong(60, lastelanrecharge);
-            ps.setLong(61, laststrengthening);
-            ps.setInt(62, deathpenalty);
-            ps.setInt(63, deathfactor);
-            ps.setInt(64, truedamage ? 1 : 0);
-            ps.setInt(65, expbonusmulti);
-            ps.setInt(66, completedallquests ? 1 : 0);
-            ps.setInt(67, scpqflag ? 1 : 0);
-            ps.setLong(68, overflowExp);
-            ps.setInt(69, questCompletion);
+            ps.setInt(40, returnmap);
+            ps.setInt(41, trialreturnmap);
+            ps.setInt(42, monstertrialpoints);
+            ps.setInt(43, monstertrialtier);
+            ps.setLong(44, lasttrialtime);
+            ps.setInt(45, deathcount);
+            ps.setInt(46, highestlevelachieved);
+            ps.setInt(47, suicides);
+            ps.setInt(48, paragonlevel);
+            ps.setInt(49, bossreturnmap);
+            ps.setInt(50, totalparagonlevel);
+            ps.setLong(51, expbonusend);
+            ps.setInt(52, eventpoints);
+            ps.setLong(53, lastelanrecharge);
+            ps.setLong(54, laststrengthening);
+            ps.setInt(55, deathpenalty);
+            ps.setInt(56, deathfactor);
+            ps.setInt(57, truedamage ? 1 : 0);
+            ps.setInt(58, expbonusmulti);
+            ps.setInt(59, scpqflag ? 1 : 0);
+            ps.setLong(60, overflowExp);
             if (map != null && map.getId() == 280030000) { // Zakum's Altar
-                ps.setInt(70, 1);
+                ps.setInt(61, 1);
             } else {
-                ps.setInt(70, 0);
+                ps.setInt(61, 0);
             }
-            ps.setLong(71, lastSamsara);
+            ps.setLong(62, lastSamsara);
+            ps.setInt(63, questSlots);
             if (update) {
-                ps.setInt(72, id);
+                ps.setInt(64, id);
             } else {
-                ps.setInt(72, accountid);
-                ps.setString(73, name);
-                ps.setInt(74, world);
+                ps.setInt(64, accountid);
+                ps.setString(65, name);
+                ps.setInt(66, world);
             }
             if (!full) {
                 ps.executeUpdate();
@@ -1092,17 +1124,58 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     ps.executeUpdate();
                 }
                 ps.close();
-                deleteWhereCharacterId(con, "DELETE FROM questkills WHERE characterid = ?");
+                //
+                deleteWhereCharacterId(con, "DELETE FROM cqueststatus WHERE characterid = ?");
                 ps = con.prepareStatement(
-                    "INSERT INTO questkills (`characterid`, `monsterid`, `killcount`) VALUES (?, ?, ?)"
+                    "INSERT INTO cqueststatus (`characterid`, `questid`, `queststatus`) VALUES (?, ?, ?)"
                 );
                 ps.setInt(1, id);
-                for (Map.Entry<Integer, Integer> e : questKills.entrySet()) {
-                    ps.setInt(2, e.getKey());
-                    ps.setInt(3, e.getValue());
+                for (CQuest cQuest : cQuests) {
+                    int qid = cQuest.getQuest().getId();
+                    if (qid == 0) continue;
+                    ps.setInt(2, qid);
+                    ps.setInt(3, 0);
+                    ps.executeUpdate();
+                }
+                for (Map.Entry<Integer, Integer> completed : completedCQuests.entrySet()) {
+                    ps.setInt(2, completed.getKey());
+                    ps.setInt(3, completed.getValue());
                     ps.executeUpdate();
                 }
                 ps.close();
+                deleteWhereCharacterId(con, "DELETE FROM questobjs WHERE characterid = ?");
+                ps = con.prepareStatement(
+                    "INSERT INTO questobjs (`characterid`, `questid`, `objname`, `completedcount`) VALUES (?, ?, ?, ?)"
+                );
+                ps.setInt(1, id);
+                for (CQuest cQuest : cQuests) {
+                    int qid = cQuest.getQuest().getId();
+                    if (qid == 0) continue;
+                    for (String objEntry : cQuest.getQuest().readOtherObjectives().keySet()) {
+                        ps.setInt(2, qid);
+                        ps.setString(3, objEntry);
+                        ps.setInt(4, cQuest.getObjectiveProgress(objEntry));
+                        ps.executeUpdate();
+                    }
+                }
+                ps.close();
+                deleteWhereCharacterId(con, "DELETE FROM questkills WHERE characterid = ?");
+                ps = con.prepareStatement(
+                    "INSERT INTO questkills (`characterid`, `questid`, `monsterid`, `killcount`) VALUES (?, ?, ?, ?)"
+                );
+                ps.setInt(1, id);
+                for (CQuest cQuest : cQuests) {
+                    int qid = cQuest.getQuest().getId();
+                    if (qid == 0) continue;
+                    for (Integer mobEntry : cQuest.getQuest().readMonsterTargets().keySet()) {
+                        ps.setInt(2, qid);
+                        ps.setInt(3, mobEntry);
+                        ps.setInt(4, cQuest.getQuestKills(mobEntry));
+                        ps.executeUpdate();
+                    }
+                }
+                ps.close();
+                //
             }
             con.commit();
         } catch (Exception e) {
@@ -1591,14 +1664,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         showPqPoints = !showPqPoints;
     }
 
-    public boolean completedAllQuests() {
-        return completedallquests;
-    }
-
-    public void setCompletedAllQuests(boolean caq) {
-        completedallquests = caq;
-    }
-
     public boolean isScpqFlagged() {
         return scpqflag;
     }
@@ -1606,28 +1671,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setScpqFlag(boolean sf) {
         scpqflag = sf;
         silentPartyUpdate();
-    }
-
-    public int getQuestCompletion() {
-        return questCompletion;
-    }
-
-    public boolean getQuestCompletion(int quest) {
-        int mask = 1 << quest;
-        return (questCompletion & mask) > 0;
-    }
-
-    public void setQuestCompletion(int questCompletion) {
-        this.questCompletion = questCompletion;
-    }
-
-    public void setQuestCompletion(int quest, boolean isComplete) {
-        int mask = (int) Math.pow(2, quest);
-        if (isComplete) {
-            questCompletion |= mask;
-        } else {
-            questCompletion &= ~mask;
-        }
     }
 
     public boolean getZakDc() {
@@ -1729,121 +1772,118 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return genderFilter;
     }
 
-    public MapleCQuests getCQuest() {
-        return quest;
+    public byte getQuestSlots() {
+        return questSlots;
     }
 
-    public int getStory() {
-        return story;
+    public void setQuestSlots(byte questSlots) {
+        this.questSlots = questSlots;
     }
 
-    public void setStory(int story) {
-        this.story = story;
+    public List<CQuest> getCQuests() {
+        return new ArrayList<>(cQuests);
     }
 
-    public void addStory(int amt) {
-        story += amt;
-    }
-
-    public int getStoryPoints() {
-        return storypoints;
-    }
-
-    public void setStoryPoints(int points) {
-        this.storypoints = points;
-    }
-
-    public void addStoryPoints(int amt) {
-        storypoints += amt;
-    }
-
-    public int getOffenseStory() {
-        return offensestory;
-    }
-
-    public void setOffenseStory(int os) {
-        this.offensestory = os;
-    }
-
-    public void addOffenseStory(int amt) {
-        offensestory += amt;
-    }
-
-    public int getBuffStory() {
-        return buffstory;
-    }
-
-    public void setBuffStory(int bs) {
-        this.buffstory = bs;
-    }
-
-    public void addBuffStory(int amt) {
-        buffstory += amt;
-    }
-
-    public int getQuestKills(int monsterId) {
-        if (!questKills.containsKey(monsterId)) {
-            return -1;
+    public void fillOutQuestSlots() {
+        if (cQuests.size() < getQuestSlots()) {
+            while (cQuests.size() < getQuestSlots()) {
+                CQuest newQuest = new CQuest(this);
+                newQuest.loadQuest(0);
+                cQuests.add(newQuest);
+            }
         }
-        return questKills.get(monsterId);
+    }
+
+    public CQuest getCQuest(byte slot) {
+        if (slot > getQuestSlots() || slot < 1) return null;
+        if (slot > cQuests.size()) {
+            fillOutQuestSlots();
+        }
+        return cQuests.get(slot - 1);
+    }
+
+    public CQuest getCQuestById(final int questId) {
+        return cQuests.stream().filter(cq -> cq.getQuest().getId() == questId).findAny().orElse(null);
+    }
+
+    public boolean loadCQuest(int questId) {
+        fillOutQuestSlots();
+        if (questId == 0) return false;
+        for (CQuest cQuest : cQuests) {
+            if (cQuest.getQuest().getId() == 0) {
+                cQuest.loadQuest(questId);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return {@code true} if an active quest was successfully forfeited,
+     *         {@code false} otherwise.
+     */
+    public boolean forfeitCQuest(byte slot) {
+        CQuest cQuest = getCQuest(slot);
+        if (cQuest == null || cQuest.getQuest().getId() == 0) return false;
+        cQuest.loadQuest(0);
+        return true;
+    }
+
+    public boolean canCompleteCQuest(int questId) {
+        CQuest cQuest = getCQuestById(questId);
+        return cQuest != null && cQuest.canComplete();
+    }
+
+    public void completeCQuest(int questId) {
+        getCQuestById(questId).complete();
+    }
+
+    public boolean isOnCQuest() {
+        fillOutQuestSlots();
+        return cQuests.stream().anyMatch(cq -> cq.getQuest().getId() != 0);
+    }
+
+    public boolean completedCQuest(int questId) {
+        return completedCQuests.containsKey(questId);
+    }
+
+    /** Returns {@code -1} for "not completed". */
+    public int getCQuestCompletion(int questId) {
+        Integer completion = completedCQuests.get(questId);
+        if (completion == null) return -1;
+        return completion;
     }
 
     public int getQuestCollected(int itemId) {
         return getItemQuantity(itemId, false);
     }
 
-    public void setQuestKills(int monsterId, int kills) {
-        questKills.put(monsterId, kills);
-    }
-
-    public void doQuestKill(int monsterId) {
-        questKills.computeIfPresent(monsterId, (mid, n) -> n + 1);
-    }
-
-    public int getQuestId() {
-        return questidd;
-    }
-
-    public void setQuestId(int id) {
-        this.questidd = id;
-    }
-
-    public boolean canComplete() {
-        return getCQuest().readMonsterTargets().entrySet().stream().allMatch(e -> getQuestKills(e.getKey())     >= e.getValue().getLeft())
-            && getCQuest().readItemsToCollect().entrySet().stream().allMatch(e -> getQuestCollected(e.getKey()) >= e.getValue().getLeft());
-    }
-
-    public void makeQuestProgress(int mobId, int itemId) {
+    public void makeQuestProgress(final int mobId, final int itemId, final String objective) {
         if (mobId > 0) {
-            doQuestKill(mobId);
-            if (getQuestKills(mobId) <= getCQuest().getNumberToKill(mobId)) {
-                sendHint(
-                      "#e"
-                    + getCQuest().getTargetName(mobId)
-                    + ": "
-                    + (getQuestKills(mobId) == getCQuest().getNumberToKill(mobId) ? "#g" : "#r")
-                    + getQuestKills(mobId)
-                    + " #k/ "
-                    + getCQuest().getNumberToKill(mobId)
-                );
-            }
-        } else if (itemId > 0) {
-            if (getItemQuantity(itemId, false) < getCQuest().getNumberToCollect(itemId)) {
-                sendHint(
-                      "#e"
-                    + getCQuest().getItemName(itemId)
-                    + ": "
-                    + (getItemQuantity(itemId, false) >= getCQuest().getNumberToCollect(itemId) ? "#g" : "#r")
-                    + getItemQuantity(itemId, false)
-                    + " #k/ "
-                    + getCQuest().getNumberToCollect(itemId)
-                );
-            }
+            cQuests.forEach(cq -> cq.doQuestKill(mobId));
         }
-        if (canComplete() && queststatus == 0) {
-            sendHint("#eReturn to the NPC: " + getCQuest().getEndNpc());
-            dropMessage("Return to the NPC: " + getCQuest().getEndNpc());
-            queststatus++;
+        if (objective != null && !objective.equals("")) {
+            cQuests.forEach(cq -> cq.doObjectiveProgress(objective));
+        }
+        if (itemId > 0) {
+            cQuests
+                .stream()
+                .filter(cq ->
+                    cq.getQuest().requiresItem(itemId) &&
+                    getItemQuantity(itemId, false) <= cq.getQuest().getNumberToCollect(itemId)
+                )
+                .forEach(cq ->
+                    sendHint(
+                        "#e" +
+                            cq.getQuest().getItemName(itemId) +
+                            ": " +
+                            (getItemQuantity(itemId, false) >=
+                                cq.getQuest().getNumberToCollect(itemId) ? "#g" : "#r") +
+                            getItemQuantity(itemId, false) +
+                            " #k/ " +
+                            cq.getQuest().getNumberToCollect(itemId)
+                    )
+                );
         }
     }
 
@@ -1877,10 +1917,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 first_num = first_num.substring(0, first_num.length() - 3);
                 repeat++;
             }
-            sb.append(first_num).append(",");
+            sb.append(first_num).append(',');
             left_num += num.substring(first_num.length(), num.length());
             for (int x = 0; x < repeat; ++x) {
-                sb.append(left_num.substring(3 * x, 3 * x + 3)).append(",");
+                sb.append(left_num.substring(3 * x, 3 * x + 3)).append(',');
             }
             readable = sb.toString().substring(0, sb.toString().length() - 1);
         } else {
@@ -2023,6 +2063,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     private static void sqlException(RemoteException re) {
         System.err.println("SQL Error: " + re);
+    }
+
+    public MapleQuestStatus getQuest(int questId) {
+        return getQuest(MapleQuest.getInstance(questId));
     }
 
     public MapleQuestStatus getQuest(MapleQuest quest) {
@@ -2178,7 +2222,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     getClient().getSession().write(MaplePacketCreator.updatePet(pet, true));
                 }
             }
-        }, 60000, 60000);
+        }, 60L * 1000L, 60L * 1000L);
         switch (petSlot) {
             case 0:
                 fullnessSchedule = schedule;
@@ -3185,7 +3229,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public synchronized void permadeath() {
         final MapleMapObject lds = getLastDamageSource();
         final int deathMap = getMap().getId();
-        final int _questCompletion = getQuestCompletion();
         final int monsterTrialPoints = getMonsterTrialPoints();
         changeMap(100);
         setMap(100);
@@ -3203,15 +3246,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setMaxMp(5);
         setExp(0);
         updateSingleStat(MapleStat.EXP, 0);
-        setStory(0);
-        setStoryPoints(0);
-        setOffenseStory(0);
-        setBuffStory(0);
-        getCQuest().loadQuest(0);
-        setQuestId(0);
-        resetQuestKills();
-        setCompletedAllQuests(false);
-        setQuestCompletion(0);
+        final StringBuilder questProgress = new StringBuilder();
+        for (Map.Entry<Integer, Integer> completed : completedCQuests.entrySet()) {
+            questProgress
+                .append("    ")
+                .append(completed.getKey())
+                .append(" : ")
+                .append(completed.getValue())
+                .append('\n');
+        }
+        completedCQuests.clear();
+        cQuests.clear();
+        CQuest newQuest = new CQuest(this);
+        newQuest.loadQuest(0);
+        cQuests.add(newQuest);
+        setQuestSlots((byte) 1);
         setScpqFlag(false);
         overflowExp = 0L;
         lastSamsara = 0L;
@@ -3274,7 +3323,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         addNewPastLife(levelAchieved, jobAchieved.getId(), lds);
         incrementDeathCount();
         new Thread(() -> {
-            if (!DeathLogger.logDeath(this, deathMap, _questCompletion, monsterTrialPoints, fourthJobSkills)) {
+            if (!DeathLogger.logDeath(this, deathMap, monsterTrialPoints, fourthJobSkills, questProgress)) {
                 System.err.println("There was an error logging " + getName() + "'s death.");
             }
             /*
@@ -3706,9 +3755,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
             }
         }
-        if (getCQuest().requiresTarget(mobId)) {
-            makeQuestProgress(mobId, 0);
-        }
+        makeQuestProgress(mobId, 0, null);
     }
 
     public final List<MapleQuestStatus> getStartedQuests() {
@@ -3724,7 +3771,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public final List<MapleQuestStatus> getCompletedQuests() {
         List<MapleQuestStatus> ret = new ArrayList<>();
         for (MapleQuestStatus q : quests.values()) {
-            if (q.getStatus().equals(MapleQuestStatus.Status.COMPLETED) && !(q.getQuest() instanceof MapleCustomQuest)) {
+            if (
+                q.getStatus().equals(MapleQuestStatus.Status.COMPLETED) &&
+                !(q.getQuest() instanceof MapleCustomQuest)
+            ) {
                 ret.add(q);
             }
         }
@@ -5015,8 +5065,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
         getMap().broadcastMessage(this, MaplePacketCreator.showPet(this, pet, true, hunger), true);
-        List<Pair<MapleStat, Integer>> stats = new ArrayList<>();
-        stats.add(new Pair<>(MapleStat.PET, 0));
         getClient().getSession().write(MaplePacketCreator.petStatUpdate(this));
         getClient().getSession().write(MaplePacketCreator.enableActions());
         removePet(pet, shift_left);
@@ -5542,11 +5590,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return didCancel;
     }
 
-    public void resetQuestKills() {
-        questKills.clear();
-        getCQuest().readMonsterTargets().keySet().forEach(monsterId -> questKills.put(monsterId, 0));
-    }
-
     public void toggleDpm() {
         showDpm = !showDpm;
     }
@@ -5556,9 +5599,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void absorbDamage(float dmg, int damageFrom) {
-        if (isHidden() || !isAlive()) {
-            return;
-        }
+        if (isHidden() || !isAlive()) return;
 
         boolean belowLevelLimit = getMap().getPartyQuestInstance() != null &&
                                   getMap().getPartyQuestInstance().getLevelLimit() > getLevel();

@@ -9,8 +9,7 @@ import java.awt.*;
 
 public class MapleSummon extends AbstractAnimatedMapleMapObject {
     private final MapleCharacter owner;
-    private final int skillLevel;
-    private final int skill;
+    private final int skillLevel, skill;
     private int hp;
     private final SummonMovementType movementType;
 

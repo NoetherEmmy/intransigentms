@@ -12,8 +12,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import java.awt.*;
 
 public class MapleGenericPortal implements MaplePortal {
-    private String name;
-    private String target;
+    private String name, target;
     private Point position;
     private int targetmap;
     private final int type;

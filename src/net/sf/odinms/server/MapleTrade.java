@@ -12,10 +12,10 @@ import java.util.Map;
 
 public class MapleTrade {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleTrade.class);
-    private MapleTrade partner = null;
+    private MapleTrade partner;
     private final List<IItem> items = new ArrayList<>();
     private List<IItem> exchangeItems;
-    private int meso = 0;
+    private int meso;
     private int exchangeMeso;
     boolean locked = false;
     private final MapleCharacter chr;
@@ -78,13 +78,9 @@ public class MapleTrade {
         }
         // just to be on the safe side...
         meso = 0;
-        if (items != null) {
-            items.clear();
-        }
+        items.clear();
         exchangeMeso = 0;
-        if (exchangeItems != null) {
-            exchangeItems.clear();
-        }
+        if (exchangeItems != null) exchangeItems.clear();
         chr.getClient().getSession().write(MaplePacketCreator.getTradeCancel(number));
     }
 
@@ -97,9 +93,7 @@ public class MapleTrade {
     }
 
     public void setMeso(int meso) {
-        if (locked) {
-            throw new RuntimeException("Trade is locked.");
-        }
+        if (locked) throw new RuntimeException("Trade is locked.");
         if (meso < 0) {
             log.info("[h4x] {} Trying to trade < 0 meso", chr.getName());
             return;

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class CheaterData implements Serializable, Comparable<CheaterData> {
     private static final long serialVersionUID = -8733673311051249885L;
-
     private final int points;
     private final String info;
 

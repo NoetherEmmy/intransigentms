@@ -20,7 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 
 public class HiredMerchant extends PlayerInteractionManager {
     private boolean open;
-    public ScheduledFuture<?> schedule;
+    public final ScheduledFuture<?> schedule;
     private final MapleMap map;
     private final int itemId;
 

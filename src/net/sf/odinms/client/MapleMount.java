@@ -66,9 +66,7 @@ public class MapleMount {
     public void increaseTiredness() {
         tiredness++;
         owner.getMap().broadcastMessage(MaplePacketCreator.updateMount(owner.getId(), this, false));
-        if (tiredness > 100) {
-            owner.dispelSkill(1004);
-        }
+        if (tiredness > 100) owner.dispelSkill(1004);
     }
 
     public void setExp(int exp) {

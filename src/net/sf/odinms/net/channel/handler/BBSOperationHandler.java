@@ -20,9 +20,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(BBSOperationHandler.class);
 
     private String correctLength(String in, int maxSize) {
-        if (in.length() > maxSize) {
-            return in.substring(0, maxSize);
-        }
+        if (in.length() > maxSize) return in.substring(0, maxSize);
         return in;
     }
 

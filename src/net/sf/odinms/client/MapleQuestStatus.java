@@ -25,9 +25,7 @@ public class MapleQuestStatus {
 
         public static Status getById(int id) {
             for (Status l : Status.values()) {
-                if (l.getId() == id) {
-                    return l;
-                }
+                if (l.getId() == id) return l;
             }
             return null;
         }
@@ -37,12 +35,12 @@ public class MapleQuestStatus {
     private final Map<Integer, Integer> killedMobs = new LinkedHashMap<>();
     private int npc;
     private long completionTime;
-    private int forfeited = 0;
+    private int forfeited;
 
     /** Creates a new instance of MapleQuestStatus */
     public MapleQuestStatus(MapleQuest quest, Status status) {
         this.quest = quest;
-        this.setStatus(status);
+        setStatus(status);
         this.completionTime = System.currentTimeMillis();
         if (status == Status.STARTED) {
             registerMobs();

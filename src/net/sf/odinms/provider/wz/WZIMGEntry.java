@@ -52,9 +52,7 @@ public class WZIMGEntry implements MapleData {
                     break;
                 }
             }
-            if (!foundChild) {
-                return null;
-            }
+            if (!foundChild) return null;
         }
         return ret;
     }

@@ -14,9 +14,7 @@ public class MobDamageMobHandler extends AbstractMaplePacketHandler {
         int damagedOid = slea.readInt();
         MapleMonster damaged = c.getPlayer().getMap().getMonsterByOid(damagedOid);
         MapleMonster attacker = c.getPlayer().getMap().getMonsterByOid(attackerOid);
-        if (damaged == null || attacker == null) {
-            return;
-        }
+        if (damaged == null || attacker == null) return;
         int damage = (int) (Math.random() * (damaged.getMaxHp() / 13 + attacker.getPADamage() * 10)) * 2 + 500;
         c.getPlayer()
          .getMap()

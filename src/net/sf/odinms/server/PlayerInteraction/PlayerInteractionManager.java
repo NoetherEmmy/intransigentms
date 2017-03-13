@@ -216,10 +216,17 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public boolean removeItem(int item) {
+    public boolean removeItem(int itemId) {
         synchronized (items) {
-            if (items.contains(item)) {
-                items.remove(item);
+            MaplePlayerShopItem toRemove = null;
+            for (MaplePlayerShopItem i : items) {
+                if (i.getItem().getItemId() == itemId) {
+                    toRemove = i;
+                    break;
+                }
+            }
+            if (toRemove != null) {
+                items.remove(toRemove);
                 tempItemsUpdate();
                 return true;
             }

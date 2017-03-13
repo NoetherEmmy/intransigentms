@@ -10,16 +10,13 @@ public class MapleParty implements Serializable {
     private static final long serialVersionUID = 9179541993413738569L;
     private MaplePartyCharacter leader;
     private final List<MaplePartyCharacter> members = new ArrayList<>();
-    private int id;
-    private int CP;
-    private int team;
-    private int totalCP;
+    private int id, CP, team, totalCP;
     private boolean capture = false;
     private boolean waiting = false;
     private boolean challenging = false;
     private boolean challenged = false;
-    private MapleParty challenger = null;
-    private int points = 0;
+    private MapleParty challenger;
+    private int points;
 
     public MapleParty(int id, MaplePartyCharacter chrfor) {
         leader = chrfor;
@@ -94,17 +91,13 @@ public class MapleParty implements Serializable {
     public void updateMember(MaplePartyCharacter member) {
         for (int i = 0; i < members.size(); ++i) {
             MaplePartyCharacter chr = members.get(i);
-            if (chr.equals(member)) {
-                members.set(i, member);
-            }
+            if (chr.equals(member)) members.set(i, member);
         }
     }
 
     public MaplePartyCharacter getMemberById(int id) {
         for (MaplePartyCharacter chr : members) {
-            if (chr.getId() == id) {
-                return chr;
-            }
+            if (chr.getId() == id) return chr;
         }
         return null;
     }
@@ -159,15 +152,9 @@ public class MapleParty implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final MapleParty other = (MapleParty) obj;
         return id == other.id;
     }

@@ -968,11 +968,11 @@ public class GM implements Command {
                 builder = new StringBuilder();
                 builder.append("HP: ");
                 builder.append(victim.getHp());
-                builder.append("/");
+                builder.append('/');
                 builder.append(victim.getCurrentMaxHp());
                 builder.append(" | MP: ");
                 builder.append(victim.getMp());
-                builder.append("/");
+                builder.append('/');
                 builder.append(victim.getCurrentMaxMp());
                 builder.append(" | EXP: ");
                 builder.append(victim.getExp());

@@ -3,8 +3,7 @@ package net.sf.odinms.server.maps;
 import java.awt.*;
 
 public class MapleFoothold implements Comparable<MapleFoothold> {
-    private final Point p1;
-    private final Point p2;
+    private final Point p1, p2;
     private final int id;
     private int next, prev;
 

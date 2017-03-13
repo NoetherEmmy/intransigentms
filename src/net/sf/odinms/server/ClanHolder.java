@@ -36,9 +36,7 @@ public class ClanHolder {
     public static int countOfflineByClan(int clan) {
         int size = 0;
         for (String name : offline.keySet()) {
-            if (offline.get(name) == clan) {
-                size++;
-            }
+            if (offline.get(name) == clan) size++;
         }
         return size;
     }
@@ -46,9 +44,7 @@ public class ClanHolder {
     public int countOnlineByClan(int clan) {
         int size = 0;
         for (MapleCharacter chr : online.keySet()) {
-            if (online.get(chr) == clan) {
-                size++;
-            }
+            if (online.get(chr) == clan) size++;
         }
         return size;
     }
@@ -56,9 +52,7 @@ public class ClanHolder {
     public List<MapleCharacter> getAllOnlinePlayersFromClan(int clan) {
         List<MapleCharacter> players = new ArrayList<>();
         for (MapleCharacter player : online.keySet()) {
-            if (online.get(player) == clan) {
-                players.add(player);
-            }
+            if (online.get(player) == clan) players.add(player);
         }
         return players;
     }
@@ -66,9 +60,7 @@ public class ClanHolder {
     public List<String> getAllOfflinePlayersFromClan(int clan) {
         List<String> players = new ArrayList<>();
         for (String name : offline.keySet()) {
-            if (offline.get(name) == clan) {
-                players.add(name);
-            }
+            if (offline.get(name) == clan) players.add(name);
         }
         return players;
     }

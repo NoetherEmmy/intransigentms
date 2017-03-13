@@ -13,9 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class
-MoveSummonHandler extends AbstractMovementPacketHandler {
-
+public class MoveSummonHandler extends AbstractMovementPacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int oid = slea.readInt();
@@ -25,20 +23,27 @@ MoveSummonHandler extends AbstractMovementPacketHandler {
         Collection<MapleSummon> summons = player.getSummons().values();
         MapleSummon summon = null;
         for (MapleSummon sum : summons) {
-            if (sum.getObjectId() == oid) {
-                summon = sum;
-            }
+            if (sum.getObjectId() == oid) summon = sum;
         }
         if (summon != null) {
             updatePosition(res, summon, 0);
             // player = ((MapleCharacter) c.getPlayer().getMap().getMapObject(30000));
-            player.getMap().broadcastMessage(player, MaplePacketCreator.moveSummon(player.getId(), oid, startPos, res), summon.getPosition());
+            player
+                .getMap()
+                .broadcastMessage(
+                    player,
+                    MaplePacketCreator.moveSummon(
+                        player.getId(),
+                        oid,
+                        startPos,
+                        res
+                    ),
+                    summon.getPosition()
+                );
         } else {
             List<Integer> summonKeys = new ArrayList<>();
             for (Integer key : player.getSummons().keySet()) {
-                if (player.getSummons().get(key) == null) {
-                    summonKeys.add(key);
-                }
+                if (player.getSummons().get(key) == null) summonKeys.add(key);
             }
             for (Integer key : summonKeys) {
                 player.getSummons().remove(key);

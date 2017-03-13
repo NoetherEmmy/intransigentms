@@ -19,18 +19,14 @@ public class PlayerBuffStorage implements Serializable {
 
     public void addBuffsToStorage(int chrid, List<PlayerBuffValueHolder> toStore) {
         for (Pair<Integer, List<PlayerBuffValueHolder>> stored : buffs) {
-            if (stored.getLeft() == chrid) {
-                buffs.remove(stored);
-            }
+            if (stored.getLeft() == chrid) buffs.remove(stored);
         }
         buffs.add(new Pair<>(chrid, toStore));
     }
 
     public void addCooldownsToStorage(int chrid, List<PlayerCoolDownValueHolder> toStore) {
         for (Pair<Integer, List<PlayerCoolDownValueHolder>> stored : coolDowns) {
-            if (stored.getLeft() == chrid) {
-                coolDowns.remove(stored);
-            }
+            if (stored.getLeft() == chrid) coolDowns.remove(stored);
         }
         coolDowns.add(new Pair<>(chrid, toStore));
     }
@@ -71,12 +67,9 @@ public class PlayerBuffStorage implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final PlayerBuffStorage other = (PlayerBuffStorage) obj;
         return id == other.id;
     }

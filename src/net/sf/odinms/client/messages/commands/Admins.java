@@ -136,8 +136,8 @@ public class Admins implements Command {
             case "!closemerchants": {
                 mc.dropMessage("Closing and saving merchants, please wait...");
                 for (ChannelServer channel : ChannelServer.getAllInstances()) {
-                    for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
-                        players.getInteraction().closeShop(true);
+                    for (MapleCharacter player_ : channel.getPlayerStorage().getAllCharacters()) {
+                        player_.getInteraction().closeShop(true);
                     }
                 }
                 mc.dropMessage("All merchants have been closed and saved.");

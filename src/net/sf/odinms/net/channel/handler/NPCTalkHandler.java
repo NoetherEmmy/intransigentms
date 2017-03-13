@@ -53,7 +53,7 @@ public class NPCTalkHandler extends AbstractMaplePacketHandler {
                 // 2 = accept decline
                 // 5 = select a link
                 // c.getSession().write(MaplePacketCreator.getNPCTalk(npc.getId(), (byte) 0,
-                // "Yo! I'm #p" + npc.getId() + "#, lulz! I can warp you lululululu.", "00 01"));
+                // "Yoo! I'm #p" + npc.getId() + "#, I can warp you.", "00 01"));
                 }
             }
         } else if (obj instanceof PlayerNPCs) {

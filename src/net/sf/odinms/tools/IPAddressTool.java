@@ -41,7 +41,7 @@ public class IPAddressTool {
             int quad = (int) (longIP / (long) Math.pow(256, (double) (4 - i)));
             longIP -= (long) quad * (long) Math.pow(256, (double) (4 - i));
             if (i > 0) {
-                ipAddress.append(".");
+                ipAddress.append('.');
             }
             if (quad > 255) {
                 throw new RuntimeException("Invalid long IP address.");

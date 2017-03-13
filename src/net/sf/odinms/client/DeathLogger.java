@@ -34,11 +34,11 @@ public final class DeathLogger {
      * @return <code>true</code> upon successful write,
      * <code>false</code> otherwise.
      */
-    public static boolean logDeath(MapleCharacter p,
-                                   int deathMap,
-                                   int questCompletion,
-                                   int monsterTrialPoints,
-                                   StringBuilder fourthJobSkills) {
+    public static synchronized boolean logDeath(MapleCharacter p,
+                                                int deathMap,
+                                                int monsterTrialPoints,
+                                                StringBuilder fourthJobSkills,
+                                                StringBuilder questProgress) {
         final List<String> toWrite = new ArrayList<>();
         Optional<List<Integer>> life = p.getLastPastLife();
 
@@ -65,19 +65,10 @@ public final class DeathLogger {
         });
         toWrite.add("Mesos: " + p.getMeso() + ", new paragon level: " + p.getTotalParagonLevel());
         toWrite.add("Cheat summary: " + p.getCheatTracker().getSummary());
-        toWrite.add(
-            "story: " +
-            p.getStory() +
-            " storypoints: " +
-            p.getStoryPoints() +
-            " offensestory: " +
-            p.getOffenseStory() +
-            " buffstory: " +
-            p.getBuffStory()
-        );
-        toWrite.add("Quest completion: " + questCompletion + ", monster trial points: " + monsterTrialPoints);
+        toWrite.add("Monster trial points: " + monsterTrialPoints);
         toWrite.add("Fourth job skills: " + fourthJobSkills.toString());
-        toWrite.add("");
+        toWrite.add("Completed quests (questId : completionLevel):");
+        toWrite.add(questProgress.toString());
 
         return LOGGER.write(toWrite);
     }
@@ -95,7 +86,7 @@ public final class DeathLogger {
      * @return <code>true</code> upon successful write,
      * <code>false</code> otherwise.
      */
-    public static boolean logItems(List<IItem> items, MapleClient c) {
+    public static synchronized boolean logItems(List<IItem> items, MapleClient c) {
         final List<String> toWrite = new ArrayList<>();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
@@ -119,50 +110,50 @@ public final class DeathLogger {
                         Equip eqp = (Equip) item;
                         StringBuilder statString = new StringBuilder();
                         statString.append(eqp.getItemId())
-                                  .append(" ")
+                                  .append(' ')
                                   .append(ii.getName(eqp.getItemId()))
                                   .append(";  ");
                         if (eqp.getAcc() > 0) {
-                            statString.append("Accuracy: ").append(eqp.getAcc()).append(" ");
+                            statString.append("Accuracy: ").append(eqp.getAcc()).append(' ');
                         }
                         if (eqp.getAvoid() > 0) {
-                            statString.append("Avoidability: ").append(eqp.getAvoid()).append(" ");
+                            statString.append("Avoidability: ").append(eqp.getAvoid()).append(' ');
                         }
                         if (eqp.getStr() > 0) {
-                            statString.append("Str: ").append(eqp.getStr()).append(" ");
+                            statString.append("Str: ").append(eqp.getStr()).append(' ');
                         }
                         if (eqp.getDex() > 0) {
-                            statString.append("Dex: ").append(eqp.getDex()).append(" ");
+                            statString.append("Dex: ").append(eqp.getDex()).append(' ');
                         }
                         if (eqp.getInt() > 0) {
-                            statString.append("Int: ").append(eqp.getInt()).append(" ");
+                            statString.append("Int: ").append(eqp.getInt()).append(' ');
                         }
                         if (eqp.getLuk() > 0) {
-                            statString.append("Luk: ").append(eqp.getLuk()).append(" ");
+                            statString.append("Luk: ").append(eqp.getLuk()).append(' ');
                         }
                         if (eqp.getHp() > 0) {
-                            statString.append("MaxHP: ").append(eqp.getHp()).append(" ");
+                            statString.append("MaxHP: ").append(eqp.getHp()).append(' ');
                         }
                         if (eqp.getMp() > 0) {
-                            statString.append("MaxMP: ").append(eqp.getMp()).append(" ");
+                            statString.append("MaxMP: ").append(eqp.getMp()).append(' ');
                         }
                         if (eqp.getJump() > 0) {
-                            statString.append("Jump: ").append(eqp.getJump()).append(" ");
+                            statString.append("Jump: ").append(eqp.getJump()).append(' ');
                         }
                         if (eqp.getSpeed() > 0) {
-                            statString.append("Speed: ").append(eqp.getSpeed()).append(" ");
+                            statString.append("Speed: ").append(eqp.getSpeed()).append(' ');
                         }
                         if (eqp.getWatk() > 0) {
-                            statString.append("Attack: ").append(eqp.getWatk()).append(" ");
+                            statString.append("Attack: ").append(eqp.getWatk()).append(' ');
                         }
                         if (eqp.getMatk() > 0) {
-                            statString.append("Magic Attack: ").append(eqp.getMatk()).append(" ");
+                            statString.append("Magic Attack: ").append(eqp.getMatk()).append(' ');
                         }
                         if (eqp.getWdef() > 0) {
-                            statString.append("W. def.: ").append(eqp.getWdef()).append(" ");
+                            statString.append("W. def.: ").append(eqp.getWdef()).append(' ');
                         }
                         if (eqp.getMdef() > 0) {
-                            statString.append("M. def.: ").append(eqp.getMdef()).append(" ");
+                            statString.append("M. def.: ").append(eqp.getMdef()).append(' ');
                         }
                         statString.append("Slots: ").append(eqp.getUpgradeSlots());
                         return statString.toString();

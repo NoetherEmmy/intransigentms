@@ -6,7 +6,9 @@ public interface IEquip extends IItem {
     }
 
     byte getUpgradeSlots();
+
     byte getLocked();
+
     byte getLevel();
 
     int getRingId();

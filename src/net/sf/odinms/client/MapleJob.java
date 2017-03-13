@@ -57,9 +57,7 @@ public enum MapleJob {
 
     public static MapleJob getById(int id) {
         for (MapleJob l : MapleJob.values()) {
-            if (l.getId() == id) {
-                return l;
-            }
+            if (l.getId() == id) return l;
         }
         return null;
     }

@@ -9,8 +9,7 @@ import java.util.*;
 public class AutobanManager implements Runnable {
     private static class ExpirationEntry implements Comparable<ExpirationEntry> {
         public final long time;
-        public final int acc;
-        public final int points;
+        public final int acc, points;
 
         public ExpirationEntry(long time, int acc, int points) {
             this.time = time;
@@ -23,16 +22,14 @@ public class AutobanManager implements Runnable {
         }
     }
 
-    private final Map<Integer, Integer> points = new LinkedHashMap<>();
-    private final Map<Integer, List<String>> reasons = new LinkedHashMap<>();
+    private final Map<Integer, Integer> points = new HashMap<>();
+    private final Map<Integer, List<String>> reasons = new HashMap<>();
     private final Set<ExpirationEntry> expirations = new TreeSet<>();
     private static final int AUTOBAN_POINTS = 1000;
-    private static AutobanManager instance = null;
+    private static AutobanManager instance;
 
     public static AutobanManager getInstance() {
-        if (instance == null) {
-            instance = new AutobanManager();
-        }
+        if (instance == null) instance = new AutobanManager();
         return instance;
     }
 

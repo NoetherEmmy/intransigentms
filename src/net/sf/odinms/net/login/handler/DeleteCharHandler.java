@@ -22,9 +22,7 @@ public class DeleteCharHandler extends AbstractMaplePacketHandler {
         int state = 0x12;
         if (shallDelete) {
             state = 0;
-            if (!c.deleteCharacter(cid)) {
-                state = 1;
-            }
+            if (!c.deleteCharacter(cid)) state = 1;
         }
         c.getSession().write(MaplePacketCreator.deleteCharResponse(cid, state));
     }

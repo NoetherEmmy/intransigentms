@@ -185,21 +185,17 @@ public class MapleClient {
     }
 
     public boolean hasBannedMac() {
-        if (macs.isEmpty()) {
-            return false;
-        }
+        if (macs.isEmpty()) return false;
         boolean ret = false;
-        int i = 0;
+        int i;
         try {
             Connection con = DatabaseConnection.getConnection();
             StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM macbans WHERE mac IN (");
             for (i = 0; i < macs.size(); ++i) {
-                sql.append("?");
-                if (i != macs.size() - 1) {
-                    sql.append(", ");
-                }
+                sql.append('?');
+                if (i != macs.size() - 1) sql.append(", ");
             }
-            sql.append(")");
+            sql.append(')');
             PreparedStatement ps = con.prepareStatement(sql.toString());
             i = 0;
             for (String mac : macs) {
@@ -208,13 +204,11 @@ public class MapleClient {
             }
             ResultSet rs = ps.executeQuery();
             rs.next();
-            if (rs.getInt(1) > 0) {
-                ret = true;
-            }
+            if (rs.getInt(1) > 0) ret = true;
             rs.close();
             ps.close();
         } catch (SQLException ex) {
-            log.error("Error checking mac bans", ex);
+            log.error("Error checking mac bans. ", ex);
         }
         return ret;
     }
@@ -228,9 +222,7 @@ public class MapleClient {
             if (rs.next()) {
                 String[] macData = rs.getString("macs").split(", ");
                 for (String mac : macData) {
-                    if (!mac.equals("")) {
-                        macs.add(mac);
-                    }
+                    if (!mac.equals("")) macs.add(mac);
                 }
             } else {
                 throw new RuntimeException("No valid account associated with this client.");
@@ -425,12 +417,12 @@ public class MapleClient {
             loadMacsIfNescessary();
             StringBuilder sql = new StringBuilder("DELETE FROM macbans WHERE mac IN (");
             for (i = 0; i < macs.size(); ++i) {
-                sql.append("?");
+                sql.append('?');
                 if (i != macs.size() - 1) {
                     sql.append(", ");
                 }
             }
-            sql.append(")");
+            sql.append(')');
             PreparedStatement ps = con.prepareStatement(sql.toString());
             i = 0;
             for (String mac : macs) {
@@ -819,7 +811,7 @@ public class MapleClient {
         StringBuilder builder = new StringBuilder();
         if (cfor != null) {
             if (cfor.getPlayer() != null) {
-                builder.append("<");
+                builder.append('<');
                 builder.append(MapleCharacterUtil.makeMapleReadable(cfor.getPlayer().getName()));
                 builder.append(" (cid: ");
                 builder.append(cfor.getPlayer().getId());

@@ -331,9 +331,9 @@ public class MapleGuild implements java.io.Serializable {
     public static int createGuild(int leaderId, String name) {
         Connection con;
         try {
-            Properties dbProp = new Properties();
-            InputStreamReader is = new FileReader("db.properties");
-            dbProp.load(is);
+            //Properties dbProp = new Properties();
+            //InputStreamReader is = new FileReader("db.properties");
+            //dbProp.load(is);
             con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT guildid FROM guilds WHERE name = ?");
             ps.setString(1, name);

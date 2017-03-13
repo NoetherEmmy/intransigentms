@@ -255,76 +255,49 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getPlayer().equipChanged();
     }
 
-    @SuppressWarnings("static-access")
     public void setSkin(int color) {
-        getPlayer().setSkinColor(c.getPlayer().getSkinColor().getById(color));
+        getPlayer().setSkinColor(MapleSkinColor.getById(color));
         getPlayer().updateSingleStat(MapleStat.SKIN, color);
         getPlayer().equipChanged();
     }
 
-    public int getStory() {
-        return getPlayer().getStory();
+    public boolean startCQuest(int id) {
+        return getPlayer().loadCQuest(id);
     }
 
-    public int getStoryPoints() {
-        return getPlayer().getStoryPoints();
+    public boolean onQuest(int questId) {
+        return getPlayer().getCQuestById(questId) != null;
     }
 
-    public int getOffenseStory() {
-        return getPlayer().getOffenseStory();
+    public boolean canComplete(int questId) {
+        return getPlayer().canCompleteCQuest(questId);
     }
 
-    public int getBuffStory() {
-        return getPlayer().getBuffStory();
-    }
-
-    public void startCQuest(int id) {
-        getPlayer().getCQuest().loadQuest(id);
-        getPlayer().setQuestId(id);
-        getPlayer().resetQuestKills();
-        if (id == 0) {
-            getPlayer().sendHint("#eQuest canceled.");
-        } else {
-            getPlayer().sendHint("#eQuest start: " + getPlayer().getCQuest().getTitle());
-        }
-    }
-
-    public boolean onQuest() {
-        return getPlayer().getQuestId() > 0;
-    }
-
-    public boolean onQuest(int questid) {
-        return getPlayer().getQuestId() == questid;
-    }
-
-    public boolean canComplete() {
-        return getPlayer().canComplete();
-    }
-
-    public String selectQuest(int questid, String msg) {
+    public String selectQuest(int questId, String msg) {
         String intro = msg + "\r\n\r\n#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L0#";
         String selection =
             "#k[" +
-            (getPlayer().getQuestId() == 0 ?
+            (questId == 0 ?
                 "#rAvailable" :
-                (getPlayer().getQuestId() == questid && !canComplete()) ?
+                (!canComplete(questId) ?
                     "#dIn progress" :
-                    "#gComplete") +
+                    "#gComplete")) +
             "#k]";
-        return intro + selection + " #e" + getPlayer().getCQuest().loadTitle(questid);
+        return intro + selection + " #e" + new MapleCQuests().loadTitle(questId);
     }
 
-    public String showReward(String msg) {
+    public String showReward(int questId, String msg) {
         final StringBuilder sb = new StringBuilder();
+        final MapleCQuests q = getPlayer().getCQuestById(questId).getQuest();
         sb.append(msg);
         sb.append("\r\n\r\n#fUI/UIWindow.img/QuestIcon/4/0#\r\n\r\n");
         sb.append("#fUI/UIWindow.img/QuestIcon/8/0#  ")
-          .append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getExpReward()))
+          .append(MapleCharacter.makeNumberReadable(q.getExpReward()))
           .append("\r\n");
         sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ")
-          .append(MapleCharacter.makeNumberReadable(getPlayer().getCQuest().getMesoReward()))
+          .append(MapleCharacter.makeNumberReadable(q.getMesoReward()))
           .append("\r\n");
-        getPlayer().getCQuest().readItemRewards().entrySet().forEach(reward ->
+        q.readItemRewards().entrySet().forEach(reward ->
             sb.append("\r\n#i")
               .append(reward.getKey())
               .append("#  ")
@@ -333,92 +306,102 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return sb.toString();
     }
 
-    public void rewardPlayer(int story, int storypoints) {
-        MapleCQuests q = getPlayer().getCQuest();
-        int questId = q.getId();
-        getPlayer().addStory(story);
-        getPlayer().addStoryPoints(storypoints);
-        double expMulti = (double) getPlayer().getExpEffectiveLevel() / 10.0d;
-        gainExp((int) (q.getExpReward() * expMulti));
-        gainMeso(q.getMesoReward());
-        q.readItemRewards().entrySet().forEach(reward -> gainItem(reward.getKey(), reward.getValue().shortValue()));
-        q.readItemsToCollect()
-         .entrySet()
-         .forEach(collected -> gainItem(collected.getKey(), (short) -collected.getValue().getLeft()));
-        c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
-        c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
-        startCQuest(0);
-        if (completedAllQuests() &&
-                (questId / 1000 == 1 || questId / 1000 == 2) &&
-                !getPlayer().completedAllQuests() &&
-                itemQuantity(3992027) < 1) {
-            MapleInventoryManipulator.addById(c, 3992027, (short) 1);
-            getPlayer().dropMessage(6,
-                "Congratulations on finishing all of the IntransigentQuests! " +
-                "For completing them all, you have been awarded with a single Red Candle. " +
-                "At level 110+ you may use this candle to revive yourself once, and avoid permanent death."
-            );
-            getPlayer().setCompletedAllQuests(true);
-        }
-    }
-
-    public void fourthRewardPlayer(int offensestory, int buffstory) {
-        final MapleCQuests q = getPlayer().getCQuest();
-        getPlayer().addOffenseStory(offensestory);
-        getPlayer().addBuffStory(buffstory);
-        double expMulti = (double) getPlayer().getExpEffectiveLevel() / 10.0d;
-        gainExp((int) (q.getExpReward() * expMulti));
-        gainMeso(q.getMesoReward());
-        q.readItemRewards().entrySet().forEach(reward -> gainItem(reward.getKey(), reward.getValue().shortValue()));
-        q.readItemsToCollect()
-         .entrySet()
-         .forEach(collected -> gainItem(collected.getKey(), (short) -collected.getValue().getLeft()));
-        c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
-        c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
-        startCQuest(0);
-    }
-
-    public void rewardPlayer() {
-        rewardPlayer(0, 0);
+    public void rewardPlayer(int questId) {
+        getPlayer().completeCQuest(questId);
     }
 
     public String showQuestProgress() {
-        final MapleCQuests q = getPlayer().getCQuest();
         final StringBuilder sb = new StringBuilder();
-        sb.append("Your quest info for:\r\n#e#r").append(q.getTitle()).append("#n#k\r\n");
+        byte currSlot = (byte) 1;
+        for (final CQuest cQuest : getPlayer().getCQuests()) {
+            sb.append("Quest info for slot #r").append(currSlot).append("#k:\r\n");
+            if (cQuest != null && cQuest.getQuest().getId() != 0) {
+                sb.append("\t\t#e")
+                  .append(cQuest.getQuest().getTitle())
+                  .append("#n\r\n\r\n");
 
-        if (q.requiresMonsterTargets()) sb.append("\r\n#eMonster targets:#n \r\n");
-        q.readMonsterTargets().entrySet().forEach(target ->
-            sb.append(target.getValue().getRight())
-              .append(": ")
-              .append(getPlayer().getQuestKills(target.getKey()) >= target.getValue().getLeft() ? "#g" : "#r")
-              .append(getPlayer().getQuestKills(target.getKey()))
-              .append("#k / ")
-              .append(target.getValue().getLeft())
-              .append("\r\n")
-        );
-        sb.append("\r\n");
+                cQuest.getQuest().readMonsterTargets().entrySet().forEach(e -> {
+                    int killed = cQuest.getQuestKills(e.getKey());
+                    int outOf = e.getValue().getLeft();
+                    sb.append("\t\t")
+                      .append(e.getValue().getRight())
+                      .append("s killed: ")
+                      .append(killed >= outOf ? "#g" : "#d")
+                      .append(killed)
+                      .append("#k/")
+                      .append(outOf)
+                      .append("\r\n");
+                });
+                sb.append("\r\n");
 
-        if (q.requiresItemCollection()) sb.append("\r\n#eItems to collect:#n \r\n");
-        q.readItemsToCollect().entrySet().forEach(toCollect ->
-            sb.append(toCollect.getValue().getRight())
-              .append(": ")
-              .append(getPlayer().getQuestCollected(toCollect.getKey()) >= toCollect.getValue().getLeft() ? "#g" : "#r")
-              .append(getPlayer().getQuestCollected(toCollect.getKey()))
-              .append("#k / ")
-              .append(toCollect.getValue().getLeft())
-              .append("\r\n")
-        );
-        sb.append("\r\n");
+                cQuest.getQuest().readItemsToCollect().entrySet().forEach(e -> {
+                    int collected = getPlayer().getQuestCollected(e.getKey());
+                    int outOf = e.getValue().getLeft();
+                    sb.append("\t\t")
+                      .append(e.getValue().getRight())
+                      .append("s collected: ")
+                      .append(collected >= outOf ? "#g" : "#d")
+                      .append(collected)
+                      .append("#k/")
+                      .append(outOf)
+                      .append("\r\n");
+                });
+                sb.append("\r\n");
 
-        if (q.hasIdenticalStartEnd()) {
-            sb.append("#eQuest NPC: #n\r\n#d").append(q.getStartNpc()).append("#k\r\n");
-        } else {
-            sb.append("#eQuest start NPC: #n\r\n#d").append(q.getStartNpc()).append("#k\r\n");
-            sb.append("#eQuest end NPC: #n\r\n#d").append(q.getEndNpc()).append("#k\r\n");
+                cQuest.getQuest().readOtherObjectives().entrySet().forEach(e -> {
+                    int completed = cQuest.getObjectiveProgress(e.getKey());
+                    int outOf = e.getValue();
+                    sb.append("\t\t")
+                      .append(e.getKey())
+                      .append(": ")
+                      .append(completed >= outOf ? "#g" : "#d")
+                      .append(completed)
+                      .append("#k/")
+                      .append(outOf)
+                      .append("\r\n");
+                });
+                sb.append("\r\n");
+
+                if (cQuest.getQuest().hasIdenticalStartEnd()) {
+                    sb.append("\t\t#eQuest NPC: #n\r\n#d")
+                      .append(cQuest.getQuest().getStartNpc())
+                      .append("#k\r\n");
+                } else {
+                    sb.append("\t\t#eQuest start NPC: #n\r\n#d")
+                      .append(cQuest.getQuest().getStartNpc())
+                      .append("#k\r\n");
+                    sb.append("\t\t#eQuest end NPC: #n\r\n#d")
+                      .append(cQuest.getQuest().getEndNpc())
+                      .append("#k\r\n");
+                }
+                String[] questInfoSplit = cQuest.getQuest().getInfo().split(" ");
+                StringBuilder questInfo = new StringBuilder("\t\t");
+                int currLineLength = 0;
+                for (final String word : questInfoSplit) {
+                    if (word.length() < 1) continue;
+                    if (currLineLength == 0) {
+                        questInfo.append(word);
+                        currLineLength += word.length();
+                    } else if (currLineLength + word.length() > 45) {
+                        questInfo
+                            .append("\r\n\t\t")
+                            .append(word);
+                        currLineLength = word.length();
+                    } else {
+                        questInfo
+                            .append(' ')
+                            .append(word);
+                        currLineLength += word.length() + 1;
+                    }
+                }
+                sb.append("\t\t#eQuest info: #n\r\n\r\n")
+                  .append(questInfo)
+                  .append("\r\n\r\n");
+            } else {
+                sb.append("\t\tThere's no quest in this slot.\r\n\r\n");
+            }
+            currSlot++;
         }
-        sb.append("#eQuest info: #n\r\n").append(q.getInfo());
-
         return sb.toString();
     }
 
@@ -441,28 +424,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                        "\r\nDo you want to cancel this quest?";
         }
         return "";
-    }
-
-    public String showNextQuest() {
-        String s = "";
-        MapleCQuests q = new MapleCQuests();
-        if (getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000)) {
-            q.loadQuest(getPlayer().getStory() + 1000);
-            s += "#e" + q.getTitle() + "#n\r\nNPC contact: #b" + q.getStartNpc() + "#k";
-        }
-        if (getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000)) {
-            q.loadQuest(getPlayer().getStoryPoints() + 2000);
-            if (s.length() > 1) {
-                s += "\r\n\r\n";
-            }
-            s += "#e" + q.getTitle() + "#n\r\nNPC contact: #b" + q.getStartNpc() + "#k";
-        }
-        return s;
-    }
-
-    public boolean completedAllQuests() {
-        return !getPlayer().getCQuest().questExists(getPlayer().getStory() + 1000) &&
-               !getPlayer().getCQuest().questExists(getPlayer().getStoryPoints() + 2000);
     }
 
     public String getAllItemStats(int itemid) {
@@ -1703,7 +1664,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         consumeList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
 
         for (Pair<Integer, String> itempair : consumeList) {
-            sb.append("#L").append(itempair.getLeft()).append("#");
+            sb.append("#L").append(itempair.getLeft()).append('#');
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
         }
@@ -1722,7 +1683,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         eqpList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
 
         for (Pair<Integer, String> itempair : eqpList) {
-            sb.append("#L").append(itempair.getLeft()).append("#");
+            sb.append("#L").append(itempair.getLeft()).append('#');
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
         }
@@ -1741,7 +1702,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         etcList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
 
         for (Pair<Integer, String> itempair : etcList) {
-            sb.append("#L").append(itempair.getLeft()).append("#");
+            sb.append("#L").append(itempair.getLeft()).append('#');
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
         }

@@ -19,15 +19,22 @@ import java.util.List;
         slea.readInt();
         Point startPos = StreamUtil.readShortPoint(slea);
         List<LifeMovementFragment> res = parseMovement(slea);
-        if (res.isEmpty()) {
-            return;
-        }
+        if (res.isEmpty()) return;
         MapleCharacter player = c.getPlayer();
         int slot = player.getPetIndex(petId);
-        if (player.inCS() || slot == -1) {
-            return;
-        }
+        if (player.inCS() || slot == -1) return;
         player.getPet(slot).updatePosition(res);
-        player.getMap().broadcastMessage(player, MaplePacketCreator.movePet(player.getId(), petId, slot, res), false);
+        player
+            .getMap()
+            .broadcastMessage(
+                player,
+                MaplePacketCreator.movePet(
+                    player.getId(),
+                    petId,
+                    slot,
+                    res
+                ),
+                false
+            );
     }
 }

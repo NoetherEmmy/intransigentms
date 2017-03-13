@@ -145,7 +145,7 @@ public class WZIMGFile {
                 slea.readByte();
                 marker = slea.readByte();
                 if (marker == 0) {
-
+                    // ???
                 } else if (marker == 1) {
                     slea.readByte();
                     slea.readByte();

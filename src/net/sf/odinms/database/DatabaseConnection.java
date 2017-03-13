@@ -13,7 +13,7 @@ import java.util.Properties;
 public class DatabaseConnection {
     private static final ThreadLocal<Connection> con = new ThreadLocalConnection();
     private static final Logger log = LoggerFactory.getLogger(DatabaseConnection.class);
-    private static Properties props = null;
+    private static Properties props;
 
     public static Connection getConnection() {
         if (props == null) {

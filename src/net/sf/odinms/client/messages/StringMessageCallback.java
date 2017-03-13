@@ -6,7 +6,7 @@ public class StringMessageCallback implements MessageCallback {
     @Override
     public void dropMessage(String message) {
         ret.append(message);
-        ret.append("\n");
+        ret.append('\n');
     }
 
     @Override

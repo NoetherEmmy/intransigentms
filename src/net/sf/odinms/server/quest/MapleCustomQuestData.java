@@ -12,7 +12,6 @@ import java.util.List;
 
 public class MapleCustomQuestData implements MapleData, Serializable {
     private static final long serialVersionUID = -8600005891655365066L;
-
     private final List<MapleCustomQuestData> children = new LinkedList<>();
     private final String name;
     private final Object data;

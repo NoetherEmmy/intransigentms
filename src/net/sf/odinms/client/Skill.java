@@ -39,9 +39,7 @@ public class Skill implements ISkill {
         }
         MapleData effect = data.getChildByPath("effect");
         if (skillType != -1) {
-            if (skillType == 2) {
-                isBuff = true;
-            }
+            if (skillType == 2) isBuff = true;
         } else {
             MapleData action = data.getChildByPath("action");
             MapleData hit = data.getChildByPath("hit");

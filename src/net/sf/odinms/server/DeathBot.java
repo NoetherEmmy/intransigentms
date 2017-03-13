@@ -117,7 +117,7 @@ public final class DeathBot {
         msg.append(p.getName())
            .append(", level ")
            .append(life.get(0))
-           .append(" ")
+           .append(' ')
            .append(MapleJob.getJobName(life.get(1)))
            .append(", has just perished ")
            .append(causeofdeath)

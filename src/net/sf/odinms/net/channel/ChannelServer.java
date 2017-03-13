@@ -134,9 +134,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             }
             synchronized (cwi) {
                 synchronized (worldReady) {
-                    if (worldReady) {
-                        return;
-                    }
+                    if (worldReady) return;
                 }
                 System.err.println("Reconnecting to world server.");
                 synchronized (wci) {

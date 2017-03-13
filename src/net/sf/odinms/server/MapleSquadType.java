@@ -1,11 +1,13 @@
 package net.sf.odinms.server;
 
 public enum MapleSquadType {
-    ZAKUM(0), HORNTAIL(1), UNKNOWN(2);
+    ZAKUM(0),
+    HORNTAIL(1),
+    UNKNOWN(2);
 
     final byte type;
 
     MapleSquadType(int type) {
-        this.type = (byte)type;
+        this.type = (byte) type;
     }
 }
