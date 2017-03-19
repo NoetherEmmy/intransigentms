@@ -101,9 +101,7 @@ public class MapleQuestStatus {
     }
 
     public int getMobKills(int id) {
-        if (killedMobs.get(id) == null) {
-            return 0;
-        }
+        if (killedMobs.get(id) == null) return 0;
         return killedMobs.get(id);
     }
 
@@ -115,9 +113,7 @@ public class MapleQuestStatus {
         int i = 0;
         for (int kMob : killedMobs.values()) {
             i++;
-            if (kMob == id) {
-                return i;
-            }
+            if (kMob == id) return i;
         }
         return i;
     }

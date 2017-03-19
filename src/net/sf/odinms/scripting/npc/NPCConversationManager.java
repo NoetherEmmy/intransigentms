@@ -277,13 +277,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         String intro = msg + "\r\n\r\n#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L0#";
         String selection =
             "#k[" +
-            (questId == 0 ?
+            (!getPlayer().isOnCQuest(questId) ?
                 "#rAvailable" :
                 (!canComplete(questId) ?
                     "#dIn progress" :
                     "#gComplete")) +
             "#k]";
-        return intro + selection + " #e" + new MapleCQuests().loadTitle(questId);
+        return intro + selection + " #e" + MapleCQuests.loadQuest(questId).getTitle();
     }
 
     public String showReward(int questId, String msg) {
@@ -363,17 +363,24 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 sb.append("\r\n");
 
                 if (cQuest.getQuest().hasIdenticalStartEnd()) {
-                    sb.append("\t\t#eQuest NPC: #n\r\n#d")
+                    sb.append("\t\t#eQuest NPC: #n#d")
                       .append(cQuest.getQuest().getStartNpc())
                       .append("#k\r\n");
                 } else {
-                    sb.append("\t\t#eQuest start NPC: #n\r\n#d")
+                    sb.append("\t\t#eQuest start NPC: #n#d")
                       .append(cQuest.getQuest().getStartNpc())
                       .append("#k\r\n");
-                    sb.append("\t\t#eQuest end NPC: #n\r\n#d")
+                    sb.append("\t\t#eQuest end NPC: #n#g")
                       .append(cQuest.getQuest().getEndNpc())
                       .append("#k\r\n");
                 }
+                sb.append("\t\tQuest effective level: #r")
+                  .append(
+                      cQuest.getEffectivePlayerLevel() > 0 ?
+                          cQuest.getEffectivePlayerLevel() :
+                          getPlayer().getLevel()
+                  )
+                  .append("#k\r\n");
                 String[] questInfoSplit = cQuest.getQuest().getInfo().split(" ");
                 StringBuilder questInfo = new StringBuilder("\t\t");
                 int currLineLength = 0;
@@ -420,8 +427,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             case 6:
                 return "Quest complete!";
             case 7:
-                return "You haven't completed your task yet! You can look it up by typing #b@questinfo#k in the chat." +
-                       "\r\nDo you want to cancel this quest?";
+                return "You haven't completed your task yet! " +
+                       "You can look it up by typing #b@questinfo#k in the chat.\r\n" +
+                       "Do you want to cancel this quest?";
+            case 8:
+                return "Looks like you can't start this quest yet.\r\n\r\n" +
+                       "Maybe all your quest slots or full, or you haven't " +
+                       "completed all the pre-requisites?";
+            case 9:
+                return "There was a problem forfeiting the quest. " +
+                       "Looks like you didn't have this quest active after all.";
         }
         return "";
     }
@@ -1076,9 +1091,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void gainFame(int amount) {
         getPlayer().addFame(amount);
         if (amount > 0) {
-            getPlayer().dropMessage(1, "You have gained " + amount + " fame.");
+            getPlayer().dropMessage(5, "You have gained " + amount + " fame.");
         } else {
-            getPlayer().dropMessage(1, "You have lost " + amount + " fame.");
+            getPlayer().dropMessage(5, "You have lost " + amount + " fame.");
         }
     }
 
@@ -1099,16 +1114,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public int partyMembersInMap() {
         int inMap = 0;
         for (MapleCharacter char2 : getPlayer().getMap().getCharacters()) {
-            if (char2.getParty() == getPlayer().getParty()) {
-                inMap++;
-            }
+            if (char2.getParty() == getPlayer().getParty()) inMap++;
         }
         return inMap;
     }
 
     public void modifyNx(int amount) {
         getPlayer().modifyCSPoints(1, amount);
-
         if (amount > 0) {
             getPlayer().dropMessage(5, "You have gained " + amount + " NX.");
         } else {

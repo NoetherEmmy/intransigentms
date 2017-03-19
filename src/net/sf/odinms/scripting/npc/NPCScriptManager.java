@@ -48,7 +48,7 @@ public class NPCScriptManager extends AbstractScriptManager {
             iv.invokeFunction("start");
         } catch (NoSuchMethodException nsme) {
             System.err.println(
-                "The start method appears to be missing from NPC " +
+                "The `start` method appears to be missing from NPC " +
                     npc +
                     (filename != null ? ", filename " + filename + ".js" : "")
             );
@@ -91,9 +91,7 @@ public class NPCScriptManager extends AbstractScriptManager {
 
     public void dispose(MapleClient c) {
         NPCConversationManager npccm = cms.get(c);
-        if (npccm != null) {
-            dispose(npccm);
-        }
+        if (npccm != null) dispose(npccm);
     }
 
     public NPCConversationManager getCM(MapleClient c) {
@@ -148,9 +146,7 @@ public class NPCScriptManager extends AbstractScriptManager {
     public int talkedTimesByNpc(int npc) {
         int i = 0;
         for (Pair<Integer, Integer> p : npcTalk.keySet()) {
-            if (p.getRight().equals(npc)) {
-                i += npcTalk.get(p);
-            }
+            if (p.getRight().equals(npc)) i += npcTalk.get(p);
         }
         return i;
     }

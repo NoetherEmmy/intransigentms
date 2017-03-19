@@ -55,6 +55,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@mapfix - | - Fixes you if you've fallen off the map.");
             mc.dropMessage("@engage <partner_name> - | - Begins the process of engagement for marriage.");
             mc.dropMessage("@questinfo - | - Gets the info for your current IntransigentQuest.");
+            mc.dropMessage("@questeffectivelevel - | - Displays your current quest effective level and its damage penalties.");
             mc.dropMessage("@ria - | - Opens chat with Ria to get info about IntransigentQuests.");
             mc.dropMessage("@cancelquest - | - Cancels your current quest.");
             mc.dropMessage("@togglesmega - | - Turns smegas off/on.");
@@ -196,6 +197,14 @@ public class PlayerCommands implements Command {
                                     e.getValue()
                             )
                         );
+                        mc.dropMessage(
+                            "    Quest effective level: " +
+                                (
+                                    cQuest.getEffectivePlayerLevel() > 0 ?
+                                        cQuest.getEffectivePlayerLevel() :
+                                        player.getLevel()
+                                )
+                        );
                         if (cQuest.canComplete()) {
                             mc.dropMessage("    [Quest is ready to turn in]");
                         } else {
@@ -255,6 +264,14 @@ public class PlayerCommands implements Command {
                             "/" +
                             e.getValue()
                     )
+                );
+                mc.dropMessage(
+                    "    Quest effective level: " +
+                        (
+                            cQuest.getEffectivePlayerLevel() > 0 ?
+                                cQuest.getEffectivePlayerLevel() :
+                                player.getLevel()
+                        )
                 );
                 if (cQuest.canComplete()) {
                     mc.dropMessage("    [Quest is ready to turn in]");
@@ -758,7 +775,7 @@ public class PlayerCommands implements Command {
                     mc.dropMessage("Channel " + cs.getChannel());
                     for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
                         if (!chr.isGM()) {
-                            if (sb.length() > 95) { // Chars per line. Could be more or less
+                            if (sb.length() + chr.getName().length() > 75) { // Chars per line. Could be more or less
                                 mc.dropMessage(sb.toString());
                                 sb = new StringBuilder();
                             }
@@ -1064,7 +1081,7 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@monsterhp")) {
             final DecimalFormat df = new DecimalFormat("#.00");
             player.getMap().getMapObjectsInRange(
-                new Point(0, 0),
+                new Point(),
                 Double.POSITIVE_INFINITY,
                 MapleMapObjectType.MONSTER
             )
@@ -1261,9 +1278,11 @@ public class PlayerCommands implements Command {
                 mc.dropMessage(
                     victim.getName() +
                         "'s total overflow EXP: " +
-                        digitGroupings.stream()
-                                      .reduce((accu, grouping) -> accu + "," + grouping)
-                                      .orElse("0")
+                        digitGroupings
+                            .stream()
+                            .filter(s -> !s.isEmpty())
+                            .reduce((accu, grouping) -> accu + "," + grouping)
+                            .orElse("0")
                 );
             } else if (overflowExp != null) {
                 String rawOverflow = "" + overflowExp;
@@ -1275,10 +1294,11 @@ public class PlayerCommands implements Command {
                 mc.dropMessage(
                     name +
                         "'s total overflow EXP: " +
-                        digitGroupings.stream()
-                                      .filter(s -> !s.isEmpty())
-                                      .reduce((accu, grouping) -> accu + "," + grouping)
-                                      .orElse("0")
+                        digitGroupings
+                            .stream()
+                            .filter(s -> !s.isEmpty())
+                            .reduce((accu, grouping) -> accu + "," + grouping)
+                            .orElse("0")
                 );
             } else {
                 mc.dropMessage("There exists no such player.");
@@ -1306,7 +1326,7 @@ public class PlayerCommands implements Command {
                         player.setPreEventMap(player.getMapId());
                         player.changeMap(eventMapId);
                     }
-                }, 4 * 1000);
+                }, 4L * 1000L);
             }
         } else if (splitted[0].equals("@magic")) {
             mc.dropMessage("Your current total magic attack: " + player.getTotalMagic());
@@ -1358,9 +1378,7 @@ public class PlayerCommands implements Command {
                 String[] nfSplit = splitted[i].split("(?i)d");
                 final int n = Integer.parseInt(nfSplit[0]),
                           f = Integer.parseInt(nfSplit[1]);
-                if (i > 1) {
-                    msg.append(" + ");
-                }
+                if (i > 1) msg.append(" + ");
                 msg.append(n).append('d').append(f);
                 for (int j = 0; j < n; ++j) {
                     total += 1 + rand.nextInt(f);
@@ -1458,7 +1476,9 @@ public class PlayerCommands implements Command {
                             mc.dropMessage(
                                 singleRetMob.getLeft() +
                                     ", quest: " +
-                                    MapleQuest.getInstance(singleRetMob.getRight()).getName()
+                                    MapleQuest
+                                        .getInstance(singleRetMob.getRight())
+                                        .getName()
                             );
                         }
                     } else {
@@ -1470,11 +1490,28 @@ public class PlayerCommands implements Command {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if (splitted[0].equals("@questeffectivelevel")) {
+            if (player.getQuestEffectiveLevel() < 1) {
+                mc.dropMessage("You don't currently have a quest effective level.");
+                return;
+            }
+            final DecimalFormat df = new DecimalFormat("#.000");
+            mc.dropMessage("Your current quest effective level: " + player.getQuestEffectiveLevel());
+            mc.dropMessage(
+                "    Outgoing damage multiplier: " +
+                    df.format(player.getQuestEffectiveLevelDmgMulti())
+            );
+            mc.dropMessage(
+                "    Incoming damage multiplier: " +
+                    df.format(
+                        1.0f + (float) (player.getLevel() - player.getQuestEffectiveLevel()) / 80.0f
+                    )
+            );
         }
     }
 
     private void compareTime(StringBuilder sb, long timeDiff) {
-        double secondsAway = timeDiff / 1000L;
+        double secondsAway = (double) (timeDiff / 1000L);
         double minutesAway = 0.0d;
         double hoursAway = 0.0d;
 
@@ -1573,7 +1610,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("dailyprize", 0),
             new CommandDefinition("roll", 0),
             new CommandDefinition("engage", 0),
-            new CommandDefinition("whoquestdrops", 0)
+            new CommandDefinition("whoquestdrops", 0),
+            new CommandDefinition("questeffectivelevel", 0)
         };
     }
 }

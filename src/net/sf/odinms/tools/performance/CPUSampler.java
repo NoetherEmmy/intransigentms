@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.Thread.State;
 import java.util.*;
-import java.util.Map.Entry;
 
 public class CPUSampler {
     private final List<String> included = new LinkedList<>();
     private static final CPUSampler instance = new CPUSampler();
-    private long interval = 5;
+    private long interval = 5L;
     private SamplerThread sampler;
     private final Map<StackTrace, Integer> recorded = new LinkedHashMap<>();
     private int totalSamples;

@@ -15,6 +15,7 @@ import net.sf.odinms.server.PlayerInteraction.MapleMiniGame.MiniGameType;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.tools.MaplePacketCreator;
+import net.sf.odinms.tools.StringUtil;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.Arrays;
@@ -189,10 +190,15 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             }
         } else if (mode == Action.CHAT.getCode()) { // Chat
             if (c.getPlayer().getTrade() != null) {
-                c.getPlayer().getTrade().chat(slea.readMapleAsciiString());
+                c.getPlayer().getTrade().chat(
+                    StringUtil.cleanForClientDisplay(
+                        slea.readMapleAsciiString(),
+                        256
+                    )
+                );
             } else if (c.getPlayer().getInteraction() != null) {
                 IPlayerInteractionManager ips = c.getPlayer().getInteraction();
-                String message = slea.readMapleAsciiString();
+                String message = StringUtil.cleanForClientDisplay(slea.readMapleAsciiString(), 256);
                 CommandProcessor.getInstance().processCommand(c, message);
                 ips.broadcast(
                     MaplePacketCreator.shopChat(
@@ -501,6 +507,15 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             }
         } else if (mode == Action.MERCHANT_ORGANIZE.getCode()) {
             IPlayerInteractionManager imps = c.getPlayer().getInteraction();
+            if (!imps.isOwner(c.getPlayer())) {
+                AutobanManager
+                    .getInstance()
+                    .autoban(
+                        c.getPlayer().getClient(),
+                        "Attempting to manipulate player shop that they do not own."
+                    );
+                return;
+            }
             for (int i = 0; i < imps.getItems().size(); ++i) {
                 if (imps.getItems().get(i).getBundles() == 0) {
                     imps.removeFromSlot(i);

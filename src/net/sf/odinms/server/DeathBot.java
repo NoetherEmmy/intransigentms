@@ -1,5 +1,6 @@
 package net.sf.odinms.server;
 
+/*
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -18,15 +19,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+*/
 
 public final class DeathBot {
+    /*
     private static DeathBot instance;
     private String token;
     private JDA jda;
     private boolean on = true;
     private static List<String> quotes;
 
-    /** Singleton class */
     private DeathBot() {}
 
     public static synchronized DeathBot getInstance() {
@@ -182,4 +184,5 @@ public final class DeathBot {
             }
         }
     }
+    */
 }

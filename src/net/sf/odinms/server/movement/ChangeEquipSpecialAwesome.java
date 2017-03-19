@@ -19,6 +19,6 @@ public class ChangeEquipSpecialAwesome implements LifeMovementFragment {
 
     @Override
     public Point getPosition() {
-        return new Point(0, 0);
+        return new Point();
     }
 }

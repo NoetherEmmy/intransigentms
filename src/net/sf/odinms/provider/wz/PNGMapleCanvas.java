@@ -120,7 +120,7 @@ public class PNGMapleCanvas implements MapleCanvas {
 
         //SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, c.getWidth(), c.getHeight(), 4, c.getWidth() * 4, new int[] {2, 1, 0, 3});
         SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, getWidth(), getHeight(), 4, getWidth() * 4, ZAHLEN);
-        WritableRaster imgRaster = Raster.createWritableRaster(sm, imgData, new Point(0, 0));
+        WritableRaster imgRaster = Raster.createWritableRaster(sm, imgData, new Point());
 
         BufferedImage aa = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         aa.setData(imgRaster);

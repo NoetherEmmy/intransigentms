@@ -15,9 +15,8 @@ public class MapleTrade {
     private MapleTrade partner;
     private final List<IItem> items = new ArrayList<>();
     private List<IItem> exchangeItems;
-    private int meso;
-    private int exchangeMeso;
-    boolean locked = false;
+    private int meso, exchangeMeso;
+    boolean visited = false, locked = false;
     private final MapleCharacter chr;
     private final byte number;
 
@@ -76,7 +75,7 @@ public class MapleTrade {
         if (meso > 0) {
             chr.gainMeso(meso, false, true, false);
         }
-        // just to be on the safe side...
+        // Just to be on the safe side...
         meso = 0;
         items.clear();
         exchangeMeso = 0;
@@ -172,6 +171,14 @@ public class MapleTrade {
         return true;
     }
 
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
     public static void completeTrade(MapleCharacter c) {
         c.getTrade().lock();
         MapleTrade local = c.getTrade();
@@ -223,14 +230,34 @@ public class MapleTrade {
         }
     }
 
-    public static void visitTrade(MapleCharacter c1, MapleCharacter c2) {
-        if (c1.getTrade() != null && c1.getTrade().getPartner() == c2.getTrade() &&
-                c2.getTrade() != null && c2.getTrade().getPartner() == c1.getTrade()) {
+    public static synchronized void visitTrade(MapleCharacter c1, MapleCharacter c2) {
+        if (
+            c1.getTrade() != null &&
+            !c1.getTrade().isVisited() &&
+            c1.getTrade().getPartner().equals(c2.getTrade()) &&
+            c2.getTrade() != null &&
+            !c2.getTrade().isVisited() &&
+            c2.getTrade().getPartner().equals(c1.getTrade())
+        ) {
+            c1.getTrade().setVisited(true);
+            c2.getTrade().setVisited(true);
             c2.getClient().getSession().write(
-                    MaplePacketCreator.getTradePartnerAdd(c1));
-            c1.getClient().getSession().write(MaplePacketCreator.getTradeStart(c1.getClient(), c1.getTrade(), (byte) 1));
+                MaplePacketCreator.getTradePartnerAdd(c1)
+            );
+            c1.getClient().getSession().write(
+                MaplePacketCreator.getTradeStart(
+                    c1.getClient(),
+                    c1.getTrade(),
+                    (byte) 1
+                )
+            );
         } else {
-            c1.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "The other player has already closed the trade"));
+            c1.getClient().getSession().write(
+                MaplePacketCreator.serverNotice(
+                    5,
+                    "The other player has already closed the trade."
+                )
+            );
         }
     }
 

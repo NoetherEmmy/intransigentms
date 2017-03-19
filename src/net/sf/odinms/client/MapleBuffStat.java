@@ -54,7 +54,8 @@ public enum MapleBuffStat implements LongValueHolder, Serializable {
     PICKPOCKET(0x800000000000000L),
     PUPPET(0x800000000000000L),
     MESOGUARD(0x1000000000000000L),
-    WEAKEN(0x4000000000000000L), //SWITCH_CONTROLS(0x8000000000000L)
+    WEAKEN(0x4000000000000000L),
+    //SWITCH_CONTROLS(0x8000000000000L),
     ;
     static final long serialVersionUID = 0L;
     private final long i;

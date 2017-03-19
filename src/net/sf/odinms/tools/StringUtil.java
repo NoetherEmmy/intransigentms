@@ -76,7 +76,7 @@ public class StringUtil {
         String[] words = enumName.split("_");
         for (String word : words) {
             if (word.length() <= 2) {
-                builder.append(word); // assume that it's an abbrevation
+                builder.append(word); // Assuming that it's an abbrevation.
             } else {
                 builder.append(word.charAt(0));
                 builder.append(word.substring(1).toLowerCase());
@@ -99,5 +99,39 @@ public class StringUtil {
             if (str.charAt(i) == chr) ret++;
         }
         return ret;
+    }
+
+    /**
+     * <p>
+     * Cleans up {@code str} for being displayed by clients.
+     * Includes trimming {@code str} to at most length {@code len}
+     * and removing ASCII characters that aren't textual.
+     * </p>
+     *
+     * <p>
+     * A {@code null} or empty {@code str} returns the {@link String}
+     * {@code " "} (space), so this function is null-tolerant.
+     * </p>
+     *
+     * <p>
+     * Note that this function is guaranteed to return a non-null
+     * {@link String} of length at least 1.
+     * </p>
+     *
+     * <ul>
+     * <li>pure?: true</li>
+     * <li>nullable?: false</li>
+     * </ul>
+     *
+     * @param str The {@link String} to be cleaned.
+     * @param len The maximum length of the returned {@link String}.
+     * @return A cleaned copy of {@code str}.
+     */
+    public static String cleanForClientDisplay(String str, int len) {
+        if (str == null || str.length() < 1) return " ";
+        if (str.length() > len) {
+            str = str.substring(0, len);
+        }
+        return str.replaceAll("[^\\t\\r\\n -~]+", " ");
     }
 }

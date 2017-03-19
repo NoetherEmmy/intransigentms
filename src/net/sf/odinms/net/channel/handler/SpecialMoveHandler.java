@@ -1,6 +1,7 @@
 package net.sf.odinms.net.channel.handler;
 
 import net.sf.odinms.client.ISkill;
+import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleCharacter.CancelCooldownAction;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.SkillFactory;
@@ -21,20 +22,21 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        final MapleCharacter p = c.getPlayer();
         slea.readShort();
         slea.readShort();
         int skillId = slea.readInt();
         Point pos = null;
         int __skillLevel = slea.readByte();
         ISkill skill = SkillFactory.getSkill(skillId);
-        int skillLevel = c.getPlayer().getSkillLevel(skill);
+        int skillLevel = p.getSkillLevel(skill);
         MapleStatEffect effect;
         try {
             effect = skill.getEffect(skillLevel);
         } catch (IndexOutOfBoundsException ioobe) {
             System.err.println(
                 "Player " +
-                    c.getPlayer().getName() +
+                    p.getName() +
                     " tried to use level " +
                     skillLevel +
                     " of skill " +
@@ -44,36 +46,62 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
             return;
         }
 
-        if (skill.isGMSkill() && !c.getPlayer().isGM()) {
+        if (p.getQuestEffectiveLevel() > 0 && p.getQuestEffectiveLevel() < p.getLevel()) {
+            if (skillId < 1000000) { // 0th job skill
+                if (skillId == 1005 && p.getQuestEffectiveLevel() < 200) { // Echo of Hero
+                    c.getSession().write(MaplePacketCreator.enableActions());
+                    return;
+                }
+            } else if (skillId / 10000 % 100 == 0) { // 1st job skill
+                if ((skillId / 1000000 != 2 && p.getQuestEffectiveLevel() < 10) || p.getQuestEffectiveLevel() < 8) {
+                    c.getSession().write(MaplePacketCreator.enableActions());
+                    return;
+                }
+            } else if (skillId / 10000 % 10 == 0) { // 2nd job skill
+                if (p.getQuestEffectiveLevel() < 30) {
+                    c.getSession().write(MaplePacketCreator.enableActions());
+                    return;
+                }
+            } else if (skillId / 10000 % 10 == 1) { // 3rd job skill
+                if (p.getQuestEffectiveLevel() < 70) {
+                    c.getSession().write(MaplePacketCreator.enableActions());
+                    return;
+                }
+            } else if (skillId / 10000 % 10 == 2) { // 4th job skill
+                if (p.getQuestEffectiveLevel() < 120) {
+                    c.getSession().write(MaplePacketCreator.enableActions());
+                    return;
+                }
+            }
+        }
+        if (skill.isGMSkill() && !p.isGM()) {
             c.disconnect();
             c.getSession().close();
             return;
         }
         if (effect.getCooldown() > 0) {
-            if (c.getPlayer().skillIsCooling(skillId)) {
+            if (p.skillIsCooling(skillId)) {
                 c.getSession().write(MaplePacketCreator.enableActions());
-                //c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
+                //p.getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                 return;
-            } else {
-                c.getSession().write(MaplePacketCreator.skillCooldown(skillId, effect.getCooldown()));
-                ScheduledFuture<?> timer =
-                    TimerManager
-                        .getInstance()
-                        .schedule(
-                            new CancelCooldownAction(
-                                c.getPlayer(),
-                                skillId
-                            ),
-                            effect.getCooldown() * 1000
-                        );
-                c.getPlayer()
-                 .addCooldown(
-                     skillId,
-                     System.currentTimeMillis(),
-                     effect.getCooldown() * 1000,
-                     timer
-                 );
             }
+            c.getSession().write(MaplePacketCreator.skillCooldown(skillId, effect.getCooldown()));
+            ScheduledFuture<?> timer =
+                TimerManager
+                    .getInstance()
+                    .schedule(
+                        new CancelCooldownAction(
+                            p,
+                            skillId
+                        ),
+                        effect.getCooldown() * 1000
+                    );
+            p.addCooldown(
+                 skillId,
+                 System.currentTimeMillis(),
+                 effect.getCooldown() * 1000,
+                 timer
+             );
         }
         // Monster Magnet
         try {
@@ -87,27 +115,24 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                     for (int i = 0; i < num; ++i) {
                         mobId = slea.readInt();
                         success = slea.readByte();
-                        c.getPlayer()
-                         .getMap()
+                        p.getMap()
                          .broadcastMessage(
-                             c.getPlayer(),
+                             p,
                              MaplePacketCreator.showMagnet(mobId, success),
                              false
                          );
-                        MapleMonster monster = c.getPlayer().getMap().getMonsterByOid(mobId);
-                        if (monster != null) {
-                            monster.switchController(c.getPlayer(), monster.isControllerHasAggro());
-                        }
+                        MapleMonster monster = p.getMap().getMonsterByOid(mobId);
+                        if (monster == null) continue;
+                        monster.switchController(p, monster.isControllerHasAggro());
                     }
                     byte direction = slea.readByte();
-                    c.getPlayer()
-                     .getMap()
+                    p.getMap()
                      .broadcastMessage(
-                         c.getPlayer(),
-                         MaplePacketCreator.showBuffeffect(c.getPlayer().getId(), skillId, 1, direction),
+                         p,
+                         MaplePacketCreator.showBuffeffect(p.getId(), skillId, 1, direction),
                          false
                      );
-                    for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
+                    for (FakeCharacter ch : p.getFakeChars()) {
                         ch.getFakeChar()
                           .getMap()
                           .broadcastMessage(
@@ -133,24 +158,22 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
         try {
             if (skillLevel == 0 || skillLevel != __skillLevel) {
                 log.warn(
-                    c.getPlayer().getName() +
+                    p.getName() +
                         " is using a move skill they don't have. ID: " +
                         skill.getId()
                 );
                 c.disconnect();
-            } else {
-                if (c.getPlayer().isAlive()) {
-                    if (skill.getId() != 2311002 || c.getPlayer().canDoor()) {
-                        skill.getEffect(skillLevel).applyTo(c.getPlayer(), pos);
-                    } else {
-                        new ServernoticeMapleClientMessageCallback(5, c).dropMessage(
-                            "Please wait 5 seconds before casting Mystic Door again."
-                        );
-                        c.getSession().write(MaplePacketCreator.enableActions());
-                    }
+            } else if (p.isAlive()) {
+                if (skill.getId() != 2311002 || p.canDoor()) {
+                    skill.getEffect(skillLevel).applyTo(p, pos);
                 } else {
+                    new ServernoticeMapleClientMessageCallback(5, c).dropMessage(
+                        "Please wait 5 seconds before casting Mystic Door again."
+                    );
                     c.getSession().write(MaplePacketCreator.enableActions());
                 }
+            } else {
+                c.getSession().write(MaplePacketCreator.enableActions());
             }
         } catch (Exception e) {
             e.printStackTrace();

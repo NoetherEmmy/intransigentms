@@ -1813,7 +1813,6 @@ public class GM implements Command {
                     } else {
                         mc.dropMessage("Error while banning.");
                     }
-
                 }
                 break;
             }
@@ -1856,13 +1855,11 @@ public class GM implements Command {
                 }
                 break;
             case "!addclones":
-                if (splitted.length < 2) {
-                    return;
-                }
+                if (splitted.length < 2) return;
                 int clones;
                 try {
                     clones = getOptionalIntArg(splitted, 1, 1);
-                } catch (NumberFormatException asdasd) {
+                } catch (NumberFormatException nfe) {
                     return;
                 }
                 if (player.getFakeChars().size() >= 5) {
@@ -2235,7 +2232,7 @@ public class GM implements Command {
                 );
                 break;
             case "!registerevent":
-                String syntax = "Syntax: !registerevent <mapId> or !registerevent <eventName>";
+                String syntax = "Syntax: !registerevent <map_id> | !registerevent <event_name>";
                 if (splitted.length == 2) {
                     try {
                         int mapId = Integer.parseInt(splitted[1]);
@@ -2318,7 +2315,7 @@ public class GM implements Command {
             case "!givedeathitems": {
                 if (splitted.length < 3) {
                     mc.dropMessage(
-                        "Syntax: !givedeathitems <deceasedPlayer> <playerToGiveTo> [offset=0] [useCache=false]"
+                        "Syntax: !givedeathitems <deceased_player> <player_to_give_to> [offset=0] [useCache=false]"
                     );
                     return;
                 }
@@ -2451,7 +2448,7 @@ public class GM implements Command {
                     if (quantity == 1) {
                         player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, true);
                     } else {
-                        final Point pos = player.getPosition();
+                        final Point pos = new Point(player.getPosition());
                         for (short i = 0; i < quantity; ++i) {
                             final int _i = i;
                             TimerManager
@@ -2969,7 +2966,7 @@ public class GM implements Command {
                         final String foreignAcctName = rs.getString("name");
                         float nameDist = distance(acctName, foreignAcctName);
                         nameDist /= Math.sqrt(floatMin((float) acctName.length(), (float) foreignAcctName.length()));
-                        if (nameDist < 1.5f) {
+                        if (nameDist < 1.375f) {
                             accounts.add(rs.getInt("id"));
                             mc.dropMessage("    " + MapleCharacterUtil.makeMapleReadable(foreignAcctName));
                         }
@@ -3032,6 +3029,20 @@ public class GM implements Command {
                 }
                 break;
             }
+            case "!clearquestcache":
+                MapleCQuests.clearCache();
+                mc.dropMessage("Quest cache cleared successfully.");
+                break;
+            case "!reloadallquests":
+                MapleCQuests.clearCache();
+                ChannelServer
+                    .getAllInstances()
+                    .forEach(cs ->
+                        cs.getPlayerStorage()
+                          .getAllCharacters()
+                          .forEach(MapleCharacter::reloadCQuests)
+                    );
+                break;
         }
     }
 
@@ -3201,7 +3212,9 @@ public class GM implements Command {
             new CommandDefinition("forcenpc", 3),
             new CommandDefinition("reverselookup", 3),
             new CommandDefinition("warpmy", 3),
-            new CommandDefinition("hackcheck", 3)
+            new CommandDefinition("hackcheck", 3),
+            new CommandDefinition("clearquestcache", 3),
+            new CommandDefinition("reloadallquests", 3)
         };
     }
 
@@ -3209,7 +3222,11 @@ public class GM implements Command {
         if (item.getQuantity() >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             MapleInventoryType type = ii.getInventoryType(item.getItemId());
-            if (type.equals(MapleInventoryType.EQUIP) && !ii.isThrowingStar(item.getItemId()) && !ii.isBullet(item.getItemId())) {
+            if (
+                type.equals(MapleInventoryType.EQUIP) &&
+                !ii.isThrowingStar(item.getItemId()) &&
+                !ii.isBullet(item.getItemId())
+            ) {
                 if (!c.getPlayer().getInventory(type).isFull()) {
                     MapleInventoryManipulator.addFromDrop(c, item, false);
                 } else {
@@ -3253,6 +3270,7 @@ public class GM implements Command {
         return true;
     }
 
+    /** Pure */
     public static float distance(final String s, final String t) {
         if (s.isEmpty()) return t.length();
         if (t.isEmpty()) return s.length();
@@ -3298,6 +3316,7 @@ public class GM implements Command {
         return v0[tLength];
     }
 
+    /** Pure */
     private static float floatMin(float... floats) {
         float min = floats[0];
         for (int i = 1; i < floats.length; ++i) {

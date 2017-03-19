@@ -26,7 +26,7 @@ public class MapleLifeFactory {
         );
     private static final MapleData mobStringData = stringDataWZ.getData("Mob.img");
     private static final MapleData npcStringData = stringDataWZ.getData("Npc.img");
-    private static final Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
+    private static final Map<Integer, MapleMonsterStats> monsterStats = new LinkedHashMap<>();
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {

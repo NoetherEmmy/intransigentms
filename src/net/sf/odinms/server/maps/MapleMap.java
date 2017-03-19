@@ -375,7 +375,7 @@ public class MapleMap {
         } else {
             maxDrops = 4 * cserv.getDropRate();
         }
-        List<Integer> toDrop = new ArrayList<>();
+        List<Integer> toDrop = new ArrayList<>(maxDrops + 1);
         for (int i = 0; i < maxDrops; ++i) {
             toDrop.add(monster.getDrop(dropOwner));
         }
@@ -419,6 +419,8 @@ public class MapleMap {
                 } else {
                     toDrop.add(4031508);
                 }
+            } else if (monster.getId() == 2220000 && dropOwner.getMapId() == 102) { // Mano quest
+                toDrop.add(4032101);
             }
             if (dropOwner.getMapId() >= 1000 && dropOwner.getMapId() <= 1006 && monster.isBoss()) {
                 int timelessItems[] =
@@ -672,7 +674,6 @@ public class MapleMap {
 
     public void startPeriodicMonsterDrop(MapleCharacter chr, MapleMonster monster, long period, long duration) {
         TimerManager timerManager = TimerManager.getInstance();
-
         final PeriodicMonsterDrop pmd = new PeriodicMonsterDrop(chr, monster);
         final ScheduledFuture<?> dropTask = timerManager.register(pmd, period, period);
         pmd.setTask(dropTask);
@@ -922,7 +923,7 @@ public class MapleMap {
         }
         List<MapleMapObject> monsters =
             getMapObjectsInRange(
-                new Point(0, 0),
+                new Point(),
                 Double.POSITIVE_INFINITY,
                 MapleMapObjectType.MONSTER
             );

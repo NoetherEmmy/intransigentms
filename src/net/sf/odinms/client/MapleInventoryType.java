@@ -24,25 +24,18 @@ public enum MapleInventoryType {
 
     public static MapleInventoryType getByType(byte type) {
         for (MapleInventoryType l : MapleInventoryType.values()) {
-            if (l.getType() == type) {
-                return l;
-            }
+            if (l.getType() == type) return l;
         }
         return null;
     }
 
     public static MapleInventoryType getByWZName(String name) {
         switch (name) {
-            case "Install":
-                return SETUP;
-            case "Consume":
-                return USE;
-            case "Etc":
-                return ETC;
-            case "Cash":
-                return CASH;
-            case "Pet":
-                return CASH;
+            case "Install": return SETUP;
+            case "Consume": return USE;
+            case "Etc":     return ETC;
+            case "Cash":    return CASH;
+            case "Pet":     return CASH;
         }
         return UNDEFINED;
     }

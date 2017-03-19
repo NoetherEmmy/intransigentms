@@ -3,6 +3,7 @@ package net.sf.odinms.client;
 import net.sf.odinms.scripting.AbstractPlayerInteraction;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.MaplePacketCreator;
+import net.sf.odinms.tools.StringUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,18 +28,24 @@ import java.util.Map;
  * </p>
  */
 public class CQuest {
-    private final MapleCQuests quest = new MapleCQuests();
+    private MapleCQuests quest;
     private final MapleCharacter player;
     private final Map<Integer, Integer> questKills = new LinkedHashMap<>(4, 0.8f);
     private final Map<String, Integer> otherObjectiveProgress = new LinkedHashMap<>(4, 0.8f);
+    private int effectivePlayerLevel;
 
     public CQuest(MapleCharacter player) {
         this.player = player;
     }
 
     public void loadQuest(int questId) {
-        quest.loadQuest(questId);
+        loadQuest(questId, 0);
+    }
+
+    public void loadQuest(int questId, int effectivePlayerLevel) {
+        quest = MapleCQuests.loadQuest(questId);
         resetProgress();
+        this.effectivePlayerLevel = effectivePlayerLevel;
         for (Integer mobId : quest.readMonsterTargets().keySet()) {
             questKills.put(mobId, 0);
         }
@@ -46,6 +53,10 @@ public class CQuest {
             otherObjectiveProgress.put(objective, 0);
         }
         if (questId != 0) player.sendHint("#eQuest start: " + quest.getTitle());
+    }
+
+    public void closeQuest() {
+        loadQuest(0);
     }
 
     public MapleCQuests getQuest() {
@@ -160,32 +171,21 @@ public class CQuest {
         return ret;
     }
 
+    public MapleCharacter getPlayer() {
+        return player;
+    }
+
     public void resetProgress() {
         questKills.clear();
         otherObjectiveProgress.clear();
     }
 
     public boolean canComplete() {
-        return
-            quest
-                .readMonsterTargets()
-                .entrySet()
-                .stream()
-                .allMatch(e -> getQuestKills(e.getKey()) >= e.getValue().getLeft()) &&
-            quest
-                .readItemsToCollect()
-                .entrySet()
-                .stream()
-                .allMatch(e -> player.getQuestCollected(e.getKey()) >= e.getValue().getLeft()) &&
-            quest
-                .readOtherObjectives()
-                .entrySet()
-                .stream()
-                .allMatch(e -> getObjectiveProgress(e.getKey()) >= e.getValue());
+        return quest.canComplete(this);
     }
 
     public void complete() {
-        MapleClient c = player.getClient();
+        final MapleClient c = player.getClient();
         final AbstractPlayerInteraction api = new AbstractPlayerInteraction(c);
         double expMulti = (double) player.getExpEffectiveLevel() / 10.0d;
         player.gainExp((int) (quest.getExpReward() * expMulti), true, true);
@@ -195,9 +195,85 @@ public class CQuest {
         );
         quest.readItemsToCollect()
              .entrySet()
-             .forEach(collected -> api.gainItem(collected.getKey(), (short) -collected.getValue().getLeft()));
+             .forEach(
+                 collected ->
+                     api.gainItem(
+                         collected.getKey(),
+                         (short) -collected.getValue().getLeft()
+                     )
+             );
+        CQuestStatus completionLevel =
+            quest.getCompletionLevel(
+                effectivePlayerLevel > 0 ?
+                    effectivePlayerLevel :
+                    player.getLevel()
+            );
+        player.setCQuestCompleted(quest.getId(), completionLevel);
         c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
         c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
-        loadQuest(0);
+        String completionColor;
+        switch (completionLevel) {
+            case FEARLESS:
+                completionColor = "#d";
+                break;
+            case VALIANT:
+                completionColor = "#b";
+                break;
+            case ADVENTURESOME:
+                completionColor = "#r";
+                break;
+            default:
+                completionColor = "";
+        }
+        player.sendHint(
+            "Quest complete: #e" +
+                quest.getTitle() +
+                "#n\r\n\r\nCompletion level: #e" +
+                completionColor +
+                StringUtil.makeEnumHumanReadable(completionLevel.name())
+        );
+        closeQuest();
+    }
+
+    public boolean hasCompletedGoal(int mobId, int itemId, String objective) {
+        if (mobId > 0) {
+            Integer req = quest.getNumberToKill(mobId);
+            return req != null && getQuestKills(mobId) >= req;
+        }
+        if (itemId > 0) {
+            Integer req = quest.getNumberToCollect(itemId);
+            return req != null && player.getQuestCollected(itemId) >= req;
+        }
+        if (objective != null && !objective.equals("")) {
+            Integer req = quest.getNumberOfOtherObjective(objective);
+            return req != null && getObjectiveProgress(objective) >= req;
+        }
+        return false;
+    }
+
+    public void reload() {
+        int id = quest.getId();
+        loadQuest(id, effectivePlayerLevel);
+    }
+
+    public void setEffectivePlayerLevel(int level) {
+        int id = quest.getId();
+        loadQuest(id, level);
+    }
+
+    public void resetEffectivePlayerLevel() {
+        setEffectivePlayerLevel(0);
+    }
+
+    public int getEffectivePlayerLevel() {
+        return effectivePlayerLevel;
+    }
+
+    public boolean canAdvance() {
+        if (effectivePlayerLevel < 1) return true;
+        if (player.getQuestEffectiveLevel() > 0) {
+            return player.getQuestEffectiveLevel() <= effectivePlayerLevel;
+        }
+        return player.getLevel() <= effectivePlayerLevel;
     }
 }

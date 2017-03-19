@@ -33,14 +33,13 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 if (dmg != null) {
                     monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 }
-                if (monster != null) {
-                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                    for (Integer dmgNumber : dmg.getRight()) {
-                        additionalDmg.add(-dmgNumber);
-                    }
-                    for (Integer additionald : additionalDmg) {
-                        c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
-                    }
+                if (monster == null) continue;
+                List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                for (Integer dmgNumber : dmg.getRight()) {
+                    additionalDmg.add(-dmgNumber);
+                }
+                for (Integer additionald : additionalDmg) {
+                    c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                 }
             }
             return;
@@ -76,24 +75,25 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
 
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                if (dmg != null && dmg.getLeft() != null && dmg.getRight() != null) {
-                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                    List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
-                    for (Integer dmgNumber : dmg.getRight()) {
-                        if (dmgNumber == null) continue;
-                        double dmgPercentile = (double) (dmgNumber - baseMin) / baseRange;
-                        int newDmgNumber = min + (int) (range * dmgPercentile);
-                        additionalDmg.add(newDmgNumber - dmgNumber);
-                        newDmg.add(newDmgNumber);
-                    }
-                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
-                    for (Integer additionald : additionalDmg) {
-                        player.getMap().broadcastMessage(
-                            player,
-                            MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
-                            true
-                        );
-                    }
+                if (dmg == null || dmg.getLeft() == null || dmg.getRight() == null) {
+                    continue;
+                }
+                List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
+                for (Integer dmgNumber : dmg.getRight()) {
+                    if (dmgNumber == null) continue;
+                    double dmgPercentile = (double) (dmgNumber - baseMin) / baseRange;
+                    int newDmgNumber = min + (int) (range * dmgPercentile);
+                    additionalDmg.add(newDmgNumber - dmgNumber);
+                    newDmg.add(newDmgNumber);
+                }
+                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
+                for (Integer additionald : additionalDmg) {
+                    player.getMap().broadcastMessage(
+                        player,
+                        MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
+                        true
+                    );
                 }
             }
         }
@@ -104,81 +104,88 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             if (dmg != null) {
                 monster = player.getMap().getMonsterByOid(dmg.getLeft());
             }
-            if (monster != null) {
-                ElementalEffectiveness ee = null;
-                if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
-                    ee = monster.getAddedEffectiveness(skillUsed.getElement());
-                    if (
-                        (ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
-                        monster.getEffectiveness(skillUsed.getElement()) == ElementalEffectiveness.WEAK
-                    ) {
-                        ee = null;
-                    }
+            if (monster == null) continue;
+            ElementalEffectiveness ee = null;
+            if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
+                ee = monster.getAddedEffectiveness(skillUsed.getElement());
+                if (
+                    (ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
+                    monster.getEffectiveness(skillUsed.getElement()) == ElementalEffectiveness.WEAK
+                ) {
+                    ee = null;
                 }
-                double multiplier = monster.getVulnerability();
-                List<Integer> additionalDmg = new ArrayList<>(6);
-                List<Integer> newDmg = new ArrayList<>(6);
-                if (ee != null) {
-                    switch (ee) {
-                        case WEAK:
-                            multiplier *= 1.5d;
-                            break;
-                        case STRONG:
-                            multiplier *= 0.5d;
-                            break;
-                        case IMMUNE:
-                            multiplier = 0.0d;
-                            break;
-                    }
+            }
+            double multiplier = monster.getVulnerability();
+            List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+            List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
+            if (ee != null) {
+                switch (ee) {
+                    case WEAK:
+                        multiplier *= 1.5d;
+                        break;
+                    case STRONG:
+                        multiplier *= 0.5d;
+                        break;
+                    case IMMUNE:
+                        multiplier = 0.0d;
+                        break;
                 }
-                if (multiplier != 1.0d) {
-                    for (Integer dmgNumber : dmg.getRight()) {
-                        additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
-                        newDmg.add((int) (dmgNumber * multiplier));
-                    }
-                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
-                    for (Integer additionald : additionalDmg) {
-                        player
-                            .getMap()
-                            .broadcastMessage(
-                                player,
-                                MaplePacketCreator.damageMonster(
-                                    dmg.getLeft(),
-                                    additionald
-                                ),
-                                true
-                            );
-                    }
-                }
+            }
+            if (multiplier == 1.0d) continue;
+            for (Integer dmgNumber : dmg.getRight()) {
+                additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
+                newDmg.add((int) (dmgNumber * multiplier));
+            }
+            attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
+            for (Integer additionald : additionalDmg) {
+                player
+                    .getMap()
+                    .broadcastMessage(
+                        player,
+                        MaplePacketCreator.damageMonster(
+                            dmg.getLeft(),
+                            additionald
+                        ),
+                        true
+                    );
             }
         }
 
-        if (player.getDeathPenalty() > 0 && attack.allDamage != null) {
-            double dpmultiplier = Math.max(1.0d - (double) player.getDeathPenalty() * 0.03d, 0.0d);
+        if ((player.getDeathPenalty() > 0 || player.getQuestEffectiveLevel() > 0) && attack.allDamage != null) {
+            double dpMultiplier = 1.0d;
+            double qeMultiplier = player.getQuestEffectiveLevelDmgMulti();
+            if (player.getDeathPenalty() > 0) {
+                dpMultiplier = Math.max(
+                    1.0d - (double) player.getDeathPenalty() * 0.03d,
+                    0.0d
+                );
+            }
+            double totalMultiplier = dpMultiplier * qeMultiplier;
+
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                if (dmg != null && dmg.getLeft() != null && dmg.getRight() != null) {
-                    List<Integer> additionaldmg = new ArrayList<>();
-                    List<Integer> newdmg = new ArrayList<>();
-                    for (Integer dmgnumber : dmg.getRight()) {
-                        if (dmgnumber != null) {
-                            additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0d)));
-                            newdmg.add((int) (dmgnumber * dpmultiplier));
-                        }
-                    }
-                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                    for (Integer additionald : additionaldmg) {
-                        player
-                            .getMap()
-                            .broadcastMessage(
-                                player,
-                                MaplePacketCreator.damageMonster(
-                                    dmg.getLeft(),
-                                    additionald
-                                ),
-                                true
-                            );
-                    }
+                if (dmg == null || dmg.getLeft() == null || dmg.getRight() == null) {
+                    continue;
+                }
+                List<Integer> additionaldmg = new ArrayList<>(dmg.getRight().size());
+                List<Integer> newdmg = new ArrayList<>(dmg.getRight().size());
+                for (Integer dmgnumber : dmg.getRight()) {
+                    if (dmgnumber == null) continue;
+                    additionaldmg.add((int) (dmgnumber * (totalMultiplier - 1.0d)));
+                    newdmg.add((int) (dmgnumber * totalMultiplier));
+                }
+                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
+                for (Integer additionald : additionaldmg) {
+                    player
+                        .getMap()
+                        .broadcastMessage(
+                            player,
+                            MaplePacketCreator.damageMonster(
+                                dmg.getLeft(),
+                                additionald
+                            ),
+                            true
+                        );
                 }
             }
         }
@@ -222,23 +229,22 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             if (player.skillIsCooling(attack.skill)) {
                 //player.getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                 return;
-            } else {
-                c.getSession().write(MaplePacketCreator.skillCooldown(attack.skill, effect_.getCooldown()));
-                ScheduledFuture<?> timer =
-                    TimerManager.getInstance().schedule(
-                        new CancelCooldownAction(
-                            c.getPlayer(),
-                            attack.skill
-                        ),
-                        effect_.getCooldown() * 1000L
-                    );
-                player.addCooldown(
-                    attack.skill,
-                    System.currentTimeMillis(),
-                    effect_.getCooldown() * 1000L,
-                    timer
-                );
             }
+            c.getSession().write(MaplePacketCreator.skillCooldown(attack.skill, effect_.getCooldown()));
+            ScheduledFuture<?> timer =
+                TimerManager.getInstance().schedule(
+                    new CancelCooldownAction(
+                        c.getPlayer(),
+                        attack.skill
+                    ),
+                    effect_.getCooldown() * 1000L
+                );
+            player.addCooldown(
+                attack.skill,
+                System.currentTimeMillis(),
+                effect_.getCooldown() * 1000L,
+                timer
+            );
         }
         applyAttack(attack, player, effect.getAttackCount());
         // MP Eater
@@ -250,18 +256,19 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             }
             if (eaterLevel > 0 && attack.allDamage != null) {
                 for (Pair<Integer, List<Integer>> singleDamage : attack.allDamage) {
-                    if (singleDamage != null && singleDamage.getLeft() != null) {
-                        eaterSkill
-                            .getEffect(eaterLevel)
-                            .applyPassive(
-                                player,
-                                player
-                                    .getMap()
-                                    .getMapObject(
-                                        singleDamage.getLeft()
-                                    )
-                            );
+                    if (singleDamage == null || singleDamage.getLeft() == null) {
+                        continue;
                     }
+                    eaterSkill
+                        .getEffect(eaterLevel)
+                        .applyPassive(
+                            player,
+                            player
+                                .getMap()
+                                .getMapObject(
+                                    singleDamage.getLeft()
+                                )
+                        );
                 }
                 break;
             }

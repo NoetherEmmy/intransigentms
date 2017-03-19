@@ -176,7 +176,15 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
         for (int i = 0; i < capacity; ++i) {
             if (visitors[i] != null) {
                 if (type != -1) {
-                    visitors[i].getClient().getSession().write(MaplePacketCreator.shopErrorMessage(error, type));
+                    visitors[i]
+                        .getClient()
+                        .getSession()
+                        .write(
+                            MaplePacketCreator.shopErrorMessage(
+                                error,
+                                type
+                            )
+                        );
                 }
                 visitors[i].setInteraction(null);
                 visitors[i] = null;

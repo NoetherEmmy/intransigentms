@@ -45,10 +45,10 @@ public class QuestActionManager extends NPCConversationManager {
     }
 
     public void forceCompleteQuest() {
-            forceCompleteQuest(quest);
+        forceCompleteQuest(quest);
     }
 
     public void forceCompleteQuest(int id) {
-            MapleQuest.getInstance(id).forceComplete(getPlayer(), getNpc());
+        MapleQuest.getInstance(id).forceComplete(getPlayer(), getNpc());
     }
 }

@@ -650,7 +650,9 @@ public class MapleStatEffect implements Serializable {
                        .map(mmo -> (MapleMonster) mmo)
                        .forEach(mob -> {
                            int localMin = (int) (min * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.6d);
+                           localMin = Math.max(1, localMin);
                            int localMax = (int) (max * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.5d);
+                           localMin = Math.max(1, localMin);
                            double chanceToHit =
                                attacker.getAccuracy() / ((1.84d + 0.07d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) * (double) mob.getAvoid()) - 1.0d;
                            if (Math.random() < chanceToHit) {

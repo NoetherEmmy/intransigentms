@@ -54,9 +54,7 @@ public class MapleMapFactory {
             synchronized (this) {
                 // Check if someone else who was also synchronized has loaded the map already:
                 map = maps.get(omapid);
-                if (map != null) {
-                    return map;
-                }
+                if (map != null) return map;
 
                 String mapName = getMapName(mapid);
 
@@ -72,9 +70,7 @@ public class MapleMapFactory {
                 float monsterRate = 0.0f;
                 if (respawns) {
                     MapleData mobRate = mapData.getChildByPath("info/mobRate");
-                    if (mobRate != null) {
-                        monsterRate = ((Float) mobRate.getData());
-                    }
+                    if (mobRate != null) monsterRate = ((Float) mobRate.getData());
                 }
                 map = new MapleMap(mapid, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
                 PortalFactory portalFactory = new PortalFactory();
@@ -102,18 +98,10 @@ public class MapleMapFactory {
                             fh.setPrev(MapleDataTool.getInt(footHold.getChildByPath("prev")));
                             fh.setNext(MapleDataTool.getInt(footHold.getChildByPath("next")));
 
-                            if (fh.getX1() < lBound.x) {
-                                lBound.x = fh.getX1();
-                            }
-                            if (fh.getX2() > uBound.x) {
-                                uBound.x = fh.getX2();
-                            }
-                            if (fh.getY1() < lBound.y) {
-                                lBound.y = fh.getY1();
-                            }
-                            if (fh.getY2() > uBound.y) {
-                                uBound.y = fh.getY2();
-                            }
+                            if (fh.getX1() < lBound.x) lBound.x = fh.getX1();
+                            if (fh.getX2() > uBound.x) uBound.x = fh.getX2();
+                            if (fh.getY1() < lBound.y) lBound.y = fh.getY1();
+                            if (fh.getY2() > uBound.y) uBound.y = fh.getY2();
                             allFootholds.add(fh);
                         }
                     }
@@ -270,7 +258,7 @@ public class MapleMapFactory {
                     try {
                         MapleCharacter faekchar = MapleCharacter.loadCharFromDB(30000, faek, true);
                         faek.setPlayer(faekchar);
-                        faekchar.setPosition(new Point(0, 0));
+                        faekchar.setPosition(new Point());
                         faekchar.setMap(map);
                         map.addPlayer(faekchar);
                     } catch (SQLException e) {

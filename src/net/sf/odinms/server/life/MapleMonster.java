@@ -1253,9 +1253,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             int damage;
             if (minPoisonDamage == maxPoisonDamage) {
                 damage = (int) (minPoisonDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                damage = Math.max(1, damage);
             } else {
                 int localMinDmg = (int) (minPoisonDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                localMinDmg = Math.max(1, localMinDmg);
                 int localMaxDmg = (int) (maxPoisonDamage - MapleMonster.this.getMdef() * 0.5d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                localMaxDmg = Math.max(1, localMaxDmg);
                 damage = (int) (localMinDmg + Math.random() * (localMaxDmg - localMinDmg + 1.0d));
             }
             if (damage >= hp) {
@@ -1302,9 +1305,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             boolean docancel = false;
             if (minFlameDamage == maxFlameDamage) {
                 damage = (int) (minFlameDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                damage = Math.max(1, damage);
             } else {
                 int localMinDmg = (int) (minFlameDamage - MapleMonster.this.getMdef() * 0.6d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                localMinDmg = Math.max(1, localMinDmg);
                 int localMaxDmg = (int) (maxFlameDamage - MapleMonster.this.getMdef() * 0.5d * (1.0d + 0.01d * Math.max(MapleMonster.this.getLevel() - chr.getLevel(), 0.0d)));
+                localMaxDmg = Math.max(1, localMaxDmg);
                 damage = (int) (localMinDmg + Math.random() * (localMaxDmg - localMinDmg + 1));
             }
             if (damage >= hp) {

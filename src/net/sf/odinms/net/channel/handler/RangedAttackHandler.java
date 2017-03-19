@@ -61,14 +61,13 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 if (dmg != null) {
                     monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 }
-                if (monster != null) {
-                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                    for (Integer dmgNumber : dmg.getRight()) {
-                        additionalDmg.add(-dmgNumber);
-                    }
-                    for (Integer additionald : additionalDmg) {
-                        c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
-                    }
+                if (monster == null) continue;
+                List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                for (Integer dmgNumber : dmg.getRight()) {
+                    additionalDmg.add(-dmgNumber);
+                }
+                for (Integer additionald : additionalDmg) {
+                    c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                 }
             }
             return;
@@ -81,52 +80,51 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             if (dmg != null) {
                 monster = player.getMap().getMonsterByOid(dmg.getLeft());
             }
-            if (monster != null) {
-                ElementalEffectiveness ee = null;
-                if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
-                    ee = monster.getAddedEffectiveness(skillUsed.getElement());
-                    if (
-                        (ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
-                        monster.getEffectiveness(skillUsed.getElement()) == ElementalEffectiveness.WEAK
-                    ) {
-                        ee = null;
-                    }
+            if (monster == null) continue;
+            ElementalEffectiveness ee = null;
+            if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
+                ee = monster.getAddedEffectiveness(skillUsed.getElement());
+                if (
+                    (ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
+                    monster.getEffectiveness(skillUsed.getElement()) == ElementalEffectiveness.WEAK
+                ) {
+                    ee = null;
                 }
+            }
 
-                double multiplier = monster.getVulnerability();
-                List<Integer> additionalDmg = new ArrayList<>();
-                List<Integer> newDmg = new ArrayList<>();
-                if (ee != null) {
-                    switch (ee) {
-                        case WEAK:
-                            multiplier *= 1.5d;
-                            break;
-                        case STRONG:
-                            multiplier *= 0.5d;
-                            break;
-                        case IMMUNE:
-                            multiplier *= 0.0d;
-                            break;
-                    }
+            double multiplier = monster.getVulnerability();
+            List<Integer> additionalDmg = new ArrayList<>();
+            List<Integer> newDmg = new ArrayList<>();
+            if (ee != null) {
+                switch (ee) {
+                    case WEAK:
+                        multiplier *= 1.5d;
+                        break;
+                    case STRONG:
+                        multiplier *= 0.5d;
+                        break;
+                    case IMMUNE:
+                        multiplier *= 0.0d;
+                        break;
                 }
+            }
 
-                if (multiplier != 1.0d) {
-                    for (Integer dmgNumber : dmg.getRight()) {
-                        additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
-                        newDmg.add((int) (dmgNumber * multiplier));
-                    }
-                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
-                    for (Integer additionald : additionalDmg) {
-                        player.getMap()
-                              .broadcastMessage(
-                                  player,
-                                  MaplePacketCreator.damageMonster(
-                                      dmg.getLeft(),
-                                      additionald
-                                  ),
-                                  true
-                              );
-                    }
+            if (multiplier != 1.0d) {
+                for (Integer dmgNumber : dmg.getRight()) {
+                    additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
+                    newDmg.add((int) (dmgNumber * multiplier));
+                }
+                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
+                for (Integer additionald : additionalDmg) {
+                    player.getMap()
+                          .broadcastMessage(
+                              player,
+                              MaplePacketCreator.damageMonster(
+                                  dmg.getLeft(),
+                                  additionald
+                              ),
+                              true
+                          );
                 }
             }
         }
@@ -137,17 +135,20 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             double capsulemultiplier = (skillUsed.getEffect(player.getSkillLevel(skillUsed)).getDamage() + 40.0d) / (double) skillUsed.getEffect(player.getSkillLevel(skillUsed)).getDamage();
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                if (dmg != null) {
-                    List<Integer> additionaldmg = new ArrayList<>();
-                    List<Integer> newdmg = new ArrayList<>();
-                    for (Integer dmgnumber : dmg.getRight()) {
-                        additionaldmg.add((int) (dmgnumber * (capsulemultiplier - 1.0d)));
-                        newdmg.add((int) (dmgnumber * capsulemultiplier));
-                    }
-                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                    for (Integer additionald : additionaldmg) {
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                    }
+                if (dmg == null) continue;
+                List<Integer> additionaldmg = new ArrayList<>(dmg.getRight().size());
+                List<Integer> newdmg = new ArrayList<>(dmg.getRight().size());
+                for (Integer dmgnumber : dmg.getRight()) {
+                    additionaldmg.add((int) (dmgnumber * (capsulemultiplier - 1.0d)));
+                    newdmg.add((int) (dmgnumber * capsulemultiplier));
+                }
+                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
+                for (Integer additionald : additionaldmg) {
+                    player.getMap().broadcastMessage(
+                        player,
+                        MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
+                        true
+                    );
                 }
             }
         }
@@ -157,28 +158,52 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             attack.charge = 1;
         }
 
-        if (player.getDeathPenalty() > 0) {
-            double dpmultiplier = Math.max(1.0d - (double) player.getDeathPenalty() * 0.03d, 0.0d);
+        if (player.getDeathPenalty() > 0 || player.getQuestEffectiveLevel() > 0) {
+            double dpMultiplier = 1.0d;
+            double qeMultiplier = player.getQuestEffectiveLevelDmgMulti();
+            if (player.getDeathPenalty() > 0) {
+                dpMultiplier = Math.max(
+                    1.0d - (double) player.getDeathPenalty() * 0.03d,
+                    0.0d
+                );
+            }
+            double totalMultiplier = dpMultiplier * qeMultiplier;
+
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                if (dmg != null) {
-                    List<Integer> additionaldmg = new ArrayList<>();
-                    List<Integer> newdmg = new ArrayList<>();
-                    for (Integer dmgnumber : dmg.getRight()) {
-                        additionaldmg.add((int) (dmgnumber * (dpmultiplier - 1.0d)));
-                        newdmg.add((int) (dmgnumber * dpmultiplier));
-                    }
-                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
-                    for (Integer additionald : additionaldmg) {
-                        //c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
-                        player.getMap().broadcastMessage(player, MaplePacketCreator.damageMonster(dmg.getLeft(), additionald), true);
-                    }
+                if (dmg == null) continue;
+                List<Integer> additionaldmg = new ArrayList<>(dmg.getRight().size());
+                List<Integer> newdmg = new ArrayList<>(dmg.getRight().size());
+                for (Integer dmgnumber : dmg.getRight()) {
+                    additionaldmg.add((int) (dmgnumber * (totalMultiplier - 1.0d)));
+                    newdmg.add((int) (dmgnumber * totalMultiplier));
+                }
+                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newdmg));
+                for (Integer additionald : additionaldmg) {
+                    //c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
+                    player.getMap().broadcastMessage(
+                        player,
+                        MaplePacketCreator.damageMonster(dmg.getLeft(), additionald),
+                        true
+                    );
                 }
             }
         }
 
         if (attack.skill == 5121002) {
-            player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player.getId(), attack.skill, attack.stance, attack.numAttackedAndDamage, 0, attack.allDamage, attack.speed), false);
+            player.getMap().broadcastMessage(
+                player,
+                MaplePacketCreator.rangedAttack(
+                    player.getId(),
+                    attack.skill,
+                    attack.stance,
+                    attack.numAttackedAndDamage,
+                    0,
+                    attack.allDamage,
+                    attack.speed
+                ),
+                false
+            );
             applyAttack(attack, player, 1);
         } else {
             MapleInventory equip = player.getInventory(MapleInventoryType.EQUIPPED);
@@ -208,22 +233,19 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
 
             boolean hasShadowPartner = player.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null;
             int damageBulletCount = bulletCount;
-            if (hasShadowPartner && attack.skill != 4121003) {
-                bulletCount *= 2;
-            }
+            if (hasShadowPartner && attack.skill != 4121003) bulletCount *= 2;
 
             for (int i = 0; i < 255; ++i) {
                 IItem item = use.getItem((byte) i);
-                if (item != null) {
-                    boolean clawCondition = type == MapleWeaponType.CLAW && mii.isThrowingStar(item.getItemId()) && weapon.getItemId() != 1472063;
-                    boolean bowCondition = type == MapleWeaponType.BOW && mii.isArrowForBow(item.getItemId());
-                    boolean crossbowCondition = type == MapleWeaponType.CROSSBOW && mii.isArrowForCrossBow(item.getItemId());
-                    boolean gunCondition = type == MapleWeaponType.GUN && mii.isBullet(item.getItemId());
-                    boolean mittenCondition = weapon.getItemId() == 1472063 && (mii.isArrowForBow(item.getItemId()) || mii.isArrowForCrossBow(item.getItemId()));
-                    if ((clawCondition || bowCondition || crossbowCondition || mittenCondition || gunCondition) && item.getQuantity() >= bulletCount) {
-                        projectile = item.getItemId();
-                        break;
-                    }
+                if (item == null) continue;
+                boolean clawCondition = type == MapleWeaponType.CLAW && mii.isThrowingStar(item.getItemId()) && weapon.getItemId() != 1472063;
+                boolean bowCondition = type == MapleWeaponType.BOW && mii.isArrowForBow(item.getItemId());
+                boolean crossbowCondition = type == MapleWeaponType.CROSSBOW && mii.isArrowForCrossBow(item.getItemId());
+                boolean gunCondition = type == MapleWeaponType.GUN && mii.isBullet(item.getItemId());
+                boolean mittenCondition = weapon.getItemId() == 1472063 && (mii.isArrowForBow(item.getItemId()) || mii.isArrowForCrossBow(item.getItemId()));
+                if ((clawCondition || bowCondition || crossbowCondition || mittenCondition || gunCondition) && item.getQuantity() >= bulletCount) {
+                    projectile = item.getItemId();
+                    break;
                 }
             }
 
@@ -376,31 +398,30 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                         if (player.skillIsCooling(attack.skill)) {
                             //player.getCheatTracker().registerOffense(CheatingOffense.COOLDOWN_HACK);
                             return;
-                        } else {
-                            c.getSession()
-                             .write(
-                                 MaplePacketCreator.skillCooldown(
-                                     attack.skill,
-                                     effect_.getCooldown()
-                                 )
-                             );
-                            ScheduledFuture<?> timer =
-                                TimerManager
-                                    .getInstance()
-                                    .schedule(
-                                        new CancelCooldownAction(
-                                            c.getPlayer(),
-                                            attack.skill
-                                        ),
-                                        effect_.getCooldown() * 1000
-                                    );
-                            player.addCooldown(
-                                attack.skill,
-                                System.currentTimeMillis(),
-                                effect_.getCooldown() * 1000,
-                                timer
-                            );
                         }
+                        c.getSession()
+                         .write(
+                             MaplePacketCreator.skillCooldown(
+                                 attack.skill,
+                                 effect_.getCooldown()
+                             )
+                         );
+                        ScheduledFuture<?> timer =
+                            TimerManager
+                                .getInstance()
+                                .schedule(
+                                    new CancelCooldownAction(
+                                        c.getPlayer(),
+                                        attack.skill
+                                    ),
+                                    effect_.getCooldown() * 1000
+                                );
+                        player.addCooldown(
+                            attack.skill,
+                            System.currentTimeMillis(),
+                            effect_.getCooldown() * 1000,
+                            timer
+                        );
                     }
                 }
                 applyAttack(attack, player, bulletCount);
