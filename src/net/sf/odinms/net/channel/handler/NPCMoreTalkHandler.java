@@ -7,7 +7,7 @@ import net.sf.odinms.scripting.quest.QuestScriptManager;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class NPCMoreTalkHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         byte lastMsg = slea.readByte(); // Last message type.
         byte action = slea.readByte(); // 00 = end chat, 01 == follow
@@ -28,7 +28,7 @@ public class NPCMoreTalkHandler extends AbstractMaplePacketHandler {
             } else {
                 if (c.getQM() != null) {
                     c.getQM().dispose();
-                } else {
+                } else if (c.getCM() != null) {
                     c.getCM().dispose();
                 }
             }

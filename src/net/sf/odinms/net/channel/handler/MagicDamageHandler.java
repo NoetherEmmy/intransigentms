@@ -49,6 +49,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         final ISkill skillUsed = SkillFactory.getSkill(attack.skill);
         if (totalMagic > 1999) {
             int skillLevel = player.getSkillLevel(skillUsed);
+            boolean isHeal = skillUsed.getId() == 2301002;
             double mastery = ((double) skillUsed.getEffect(skillLevel).getMastery() * 5.0d + 10.0d) / 100.0d;
             double spellAttack = (double) skillUsed.getEffect(skillLevel).getMatk();
             ISkill eleAmp = SkillFactory.getSkill(2110001);
@@ -66,18 +67,26 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 eleAmpMulti = 1.0d;
             }
 
-            int baseMin = (int) (((1999.0d * 1999.0d / 1000.0d + 1999.0d * mastery * 0.9d) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
-            int baseMax = (int) (((1999.0d * 1999.0d / 1000.0d + 1999.0d) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
-            double baseRange = (double) (baseMax - baseMin);
-            int min = (int) ((((double) (totalMagic * totalMagic) / 1000.0d + (double) totalMagic * mastery * 0.9d) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
-            int max = (int) ((((double) (totalMagic * totalMagic) / 1000.0d + (double) totalMagic) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
+            int baseMin, baseMax, min, max;
+            double baseRange;
+            if (isHeal) {
+                baseMin = (int) (((double) player.getTotalInt() * 0.3d + (double) player.getTotalLuk()) * 1999.0d / 1000.0d * (1.5d + 5.0d / (double) (attack.allDamage.size() + 1)));
+                baseMax = (int) (((double) player.getTotalInt() * 1.2d + (double) player.getTotalLuk()) * 1999.0d / 1000.0d * (1.5d + 5.0d / (double) (attack.allDamage.size() + 1)));
+                baseRange = (double) (baseMax - baseMin);
+                min = (int) (((double) player.getTotalInt() * 0.3d + (double) player.getTotalLuk()) * (double) totalMagic / 1000.0d * (1.5d + 5.0d / (double) (attack.allDamage.size() + 1)));
+                max = (int) (((double) player.getTotalInt() * 1.2d + (double) player.getTotalLuk()) * (double) totalMagic / 1000.0d * (1.5d + 5.0d / (double) (attack.allDamage.size() + 1)));
+            } else {
+                baseMin = (int) (((1999.0d * 1999.0d / 1000.0d + 1999.0d * mastery * 0.9d) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
+                baseMax = (int) (((1999.0d * 1999.0d / 1000.0d + 1999.0d) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
+                baseRange = (double) (baseMax - baseMin);
+                min = (int) ((((double) (totalMagic * totalMagic) / 1000.0d + (double) totalMagic * mastery * 0.9d) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
+                max = (int) ((((double) (totalMagic * totalMagic) / 1000.0d + (double) totalMagic) / 30.0d + player.getTotalInt() / 200.0d) * spellAttack * eleAmpMulti);
+            }
             double range = (double) (max - min);
 
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                if (dmg == null || dmg.getLeft() == null || dmg.getRight() == null) {
-                    continue;
-                }
+                if (dmg == null || dmg.getLeft() == null || dmg.getRight() == null) continue;
                 List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
                 List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
                 for (Integer dmgNumber : dmg.getRight()) {
@@ -101,9 +110,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         for (int i = 0; i < attack.allDamage.size(); ++i) {
             Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
             MapleMonster monster = null;
-            if (dmg != null) {
-                monster = player.getMap().getMonsterByOid(dmg.getLeft());
-            }
+            if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
             if (monster == null) continue;
             ElementalEffectiveness ee = null;
             if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
@@ -164,9 +171,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
 
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                if (dmg == null || dmg.getLeft() == null || dmg.getRight() == null) {
-                    continue;
-                }
+                if (dmg == null || dmg.getLeft() == null || dmg.getRight() == null) continue;
                 List<Integer> additionaldmg = new ArrayList<>(dmg.getRight().size());
                 List<Integer> newdmg = new ArrayList<>(dmg.getRight().size());
                 for (Integer dmgnumber : dmg.getRight()) {
@@ -251,9 +256,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         for (int i = 1; i <= 3; ++i) {
             ISkill eaterSkill = SkillFactory.getSkill(2000000 + i * 100000);
             int eaterLevel = 0;
-            if (eaterSkill != null) {
-                eaterLevel = player.getSkillLevel(eaterSkill);
-            }
+            if (eaterSkill != null) eaterLevel = player.getSkillLevel(eaterSkill);
             if (eaterLevel > 0 && attack.allDamage != null) {
                 for (Pair<Integer, List<Integer>> singleDamage : attack.allDamage) {
                     if (singleDamage == null || singleDamage.getLeft() == null) {

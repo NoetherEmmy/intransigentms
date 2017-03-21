@@ -154,14 +154,10 @@ public class AbstractPlayerInteraction {
                 }
             } else if (MapleInventoryManipulator.checkSpace(c, id, quantity, "")) {
                 if (id >= 5000000 && id <= 5000100) {
-                    if (quantity > 1) {
-                        quantity = 1;
-                    }
+                    if (quantity > 1) quantity = 1;
                     int petId = MaplePet.createPet(id);
                     MapleInventoryManipulator.addById(c, id, (short) 1, null, petId);
-                    if (show) {
-                        c.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity));
-                    }
+                    if (show) c.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity));
                 } else {
                     MapleInventoryManipulator.addById(c, id, quantity);
                 }
@@ -175,9 +171,7 @@ public class AbstractPlayerInteraction {
                 c.getPlayer().addUnclaimedItem(id, quantity);
                 return false;
             }
-            if (show) {
-                c.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity, true));
-            }
+            if (show) c.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity, true));
         } else {
             MapleInventoryManipulator.removeById(
                 c,

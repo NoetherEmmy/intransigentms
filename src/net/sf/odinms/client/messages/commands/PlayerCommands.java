@@ -1,6 +1,7 @@
 package net.sf.odinms.client.messages.commands;
 
 import net.sf.odinms.client.*;
+import net.sf.odinms.client.anticheat.CheatTracker;
 import net.sf.odinms.client.messages.Command;
 import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.MessageCallback;
@@ -12,6 +13,7 @@ import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.MapleItemInformationProvider;
+import net.sf.odinms.server.SoundInformationProvider;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.life.MapleLifeFactory;
 import net.sf.odinms.server.life.MapleMonster;
@@ -53,6 +55,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@expfix - | - Fixes your negative experience.");
             mc.dropMessage("@dispose - | - Unsticks you from any hanging NPC interactions.");
             mc.dropMessage("@mapfix - | - Fixes you if you've fallen off the map.");
+            mc.dropMessage("@music [section_number] [title] - | - Changes the background music for the map you're in.");
             mc.dropMessage("@engage <partner_name> - | - Begins the process of engagement for marriage.");
             mc.dropMessage("@questinfo - | - Gets the info for your current IntransigentQuest.");
             mc.dropMessage("@questeffectivelevel - | - Displays your current quest effective level and its damage penalties.");
@@ -1507,6 +1510,98 @@ public class PlayerCommands implements Command {
                         1.0f + (float) (player.getLevel() - player.getQuestEffectiveLevel()) / 80.0f
                     )
             );
+        } else if (splitted[0].equals("@music")) {
+            SoundInformationProvider sip = SoundInformationProvider.getInstance();
+            switch (splitted.length) {
+                case 1:
+                    mc.dropMessage(
+                        "There are " +
+                            sip.getAllBgmNames().size() +
+                            " sections of music to choose from."
+                    );
+                    mc.dropMessage("Use @music <section_number> to list the pieces in that section,");
+                    mc.dropMessage("or @music <section_number> <title> to play a specific piece.");
+                    return;
+                case 2: {
+                    int sectionNumber;
+                    try {
+                        sectionNumber = Integer.parseInt(splitted[1]);
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage(
+                            "Invalid syntax. Use: @music | @music <section_number> | @music <section_number> <title>"
+                        );
+                        return;
+                    }
+                    if (sectionNumber < 1 || sectionNumber > sip.getAllBgmNames().size()) {
+                        mc.dropMessage("There is no such section with that number.");
+                        return;
+                    }
+                    String section = null;
+                    int i = 1;
+                    for (String section_ : sip.getAllBgmNames().keySet()) {
+                        if (i > sectionNumber) break;
+                        section = section_;
+                        i++;
+                    }
+                    if (section == null) {
+                        mc.dropMessage("There is no such section with that number.");
+                        return;
+                    }
+                    mc.dropMessage("Pieces in section " + sectionNumber + ":");
+                    sip.getAllBgmNames().get(section).forEach(t -> mc.dropMessage("    " + t));
+                    return;
+                }
+                case 3: {
+                    int sectionNumber;
+                    try {
+                        sectionNumber = Integer.parseInt(splitted[1]);
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage(
+                            "Invalid syntax. Use: @music | @music <section_number> | @music <section_number> <title>"
+                        );
+                        return;
+                    }
+                    if (sectionNumber < 1 || sectionNumber > sip.getAllBgmNames().size()) {
+                        mc.dropMessage("There is no such section with that number.");
+                        return;
+                    }
+                    String section = null;
+                    int i = 1;
+                    for (String section_ : sip.getAllBgmNames().keySet()) {
+                        if (i > sectionNumber) break;
+                        section = section_;
+                        i++;
+                    }
+                    if (section == null) {
+                        mc.dropMessage("There is no such section with that number.");
+                        return;
+                    }
+                    final String title = splitted[2];
+                    if (sip.getAllBgmNames().get(section).stream().anyMatch(t -> t.equals(title))) {
+                        if (!player.getCheatTracker().Spam(90 * 1000, 6)) { // 90 seconds
+                            player.getMap().broadcastMessage(MaplePacketCreator.musicChange(section + "/" + title));
+                        } else {
+                            mc.dropMessage(
+                                "Looks like you're trying to change up the music a bit fast there. " +
+                                    "Try again in a minute or so."
+                            );
+                        }
+                    } else {
+                        mc.dropMessage(
+                            "There is no such piece with the title '" +
+                                title +
+                                "' in section " +
+                                sectionNumber +
+                                "."
+                        );
+                    }
+                    return;
+                }
+                default:
+                    mc.dropMessage(
+                        "Invalid syntax. Use: @music | @music <section_number> | @music <section_number> <title>"
+                    );
+            }
         }
     }
 
@@ -1611,7 +1706,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("roll", 0),
             new CommandDefinition("engage", 0),
             new CommandDefinition("whoquestdrops", 0),
-            new CommandDefinition("questeffectivelevel", 0)
+            new CommandDefinition("questeffectivelevel", 0),
+            new CommandDefinition("music", 0)
         };
     }
 }

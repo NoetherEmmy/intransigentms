@@ -61,17 +61,13 @@ public class MapleItemInformationProvider {
     }
 
     public static MapleItemInformationProvider getInstance() {
-        if (instance == null) {
-            instance = new MapleItemInformationProvider();
-        }
+        if (instance == null) instance = new MapleItemInformationProvider();
         return instance;
     }
 
     /** Returns the inventory type for the specified item ID. */
     public MapleInventoryType getInventoryType(int itemId) {
-        if (inventoryTypeCache.containsKey(itemId)) {
-            return inventoryTypeCache.get(itemId);
-        }
+        if (inventoryTypeCache.containsKey(itemId)) return inventoryTypeCache.get(itemId);
         MapleInventoryType ret;
         String idStr = "0" + String.valueOf(itemId);
         // First look in items
@@ -124,22 +120,16 @@ public class MapleItemInformationProvider {
                 if (Character.toUpperCase(itemName.charAt(0)) == initial) {
                     int itemId = Integer.parseInt(itemFolder.getName());
                     MapleData item = getItemData(itemId);
-                    if (item == null) {
-                        continue;
-                    }
+                    if (item == null) continue;
                     MapleData info = item.getChildByPath("info");
-                    if (info == null) {
-                        continue;
-                    }
+                    if (info == null) continue;
                     for (MapleData data : info.getChildren()) {
                         if (data.getName().equalsIgnoreCase("icon")) {
                             hasIcon = true;
                             break;
                         }
                     }
-                    if (hasIcon) {
-                        itemPairs.add(new Pair<>(itemId, itemName));
-                    }
+                    if (hasIcon) itemPairs.add(new Pair<>(itemId, itemName));
                 }
             }
         } else if (initial == '#') {
@@ -149,22 +139,16 @@ public class MapleItemInformationProvider {
                 if (!Character.isLetter(itemName.charAt(0))) {
                     int itemId = Integer.parseInt(itemFolder.getName());
                     MapleData item = getItemData(itemId);
-                    if (item == null) {
-                        continue;
-                    }
+                    if (item == null) continue;
                     MapleData info = item.getChildByPath("info");
-                    if (info == null) {
-                        continue;
-                    }
+                    if (info == null) continue;
                     for (MapleData data : info.getChildren()) {
                         if (data.getName().equalsIgnoreCase("icon")) {
                             hasicon = true;
                             break;
                         }
                     }
-                    if (hasicon) {
-                        itemPairs.add(new Pair<>(itemId, itemName));
-                    }
+                    if (hasicon) itemPairs.add(new Pair<>(itemId, itemName));
                 }
             }
         } else {
@@ -173,22 +157,16 @@ public class MapleItemInformationProvider {
                 String itemName = MapleDataTool.getString("name", itemFolder, "NO-NAME");
                 int itemId = Integer.parseInt(itemFolder.getName());
                 MapleData item = getItemData(itemId);
-                if (item == null) {
-                    continue;
-                }
+                if (item == null) continue;
                 MapleData info = item.getChildByPath("info");
-                if (info == null) {
-                    continue;
-                }
+                if (info == null) continue;
                 for (MapleData data : info.getChildren()) {
                     if (data.getName().equalsIgnoreCase("icon")) {
                         hasicon = true;
                         break;
                     }
                 }
-                if (hasicon) {
-                    itemPairs.add(new Pair<>(itemId, itemName));
-                }
+                if (hasicon) itemPairs.add(new Pair<>(itemId, itemName));
             }
         }
         return itemPairs;
@@ -200,9 +178,7 @@ public class MapleItemInformationProvider {
 
         itemsData = stringData.getData("Consume.img");
 
-        if (searchstring.isEmpty()) {
-            return null;
-        }
+        if (searchstring.isEmpty()) return null;
         searchstring = searchstring.toUpperCase();
         for (MapleData itemFolder : itemsData.getChildren()) {
             boolean hasicon = false;
@@ -210,13 +186,9 @@ public class MapleItemInformationProvider {
             if (itemName.toUpperCase().startsWith(searchstring)) {
                 int itemId = Integer.parseInt(itemFolder.getName());
                 MapleData item = getItemData(itemId);
-                if (item == null) {
-                    continue;
-                }
+                if (item == null) continue;
                 MapleData info = item.getChildByPath("info");
-                if (info == null) {
-                    continue;
-                }
+                if (info == null) continue;
                 for (MapleData data : info.getChildren()) {
                     if (data.getName().equalsIgnoreCase("icon")) {
                         hasicon = true;
@@ -254,22 +226,16 @@ public class MapleItemInformationProvider {
                     if (Character.toUpperCase(itemName.charAt(0)) == initial) {
                         int itemId = Integer.parseInt(itemFolder.getName());
                         MapleData item = getItemData(itemId);
-                        if (item == null) {
-                            continue;
-                        }
+                        if (item == null) continue;
                         MapleData info = item.getChildByPath("info");
-                        if (info == null) {
-                            continue;
-                        }
+                        if (info == null) continue;
                         for (MapleData data : info.getChildren()) {
                             if (data.getName().equalsIgnoreCase("icon")) {
                                 hasicon = true;
                                 break;
                             }
                         }
-                        if (hasicon) {
-                            itemPairs.add(new Pair<>(itemId, itemName));
-                        }
+                        if (hasicon) itemPairs.add(new Pair<>(itemId, itemName));
                     }
                 }
             }
@@ -281,22 +247,16 @@ public class MapleItemInformationProvider {
                     if (!Character.isLetter(itemName.charAt(0))) {
                         int itemId = Integer.parseInt(itemFolder.getName());
                         MapleData item = getItemData(itemId);
-                        if (item == null) {
-                            continue;
-                        }
+                        if (item == null) continue;
                         MapleData info = item.getChildByPath("info");
-                        if (info == null) {
-                            continue;
-                        }
+                        if (info == null) continue;
                         for (MapleData data : info.getChildren()) {
                             if (data.getName().equalsIgnoreCase("icon")) {
                                 hasicon = true;
                                 break;
                             }
                         }
-                        if (hasicon) {
-                            itemPairs.add(new Pair<>(itemId, itemName));
-                        }
+                        if (hasicon) itemPairs.add(new Pair<>(itemId, itemName));
                     }
                 }
             }
@@ -338,13 +298,9 @@ public class MapleItemInformationProvider {
                 if (itemName.toUpperCase().startsWith(searchstring)) {
                     int itemId = Integer.parseInt(itemFolder.getName());
                     MapleData item = getItemData(itemId);
-                    if (item == null) {
-                        continue;
-                    }
+                    if (item == null) continue;
                     MapleData info = item.getChildByPath("info");
-                    if (info == null) {
-                        continue;
-                    }
+                    if (info == null) continue;
                     for (MapleData data : info.getChildren()) {
                         if (data.getName().equalsIgnoreCase("icon")) {
                             hasicon = true;
@@ -390,9 +346,7 @@ public class MapleItemInformationProvider {
                             break;
                         }
                     }
-                    if (hasicon) {
-                        itemPairs.add(new Pair<>(itemId, itemName));
-                    }
+                    if (hasicon) itemPairs.add(new Pair<>(itemId, itemName));
                 }
             }
         } else if (initial == '#') {
@@ -411,9 +365,7 @@ public class MapleItemInformationProvider {
                             break;
                         }
                     }
-                    if (hasicon) {
-                        itemPairs.add(new Pair<>(itemId, itemName));
-                    }
+                    if (hasicon) itemPairs.add(new Pair<>(itemId, itemName));
                 }
             }
         } else {
@@ -443,9 +395,7 @@ public class MapleItemInformationProvider {
 
         itemsData = stringData.getData("Etc.img").getChildByPath("Etc");
 
-        if (searchstring.isEmpty()) {
-            return null;
-        }
+        if (searchstring.isEmpty()) return null;
         searchstring = searchstring.toUpperCase();
         for (MapleData itemFolder : itemsData.getChildren()) {
             boolean hasIcon = false;
@@ -476,9 +426,7 @@ public class MapleItemInformationProvider {
     }
 
     public Map<Integer, String> getAllItems() {
-        if (namesCached) {
-            return nameCache;
-        }
+        if (namesCached) return nameCache;
 
         MapleData itemsData;
 
@@ -609,9 +557,7 @@ public class MapleItemInformationProvider {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
                     ret = itemData.getData(topDir.getName() + "/" + iFile.getName());
-                    if (ret == null) {
-                        return null;
-                    }
+                    if (ret == null) return null;
                     ret = ret.getChildByPath(idStr);
                     return ret;
                 } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
@@ -658,7 +604,7 @@ public class MapleItemInformationProvider {
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Face")) {
                     topDir.getFiles().stream().map(MapleDataEntry::getName).sorted().forEachOrdered((iFile) -> {
-                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID w/o leading zeroes.
+                        final Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID w/o leading zeroes.
                         List<List<Integer>> faceLists;
                         if (id >= 20000 && id < 30000) { // Just in case.
                             if ((id / 1000) % 10 == 0) {
@@ -705,7 +651,7 @@ public class MapleItemInformationProvider {
             for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
                 if (topDir.getName().equals("Hair")) {
                     topDir.getFiles().stream().map(MapleDataEntry::getName).sorted().forEachOrdered((iFile) -> {
-                        Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID w/o leading zeroes.
+                        final Integer id = Integer.parseInt(iFile.substring(3, 8)); // Gets just the ID w/o leading zeroes.
                         List<List<Integer>> hairLists;
                         if (id >= 30000 && id < 40000) { // Filtering out IDs that cannot be rendered by the client.
                             if ((id / 1000) % 10 == 0) {
@@ -811,7 +757,7 @@ public class MapleItemInformationProvider {
         List<Integer> ret = new ArrayList<>();
         List<List<Integer>> cache;
         if (id >= 20000 && id < 30000) { // Face
-            int match = id - (id % 1000 / 100 * 100); // Hundreds place set to zero.
+            final int match = id - (id % 1000 / 100 * 100); // Hundreds place set to zero.
             switch ((id / 1000) % 10) {
                 case 0:
                     cache = maleFaceCache;
@@ -835,7 +781,7 @@ public class MapleItemInformationProvider {
                 }
             }
         } else { // Hair
-            int match = id / 10;
+            final int match = id / 10;
             switch ((id / 1000) % 10) {
                 case 0:
                     cache = maleHairCache;
@@ -864,9 +810,7 @@ public class MapleItemInformationProvider {
 
     /** Returns the maximum of items in one slot. */
     public short getSlotMax(MapleClient c, int itemId) {
-        if (slotMaxCache.containsKey(itemId)) {
-            return slotMaxCache.get(itemId);
-        }
+        if (slotMaxCache.containsKey(itemId)) return slotMaxCache.get(itemId);
         short ret = 0;
         MapleData item = getItemData(itemId);
         if (item != null) {
@@ -892,26 +836,17 @@ public class MapleItemInformationProvider {
 
             }
         }
-        if (!isThrowingStar(itemId) && !isBullet(itemId)) {
-            slotMaxCache.put(itemId, ret);
-        }
-
+        if (!isThrowingStar(itemId) && !isBullet(itemId)) slotMaxCache.put(itemId, ret);
         return ret;
     }
 
     public int getMeso(int itemId) {
-        if (getMesoCache.containsKey(itemId)) {
-            return getMesoCache.get(itemId);
-        }
+        if (getMesoCache.containsKey(itemId)) return getMesoCache.get(itemId);
         MapleData item = getItemData(itemId);
-        if (item == null) {
-            return -1;
-        }
+        if (item == null) return -1;
         int pEntry;
         MapleData pData = item.getChildByPath("info/meso");
-        if (pData == null) {
-            return -1;
-        }
+        if (pData == null) return -1;
         pEntry = MapleDataTool.getInt(pData);
 
         getMesoCache.put(itemId, pEntry);
@@ -919,18 +854,12 @@ public class MapleItemInformationProvider {
     }
 
     public int getExpCache(int itemId) {
-        if (this.getExpCache.containsKey(itemId)) {
-            return getExpCache.get(itemId);
-        }
+        if (getExpCache.containsKey(itemId)) return getExpCache.get(itemId);
         MapleData item = getItemData(itemId);
-        if (item == null) {
-            return 0;
-        }
+        if (item == null) return 0;
         int pEntry;
         MapleData pData = item.getChildByPath("spec/exp");
-        if (pData == null) {
-            return 0;
-        }
+        if (pData == null) return 0;
         pEntry = MapleDataTool.getInt(pData);
 
         getExpCache.put(itemId, pEntry);
@@ -938,19 +867,13 @@ public class MapleItemInformationProvider {
     }
 
     public int getWholePrice(int itemId) {
-        if (wholePriceCache.containsKey(itemId)) {
-            return wholePriceCache.get(itemId);
-        }
+        if (wholePriceCache.containsKey(itemId)) return wholePriceCache.get(itemId);
         MapleData item = getItemData(itemId);
-        if (item == null) {
-            return -1;
-        }
+        if (item == null) return -1;
 
         int pEntry;
         MapleData pData = item.getChildByPath("info/price");
-        if (pData == null) {
-            return -1;
-        }
+        if (pData == null) return -1;
         pEntry = MapleDataTool.getInt(pData);
 
         wholePriceCache.put(itemId, pEntry);
@@ -958,13 +881,9 @@ public class MapleItemInformationProvider {
     }
 
     public double getPrice(int itemId) {
-        if (priceCache.containsKey(itemId)) {
-            return priceCache.get(itemId);
-        }
+        if (priceCache.containsKey(itemId)) return priceCache.get(itemId);
         MapleData item = getItemData(itemId);
-        if (item == null) {
-            return -1.0d;
-        }
+        if (item == null) return -1.0d;
 
         double pEntry;
         MapleData pData = item.getChildByPath("info/unitPrice");
@@ -987,18 +906,12 @@ public class MapleItemInformationProvider {
     }
 
     protected Map<String, Integer> getEquipStats(int itemId) {
-        if (equipStatsCache.containsKey(itemId)) {
-            return equipStatsCache.get(itemId);
-        }
+        if (equipStatsCache.containsKey(itemId)) return equipStatsCache.get(itemId);
         Map<String, Integer> ret = new LinkedHashMap<>();
         MapleData item = getItemData(itemId);
-        if (item == null) {
-            return null;
-        }
+        if (item == null) return null;
         MapleData info = item.getChildByPath("info");
-        if (info == null) {
-            return null;
-        }
+        if (info == null) return null;
         for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
                 ret.put(data.getName().substring(3), MapleDataTool.getIntConvert(data));
@@ -1013,9 +926,7 @@ public class MapleItemInformationProvider {
     }
 
     public boolean isCash(int itemId) {
-        if (cashCache.containsKey(itemId)) {
-            return cashCache.get(itemId);
-        }
+        if (cashCache.containsKey(itemId)) return cashCache.get(itemId);
         MapleData item = getItemData(itemId);
         MapleData info = item.getChildByPath("info");
         if (info == null) {
@@ -1114,15 +1025,9 @@ public class MapleItemInformationProvider {
                             combinedIndices2 += name2.indexOf(token);
                         }
                     }
-                    if (tokenCount1 != tokenCount2) {
-                        return tokenCount2 - tokenCount1;
-                    }
-                    if (combinedIndices1 != combinedIndices2) {
-                        return combinedIndices1 - combinedIndices2;
-                    }
-                    if (name1.length() != name2.length()) {
-                        return name1.length() - name2.length();
-                    }
+                    if (tokenCount1 != tokenCount2) return tokenCount2 - tokenCount1;
+                    if (combinedIndices1 != combinedIndices2) return combinedIndices1 - combinedIndices2;
+                    if (name1.length() != name2.length()) return name1.length() - name2.length();
                     return name1.compareTo(name2);
                 })
                 .map(Entry::getValue)
@@ -1152,9 +1057,7 @@ public class MapleItemInformationProvider {
         List<Integer> ret = new ArrayList<>();
         MapleData data = getItemData(itemId);
         data = data.getChildByPath("req");
-        if (data == null) {
-            return ret;
-        }
+        if (data == null) return ret;
         for (MapleData req : data.getChildren()) {
             ret.add(MapleDataTool.getInt(req));
         }
@@ -1229,14 +1132,10 @@ public class MapleItemInformationProvider {
 
     public IItem scrollEquipWithId(MapleClient c, IItem equip, int scrollId, boolean usingWhiteScroll) {
         boolean noFail = false;
-        if (c.getPlayer().haveItem(2022118, 1, false, true)) {
-            noFail = true;
-        }
+        if (c.getPlayer().haveItem(2022118, 1, false, true)) noFail = true;
 
         boolean isGM = false;
-        if (c.getPlayer().isGM()) {
-            isGM = true;
-        }
+        if (c.getPlayer().isGM()) isGM = true;
 
         if (equip instanceof Equip) {
             Equip nEquip = (Equip) equip;
@@ -1391,9 +1290,7 @@ public class MapleItemInformationProvider {
                 if (!usingWhiteScroll && !isCleanSlate(scrollId) && nEquip.getUpgradeSlots() > 0) {
                     nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
                 }
-                if (Math.ceil(1.0d + Math.random() * 100.0d) < stats.get("cursed")) {
-                    return null;
-                }
+                if (Math.ceil(1.0d + Math.random() * 100.0d) < stats.get("cursed")) return null;
             }
         }
         return equip;
@@ -1408,9 +1305,7 @@ public class MapleItemInformationProvider {
     }
 
     public IItem getEquipById(int equipId, int ringId) {
-        if (equipCache.containsKey(equipId)) {
-            return equipCache.get(equipId).copy();
-        }
+        if (equipCache.containsKey(equipId)) return equipCache.get(equipId).copy();
         Equip nEquip;
         nEquip = new Equip(equipId, (byte) 0, ringId);
         nEquip.setQuantity((short) 1);
@@ -1599,9 +1494,7 @@ public class MapleItemInformationProvider {
     }
 
     public String getName(int itemId) {
-        if (nameCache.containsKey(itemId)) {
-            return nameCache.get(itemId);
-        }
+        if (nameCache.containsKey(itemId)) return nameCache.get(itemId);
         MapleData strings = getStringData(itemId);
         if (strings == null) return null;
         String ret = MapleDataTool.getString("name", strings, null);
@@ -1610,9 +1503,7 @@ public class MapleItemInformationProvider {
     }
 
     public String getDesc(int itemId) {
-        if (descCache.containsKey(itemId)) {
-            return descCache.get(itemId);
-        }
+        if (descCache.containsKey(itemId)) return descCache.get(itemId);
         MapleData strings = getStringData(itemId);
         if (strings == null) return null;
         String ret = MapleDataTool.getString("desc", strings, null);
@@ -1621,9 +1512,7 @@ public class MapleItemInformationProvider {
     }
 
     public String getMsg(int itemId) {
-        if (msgCache.containsKey(itemId)) {
-            return msgCache.get(itemId);
-        }
+        if (msgCache.containsKey(itemId)) return msgCache.get(itemId);
         MapleData strings = getStringData(itemId);
         if (strings == null) return null;
         String ret = MapleDataTool.getString("msg", strings, null);
@@ -1632,25 +1521,19 @@ public class MapleItemInformationProvider {
     }
 
     public boolean isDropRestricted(int itemId) {
-        if (dropRestrictionCache.containsKey(itemId)) {
-            return dropRestrictionCache.get(itemId);
-        }
+        if (dropRestrictionCache.containsKey(itemId)) return dropRestrictionCache.get(itemId);
 
         MapleData data = getItemData(itemId);
 
         boolean bRestricted = MapleDataTool.getIntConvert("info/tradeBlock", data, 0) == 1;
-        if (!bRestricted) {
-            bRestricted = MapleDataTool.getIntConvert("info/quest", data, 0) == 1;
-        }
+        if (!bRestricted) bRestricted = MapleDataTool.getIntConvert("info/quest", data, 0) == 1;
         dropRestrictionCache.put(itemId, bRestricted);
 
         return bRestricted;
     }
 
     public boolean isPickupRestricted(int itemId) {
-        if (pickupRestrictionCache.containsKey(itemId)) {
-            return pickupRestrictionCache.get(itemId);
-        }
+        if (pickupRestrictionCache.containsKey(itemId)) return pickupRestrictionCache.get(itemId);
 
         MapleData data = getItemData(itemId);
         boolean bRestricted = MapleDataTool.getIntConvert("info/only", data, 0) == 1;

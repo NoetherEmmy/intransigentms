@@ -70,9 +70,7 @@ public class XMLWZFile implements MapleDataProvider {
             }
         } finally {
             try {
-                if (fis != null) {
-                    fis.close();
-                }
+                if (fis != null) fis.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

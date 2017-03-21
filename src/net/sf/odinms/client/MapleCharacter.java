@@ -1967,6 +1967,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return q != null && q.hasCompletedGoal(mobId, itemId, objective);
     }
 
+    public void updateQuestEffectiveLevel() {
+        questEffectiveLevel =
+            cQuests
+                .stream()
+                .filter(cq -> cq.getQuest().getId() != 0 && cq.getEffectivePlayerLevel() > 0)
+                .mapToInt(CQuest::getEffectivePlayerLevel)
+                .min()
+                .orElse(questEffectiveLevel);
+    }
+
     public void resetQuestEffectiveLevel() {
         questEffectiveLevel = 0;
     }
@@ -4601,8 +4611,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         localInt = getInt();
         localStr = getStr();
         localLuk = getLuk();
-        int speed = 100;
-        int jump = 100;
+        int speed = 100, jump = 100;
         magic = localInt;
         watk = 0;
         wdef = 0;
@@ -4672,9 +4681,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         localMaxHp = Math.min(30000, localMaxHp);
         localMaxMp = Math.min(30000, localMaxMp);
         Integer watkbuff = getBuffedValue(MapleBuffStat.WATK);
-        if (watkbuff != null) {
-            watk += watkbuff;
-        }
+        if (watkbuff != null) watk += watkbuff;
         if (job.isA(MapleJob.BOWMAN)) {
             ISkill expert = null;
             if (job.isA(MapleJob.CROSSBOWMASTER)) {
@@ -4708,23 +4715,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
 
         Integer matkbuff = getBuffedValue(MapleBuffStat.MATK);
-        if (matkbuff != null) {
-            magic += matkbuff;
-        }
+        if (matkbuff != null) magic += matkbuff;
         Integer speedbuff = getBuffedValue(MapleBuffStat.SPEED);
-        if (speedbuff != null) {
-            speed += speedbuff;
-        }
+        if (speedbuff != null) speed += speedbuff;
         Integer jumpbuff = getBuffedValue(MapleBuffStat.JUMP);
-        if (jumpbuff != null) {
-            jump += jumpbuff;
-        }
-        if (speed > 140) {
-            speed = 140;
-        }
-        if (jump > 123) {
-            jump = 123;
-        }
+        if (jumpbuff != null) jump += jumpbuff;
+        if (speed > 140) speed = 140;
+        if (jump > 123) jump = 123;
         speedMod = speed / 100.0d;
         jumpMod = jump / 100.0d;
         Integer mount = getBuffedValue(MapleBuffStat.MONSTER_RIDING);
@@ -4758,29 +4755,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
 
         Integer accbuff = getBuffedValue(MapleBuffStat.ACC);
-        if (accbuff != null) {
-            accuracy += accbuff;
-        }
+        if (accbuff != null) accuracy += accbuff;
 
         Integer avoidbuff = getBuffedValue(MapleBuffStat.AVOID);
-        if (avoidbuff != null) {
-            avoidability += avoidbuff;
-        }
+        if (avoidbuff != null) avoidability += avoidbuff;
 
         Integer wdefbuff = getBuffedValue(MapleBuffStat.WDEF);
-        if (wdefbuff != null) {
-            wdef += wdefbuff;
-        }
+        if (wdefbuff != null) wdef += wdefbuff;
 
         Integer mdefbuff = getBuffedValue(MapleBuffStat.MDEF);
-        if (mdefbuff != null) {
-            mdef += mdefbuff;
+        if (mdefbuff != null) mdef += mdefbuff;
+
+        Integer echoBuff = getBuffedValue(MapleBuffStat.ECHO_OF_HERO);
+        if (echoBuff != null) {
+            double echoMulti = (double) (100 + echoBuff) / 100.0d;
+            magic *= echoMulti;
+            watk *= echoMulti;
         }
 
         mdef += localInt;
 
         // What follows is code for getting accuracy from passives
-        IItem weapon_item = getInventory(MapleInventoryType.EQUIPPED).getItem((byte) - 11);
+        IItem weapon_item = getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
         if (weapon_item != null) {
             MapleWeaponType weapon = MapleItemInformationProvider.getInstance().getWeaponType(weapon_item.getItemId());
             ISkill accpassive;

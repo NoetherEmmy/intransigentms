@@ -4,12 +4,9 @@ import net.sf.odinms.client.*;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.tools.MaplePacketCreator;
-import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class SpawnPetHandler extends AbstractMaplePacketHandler {

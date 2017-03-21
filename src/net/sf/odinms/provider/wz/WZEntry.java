@@ -5,8 +5,7 @@ import net.sf.odinms.provider.MapleDataEntry;
 
 public class WZEntry implements MapleDataEntry {
     private final String name;
-    private final int size;
-    private final int checksum;
+    private final int size, checksum;
     private int offset;
     private final MapleDataEntity parent;
 

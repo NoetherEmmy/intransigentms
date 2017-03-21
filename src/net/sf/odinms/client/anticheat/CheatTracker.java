@@ -50,18 +50,18 @@ public class CheatTracker {
     }
 
     /**
-     * Type 0 - Save limit.
-     * Type 1 - Contact GM.
-     * Type 2 - Mesos drop.
-     * Type 3 - Smega.
-     * Type 4 - NPC.
-     * Type 5 - Change map.
-     * Type 6 - N/A.
-     * Type 7 - Commands.
+     * <ul>
+     * <li>Type 0 - Save limit.</li>
+     * <li>Type 1 - Contact GM.</li>
+     * <li>Type 2 - Mesos drop.</li>
+     * <li>Type 3 - Smega.</li>
+     * <li>Type 4 - NPC.</li>
+     * <li>Type 5 - Change map.</li>
+     * <li>Type 6 - N/A.</li>
+     * <li>Type 7 - Commands.</li>
+     * </ul>
      *
-     * @param limit
-     * @param type
-     * @return whether or not it's spam
+     * @return Whether or not it's spam.
      */
     public synchronized boolean Spam(int limit, int type) {
         if (type < 0 || lastTime.length < type) {

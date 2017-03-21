@@ -9,8 +9,6 @@ import net.sf.odinms.net.channel.remote.ChannelWorldInterface;
 import net.sf.odinms.net.world.WorldRegistryImpl;
 import net.sf.odinms.tools.MaplePacketCreator;
 
-import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

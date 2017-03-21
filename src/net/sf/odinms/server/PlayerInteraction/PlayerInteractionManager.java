@@ -62,9 +62,22 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
             broadcast(MaplePacketCreator.shopVisitorLeave(slot + 1), true);
             if (shouldUpdate) {
                 if (getShopType() == 1) {
-                    ((HiredMerchant) this).getMap().broadcastMessage(MaplePacketCreator.updateHiredMerchant((HiredMerchant) this));
+                    ((HiredMerchant) this)
+                        .getMap()
+                        .broadcastMessage(
+                            MaplePacketCreator.updateHiredMerchant(
+                                (HiredMerchant) this
+                            )
+                        );
                 } else {
-                    ((MaplePlayerShop) this).getMCOwner().getMap().broadcastMessage(MaplePacketCreator.sendInteractionBox(((MaplePlayerShop) this).getMCOwner()));
+                    ((MaplePlayerShop) this)
+                        .getMCOwner()
+                        .getMap()
+                        .broadcastMessage(
+                            MaplePacketCreator.sendInteractionBox(
+                                ((MaplePlayerShop) this).getMCOwner()
+                            )
+                        );
                 }
             }
         }
@@ -139,23 +152,28 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
 
     @Override
     public void addVisitor(MapleCharacter visitor) {
-        int i = this.getFreeSlot();
-        if (i > -1) {
-            broadcast(MaplePacketCreator.shopVisitorAdd(visitor, i + 1), true);
-            visitors[i] = visitor;
-            if (getFreeSlot() == -1) {
-                if (getShopType() == 1) {
-                    ((HiredMerchant) this).getMap().broadcastMessage(MaplePacketCreator.updateHiredMerchant((HiredMerchant) this));
-                } else {
-                    MapleCharacter pOwner = null;
-                    if (getShopType() == 2) {
-                        pOwner = ((MaplePlayerShop) this).getMCOwner();
-                    } else if (getShopType() == 3 || getShopType() == 4) {
-                        pOwner = ((MapleMiniGame) this).getOwner();
-                    }
-                    if (pOwner != null) {
-                        pOwner.getMap().broadcastMessage(MaplePacketCreator.sendInteractionBox(pOwner));
-                    }
+        int i = getFreeSlot();
+        if (i <= -1) return;
+        broadcast(MaplePacketCreator.shopVisitorAdd(visitor, i + 1), true);
+        visitors[i] = visitor;
+        if (getFreeSlot() == -1) {
+            if (getShopType() == 1) {
+                ((HiredMerchant) this)
+                    .getMap()
+                    .broadcastMessage(
+                        MaplePacketCreator.updateHiredMerchant(
+                            (HiredMerchant) this
+                        )
+                    );
+            } else {
+                MapleCharacter pOwner = null;
+                if (getShopType() == 2) {
+                    pOwner = ((MaplePlayerShop) this).getMCOwner();
+                } else if (getShopType() == 3 || getShopType() == 4) {
+                    pOwner = ((MapleMiniGame) this).getOwner();
+                }
+                if (pOwner != null) {
+                    pOwner.getMap().broadcastMessage(MaplePacketCreator.sendInteractionBox(pOwner));
                 }
             }
         }
@@ -164,9 +182,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     @Override
     public int getVisitorSlot(MapleCharacter visitor) {
         for (int i = 0; i < capacity; ++i) {
-            if (visitors[i] == visitor) {
-                return i;
-            }
+            if (visitors[i] == visitor) return i;
         }
         return -1;
     }
@@ -250,9 +266,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     @Override
     public int getFreeSlot() {
         for (int i = 0; i < 3; ++i) {
-            if (visitors[i] == null) {
-                return i;
-            }
+            if (visitors[i] == null) return i;
         }
         return -1;
     }

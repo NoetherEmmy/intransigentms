@@ -30,8 +30,11 @@ public class MapleCustomQuest extends MapleQuest {
                 ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
                     blob.getBytes(1, (int) blob.length())));
                 data = (MapleCustomQuestData) ois.readObject();
-                req = new MapleQuestRequirement(this,
-                    MapleQuestRequirementType.getByWZName(data.getName()), data);
+                req = new MapleQuestRequirement(
+                    this,
+                    MapleQuestRequirementType.getByWZName(data.getName()),
+                    data
+                );
                 MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(rs.getInt("status"));
                 if (status.equals(MapleQuestStatus.Status.NOT_STARTED)) {
                     startReqs.add(req);

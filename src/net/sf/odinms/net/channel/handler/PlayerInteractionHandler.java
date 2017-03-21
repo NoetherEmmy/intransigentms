@@ -464,7 +464,12 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             int slot = slea.readShort();
             IPlayerInteractionManager shop = c.getPlayer().getInteraction();
             if (shop != null && shop.isOwner(c.getPlayer())) {
-                MaplePlayerShopItem item = shop.getItems().get(slot);
+                MaplePlayerShopItem item;
+                try {
+                    item = shop.getItems().get(slot);
+                } catch (IndexOutOfBoundsException ioobe) {
+                    return;
+                }
                 if (item.getBundles() > 0) {
                     IItem iitem = item.getItem();
                     iitem.setQuantity((short) (item.getBundles() * iitem.getQuantity()));

@@ -382,18 +382,12 @@ public class MapleMap {
         //
         if (dropOwner != null && dropOwner.getEventInstance() == null && dropOwner.getPartyQuest() == null) {
             int chance = (int) (Math.random() * 150.0d); // 1/150 droprate
-            if (chance < 1) {
-                toDrop.add(4001126); // Maple leaf
-            }
+            if (chance < 1) toDrop.add(4001126); // Maple leaf
             chance = (int) (Math.random() * 150.0d); // 1/150 droprate
-            if (chance < 1) {
-                toDrop.add(5072000); // Super megaphone
-            }
+            if (chance < 1) toDrop.add(5072000); // Super megaphone
             if (dropOwner.getMapId() == 2000) { // Pirate 2nd job adv. map
                 chance = (int) (Math.random() * 3.0d); // 1/3 droprate
-                if (chance < 1) {
-                    toDrop.add(4031013); // Dark marble
-                }
+                if (chance < 1) toDrop.add(4031013); // Dark marble
             } else if (
                 dropOwner.getQuest(MapleQuest.getInstance(7104 /* A Piece of Crack */)).getStatus() ==
                     MapleQuestStatus.Status.STARTED &&
@@ -423,7 +417,7 @@ public class MapleMap {
                 toDrop.add(4032101);
             }
             if (dropOwner.getMapId() >= 1000 && dropOwner.getMapId() <= 1006 && monster.isBoss()) {
-                int timelessItems[] =
+                int[] timelessItems =
                 {
                     1302081, 1312037, 1322060, 1332073, 1332074, 1372044, 1382057, 1402046,
                     1412033, 1422037, 1432047, 1442063, 1452057, 1462050, 1472068, 1482023,
@@ -432,8 +426,13 @@ public class MapleMap {
                 if (Math.random() < 0.15d) {
                     toDrop.add(timelessItems[(int) (Math.random() * timelessItems.length)]);
                 }
-            } else if (dropOwner.getMapId() >= 5000 && monster.getId() == 8200000) {
-                toDrop.removeIf(i -> i.equals(4031303));
+            }
+            if (monster.getId() == 8200000) {
+                if (dropOwner.getMapId() >= 5000) {
+                    toDrop.removeIf(i -> i.equals(4031303));
+                } else {
+                    toDrop.removeIf(i -> !i.equals(4031303));
+                }
             }
             if (partyevent && dropOwner.getParty() != null) {
                 chance = (int) (Math.random() * 112.0d); // 1/112 droprate
@@ -465,9 +464,7 @@ public class MapleMap {
             }
             if (monster.getId() == 9500196) {
                 chance = (int) (Math.random() * 5.0d); // 1/5 droprate
-                if (chance == 2) { // Arbitrary
-                    toDrop.add(4031203);
-                }
+                if (chance == 2) toDrop.add(4031203);
             }
         }
         //
@@ -526,8 +523,7 @@ public class MapleMap {
                 toDrop.add(-1);
             }
         }
-        int shiftDirection = 0;
-        int shiftCount = 0;
+        int shiftDirection = 0, shiftCount = 0;
         int curX = Math.min(Math.max(monster.getPosition().x - 25 * (toDrop.size() / 2), footholds.getMinDropX() + 25), footholds.getMaxDropX() - toDrop.size() * 25);
         int curY = Math.max(monster.getPosition().y, footholds.getY1());
         while (shiftDirection < 3 && shiftCount < 1000) {

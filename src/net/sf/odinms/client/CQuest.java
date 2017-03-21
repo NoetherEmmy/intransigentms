@@ -53,6 +53,7 @@ public class CQuest {
             otherObjectiveProgress.put(objective, 0);
         }
         if (questId != 0) player.sendHint("#eQuest start: " + quest.getTitle());
+        player.updateQuestEffectiveLevel();
     }
 
     public void closeQuest() {
