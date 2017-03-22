@@ -4931,7 +4931,7 @@ public class MaplePacketCreator {
                 mplew.writeInt(skill.getValue().masterlevel);
             }
         }
-        List<PlayerCoolDownValueHolder> coolDowns = chr.getAllCooldowns();
+        Set<PlayerCoolDownValueHolder> coolDowns = chr.getAllCooldowns();
         mplew.writeShort(coolDowns.size());
         for (PlayerCoolDownValueHolder cooling : coolDowns) {
             mplew.writeInt(cooling.skillId);

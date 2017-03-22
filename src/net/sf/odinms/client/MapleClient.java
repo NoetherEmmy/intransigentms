@@ -561,7 +561,7 @@ public class MapleClient {
             if (chr.getTrade() != null) {
                 MapleTrade.cancelTrade(chr);
             }
-            List<PlayerCoolDownValueHolder> cooldowns = chr.getAllCooldowns();
+            final Set<PlayerCoolDownValueHolder> cooldowns = chr.getAllCooldowns();
             if (cooldowns != null && !cooldowns.isEmpty()) {
                 Connection con = DatabaseConnection.getConnection();
                 for (PlayerCoolDownValueHolder cooling : cooldowns) {
