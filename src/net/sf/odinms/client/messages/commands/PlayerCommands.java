@@ -1580,6 +1580,18 @@ public class PlayerCommands implements Command {
                     if (sip.getAllBgmNames().get(section).stream().anyMatch(t -> t.equals(title))) {
                         if (!player.getCheatTracker().Spam(90 * 1000, 6)) { // 90 seconds
                             player.getMap().broadcastMessage(MaplePacketCreator.musicChange(section + "/" + title));
+                            player
+                                .getMap()
+                                .broadcastMessage(
+                                    MaplePacketCreator.serverNotice(
+                                        5,
+                                        player.getName() +
+                                            " has changed the music: " +
+                                            sectionNumber +
+                                            " -- " +
+                                            title
+                                    )
+                                );
                         } else {
                             mc.dropMessage(
                                 "Looks like you're trying to change up the music a bit fast there. " +

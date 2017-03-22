@@ -1849,6 +1849,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         for (CQuest cQuest : cQuests) {
             if (cQuest.getQuest().getId() == 0) {
                 cQuest.loadQuest(questId);
+                sendHint("#eQuest start: " + MapleCQuests.loadQuest(questId).getTitle());
                 return true;
             }
         }
@@ -1971,7 +1972,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         questEffectiveLevel =
             cQuests
                 .stream()
-                .filter(cq -> cq.getQuest().getId() != 0 && cq.getEffectivePlayerLevel() > 0)
+                .filter(cq -> cq.getEffectivePlayerLevel() > 0)
                 .mapToInt(CQuest::getEffectivePlayerLevel)
                 .min()
                 .orElse(questEffectiveLevel);

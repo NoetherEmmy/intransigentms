@@ -266,7 +266,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean onQuest(int questId) {
-        return getPlayer().getCQuestById(questId) != null;
+        return questId != 0 && getPlayer().getCQuestById(questId) != null;
     }
 
     public boolean canComplete(int questId) {

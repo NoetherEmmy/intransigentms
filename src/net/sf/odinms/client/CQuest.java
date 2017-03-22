@@ -38,6 +38,10 @@ public class CQuest {
         this.player = player;
     }
 
+    public void closeQuest() {
+        loadQuest(0);
+    }
+
     public void loadQuest(int questId) {
         loadQuest(questId, 0);
     }
@@ -52,12 +56,7 @@ public class CQuest {
         for (String objective : quest.readOtherObjectives().keySet()) {
             otherObjectiveProgress.put(objective, 0);
         }
-        if (questId != 0) player.sendHint("#eQuest start: " + quest.getTitle());
         player.updateQuestEffectiveLevel();
-    }
-
-    public void closeQuest() {
-        loadQuest(0);
     }
 
     public MapleCQuests getQuest() {
