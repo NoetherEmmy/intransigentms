@@ -133,7 +133,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private final Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
     private final Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentHashMap<>(8, 0.8f, 2);
     private final HashMap<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
-    private final List<MapleDoor> doors = new ArrayList<>();
+    private final List<MapleDoor> doors = new ArrayList<>(2);
     private final Map<Integer, MapleSummon> summons = Collections.synchronizedMap(new LinkedHashMap<>(6, 0.7f));
     private BuddyList buddylist;
     private final Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>();
@@ -1975,7 +1975,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 .filter(cq -> cq.getEffectivePlayerLevel() > 0)
                 .mapToInt(CQuest::getEffectivePlayerLevel)
                 .min()
-                .orElse(questEffectiveLevel);
+                .orElse(0);
     }
 
     public void resetQuestEffectiveLevel() {

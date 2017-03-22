@@ -1639,18 +1639,14 @@ public class PlayerCommands implements Command {
             hours = true;
         }
         if (minutesAway > 0.0d) {
-            if (hours) {
-                sb.append(" -");
-            }
+            if (hours) sb.append(" -");
             sb.append(' ');
             sb.append((int) minutesAway);
             sb.append(" minutes");
             minutes = true;
         }
         if (secondsAway > 0.0d) {
-            if (minutes) {
-                sb.append(" and");
-            }
+            if (minutes) sb.append(" and");
             sb.append(' ');
             sb.append((int) secondsAway);
             sb.append(" seconds.");
