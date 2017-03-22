@@ -37,7 +37,7 @@ public class CheatTracker {
     private int numGotMissed;
     private int vac;
     private Boolean pickupComplete = Boolean.TRUE;
-    private final long[] lastTime = new long[6];
+    private final long[] lastTime = new long[8];
     private final ScheduledFuture<?> invalidationTask;
 
     public CheatTracker(MapleCharacter chr) {
@@ -64,7 +64,7 @@ public class CheatTracker {
      * @return Whether or not it's spam.
      */
     public synchronized boolean Spam(int limit, int type) {
-        if (type < 0 || lastTime.length < type) {
+        if (type < 0 || lastTime.length <= type) {
             type = 1; // Default.
         }
         if (!chr.get().isGM()) {
