@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
     @Override
@@ -88,11 +89,11 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         cserv.addPlayer(player);
         try {
             WorldChannelInterface wci = ChannelServer.getInstance(c.getChannel()).getWorldInterface();
-            List<PlayerBuffValueHolder> buffs = wci.getBuffsFromStorage(cid);
+            Set<PlayerBuffValueHolder> buffs = wci.getBuffsFromStorage(cid);
             if (buffs != null) {
                 c.getPlayer().silentGiveBuffs(buffs);
             }
-            List<PlayerCoolDownValueHolder> cooldowns = wci.getCooldownsFromStorage(cid);
+            Set<PlayerCoolDownValueHolder> cooldowns = wci.getCooldownsFromStorage(cid);
             if (cooldowns != null) {
                 c.getPlayer().giveCoolDowns(cooldowns);
             }

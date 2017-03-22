@@ -32,13 +32,13 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     private static final Logger log = LoggerFactory.getLogger(WorldRegistryImpl.class);
     private final Map<Integer, ChannelWorldInterface> channelServer = new LinkedHashMap<>();
     private final List<LoginWorldInterface> loginServer = new LinkedList<>();
-    private final Map<Integer, MapleParty> parties = new LinkedHashMap<>();
+    private final Map<Integer, MapleParty> parties = new HashMap<>();
     private final AtomicInteger runningPartyId = new AtomicInteger();
-    private final Map<Integer, MapleMessenger> messengers = new LinkedHashMap<>();
+    private final Map<Integer, MapleMessenger> messengers = new HashMap<>();
     private final AtomicInteger runningMessengerId = new AtomicInteger();
-    private final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
+    private final Map<Integer, MapleGuild> guilds = new HashMap<>();
     private final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
-    private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>(); // Contains ID and alliance info
+    private final Map<Integer, MapleAlliance> alliances = new HashMap<>(); // Contains ID and alliance info
 
     private WorldRegistryImpl() throws RemoteException {
         super(0, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
@@ -101,7 +101,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
                         try {
                             oldch.shutdown(0);
                         } catch (ConnectException ce) {
-                            // silently ignore as we assume that the server is offline
+                            // Silently ignore, as we assume that the server is offline.
                         }
                         // int switchChannel = getFreeChannelId();
                         // if (switchChannel == -1) {
@@ -217,7 +217,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
         List<Entry<Integer, ChannelWorldInterface>> channelServers = new ArrayList<>(channelServer.entrySet());
         channelServers.sort(Comparator.comparing(Entry::getKey));
         int totalUsers = 0;
-        for (Entry<Integer, ChannelWorldInterface> cs : channelServers) {
+        for (Map.Entry<Integer, ChannelWorldInterface> cs : channelServers) {
             ret.append("Channel ");
             ret.append(cs.getKey());
             try {
@@ -261,9 +261,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     public MapleGuild getGuild(int id, MapleGuildCharacter mgc) {
         synchronized (guilds) {
-            if (guilds.get(id) != null) {
-                return guilds.get(id);
-            }
+            if (guilds.containsKey(id)) return guilds.get(id);
 
             MapleGuild g = new MapleGuild(id, mgc);
             if (g.getId() == -1) { // Failed to load
@@ -295,66 +293,48 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     public int addGuildMember(MapleGuildCharacter mgc) {
         MapleGuild g = guilds.get(mgc.getGuildId());
-        if (g != null) {
-            return g.addGuildMember(mgc);
-        }
+        if (g != null) return g.addGuildMember(mgc);
         return 0;
     }
 
     public void leaveGuild(MapleGuildCharacter mgc) {
         MapleGuild g = guilds.get(mgc.getGuildId());
-        if (g != null) {
-            g.leaveGuild(mgc);
-        }
+        if (g != null) g.leaveGuild(mgc);
     }
 
     public void guildChat(int gid, String name, int cid, String msg) {
         MapleGuild g = guilds.get(gid);
-        if (g != null) {
-            g.guildChat(name, cid, msg);
-        }
+        if (g != null) g.guildChat(name, cid, msg);
     }
 
     public void changeRank(int gid, int cid, int newRank) {
         MapleGuild g = guilds.get(gid);
-        if (g != null) {
-            g.changeRank(cid, newRank);
-        }
+        if (g != null) g.changeRank(cid, newRank);
     }
 
     public void expelMember(MapleGuildCharacter initiator, String name, int cid) {
         MapleGuild g = guilds.get(initiator.getGuildId());
-        if (g != null) {
-            g.expelMember(initiator, name, cid);
-        }
+        if (g != null) g.expelMember(initiator, name, cid);
     }
 
     public void setGuildNotice(int gid, String notice) {
         MapleGuild g = guilds.get(gid);
-        if (g != null) {
-            g.setGuildNotice(notice);
-        }
+        if (g != null) g.setGuildNotice(notice);
     }
 
     public void memberLevelJobUpdate(MapleGuildCharacter mgc) {
         MapleGuild g = guilds.get(mgc.getGuildId());
-        if (g != null) {
-            g.memberLevelJobUpdate(mgc);
-        }
+        if (g != null) g.memberLevelJobUpdate(mgc);
     }
 
     public void changeRankTitle(int gid, String[] ranks) {
         MapleGuild g = guilds.get(gid);
-        if (g != null) {
-            g.changeRankTitle(ranks);
-        }
+        if (g != null) g.changeRankTitle(ranks);
     }
 
     public void setGuildEmblem(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
         MapleGuild g = guilds.get(gid);
-        if (g != null) {
-            g.setGuildEmblem(bg, bgcolor, logo, logocolor);
-        }
+        if (g != null) g.setGuildEmblem(bg, bgcolor, logo, logocolor);
     }
 
     public void disbandGuild(int gid) {
@@ -381,9 +361,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     public void gainGP(int gid, int amount) {
         MapleGuild g = guilds.get(gid);
-        if (g != null) {
-            g.gainGP(amount);
-        }
+        if (g != null) g.gainGP(amount);
     }
 
     public MapleMessenger createMessenger(MapleMessengerCharacter chrfor) {
@@ -403,18 +381,15 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
 
     public MapleAlliance getAlliance(int id) {
         synchronized (alliances) {
-            if (alliances.containsKey(id)) {
-                return alliances.get(id);
-            }
+            if (alliances.containsKey(id)) return alliances.get(id);
             return null;
         }
     }
 
     public void addAlliance(int id, MapleAlliance alliance) {
         synchronized (alliances) {
-            if (!alliances.containsKey(id)) {
-                alliances.put(id, alliance);
-            }
+            if (!alliances.containsKey(id)) alliances.put(id, alliance);
+
         }
     }
 
@@ -423,8 +398,8 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
             MapleAlliance alliance = alliances.get(id);
             if (alliance != null) {
                 for (Integer gid : alliance.getGuilds()) {
-                        MapleGuild guild = guilds.get(gid);
-                        guild.setAllianceId(0);
+                    MapleGuild guild = guilds.get(gid);
+                    guild.setAllianceId(0);
                 }
                 alliances.remove(id);
             }
@@ -435,13 +410,9 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
         MapleAlliance alliance = alliances.get(id);
         if (alliance != null) {
             for (Integer gid : alliance.getGuilds()) {
-                if (guildex == gid) {
-                    continue;
-                }
+                if (guildex == gid) continue;
                 MapleGuild guild = guilds.get(gid);
-                if (guild != null) {
-                    guild.broadcast(packet, exception);
-                }
+                if (guild != null) guild.broadcast(packet, exception);
             }
         }
     }

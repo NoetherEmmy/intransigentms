@@ -9,9 +9,9 @@ import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public interface WorldChannelInterface extends Remote, WorldChannelCommonOperations {
     Properties getDatabaseProperties() throws RemoteException;
@@ -94,13 +94,13 @@ public interface WorldChannelInterface extends Remote, WorldChannelCommonOperati
 
     void updateMessenger(int messengerid, String namefrom, int fromchannel) throws RemoteException;
 
-    void addBuffsToStorage(int chrid, List<PlayerBuffValueHolder> toStore) throws RemoteException;
+    void addBuffsToStorage(int chrid, Set<PlayerBuffValueHolder> toStore) throws RemoteException;
 
-    List<PlayerBuffValueHolder> getBuffsFromStorage(int chrid) throws RemoteException;
+    Set<PlayerBuffValueHolder> getBuffsFromStorage(int chrid) throws RemoteException;
 
-    void addCooldownsToStorage(int chrid, List<PlayerCoolDownValueHolder> toStore) throws RemoteException;
+    void addCooldownsToStorage(int chrid, Set<PlayerCoolDownValueHolder> toStore) throws RemoteException;
 
-    List<PlayerCoolDownValueHolder> getCooldownsFromStorage(int chrid) throws RemoteException;
+    Set<PlayerCoolDownValueHolder> getCooldownsFromStorage(int chrid) throws RemoteException;
 
     MapleAlliance getAlliance(int id) throws RemoteException;
 

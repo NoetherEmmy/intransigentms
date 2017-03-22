@@ -69,9 +69,7 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                 } else {
                     if (mapitem.getItem().getItemId() >= 5000000 && mapitem.getItem().getItemId() <= 5000100) {
                         int petId = MaplePet.createPet(mapitem.getItem().getItemId());
-                        if (petId == -1) {
-                            return;
-                        }
+                        if (petId == -1) return;
                         MapleInventoryManipulator.addById(c, mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), null, petId);
                         player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, player.getId()), mapitem.getPosition());
                         // player.getCheatTracker().pickupComplete();

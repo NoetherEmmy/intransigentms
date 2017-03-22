@@ -564,25 +564,25 @@ public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements Wo
     }
 
     @Override
-    public void addBuffsToStorage(int chrid, List<PlayerBuffValueHolder> toStore) throws RemoteException {
+    public void addBuffsToStorage(int chrid, Set<PlayerBuffValueHolder> toStore) throws RemoteException {
         PlayerBuffStorage buffStorage = WorldRegistryImpl.getInstance().getPlayerBuffStorage();
         buffStorage.addBuffsToStorage(chrid, toStore);
     }
 
     @Override
-    public List<PlayerBuffValueHolder> getBuffsFromStorage(int chrid) throws RemoteException {
+    public Set<PlayerBuffValueHolder> getBuffsFromStorage(int chrid) throws RemoteException {
         PlayerBuffStorage buffStorage = WorldRegistryImpl.getInstance().getPlayerBuffStorage();
         return buffStorage.getBuffsFromStorage(chrid);
     }
 
     @Override
-    public void addCooldownsToStorage(int chrid, List<PlayerCoolDownValueHolder> toStore) throws RemoteException {
+    public void addCooldownsToStorage(int chrid, Set<PlayerCoolDownValueHolder> toStore) throws RemoteException {
         PlayerBuffStorage buffStorage = WorldRegistryImpl.getInstance().getPlayerBuffStorage();
         buffStorage.addCooldownsToStorage(chrid, toStore);
     }
 
     @Override
-    public List<PlayerCoolDownValueHolder> getCooldownsFromStorage(int chrid) throws RemoteException {
+    public Set<PlayerCoolDownValueHolder> getCooldownsFromStorage(int chrid) throws RemoteException {
         PlayerBuffStorage buffStorage = WorldRegistryImpl.getInstance().getPlayerBuffStorage();
         return buffStorage.getCooldownsFromStorage(chrid);
     }

@@ -40,6 +40,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements InventoryContainer {
     public static final double MAX_VIEW_RANGE_SQ = 850.0d * 850.0d;
@@ -2635,18 +2636,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    public void silentGiveBuffs(List<PlayerBuffValueHolder> buffs) {
+    public void silentGiveBuffs(Set<PlayerBuffValueHolder> buffs) {
         for (PlayerBuffValueHolder mbsvh : buffs) {
             mbsvh.effect.silentApplyBuff(this, mbsvh.startTime);
         }
     }
 
-    public List<PlayerBuffValueHolder> getAllBuffs() {
-        List<PlayerBuffValueHolder> ret = new ArrayList<>();
-        for (MapleBuffStatValueHolder mbsvh : effects.values()) {
-            ret.add(new PlayerBuffValueHolder(mbsvh.startTime, mbsvh.effect));
-        }
-        return ret;
+    public Set<PlayerBuffValueHolder> getAllBuffs() {
+        return
+            effects
+                .values()
+                .stream()
+                .map(mbsvh -> new PlayerBuffValueHolder(mbsvh.startTime, mbsvh.effect))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public void cancelMagicDoor() {
@@ -2669,9 +2671,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (getBuffedValue(MapleBuffStat.COMBO) < ceffect.getX() + 1) {
             int neworbcount = getBuffedValue(MapleBuffStat.COMBO) + 1;
             if (advComboSkillLevel > 0 && ceffect.makeChanceResult()) {
-                if (neworbcount < ceffect.getX() + 1) {
-                    neworbcount++;
-                }
+                if (neworbcount < ceffect.getX() + 1) neworbcount++;
             }
             List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.COMBO, neworbcount));
             setBuffedValue(MapleBuffStat.COMBO, neworbcount);
@@ -6049,7 +6049,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return this.coolDowns.containsKey(skillId);
     }
 
-    public void giveCoolDowns(final List<PlayerCoolDownValueHolder> cooldowns) {
+    public void giveCoolDowns(final Set<PlayerCoolDownValueHolder> cooldowns) {
         for (PlayerCoolDownValueHolder cooldown : cooldowns) {
             int time = (int) ((cooldown.length + cooldown.startTime) - System.currentTimeMillis());
             ScheduledFuture<?> timer = TimerManager.getInstance().schedule(new CancelCooldownAction(this, cooldown.skillId), time);
@@ -6067,12 +6067,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         addCooldown(skillid, System.currentTimeMillis(), time, timer, sendpacket);
     }
 
-    public List<PlayerCoolDownValueHolder> getAllCooldowns() {
-        List<PlayerCoolDownValueHolder> ret = new ArrayList<>();
-        for (MapleCoolDownValueHolder mcdvh : coolDowns.values()) {
-            ret.add(new PlayerCoolDownValueHolder(mcdvh.skillId, mcdvh.startTime, mcdvh.length));
-        }
-        return ret;
+    public Set<PlayerCoolDownValueHolder> getAllCooldowns() {
+        return
+            coolDowns
+                .values()
+                .stream()
+                .map(mcdvh -> new PlayerCoolDownValueHolder(mcdvh.skillId, mcdvh.startTime, mcdvh.length))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public static class CancelCooldownAction implements Runnable {
