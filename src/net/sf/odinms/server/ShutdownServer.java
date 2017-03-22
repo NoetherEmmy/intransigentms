@@ -19,7 +19,7 @@ public class ShutdownServer implements Runnable {
 
     @Override
     public void run() {
-        DeathBot.getInstance().dispose();
+        //DeathBot.getInstance().dispose();
         try {
             ChannelServer.getInstance(myChannel).shutdown();
         } catch (Throwable t) {

@@ -775,6 +775,7 @@ public class Admins implements Command {
                 }
                 break;
             }
+            /*
             case "!reinitdiscord":
                 mc.dropMessage(
                     "Reinitialization of discord bot " +
@@ -786,6 +787,7 @@ public class Admins implements Command {
                 DeathBot.getInstance().dispose();
                 mc.dropMessage("Discord bot disposed.");
                 break;
+            */
             case "!clearquests":
                 MapleQuest.clearQuests();
                 mc.dropMessage("Quest cache has been cleared.");

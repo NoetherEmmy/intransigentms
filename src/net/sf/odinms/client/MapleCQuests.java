@@ -216,7 +216,7 @@ public class MapleCQuests {
             if (repeatable != null) q.repeatable = repeatable;
 
             Toml reqTable = t.getTable("requirements");
-            if (reqTable != null) {
+            if (reqTable != null && !reqTable.isEmpty()) {
                 reqTable
                     .getList("quests")
                     .stream()
@@ -271,7 +271,7 @@ public class MapleCQuests {
             );
 
             Toml rewardsTable = t.getTable("rewards");
-            if (rewardsTable != null) {
+            if (rewardsTable != null && !rewardsTable.isEmpty()) {
                 Long exp = rewardsTable.getLong("exp");
                 if (exp != null) q.expReward = exp.intValue();
                 Long mesos = rewardsTable.getLong("mesos");
@@ -304,7 +304,7 @@ public class MapleCQuests {
             }
 
             Toml parTable = t.getTable("par");
-            if (parTable != null) {
+            if (parTable != null && !parTable.isEmpty()) {
                 q.fearless = parTable.getLong("fearless").intValue();
                 q.valiant = parTable.getLong("valiant").intValue();
                 q.adventuresome = parTable.getLong("adventuresome").intValue();
