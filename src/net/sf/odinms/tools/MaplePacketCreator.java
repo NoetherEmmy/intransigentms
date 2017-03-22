@@ -73,8 +73,6 @@ public class MaplePacketCreator {
      * @param mapleVersion The maple client version.
      * @param sendIv the IV used by the server for sending
      * @param recvIv the IV used by the server for receiving
-     * @param testServer
-     * @return
      */
     public static MaplePacket getHello(short mapleVersion, byte[] sendIv, byte[] recvIv, boolean testServer) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
@@ -141,21 +139,22 @@ public class MaplePacketCreator {
     /**
      * Banned reasons.
      *
-     * 00 - Block user
-     * 01 - Hacking
-     * 02 - Botting
-     * 03 - Advertising
-     * 04 - Harassment
-     * 05 - Profane language
-     * 06 - Scamming
-     * 07 - Misconduct
-     * 08 - Illegal cash transaction
-     * 09 - Illegal charging/funding
-     * 10 - Temporary request
-     * 11 - Impersonating GM
-     * 12 - Violating game policy
-     * 13 - Abusing Megaphones
-     * @return
+     * <ul>
+     * <li>00 - Block user</li>
+     * <li>01 - Hacking</li>
+     * <li>02 - Botting</li>
+     * <li>03 - Advertising</li>
+     * <li>04 - Harassment</li>
+     * <li>05 - Profane language</li>
+     * <li>06 - Scamming</li>
+     * <li>07 - Misconduct</li>
+     * <li>08 - Illegal cash transaction</li>
+     * <li>09 - Illegal charging/funding</li>
+     * <li>10 - Temporary request</li>
+     * <li>11 - Impersonating GM</li>
+     * <li>12 - Violating game policy</li>
+     * <li>13 - Abusing Megaphones</li>
+     * </ul>
      */
     public static MaplePacket getPermBan(int reason) {
         // [00 00] [02 00] [00 00 00 00] [01 00] [8C 65 3F 8A CB D1 01]
@@ -212,7 +211,6 @@ public class MaplePacketCreator {
      * 4 - Enter the pin
      *
      * @param mode The mode.
-     * @return
      */
     public static MaplePacket pinOperation(byte mode) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);
@@ -287,7 +285,7 @@ public class MaplePacketCreator {
 
         mplew.write(0x0);
         int lastChannel = 1;
-        Set<Integer> channels = channelLoad.keySet();
+        final Set<Integer> channels = channelLoad.keySet();
         for (int i = 30; i > 0; --i) {
             if (channels.contains(i)) {
                 lastChannel = i;

@@ -5,11 +5,11 @@ Repository for the IntransigentMS Maplestory private server:
 
 - Maplestory base version: **GMS v62**
 - Source used: **XiuzSource**
-- Java version: **openSDK 8u91**
+- Java version: **openJDK 1.8.0u121**
 
 ---
 
-IntransigentMS is a **_permadeath_** server; see the `playerDead()` function in MapleCharacter.java for some insight on that.
+IntransigentMS is a **_permadeath_** server; see the `playerDead()` method in MapleCharacter.java for some insight on that.
 
 IntransigentMS is also highly customized, including features such as:
 - Permadeath (duh)
