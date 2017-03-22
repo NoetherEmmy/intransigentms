@@ -2,18 +2,16 @@ package net.sf.odinms.net.world;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@SuppressWarnings("serial")
 public class PlayerBuffStorage implements Serializable {
-    private static int runningId = (int) (Math.random() * 127.0d);
+    private static final AtomicInteger runningId = new AtomicInteger((int) (Math.random() * 127.0d));
     private final Map<Integer, Set<PlayerBuffValueHolder>> buffs = new HashMap<>();
     private final Map<Integer, Set<PlayerCoolDownValueHolder>> coolDowns = new HashMap<>();
     private final int id;
-    @SuppressWarnings("unused")
 
     public PlayerBuffStorage() {
-        runningId += 7;
-        id = runningId;
+        id = runningId.addAndGet(7);
     }
 
     public void addBuffsToStorage(int cid, Set<PlayerBuffValueHolder> toStore) {
