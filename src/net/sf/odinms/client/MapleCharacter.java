@@ -4273,7 +4273,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return MapleCharacter.rand(mindamage, maxdamage);
     }
 
-    public void levelUp() {
+    public synchronized void levelUp() {
         ISkill improvingMaxHP = null;
         int improvingMaxHPLevel = 0;
         ISkill improvingMaxMP = SkillFactory.getSkill(2000001);
