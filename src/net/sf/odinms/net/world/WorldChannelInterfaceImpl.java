@@ -10,7 +10,6 @@ import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 import net.sf.odinms.net.world.remote.CheaterData;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.net.world.remote.WorldLocation;
-//import net.sf.odinms.server.DeathBot;
 import net.sf.odinms.tools.CollectionUtil;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
@@ -22,6 +21,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+
+//import net.sf.odinms.server.DeathBot;
 
 public class WorldChannelInterfaceImpl extends UnicastRemoteObject implements WorldChannelInterface {
     private static final long serialVersionUID = -5568606556235590482L;

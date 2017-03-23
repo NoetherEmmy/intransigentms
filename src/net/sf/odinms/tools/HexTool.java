@@ -1,11 +1,18 @@
 package net.sf.odinms.tools;
 
+import net.sf.odinms.tools.data.input.LittleEndianAccessor;
 import org.apache.mina.common.ByteBuffer;
 
 import java.io.ByteArrayOutputStream;
 
 public class HexTool {
-    private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    private static final char[] HEX =
+    {
+        '0', '1', '2', '3',
+        '4', '5', '6', '7',
+        '8', '9', 'A', 'B',
+        'C', 'D', 'E', 'F'
+    };
 
     /**
      * Static class dummy constructor.
@@ -16,22 +23,24 @@ public class HexTool {
     /**
      * Turns a byte into a hexadecimal string.
      *
-     * @param byteValue The byte to convert.
-     * @return The hexadecimal representation of <code>byteValue</code>
+     * @param  byteValue The byte to convert.
+     * @return The hexadecimal representation of {@code byteValue}
      */
     public static String toString(byte byteValue) {
         int tmp = byteValue << 8;
-        char[] retstr = new char[] { HEX[(tmp >> 12) & 0x0F], HEX[(tmp >> 8) & 0x0F] };
+        char[] retstr = new char[] {
+            HEX[(tmp >> 12) & 0x0F],
+            HEX[(tmp >> 8) & 0x0F]
+        };
         return String.valueOf(retstr);
     }
 
     /**
-     * Turns a <code>org.apache.mina.common.ByteBuffer</code> into a
-     * hexadecimal string.
+     * Turns a {@link org.apache.mina.common.ByteBuffer ByteBuffer}
+     * into a hexadecimal string.
      *
-     * @param buf The <code>org.apache.mina.common.ByteBuffer</code> to
-     *            convert.
-     * @return The hexadecimal representation of <code>buf</code>
+     * @param  buf The <code>ByteBuffer</code> to convert.
+     * @return The hexadecimal representation of <code>buf</code>.
      */
     public static String toString(ByteBuffer buf) {
         buf.flip();
@@ -46,7 +55,7 @@ public class HexTool {
     /**
      * Turns an integer into a hexadecimal string.
      *
-     * @param intValue The integer to transform.
+     * @param  intValue The integer to transform.
      * @return The hexadecimal representation of <code>intValue</code>.
      */
     public static String toString(int intValue) {
@@ -56,8 +65,8 @@ public class HexTool {
     /**
      * Turns an array of bytes into a hexadecimal string.
      *
-     * @param bytes The bytes to convert.
-     * @return The hexadecimal representation of <code>bytes</code>
+     * @param  bytes The bytes to convert.
+     * @return The hexadecimal representation of {@code bytes}.
      */
     public static String toString(byte[] bytes) {
         StringBuilder hexed = new StringBuilder();
@@ -69,10 +78,27 @@ public class HexTool {
     }
 
     /**
+     * Reads the remaining bytes of a
+     * {@link net.sf.odinms.tools.data.input.LittleEndianAccessor LittleEndianAccessor}
+     * into a hexadecimal string, exhausting it.
+     *
+     * @param  lea The {@code LittleEndianAccessor} to read from.
+     * @return The hexadecimal representation of the byes read from {@code lea}.
+     */
+    public static String toString(LittleEndianAccessor lea) {
+        final int restLen = (int) lea.available();
+        byte[] bytes = new byte[restLen];
+        for (int i = 0; i < restLen; ++i) {
+            bytes[i] = lea.readByte();
+        }
+        return toString(bytes);
+    }
+
+    /**
      * Turns an array of bytes into a ASCII string. Any non-printable characters
      * are replaced by a period (<code>.</code>)
      *
-     * @param bytes The bytes to convert.
+     * @param  bytes The bytes to convert.
      * @return The ASCII hexadecimal representation of <code>bytes</code>
      */
     public static String toStringFromAscii(byte[] bytes) {
@@ -101,7 +127,7 @@ public class HexTool {
     /**
      * Turns an hexadecimal string into a byte array.
      *
-     * @param hex The string to convert.
+     * @param  hex The string to convert.
      * @return The byte array representation of {@code hex}
      */
     public static byte[] getByteArrayFromHexString(String hex) {

@@ -14,6 +14,7 @@ import net.sf.odinms.server.PlayerInteraction.*;
 import net.sf.odinms.server.PlayerInteraction.MapleMiniGame.MiniGameType;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
+import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.StringUtil;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
@@ -139,11 +140,11 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
                     }
                 } else {
                     System.err.println(
-                        "Unhandled PLAYER_INTERACTION packet:\n" +
-                            slea.getBytesRead() +
-                            "\n" +
-                            createType
+                        "Unhandled PLAYER_INTERACTION packet, createType = " +
+                            createType +
+                            ", remaining:"
                     );
+                    System.err.println(HexTool.toString(slea));
                 }
             }
         } else if (mode == Action.INVITE.getCode()) {

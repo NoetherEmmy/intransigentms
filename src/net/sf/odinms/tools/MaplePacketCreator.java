@@ -771,11 +771,7 @@ public class MaplePacketCreator {
             updateMask |= statupdate.getLeft().getValue();
         }
         if (stats.size() > 1) {
-            stats.sort((o1, o2) -> {
-                int val1 = o1.getLeft().getValue();
-                int val2 = o2.getLeft().getValue();
-                return val1 < val2 ? -1 : (val1 == val2 ? 0 : 1);
-            });
+            stats.sort(Comparator.comparingInt(s -> s.getLeft().getValue()));
         }
         mplew.writeInt(updateMask);
         for (Pair<MapleStat, Integer> statupdate : stats) {
@@ -802,7 +798,7 @@ public class MaplePacketCreator {
      *
      * @param to The <code>MapleMap</code> to warp to.
      * @param spawnPoint The spawn portal number to spawn at.
-     * @param chr The character warping to <code>to</code>
+     * @param chr The character warping to {@code to}
      * @return The map change packet.
      */
     public static MaplePacket getWarpToMap(MapleMap to, int spawnPoint, MapleCharacter chr) {
@@ -981,17 +977,13 @@ public class MaplePacketCreator {
         IEquip equip = null;
         if (item.getType() == IItem.EQUIP) {
             equip = (IEquip) item;
-            if (equip.getRingId() > -1) {
-                ring = true;
-            }
+            if (equip.getRingId() > -1) ring = true;
         }
         byte pos = item.getPosition();
         boolean masking = false;
         boolean equipped = false;
         if (zeroPosition) {
-            if (!leaveOut) {
-                mplew.write(0);
-            }
+            if (!leaveOut) mplew.write(0);
         } else if (pos <= (byte) -1) {
             pos *= -1;
             if (pos > 100 || ring) {
@@ -1038,7 +1030,6 @@ public class MaplePacketCreator {
 
             mplew.writeLong(getKoreanTimestamp((long) (System.currentTimeMillis() * 1.2d)));
             mplew.writeInt(0);
-
             return;
         }
         if (masking && !ring) {
@@ -1090,9 +1081,7 @@ public class MaplePacketCreator {
             // 0 normal; 1 locked
             mplew.write(equip.getLocked());
 
-            if (ring && !equipped) {
-                mplew.write(0);
-            }
+            if (ring && !equipped) mplew.write(0);
 
             if (!masking && !ring) {
                 mplew.write(0);
@@ -1202,15 +1191,11 @@ public class MaplePacketCreator {
 
         mplew.writeShort(SendPacketOpcode.SERVERMESSAGE.getValue());
         mplew.write(type);
-        if (servermessage) {
-            mplew.write(1);
-        }
+        if (servermessage) mplew.write(1);
         mplew.writeMapleAsciiString(message);
         if (type == 3) {
-            mplew.write(channel - 1); // channel
-
+            mplew.write(channel - 1); // Channel
             mplew.write(megaEar ? 1 : 0);
-
         }
 
         return mplew.getPacket();
@@ -1223,7 +1208,6 @@ public class MaplePacketCreator {
      * @param channel The channel the character is on.
      * @param itemId The ID of the avatar-mega.
      * @param message The message that is sent.
-     * @param ear
      * @return The avatar mega packet.
      */
     public static MaplePacket getAvatarMega(MapleCharacter chr,

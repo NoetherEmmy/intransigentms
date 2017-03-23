@@ -8,6 +8,7 @@ import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.server.MTSItemInfo;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.MapleItemInformationProvider;
+import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import org.slf4j.Logger;
@@ -516,7 +517,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     log.error("Err8: " + e);
                 }
             } else {
-                log.info("Unhandled OP(MTS): " + op + " Packet: " + slea.getBytesRead());
+                log.info("Unhandled OP(MTS): " + op + " Packet:\n" + HexTool.toString(slea));
             }
         } else {
             c.getSession().write(MaplePacketCreator.showMTSCash(c.getPlayer()));

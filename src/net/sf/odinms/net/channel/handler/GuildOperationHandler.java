@@ -6,6 +6,7 @@ import net.sf.odinms.client.MaplePet;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.net.world.guild.MapleGuild;
 import net.sf.odinms.net.world.guild.MapleGuildResponse;
+import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
@@ -50,7 +51,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
         public boolean equals(Object other) {
             if (!(other instanceof Invited)) return false;
             Invited oth = (Invited) other;
-            return (gid == oth.gid && name.equals(oth.name));
+            return gid == oth.gid && name.equals(oth.name);
         }
     }
 
@@ -117,12 +118,11 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                 }
                 String name = slea.readMapleAsciiString();
                 MapleGuildResponse mgr = MapleGuild.sendInvite(c, name);
-                if (mgr != null)
+                if (mgr != null) {
                     c.getSession().write(mgr.getPacket());
-                else {
+                } else {
                     Invited inv = new Invited(name, mc.getGuildId());
-                    if (!invited.contains(inv))
-                        invited.add(inv);
+                    if (!invited.contains(inv)) invited.add(inv);
                 }
                 break;
             case 0x06:
@@ -281,12 +281,18 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     c.getChannelServer().getWorldInterface().setGuildNotice(mc.getGuildId(), notice);
                 } catch (RemoteException re) {
                     System.err.println("Exception occurred attempting to set guild notice: " + re);
-                    c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
+                    c.getSession().write(
+                        MaplePacketCreator.serverNotice(
+                            5,
+                            "Unable to connect to the World Server. Please try again later."
+                        )
+                    );
                     return;
                 }
                 break;
             default:
-                System.err.println("Unhandled GUILD_OPERATION packet:\n" + slea.getBytesRead());
+                System.err.println("Unhandled GUILD_OPERATION packet, type = " + type + ", remaining:");
+                System.err.println(HexTool.toString(slea));
                 break;
         }
     }

@@ -212,7 +212,10 @@ public class MapleCQuests {
             q.startNpc = t.getString("npc");
             q.endNpc = t.getString("endnpc");
             if (q.endNpc == null) q.endNpc = q.startNpc;
-            q.info = t.getString("info");
+            // Data is stored using Unix line endings (LF) because that's our locale,
+            // but the client expects Windows-style (CRLF), so we replace the line
+            // endings here since clients will have to display `info`.
+            q.info = t.getString("info").replaceAll("([^\\r])\\n", "$1\r\n");
             Boolean repeatable = t.getBoolean("repeatable");
             if (repeatable != null) q.repeatable = repeatable;
 

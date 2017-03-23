@@ -84,7 +84,7 @@ public class Vect implements IVect {
      ** specified by {@code index}
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public Integer x(int index) {
         return elems.get(index);
@@ -94,7 +94,7 @@ public class Vect implements IVect {
      ** specified by {@code index} as a {@code double} (real number).
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public double realX(int index) {
         return elems.get(index).doubleValue();
@@ -118,7 +118,7 @@ public class Vect implements IVect {
      ** to {@code x}
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public void let(int index, int x) {
         elems.set(index, x);
@@ -128,7 +128,7 @@ public class Vect implements IVect {
      ** to {@code (int) Math.round(x)}
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public void let(int index, double x) {
         elems.set(index, (int) Math.round(x));

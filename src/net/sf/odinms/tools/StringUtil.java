@@ -115,7 +115,7 @@ public class StringUtil {
      *
      * <p>
      * Note that this function is guaranteed to return a non-null
-     * {@link String} of length at least 1.
+     * {@code String} of length at least 1.
      * </p>
      *
      * <ul>
@@ -123,8 +123,8 @@ public class StringUtil {
      * <li>nullable?: false</li>
      * </ul>
      *
-     * @param str The {@link String} to be cleaned.
-     * @param len The maximum length of the returned {@link String}.
+     * @param str The {@code String} to be cleaned.
+     * @param len The maximum length of the returned {@code String}.
      * @return A cleaned copy of {@code str}.
      */
     public static String cleanForClientDisplay(String str, int len) {

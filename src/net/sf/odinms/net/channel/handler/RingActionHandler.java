@@ -5,6 +5,7 @@ import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.scripting.npc.Marriage;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
+import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class RingActionHandler extends AbstractMaplePacketHandler {
@@ -43,11 +44,11 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
                 break;
             default:
                 System.err.println(
-                    "Unhandled ring packet. mode: " +
+                    "Unhandled ring packet, mode = " +
                         Integer.toHexString(mode) +
-                        " bytes read: " +
-                        slea.getBytesRead()
+                        ", remaining:"
                 );
+                System.err.println(HexTool.toString(slea));
                 break;
         }
     }

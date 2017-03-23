@@ -84,7 +84,7 @@ public class VectR implements IVect {
      ** specified by {@code index}
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public Double x(int index) {
         return elems.get(index);
@@ -94,7 +94,7 @@ public class VectR implements IVect {
      ** specified by {@code index} as a {@code double} (real number).
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public double realX(int index) {
         return elems.get(index);
@@ -118,7 +118,7 @@ public class VectR implements IVect {
      ** to {@code x}
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public void let(int index, int x) {
         elems.set(index, (double) x);
@@ -128,7 +128,7 @@ public class VectR implements IVect {
      ** to {@code x}
      **
      ** @throws IndexOutOfBoundsException if the vector has no such index
-     **        (<tt>index &lt; 0 || index &gt;= dim()</tt>) */
+     **        ({@code index < 0 || index >= dim()}) */
     @Override
     public void let(int index, double x) {
         elems.set(index, x);
@@ -320,9 +320,7 @@ public class VectR implements IVect {
     @Override
     public VectR basisVect() {
         VectR basisV = new VectR(dim());
-        if (isZero()) {
-            return basisV;
-        }
+        if (isZero()) return basisV;
         int maxIndex = 0;
         for (int i = 1; i < dim(); ++i) {
             if (elems.get(i) > elems.get(maxIndex)) {

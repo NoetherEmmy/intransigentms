@@ -1,7 +1,6 @@
 package net.sf.odinms.client.messages.commands;
 
 import net.sf.odinms.client.*;
-import net.sf.odinms.client.anticheat.CheatTracker;
 import net.sf.odinms.client.messages.Command;
 import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.MessageCallback;

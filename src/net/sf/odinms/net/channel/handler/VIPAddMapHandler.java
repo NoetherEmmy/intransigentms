@@ -4,6 +4,7 @@ import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
+import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import org.slf4j.Logger;
@@ -51,7 +52,12 @@ public class VIPAddMapHandler extends AbstractMaplePacketHandler {
                 }
                 break;
             default:
-                log.info("Unhandled VIP Rock operation: " + slea.getBytesRead());
+                log.info(
+                    "Unhandled VIP Rock operation, operation = " +
+                        operation +
+                        ", remaining:\n" +
+                        HexTool.toString(slea)
+                );
                 break;
         }
         c.getSession().write(MaplePacketCreator.refreshVIPRockMapList(player.getVIPRockMaps(type), type));
