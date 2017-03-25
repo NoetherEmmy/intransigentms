@@ -163,8 +163,8 @@ public class MapleCQuests {
     }
 
     public boolean canComplete(final CQuest cq) {
-        if (id == 0) return false;
         return
+            id != 0 &&
             monsterTargets
                 .entrySet()
                 .stream()

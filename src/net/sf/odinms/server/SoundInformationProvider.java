@@ -51,9 +51,9 @@ public class SoundInformationProvider {
     public List<String> listBgmNames() {
         if (!bgmNameList.isEmpty()) return bgmNameList;
         getAllBgmNames();
-        bgmNames.entrySet().forEach(e -> {
-            final String group = e.getKey();
-            e.getValue().forEach(track -> bgmNameList.add(group + "/" + track));
+        bgmNames.forEach((sectionName, titles) -> {
+            final String group = sectionName;
+            titles.forEach(track -> bgmNameList.add(group + "/" + track));
         });
         ((ArrayList) bgmNameList).trimToSize();
         return bgmNameList;

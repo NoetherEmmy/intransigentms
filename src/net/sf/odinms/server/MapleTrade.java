@@ -154,14 +154,10 @@ public class MapleTrade {
 
     public boolean fitsInInventory() {
         MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
-        Map<MapleInventoryType, Integer> neededSlots = new LinkedHashMap<>();
+        Map<MapleInventoryType, Integer> neededSlots = new LinkedHashMap<>(4 * exchangeItems.size() / 3);
         for (IItem item : exchangeItems) {
             MapleInventoryType type = mii.getInventoryType(item.getItemId());
-            if (neededSlots.get(type) == null) {
-                neededSlots.put(type, 1);
-            } else {
-                neededSlots.put(type, neededSlots.get(type) + 1);
-            }
+            neededSlots.merge(type, 1, (a, b) -> a + b);
         }
         for (Map.Entry<MapleInventoryType, Integer> entry : neededSlots.entrySet()) {
             if (chr.getInventory(entry.getKey()).isFull(entry.getValue() - 1)) {

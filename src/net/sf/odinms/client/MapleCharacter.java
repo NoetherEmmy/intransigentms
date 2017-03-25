@@ -1012,7 +1012,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     "INSERT INTO skills (characterid, skillid, skilllevel, masterlevel) VALUES (?, ?, ?, ?)"
                 );
                 ps.setInt(1, id);
-                for (Entry<ISkill, SkillEntry> skill_ : skills.entrySet()) {
+                for (Map.Entry<ISkill, SkillEntry> skill_ : skills.entrySet()) {
                     ps.setInt(2, skill_.getKey().getId());
                     ps.setInt(3, skill_.getValue().skillevel);
                     ps.setInt(4, skill_.getValue().masterlevel);
@@ -1840,13 +1840,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
      */
     public boolean canBeginCQuest(MapleCQuests q) {
         return
+            q.getId() != 0 &&
             !(!q.isRepeatable() && completedCQuest(q.getId())) &&
             q.meetsPrereqs(this);
     }
 
     public boolean loadCQuest(int questId) {
         fillOutQuestSlots();
-        if (questId == 0 || !canBeginCQuest(questId)) return false;
+        if (!canBeginCQuest(questId)) return false;
         for (CQuest cQuest : cQuests) {
             if (cQuest.getQuest().getId() == 0) {
                 cQuest.loadQuest(questId);

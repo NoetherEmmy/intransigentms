@@ -190,18 +190,8 @@ public class CQuest {
         double expMulti = (double) player.getExpEffectiveLevel() / 10.0d;
         player.gainExp((int) (quest.getExpReward() * expMulti), true, true);
         player.gainMeso(quest.getMesoReward(), true, false, true);
-        quest.readItemRewards().entrySet().forEach(
-            reward -> api.gainItem(reward.getKey(), reward.getValue().shortValue())
-        );
-        quest.readItemsToCollect()
-             .entrySet()
-             .forEach(
-                 collected ->
-                     api.gainItem(
-                         collected.getKey(),
-                         (short) -collected.getValue().getLeft()
-                     )
-             );
+        quest.readItemRewards().forEach((itemId, count) -> api.gainItem(itemId, count.shortValue()));
+        quest.readItemsToCollect().forEach((itemId, qtyAndName) -> api.gainItem(itemId, (short) -qtyAndName.getLeft()));
         CQuestStatus completionLevel =
             quest.getCompletionLevel(
                 effectivePlayerLevel > 0 ?

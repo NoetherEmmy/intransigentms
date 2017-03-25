@@ -52,7 +52,7 @@ public class CPUSampler {
 
     public SampledStacktraces getTopConsumers() {
         List<StacktraceWithCount> ret = new ArrayList<>();
-        Set<Map.Entry<StackTrace, Integer>> entrySet = recorded.entrySet();
+        final Set<Map.Entry<StackTrace, Integer>> entrySet = recorded.entrySet();
         for (Map.Entry<StackTrace, Integer> entry : entrySet) {
             ret.add(new StacktraceWithCount(entry.getValue(), entry.getKey()));
         }

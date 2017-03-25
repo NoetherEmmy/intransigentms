@@ -4906,7 +4906,7 @@ public class MaplePacketCreator {
 
         Map<ISkill, MapleCharacter.SkillEntry> skills = chr.getSkills();
         mplew.writeShort(skills.size());
-        for (Entry<ISkill, MapleCharacter.SkillEntry> skill : skills.entrySet()) {
+        for (Map.Entry<ISkill, MapleCharacter.SkillEntry> skill : skills.entrySet()) {
             mplew.writeInt(skill.getKey().getId());
             mplew.writeInt(skill.getValue().skillevel);
             if (skill.getKey().isFourthJob()) {
@@ -5157,6 +5157,15 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket showPet(MapleCharacter chr, MaplePet pet, boolean remove, boolean hunger) {
+        if (chr == null) {
+            System.err.println("chr == null in MaplePacketCreator#showPet");
+        }
+        if (pet == null) {
+            System.err.println("pet == null in MaplePacketCreator#showPet");
+        }
+        if (pet.getPos() == null) {
+            System.err.println("pet.getPos() == null in MaplePacketCreator#showPet");
+        }
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SPAWN_PET.getValue());
@@ -5406,13 +5415,13 @@ public class MaplePacketCreator {
             }
         }
 
-        for (Entry<Byte, Integer> entry : myEquip.entrySet()) {
+        for (Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
             mplew.write(entry.getKey());
             mplew.writeInt(entry.getValue());
         }
         mplew.write(0xFF);
 
-        for (Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
+        for (Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
             mplew.write(entry.getKey());
             mplew.writeInt(entry.getValue());
         }

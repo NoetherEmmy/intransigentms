@@ -169,34 +169,34 @@ public class PlayerCommands implements Command {
                     if (cQuest != null && cQuest.getQuest().getId() != 0) {
                         mc.dropMessage("--------------------------------------------");
                         mc.dropMessage("Slot " + currSlot + ": " + cQuest.getQuest().getTitle());
-                        cQuest.getQuest().readMonsterTargets().entrySet().forEach(e ->
+                        cQuest.getQuest().readMonsterTargets().forEach((mobId, qtyAndName) ->
                             mc.dropMessage(
                                 "    " +
-                                    e.getValue().getRight() +
+                                    qtyAndName.getRight() +
                                     "s killed: " +
-                                    cQuest.getQuestKills(e.getKey()) +
+                                    cQuest.getQuestKills(mobId) +
                                     "/" +
-                                    e.getValue().getLeft()
+                                    qtyAndName.getLeft()
                             )
                         );
-                        cQuest.getQuest().readItemsToCollect().entrySet().forEach(e ->
+                        cQuest.getQuest().readItemsToCollect().forEach((itemId, qtyAndName) ->
                             mc.dropMessage(
                                 "    " +
-                                    e.getValue().getRight() +
+                                    qtyAndName.getRight() +
                                     "s collected: " +
-                                    player.getQuestCollected(e.getKey()) +
+                                    player.getQuestCollected(itemId) +
                                     "/" +
-                                    e.getValue().getLeft()
+                                    qtyAndName.getLeft()
                             )
                         );
-                        cQuest.getQuest().readOtherObjectives().entrySet().forEach(e ->
+                        cQuest.getQuest().readOtherObjectives().forEach((name, count) ->
                             mc.dropMessage(
                                 "    " +
-                                    e.getKey() +
+                                    name +
                                     ": " +
-                                    cQuest.getObjectiveProgress(e.getKey()) +
+                                    cQuest.getObjectiveProgress(name) +
                                     "/" +
-                                    e.getValue()
+                                    count
                             )
                         );
                         mc.dropMessage(
@@ -247,24 +247,24 @@ public class PlayerCommands implements Command {
                             e.getValue().getLeft()
                     )
                 );
-                cQuest.getQuest().readItemsToCollect().entrySet().forEach(e ->
+                cQuest.getQuest().readItemsToCollect().forEach((itemId, qtyAndName) ->
                     mc.dropMessage(
                         "    " +
-                            e.getValue().getRight() +
+                            qtyAndName.getRight() +
                             "s collected: " +
-                            player.getQuestCollected(e.getKey()) +
+                            player.getQuestCollected(itemId) +
                             "/" +
-                            e.getValue().getLeft()
+                            qtyAndName.getLeft()
                     )
                 );
-                cQuest.getQuest().readOtherObjectives().entrySet().forEach(e ->
+                cQuest.getQuest().readOtherObjectives().forEach((name, count) ->
                     mc.dropMessage(
                         "    " +
-                            e.getKey() +
+                            name +
                             ": " +
-                            cQuest.getObjectiveProgress(e.getKey()) +
+                            cQuest.getObjectiveProgress(name) +
                             "/" +
-                            e.getValue()
+                            count
                     )
                 );
                 mc.dropMessage(

@@ -101,7 +101,7 @@ public class LoginWorker implements Runnable {
 
             Map<Integer, Integer> load = LoginServer.getInstance().getWorldInterface().getChannelLoad();
             double loadFactor = 1200.0d / ((double) LoginServer.getInstance().getUserLimit() / load.size());
-            for (Entry<Integer, Integer> entry : load.entrySet()) {
+            for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
                 load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
             }
             LoginServer.getInstance().setLoad(load);

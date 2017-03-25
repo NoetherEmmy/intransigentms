@@ -31,6 +31,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
         mc.getMap().broadcastMessage(mc, MaplePacketCreator.spawnPlayerMapobject(mc), false);
         if (mc.getNoPets() > 0) {
             for (MaplePet pet : mc.getPets()) {
+                if (pet == null) continue;
                 mc.getMap().broadcastMessage(mc, MaplePacketCreator.showPet(mc, pet, false, false), false);
             }
         }

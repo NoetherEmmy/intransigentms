@@ -1470,7 +1470,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         @Override
         public List<AttackingMapleCharacter> getAttackers() {
             List<AttackingMapleCharacter> ret = new ArrayList<>(attackers.size());
-            for (Entry<Integer, OnePartyAttacker> entry : attackers.entrySet()) {
+            for (Map.Entry<Integer, OnePartyAttacker> entry : attackers.entrySet()) {
                 MapleCharacter chr = cserv.getPlayerStorage().getCharacterById(entry.getKey());
                 if (chr != null) {
                     ret.add(new AttackingMapleCharacter(chr, entry.getValue().lastAttackTime));

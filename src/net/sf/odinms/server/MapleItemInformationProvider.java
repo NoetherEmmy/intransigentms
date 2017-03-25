@@ -1242,7 +1242,7 @@ public class MapleItemInformationProvider {
                         nEquip.setLevel((byte) 0);
                         break;
                     default:
-                        for (Entry<String, Integer> stat : stats.entrySet()) {
+                        for (Map.Entry<String, Integer> stat : stats.entrySet()) {
                             if (stat.getKey().equals("STR")) {
                                 nEquip.setStr((short) (nEquip.getStr() + stat.getValue()));
                             } else if (stat.getKey().equals("DEX")) {
@@ -1312,38 +1312,55 @@ public class MapleItemInformationProvider {
         Map<String, Integer> stats = getEquipStats(equipId);
         if (stats != null) {
             for (Map.Entry<String, Integer> stat : stats.entrySet()) {
-                if (stat.getKey().equals("STR")) {
-                    nEquip.setStr((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("DEX")) {
-                    nEquip.setDex((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("INT")) {
-                    nEquip.setInt((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("LUK")) {
-                    nEquip.setLuk((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("PAD")) {
-                    nEquip.setWatk((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("PDD")) {
-                    nEquip.setWdef((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MAD")) {
-                    nEquip.setMatk((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MDD")) {
-                    nEquip.setMdef((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("ACC")) {
-                    nEquip.setAcc((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("EVA")) {
-                    nEquip.setAvoid((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("Speed")) {
-                    nEquip.setSpeed((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("Jump")) {
-                    nEquip.setJump((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MHP")) {
-                    nEquip.setHp((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MMP")) {
-                    nEquip.setMp((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("tuc")) {
-                    nEquip.setUpgradeSlots((byte) stat.getValue().intValue());
-                }/* else if (stat.getKey().equals("afterImage")) {
-                }*/
+                final String k = stat.getKey();
+                final short val = (short) stat.getValue().intValue();
+                switch (k) {
+                    case "STR":
+                        nEquip.setStr(val);
+                        break;
+                    case "DEX":
+                        nEquip.setDex(val);
+                        break;
+                    case "INT":
+                        nEquip.setInt(val);
+                        break;
+                    case "LUK":
+                        nEquip.setLuk(val);
+                        break;
+                    case "PAD":
+                        nEquip.setWatk(val);
+                        break;
+                    case "PDD":
+                        nEquip.setWdef(val);
+                        break;
+                    case "MAD":
+                        nEquip.setMatk(val);
+                        break;
+                    case "MDD":
+                        nEquip.setMdef(val);
+                        break;
+                    case "ACC":
+                        nEquip.setAcc(val);
+                        break;
+                    case "EVA":
+                        nEquip.setAvoid(val);
+                        break;
+                    case "Speed":
+                        nEquip.setSpeed(val);
+                        break;
+                    case "Jump":
+                        nEquip.setJump(val);
+                        break;
+                    case "MHP":
+                        nEquip.setHp(val);
+                        break;
+                    case "MMP":
+                        nEquip.setMp(val);
+                        break;
+                    case "tuc":
+                        nEquip.setUpgradeSlots((byte) stat.getValue().intValue());
+                        break;
+                }
             }
         }
         equipCache.put(equipId, nEquip);

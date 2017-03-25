@@ -297,17 +297,21 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         sb.append("#fUI/UIWindow.img/QuestIcon/7/0#  ")
           .append(MapleCharacter.makeNumberReadable(q.getMesoReward()))
           .append("\r\n");
-        q.readItemRewards().entrySet().forEach(reward ->
+        q.readItemRewards().forEach((itemId, count) ->
             sb.append("\r\n#i")
-              .append(reward.getKey())
+              .append(itemId)
               .append("#  ")
-              .append(MapleCharacter.makeNumberReadable(reward.getValue()))
+              .append(MapleCharacter.makeNumberReadable(count))
         );
         return sb.toString();
     }
 
     public void rewardPlayer(int questId) {
         getPlayer().completeCQuest(questId);
+    }
+
+    public boolean forfeitCQuestById(int questId) {
+        return getPlayer().forfeitCQuestById(questId);
     }
 
     public String showQuestProgress() {
@@ -320,11 +324,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                   .append(cQuest.getQuest().getTitle())
                   .append("#n\r\n\r\n");
 
-                cQuest.getQuest().readMonsterTargets().entrySet().forEach(e -> {
-                    int killed = cQuest.getQuestKills(e.getKey());
-                    int outOf = e.getValue().getLeft();
+                cQuest.getQuest().readMonsterTargets().forEach((mobId, qtyAndName) -> {
+                    int killed = cQuest.getQuestKills(mobId);
+                    int outOf = qtyAndName.getLeft();
                     sb.append("\t\t")
-                      .append(e.getValue().getRight())
+                      .append(qtyAndName.getRight())
                       .append("s killed: ")
                       .append(killed >= outOf ? "#g" : "#d")
                       .append(killed)
@@ -334,11 +338,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 });
                 sb.append("\r\n");
 
-                cQuest.getQuest().readItemsToCollect().entrySet().forEach(e -> {
-                    int collected = getPlayer().getQuestCollected(e.getKey());
-                    int outOf = e.getValue().getLeft();
+                cQuest.getQuest().readItemsToCollect().forEach((itemId, qtyAndName) -> {
+                    int collected = getPlayer().getQuestCollected(itemId);
+                    int outOf = qtyAndName.getLeft();
                     sb.append("\t\t")
-                      .append(e.getValue().getRight())
+                      .append(qtyAndName.getRight())
                       .append("s collected: ")
                       .append(collected >= outOf ? "#g" : "#d")
                       .append(collected)
@@ -348,11 +352,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 });
                 sb.append("\r\n");
 
-                cQuest.getQuest().readOtherObjectives().entrySet().forEach(e -> {
-                    int completed = cQuest.getObjectiveProgress(e.getKey());
-                    int outOf = e.getValue();
+                cQuest.getQuest().readOtherObjectives().forEach((name, count) -> {
+                    int completed = cQuest.getObjectiveProgress(name);
+                    int outOf = count;
                     sb.append("\t\t")
-                      .append(e.getKey())
+                      .append(name)
                       .append(": ")
                       .append(completed >= outOf ? "#g" : "#d")
                       .append(completed)
