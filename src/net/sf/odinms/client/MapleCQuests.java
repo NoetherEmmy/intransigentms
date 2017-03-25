@@ -393,4 +393,8 @@ public class MapleCQuests {
         quests.clear();
         loadedAllQuests = false;
     }
+
+    public Set<Consumer<MapleCharacter>> readOtherRewards() {
+        return new LinkedHashSet<>(otherRewards);
+    }
 }
