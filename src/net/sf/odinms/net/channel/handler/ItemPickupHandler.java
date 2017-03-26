@@ -40,7 +40,7 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 double distance = player.getPosition().distanceSq(mapitem.getPosition());
-                // player.getCheatTracker().checkPickupAgain();
+                //player.getCheatTracker().checkPickupAgain();
                 if (mapitem.getMeso() > 0) {
                     if (player.getParty() != null) {
                         ChannelServer cserv = c.getChannelServer();
