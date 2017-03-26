@@ -652,11 +652,11 @@ public class MapleStatEffect implements Serializable {
                            int localMin = (int) (min * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.6d);
                            localMin = Math.max(1, localMin);
                            int localMax = (int) (max * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.5d);
-                           localMin = Math.max(1, localMin);
+                           localMax = Math.max(1, localMax);
                            double chanceToHit =
                                attacker.getAccuracy() / ((1.84d + 0.07d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) * (double) mob.getAvoid()) - 1.0d;
                            if (Math.random() < chanceToHit) {
-                               int dmg = (int) ((rand.nextInt(max - min) + min) * mob.getVulnerability());
+                               int dmg = (int) ((rand.nextInt(localMax - localMin) + localMin) * mob.getVulnerability());
                                map.broadcastMessage(
                                    attacker,
                                    MaplePacketCreator.damageMonster(
@@ -668,7 +668,7 @@ public class MapleStatEffect implements Serializable {
                                map.damageMonster(attacker, mob, dmg);
                            }
                        });
-                }, 800);
+                }, 800L);
 
                 tMan.schedule(() -> ninjaTask.cancel(false), getDuration());
             }
@@ -717,12 +717,13 @@ public class MapleStatEffect implements Serializable {
                     break;
             }
             List<MapleMapObject> mobsInRange;
-            mobsInRange = applyFrom.getMap()
-                                   .getMapObjectsInRange(
-                                       applyFrom.getPosition(),
-                                       200000 + applyFrom.getSkillLevel(sourceid) * 10000,
-                                       MapleMapObjectType.MONSTER
-                                   );
+            mobsInRange =
+                applyFrom.getMap()
+                    .getMapObjectsInRange(
+                        applyFrom.getPosition(),
+                        200000 + applyFrom.getSkillLevel(sourceid) * 10000,
+                        MapleMapObjectType.MONSTER
+                    );
             for (MapleMapObject _mob : mobsInRange) {
                 MapleMonster mob = (MapleMonster) _mob;
                 if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
@@ -752,9 +753,7 @@ public class MapleStatEffect implements Serializable {
                 return false;
             }
             int newHp = applyTo.getHp() + hpChange;
-            if (newHp < 1) {
-                newHp = 1;
-            }
+            if (newHp < 1) newHp = 1;
             applyTo.setHp(newHp);
             hpMpUpdate.add(new Pair<>(MapleStat.HP, applyTo.getHp()));
         }
@@ -788,13 +787,13 @@ public class MapleStatEffect implements Serializable {
                         return false;
                     }
                 } else {
-                    target = ChannelServer.getInstance(applyTo.getClient().getChannel())
-                                          .getMapFactory()
-                                          .getMap(moveTo);
+                    target =
+                        ChannelServer
+                            .getInstance(applyTo.getClient().getChannel())
+                            .getMapFactory()
+                            .getMap(moveTo);
                 }
-                if (target == null) {
-                    return false;
-                }
+                if (target == null) return false;
                 applyTo.changeMap(target, target.getPortal(0));
             } else {
                 return false;
@@ -814,18 +813,15 @@ public class MapleStatEffect implements Serializable {
                     }
                 }
             }
-            if (projectile == 0) {
-                return false;
-            } else {
-                MapleInventoryManipulator.removeById(
-                    applyTo.getClient(),
-                    MapleInventoryType.USE,
-                    projectile,
-                    200,
-                    false,
-                    true
-                );
-            }
+            if (projectile == 0) return false;
+            MapleInventoryManipulator.removeById(
+                applyTo.getClient(),
+                MapleInventoryType.USE,
+                projectile,
+                200,
+                false,
+                true
+            );
         }
         if (overTime) {
             applyBuffEffect(applyFrom, applyTo, primary);
@@ -846,9 +842,7 @@ public class MapleStatEffect implements Serializable {
             applyFrom.getMap().spawnSummon(toSummon);
             applyFrom.getSummons().put(sourceid, toSummon);
             toSummon.addHP(x);
-            if (isBeholder()) {
-                toSummon.addHP(1);
-            }
+            if (isBeholder()) toSummon.addHP(1);
         }
 
         // Magic Door

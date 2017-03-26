@@ -22,6 +22,7 @@ import net.sf.odinms.tools.Pair;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -31,24 +32,24 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private int hp, mp;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
     private boolean controllerHasAggro, controllerKnowsAboutAggro;
-    private final Collection<AttackerEntry> attackers = new ArrayList<>();
+    private final Collection<AttackerEntry> attackers = new ArrayList<>(5);
     private EventInstanceManager eventInstance;
-    private final List<MonsterListener> listeners = new ArrayList<>();
+    private final List<MonsterListener> listeners = new ArrayList<>(2);
     private MapleCharacter highestDamageChar;
-    private final Map<MonsterStatus, MonsterStatusEffect> stati = new LinkedHashMap<>();
+    private final Map<MonsterStatus, MonsterStatusEffect> stati = new LinkedHashMap<>(8);
     private final List<MonsterStatusEffect> activeEffects = Collections.synchronizedList(new ArrayList<>(5));
     private MapleMap map;
     private int venomMultiplier;
     private boolean fake = false;
     private boolean dropsDisabled = false;
-    private final List<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
-    private final Map<Pair<Integer, Integer>, Integer> skillsUsed = new LinkedHashMap<>();
+    private final List<Pair<Integer, Integer>> usedSkills = new ArrayList<>(5);
+    private final Map<Pair<Integer, Integer>, Integer> skillsUsed = new HashMap<>(8);
     private final List<MonsterStatus> monsterBuffs = new ArrayList<>();
-    private final Map<Element, ElementalEffectiveness> addedEffectiveness = new LinkedHashMap<>(2, 0.7f);
+    private final Map<Element, ElementalEffectiveness> addedEffectiveness = new HashMap<>(2, 0.7f);
     private boolean isAflame = false;
     private ScheduledFuture<?> flameSchedule;
     private ScheduledFuture<?> cancelFlameTask;
-    private final Map<Element, ElementalEffectiveness> originalEffectiveness = new LinkedHashMap<>(2, 0.7f);
+    private final Map<Element, ElementalEffectiveness> originalEffectiveness = new HashMap<>(2, 0.7f);
     private ScheduledFuture<?> cancelEffectivenessTask;
     public final AtomicInteger dropShareCount = new AtomicInteger();
     private ScheduledFuture<?> otherMobHitCheckTask;
@@ -136,9 +137,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         for (DropEntry d : dropEntries) {
             if (d.questId > 0) continue;
             chanceLadder += (long) (Integer.MAX_VALUE / d.chance);
-            if (chanceLadder > roll) {
-                return d.itemId;
-            }
+            if (chanceLadder > roll) return d.itemId;
         }
         return dropEntries.get(dropEntries.size() - 1).itemId;
     }
@@ -458,18 +457,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             TimerManager.getInstance().schedule(() -> {
                 for (Integer mid : toSpawn) {
                     MapleMonster mob = MapleLifeFactory.getMonster(mid);
-                    if (mob != null) {
-                        if (eventInstance != null) {
-                            eventInstance.registerMonster(mob);
-                        }
-                        mob.setPosition(getPosition());
-                        if (dropsDisabled()) {
-                            mob.disableDrops();
-                        }
-                        reviveMap.spawnRevives(mob);
-                    }
+                    if (mob == null) continue;
+                    if (eventInstance != null) eventInstance.registerMonster(mob);
+                    mob.setPosition(getPosition());
+                    if (dropsDisabled()) mob.disableDrops();
+                    reviveMap.spawnRevives(mob);
                 }
-            }, this.getAnimationTime("die1"));
+            }, getAnimationTime("die1"));
         }
         if (eventInstance != null) {
             eventInstance.unregisterMonster(this);
@@ -479,13 +473,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 listener.monsterKilled(this);
             }
         }
-        MapleCharacter ret = highestDamageChar;
+        final MapleCharacter ret = highestDamageChar;
         highestDamageChar = null;
         return ret;
     }
 
     public boolean isAlive() {
-        return this.hp > 0;
+        return hp > 0;
     }
 
     public MapleCharacter getController() {
@@ -498,9 +492,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public void switchController(MapleCharacter newController, boolean immediateAggro) {
         MapleCharacter controllers = getController();
-        if (controllers == newController) {
-            return;
-        }
+        if (controllers == newController) return;
         if (controllers != null) {
             controllers.stopControllingMonster(this);
             controllers.getClient().getSession().write(MaplePacketCreator.stopControllingMonster(getObjectId()));
@@ -1609,15 +1601,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             final PartyAttackerEntry other = (PartyAttackerEntry) obj;
             return partyid == other.partyid;
         }

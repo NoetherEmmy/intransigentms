@@ -792,6 +792,12 @@ public class Admins implements Command {
                 MapleQuest.clearQuests();
                 mc.dropMessage("Quest cache has been cleared.");
                 break;
+            case "!restarttimermanager":
+                TimerManager tMan = TimerManager.getInstance();
+                tMan.stop();
+                tMan.start();
+                mc.dropMessage("TimerManager restarted.");
+                break;
         }
     }
 
@@ -849,7 +855,8 @@ public class Admins implements Command {
             new CommandDefinition("pmob", 4),
             new CommandDefinition("reinitdiscord", 4),
             new CommandDefinition("disposediscord", 4),
-            new CommandDefinition("clearquests", 4)
+            new CommandDefinition("clearquests", 4),
+            new CommandDefinition("restarttimermanager", 4)
         };
     }
 }

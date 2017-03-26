@@ -24,7 +24,7 @@ public class UseItemHandler extends AbstractMaplePacketHandler {
         byte slot = (byte) slea.readShort();
         int itemId = slea.readInt();
         IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
-        System.out.println("UseItemHandler | player: " + c.getPlayer().getName() + ", slot: " + slot + ", itemId: " + itemId);
+
         if (itemId == 2022118) {
             c.getPlayer().dropMessage(1, "Please keep this item for scrolling purposes. Gives you 100% scroll rate.");
             c.getSession().write(MaplePacketCreator.enableActions());
@@ -45,9 +45,9 @@ public class UseItemHandler extends AbstractMaplePacketHandler {
                     switch (itemId) {
                         case 2030000: // Next town
                         case 2030008: // Next town (coffee-thingy)
-                            int returnMapId = c.getPlayer().getMap().getReturnMapId();
+                            final int returnMapId = c.getPlayer().getMap().getReturnMapId();
                             if (returnMapId < 999999999) {
-                                warpRandom(c, c.getPlayer().getMap().getReturnMapId());
+                                warpRandom(c, returnMapId);
                                 MapleInventoryManipulator.removeFromSlot(
                                     c,
                                     MapleInventoryType.USE,

@@ -2536,24 +2536,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (!overwrite) {
             cancelPlayerBuffs(buffstats);
             if (effect.isHide() && getMap().getMapObject(getObjectId()) != null) {
-                this.hidden = false;
+                hidden = false;
                 getMap().broadcastNONGMMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
                 setOffOnline(true);
                 for (int i = 0; i < 3; ++i) {
-                    if (pets[i] != null) {
-                        getMap().broadcastNONGMMessage(
+                    if (pets[i] == null) break;
+                    getMap().broadcastNONGMMessage(
+                        this,
+                        MaplePacketCreator.showPet(
                             this,
-                            MaplePacketCreator.showPet(
-                                this,
-                                pets[i],
-                                false,
-                                false
-                            ),
+                            pets[i],
+                            false,
                             false
-                        );
-                    } else {
-                        break;
-                    }
+                        ),
+                        false
+                    );
                 }
             }
         }

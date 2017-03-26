@@ -5163,9 +5163,6 @@ public class MaplePacketCreator {
         if (pet == null) {
             System.err.println("pet == null in MaplePacketCreator#showPet");
         }
-        if (pet.getPos() == null) {
-            System.err.println("pet.getPos() == null in MaplePacketCreator#showPet");
-        }
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SPAWN_PET.getValue());
@@ -5175,6 +5172,9 @@ public class MaplePacketCreator {
             mplew.write(0);
             mplew.write(hunger ? 1 : 0);
         } else {
+            if (pet.getPos() == null) {
+                System.err.println("pet.getPos() == null in MaplePacketCreator#showPet");
+            }
             mplew.write(1);
             mplew.write(0);
             mplew.writeInt(pet.getItemId());

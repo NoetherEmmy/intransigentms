@@ -110,6 +110,10 @@ public class MapleCQuests {
         return new LinkedHashMap<>(itemRewards);
     }
 
+    public Set<Consumer<MapleCharacter>> readOtherRewards() {
+        return new LinkedHashSet<>(otherRewards);
+    }
+
     /** Nullable */
     public String getTargetName(int monsterId) {
         if (!monsterTargets.containsKey(monsterId)) return null;
@@ -392,9 +396,5 @@ public class MapleCQuests {
     public static void clearCache() {
         quests.clear();
         loadedAllQuests = false;
-    }
-
-    public Set<Consumer<MapleCharacter>> readOtherRewards() {
-        return new LinkedHashSet<>(otherRewards);
     }
 }
