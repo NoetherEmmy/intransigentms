@@ -74,6 +74,7 @@ public class HexTool {
             hexed.append(toString(bytes[i]));
             hexed.append(' ');
         }
+        if (hexed.length() == 0) return "";
         return hexed.substring(0, hexed.length() - 1);
     }
 
@@ -137,13 +138,10 @@ public class HexTool {
         outer: for (;;) {
             int number = -1;
             while (number == -1) {
-                if (nexti == hex.length()) {
-                    break outer;
-                }
+                if (nexti == hex.length()) break outer;
                 char chr = hex.charAt(nexti);
                 if (chr >= '0' && chr <= '9') {
                     number = chr - '0';
-
                 } else if (chr >= 'a' && chr <= 'f') {
                     number = chr - 'a' + 10;
                 } else if (chr >= 'A' && chr <= 'F') {

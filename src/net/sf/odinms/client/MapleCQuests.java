@@ -283,7 +283,7 @@ public class MapleCQuests {
                 Long exp = rewardsTable.getLong("exp");
                 if (exp != null) q.expReward = exp.intValue();
                 Long mesos = rewardsTable.getLong("mesos");
-                if (mesos != null) q.expReward = mesos.intValue();
+                if (mesos != null) q.mesoReward = mesos.intValue();
                 rewardsTable.getTables("items").forEach(it ->
                     q.itemRewards.put(
                         it.getLong("id").intValue(),

@@ -5,6 +5,7 @@ import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleCharacter.CancelCooldownAction;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.SkillFactory;
+import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.TimerManager;
@@ -24,15 +25,13 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         AttackInfo attack = parseDamage(slea, false);
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
 
-        if (player.getMap().isDamageMuted()) {
+        if (!player.canQuestEffectivelyUseSkill(attack.skill) || player.getMap().isDamageMuted()) {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 MapleMonster monster = null;
-                if (dmg != null) {
-                    monster = player.getMap().getMonsterByOid(dmg.getLeft());
-                }
+                if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 if (monster == null) continue;
                 List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
                 for (Integer dmgNumber : dmg.getRight()) {
@@ -86,7 +85,10 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
 
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                if (dmg == null || dmg.getLeft() == null || dmg.getRight() == null) continue;
+                final MapleMonster m = dmg == null ? null : player.getMap().getMonsterByOid(dmg.getLeft());
+                if (m == null || m.isBuffed(MonsterStatus.MAGIC_IMMUNITY) || dmg.getRight() == null) {
+                    continue;
+                }
                 List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
                 List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
                 for (Integer dmgNumber : dmg.getRight()) {
@@ -112,6 +114,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             MapleMonster monster = null;
             if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
             if (monster == null) continue;
+            if (monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) continue;
             ElementalEffectiveness ee = null;
             if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
                 ee = monster.getAddedEffectiveness(skillUsed.getElement());
@@ -228,6 +231,14 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         MapleStatEffect effect_ = null;
         if (skill != null) {
             int skillLevel = c.getPlayer().getSkillLevel(skill);
+            if (skillLevel < 1) {
+                System.err.println(
+                    c.getPlayer().getName() +
+                        " is using a magic skill they don't have: " +
+                        skill.getId()
+                );
+                return;
+            }
             effect_ = skill.getEffect(skillLevel);
         }
         if (effect_ != null && effect_.getCooldown() > 0) {
@@ -259,9 +270,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
             if (eaterSkill != null) eaterLevel = player.getSkillLevel(eaterSkill);
             if (eaterLevel > 0 && attack.allDamage != null) {
                 for (Pair<Integer, List<Integer>> singleDamage : attack.allDamage) {
-                    if (singleDamage == null || singleDamage.getLeft() == null) {
-                        continue;
-                    }
+                    if (singleDamage == null || singleDamage.getLeft() == null) continue;
                     eaterSkill
                         .getEffect(eaterLevel)
                         .applyPassive(

@@ -129,9 +129,7 @@ public class StringUtil {
      */
     public static String cleanForClientDisplay(String str, int len) {
         if (str == null || str.length() < 1) return " ";
-        if (str.length() > len) {
-            str = str.substring(0, len);
-        }
+        if (str.length() > len) str = str.substring(0, len);
         return str.replaceAll("[^\\t\\r\\n -~]+", " ");
     }
 }

@@ -322,17 +322,19 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
 
     public static void displayThread(MapleClient client, int threadid, boolean bIsThreadIdLocal) {
         MapleCharacter mc = client.getPlayer();
-        if (mc.getGuildId() <= 0) {
-            return;
-        }
+        if (mc.getGuildId() <= 0) return;
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps =
-                con.prepareStatement(
-                    "SELECT * FROM bbs_threads WHERE guildid = ? AND " +
-                        (bIsThreadIdLocal ? "local" : "") +
-                        "threadid = ?"
+            PreparedStatement ps;
+            if (bIsThreadIdLocal) {
+                ps = con.prepareStatement(
+                    "SELECT * FROM bbs_threads WHERE guildid = ? AND localthreadid = ?"
                 );
+            } else {
+                ps = con.prepareStatement(
+                    "SELECT * FROM bbs_threads WHERE guildid = ? AND threadid = ?"
+                );
+            }
             ps.setInt(1, mc.getGuildId());
             ps.setInt(2, threadid);
             ResultSet threadRS = ps.executeQuery();

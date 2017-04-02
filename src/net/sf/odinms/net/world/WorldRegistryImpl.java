@@ -214,7 +214,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     @Override
     public String getStatus() throws RemoteException {
         StringBuilder ret = new StringBuilder();
-        List<Entry<Integer, ChannelWorldInterface>> channelServers = new ArrayList<>(channelServer.entrySet());
+        List<Map.Entry<Integer, ChannelWorldInterface>> channelServers = new ArrayList<>(channelServer.entrySet());
         channelServers.sort(Comparator.comparing(Entry::getKey));
         int totalUsers = 0;
         for (Map.Entry<Integer, ChannelWorldInterface> cs : channelServers) {

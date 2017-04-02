@@ -956,7 +956,7 @@ public class MapleItemInformationProvider {
         }
     }
 
-    public List<Entry<String, Integer>> getCashEquipEntries(final int type) {
+    public List<Map.Entry<String, Integer>> getCashEquipEntries(final int type) {
         return
             cashEquips
                 .entrySet()
@@ -1160,11 +1160,7 @@ public class MapleItemInformationProvider {
                     case 2049100:
                     case 2049101:
                     case 2049102:
-                    case 2049122: // Chaos Scroll of Goodness
-                        int increase = 1;
-                        if (Math.ceil(Math.random() * 100.0d) <= 50 && scrollId != 2049122) {
-                            increase *= -1;
-                        }
+                        int increase = Math.ceil(Math.random() * 100.0d) <= 50 ? -1 : 1;
                         if (nEquip.getStr() > 0) {
                             short newStat = (short) (nEquip.getStr() + Math.ceil(Math.random() * 5.0d) * increase);
                             nEquip.setStr(newStat);

@@ -8,12 +8,6 @@ import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ItemMoveHandler extends AbstractMaplePacketHandler {
-    // private static Logger log = LoggerFactory.getLogger(ItemMoveHandler.class);
-
-    /** Creates a new instance of ItemMoveHandler */
-    public ItemMoveHandler() {
-    }
-
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
@@ -32,7 +26,11 @@ public class ItemMoveHandler extends AbstractMaplePacketHandler {
                 return;
             }
             if (checkq > 4000 || checkq < 1) {
-                AutobanManager.getInstance().autoban(c, "Drop-dupe attempt, item (" + c.getPlayer().getInventory(type).getItem(src).getItemId() + ").");
+                AutobanManager.getInstance().autoban(
+                    c,
+                    "Drop-dupe attempt, item: " +
+                        c.getPlayer().getInventory(type).getItem(src).getItemId()
+                );
                 return;
             }
             MapleInventoryManipulator.drop(c, type, src, quantity);

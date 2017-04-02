@@ -54,11 +54,10 @@ public class HiredMerchant extends PlayerInteractionManager {
                             try {
                                 PreparedStatement ps =
                                     con.prepareStatement(
-                                        "UPDATE characters SET MerchantMesos = MerchantMesos + " +
-                                            pItem.getPrice() * quantity +
-                                            " WHERE id = ?"
+                                        "UPDATE characters SET MerchantMesos = MerchantMesos + ? WHERE id = ?"
                                     );
-                                ps.setInt(1, getOwnerId());
+                                ps.setInt(1, pItem.getPrice() * quantity);
+                                ps.setInt(2, getOwnerId());
                                 ps.executeUpdate();
                                 ps.close();
                             } catch (SQLException se) {

@@ -155,11 +155,10 @@ public class MapleMiniGame extends PlayerInteractionManager {
         try {
             PreparedStatement ps =
                 con.prepareStatement(
-                    "SELECT omok" +
-                        type +
-                        " FROM characters WHERE name = ?"
+                    "SELECT ? FROM characters WHERE name = ?"
                 );
-            ps.setString(1, owner.getName());
+            ps.setString(1, "omok" + type);
+            ps.setString(2, owner.getName());
             ResultSet rs = ps.executeQuery();
             rs.next();
             points = rs.getInt("omok" + type);
@@ -180,11 +179,10 @@ public class MapleMiniGame extends PlayerInteractionManager {
         try {
             PreparedStatement ps =
                 con.prepareStatement(
-                    "SELECT matchcard" +
-                        type +
-                        " FROM characters WHERE name = ?"
+                    "SELECT ? FROM characters WHERE name = ?"
                 );
-            ps.setString(1, owner.getName());
+            ps.setString(1, "matchcard" + type);
+            ps.setString(2, owner.getName());
             ResultSet rs = ps.executeQuery();
             rs.next();
             points = rs.getInt("matchcard" + type);

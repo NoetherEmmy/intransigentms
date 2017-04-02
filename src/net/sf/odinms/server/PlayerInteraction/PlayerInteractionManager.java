@@ -105,7 +105,9 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
         if (saveItems) {
             table = "";
         } else {
-            ps = DatabaseConnection.getConnection().prepareStatement("DELETE FROM hiredmerchanttemp WHERE ownerid = ?");
+            ps = DatabaseConnection.getConnection().prepareStatement(
+                "DELETE FROM hiredmerchanttemp WHERE ownerid = ?"
+            );
             ps.setInt(1, getOwnerId());
             ps.executeUpdate();
             ps.close();
@@ -114,35 +116,42 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
             for (MaplePlayerShopItem pItems : items) {
                 if (pItems.getBundles() > 0) {
                     if (pItems.getItem().getType() == 1) {
-                        ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO hiredmerchant" + table + " (ownerid, itemid, quantity, upgradeslots, level, str, dex, `int`, luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, owner, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
+                        ps = DatabaseConnection.getConnection().prepareStatement(
+                            "INSERT INTO ? (ownerid, itemid, quantity, upgradeslots, level, str, dex, `int`, " +
+                                "luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, owner, type) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)"
+                        );
                         Equip eq = (Equip) pItems.getItem();
-                        ps.setInt(2, eq.getItemId());
-                        ps.setInt(3, 1);
-                        ps.setInt(4, eq.getUpgradeSlots());
-                        ps.setInt(5, eq.getLevel());
-                        ps.setInt(6, eq.getStr());
-                        ps.setInt(7, eq.getDex());
-                        ps.setInt(8, eq.getInt());
-                        ps.setInt(9, eq.getLuk());
-                        ps.setInt(10, eq.getHp());
-                        ps.setInt(11, eq.getMp());
-                        ps.setInt(12, eq.getWatk());
-                        ps.setInt(13, eq.getMatk());
-                        ps.setInt(14, eq.getWdef());
-                        ps.setInt(15, eq.getMdef());
-                        ps.setInt(16, eq.getAcc());
-                        ps.setInt(17, eq.getAvoid());
-                        ps.setInt(18, eq.getHands());
-                        ps.setInt(19, eq.getSpeed());
-                        ps.setInt(20, eq.getJump());
-                        ps.setString(21, eq.getOwner());
+                        ps.setInt(3, eq.getItemId());
+                        ps.setInt(4, 1);
+                        ps.setInt(5, eq.getUpgradeSlots());
+                        ps.setInt(6, eq.getLevel());
+                        ps.setInt(7, eq.getStr());
+                        ps.setInt(8, eq.getDex());
+                        ps.setInt(9, eq.getInt());
+                        ps.setInt(10, eq.getLuk());
+                        ps.setInt(11, eq.getHp());
+                        ps.setInt(12, eq.getMp());
+                        ps.setInt(13, eq.getWatk());
+                        ps.setInt(14, eq.getMatk());
+                        ps.setInt(15, eq.getWdef());
+                        ps.setInt(16, eq.getMdef());
+                        ps.setInt(17, eq.getAcc());
+                        ps.setInt(18, eq.getAvoid());
+                        ps.setInt(19, eq.getHands());
+                        ps.setInt(20, eq.getSpeed());
+                        ps.setInt(21, eq.getJump());
+                        ps.setString(22, eq.getOwner());
                     } else {
-                        ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO hiredmerchant" + table + " (ownerid, itemid, quantity, owner, type) VALUES (?, ?, ?, ?, 0)");
-                        ps.setInt(2, pItems.getItem().getItemId());
-                        ps.setInt(3, pItems.getBundles());
-                        ps.setString(4, pItems.getItem().getOwner());
+                        ps = DatabaseConnection.getConnection().prepareStatement(
+                            "INSERT INTO ? (ownerid, itemid, quantity, owner, type) VALUES (?, ?, ?, ?, 0)"
+                        );
+                        ps.setInt(3, pItems.getItem().getItemId());
+                        ps.setInt(4, pItems.getBundles());
+                        ps.setString(5, pItems.getItem().getOwner());
                     }
-                    ps.setInt(1, getOwnerId());
+                    ps.setString(1, "hiredmerchant" + table);
+                    ps.setInt(2, getOwnerId());
                     ps.executeUpdate();
                     ps.close();
                 }

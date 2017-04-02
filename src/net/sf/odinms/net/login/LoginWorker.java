@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.Map.Entry;
 
 public class LoginWorker implements Runnable {
     private static final LoginWorker instance = new LoginWorker();

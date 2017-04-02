@@ -187,12 +187,15 @@ public class CQuest {
     public void complete() {
         final MapleClient c = player.getClient();
         final AbstractPlayerInteraction api = new AbstractPlayerInteraction(c);
-        double expMulti = (double) player.getExpEffectiveLevel() / 10.0d;
+        final boolean firstTime = !player.completedCQuest(quest.getId()) || quest.isRepeatable();
+        double expMulti = (double) player.getExpEffectiveLevel() / (firstTime ? 10.0d : 20.0d);
         player.gainExp((int) (quest.getExpReward() * expMulti), true, true);
-        player.gainMeso(quest.getMesoReward(), true, false, true);
+        player.gainMeso(quest.getMesoReward() / (firstTime ? 1 : 2), true, false, true);
         quest.readItemsToCollect().forEach((itemId, qtyAndName) -> api.gainItem(itemId, (short) -qtyAndName.getLeft()));
-        quest.readItemRewards().forEach((itemId, count) -> api.gainItem(itemId, count.shortValue()));
-        quest.readOtherRewards().forEach(consumer -> consumer.accept(player));
+        if (firstTime) {
+            quest.readItemRewards().forEach((itemId, count) -> api.gainItem(itemId, count.shortValue()));
+            quest.readOtherRewards().forEach(consumer -> consumer.accept(player));
+        }
         CQuestStatus completionLevel =
             quest.getCompletionLevel(
                 effectivePlayerLevel > 0 ?
@@ -266,5 +269,11 @@ public class CQuest {
             return player.getQuestEffectiveLevel() <= effectivePlayerLevel;
         }
         return player.getLevel() <= effectivePlayerLevel;
+    }
+
+    public void softReload() {
+        final int questId = quest.getId();
+        quest = MapleCQuests.loadQuest(questId);
+        player.updateQuestEffectiveLevel();
     }
 }

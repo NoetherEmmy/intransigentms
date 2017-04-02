@@ -12,7 +12,6 @@ import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.server.movement.LifeMovementFragment;
 import net.sf.odinms.tools.MaplePacketCreator;
-import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +26,10 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int objectid = slea.readInt();
-        short moveid = slea.readShort();
+        int oid = slea.readInt();
+        short moveId = slea.readShort();
         final MapleMap map = c.getPlayer().getMap();
-        MapleMapObject mmo = map.getMapObject(objectid);
+        MapleMapObject mmo = map.getMapObject(oid);
         if (mmo == null || mmo.getType() != MapleMapObjectType.MONSTER) {
             /*
             if (mmo != null) {
@@ -38,14 +37,14 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
                     "[dc] Player {} is trying to move something which is not a monster. It is a {}.",
                     new Object[] {
                         c.getPlayer().getName(),
-                        map.getMapObject(objectid).getClass().getCanonicalName()
+                        map.getMapObject(oid).getClass().getCanonicalName()
                     }
                 );
             }
             */
             return;
         }
-        MapleMonster monster = (MapleMonster) mmo;
+        final MapleMonster monster = (MapleMonster) mmo;
         List<LifeMovementFragment> res;
         int skillByte = slea.readByte();
         int skill = slea.readByte();
@@ -55,30 +54,19 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         @SuppressWarnings("unused")
         int skill_4 = slea.readByte();
         MobSkill toUse = null;
-        Random rand = new Random();
+        boolean damagingSkill = true;
+        final Random rand = new Random();
         if (skillByte == 1 && monster.getNoSkills() > 0) {
-            int random = rand.nextInt(monster.getNoSkills());
-            Pair<Integer, Integer> skillToUse = monster.getSkills().get(random);
-            toUse = MobSkillFactory.getMobSkill(skillToUse.getLeft(), skillToUse.getRight());
-            if (toUse == null) {
-                System.err.println(
-                    "Failed to get mob skill with ID " +
-                        skillToUse.getLeft() +
-                        " and level " +
-                        skillToUse.getRight() +
-                        ". Mob ID: " +
-                        monster.getId()
-                );
-            }
+            final int random = rand.nextInt(monster.getNoSkills());
+            toUse = monster.getSkills().get(random);
             int percHpLeft = monster.getHp() / monster.getMaxHp() * 100;
-            if (toUse == null || toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) {
-                toUse = null;
-            }
+            if (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) toUse = null;
         }
         if (skill_1 >= 100 && skill_1 <= 200 && monster.hasSkill(skill_1, skill_2)) {
             MobSkill skillData = MobSkillFactory.getMobSkill(skill_1, skill_2);
             if (skillData != null && monster.canUseSkill(skillData)) {
                 skillData.applyEffect(c.getPlayer(), monster, true);
+                damagingSkill = false;
             }
         }
         slea.readByte();
@@ -87,7 +75,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         int start_y = slea.readShort();
         Point startPos = new Point(start_x, start_y);
         res = parseMovement(slea);
-        if (monster.getController() != c.getPlayer()) {
+        if (!c.getPlayer().equals(monster.getController())) {
             if (monster.isAttackedBy(c.getPlayer())) { // Aggro and controller change.
                 monster.switchController(c.getPlayer(), true);
             } else {
@@ -104,13 +92,14 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
                 monster.setControllerKnowsAboutAggro(false);
             }
         }
-        boolean aggro = monster.isControllerHasAggro();
+        final boolean aggro = monster.isControllerHasAggro();
 
         if (toUse != null) {
+            if (damagingSkill) monster.reduceComa();
             c.getSession().write(
                 MaplePacketCreator.moveMonsterResponse(
-                    objectid,
-                    moveid,
+                    oid,
+                    moveId,
                     monster.getMp(),
                     aggro,
                     toUse.getSkillId(),
@@ -120,60 +109,57 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         } else {
             c.getSession().write(
                 MaplePacketCreator.moveMonsterResponse(
-                    objectid,
-                    moveid,
+                    oid,
+                    moveId,
                     monster.getMp(),
                     aggro
                 )
             );
         }
-        if (aggro) {
-            monster.setControllerKnowsAboutAggro(true);
-        }
-        if (res != null) {
-            if (slea.available() != 9) {
-                map.removePlayer(c.getPlayer());
-                map.addPlayer(c.getPlayer());
-                log.warn("slea.available != 9 (movement parsing error)");
-                c.getPlayer().getCheatTracker().incrementVac();
-                if (c.getPlayer().getCheatTracker().getVac() >= 5) {
-                    AutobanManager.getInstance().autoban(c, "Monster vac.");
-                    return;
-                }
-                try {
-                    c.getChannelServer()
-                     .getWorldInterface()
-                     .broadcastGMMessage(
-                         null,
-                         MaplePacketCreator.serverNotice(6,
-                             "WARNING: It appears that the player with name " +
-                             MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
-                             " on channel " +
-                             c.getChannel() +
-                             " is vac hacking."
-                         ).getBytes()
-                     );
-                } catch (RemoteException re) {
-                    re.printStackTrace();
-                    c.getChannelServer().reconnectWorld();
-                }
+        if (aggro) monster.setControllerKnowsAboutAggro(true);
+        if (res == null) return;
+        if (slea.available() != 9) {
+            map.removePlayer(c.getPlayer());
+            map.addPlayer(c.getPlayer());
+            log.warn("slea.available != 9 (movement parsing error)");
+            c.getPlayer().getCheatTracker().incrementVac();
+            if (c.getPlayer().getCheatTracker().getVac() >= 5) {
+                AutobanManager.getInstance().autoban(c, "Monster vac.");
                 return;
             }
-            MaplePacket packet =
-                MaplePacketCreator.moveMonster(
-                    skillByte,
-                    skill,
-                    skill_1,
-                    skill_2,
-                    skill_3,
-                    objectid,
-                    startPos,
-                    res
-                );
-            map.broadcastMessage(c.getPlayer(), packet, monster.getPosition());
-            updatePosition(res, monster, -1);
-            map.moveMonster(monster, monster.getPosition());
-            c.getPlayer().getCheatTracker().checkMoveMonster(monster.getPosition());
+            try {
+                c.getChannelServer()
+                 .getWorldInterface()
+                 .broadcastGMMessage(
+                     null,
+                     MaplePacketCreator.serverNotice(6,
+                         "WARNING: It appears that the player with name " +
+                         MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) +
+                         " on channel " +
+                         c.getChannel() +
+                         " is vac hacking."
+                     ).getBytes()
+                 );
+            } catch (RemoteException re) {
+                re.printStackTrace();
+                c.getChannelServer().reconnectWorld();
+            }
+            return;
         }
+        MaplePacket packet =
+            MaplePacketCreator.moveMonster(
+                skillByte,
+                skill,
+                skill_1,
+                skill_2,
+                skill_3,
+                oid,
+                startPos,
+                res
+            );
+        map.broadcastMessage(c.getPlayer(), packet, monster.getPosition());
+        updatePosition(res, monster, -1);
+        map.moveMonster(monster, monster.getPosition());
+        c.getPlayer().getCheatTracker().checkMoveMonster(monster.getPosition());
     }
 }

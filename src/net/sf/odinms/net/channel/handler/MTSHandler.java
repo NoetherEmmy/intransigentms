@@ -124,7 +124,8 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                         } else {
                             date += day + "";
                         }
-                        ps = con.prepareStatement("SELECT count(*) FROM mts_items WHERE seller = " + c.getPlayer().getId());
+                        ps = con.prepareStatement("SELECT COUNT(*) FROM mts_items WHERE seller = ?");
+                        ps.setInt(1, c.getPlayer().getId());
                         ResultSet rs = ps.executeQuery();
                         rs.next();
                         if (rs.getInt(1) >= 10) {
@@ -136,8 +137,10 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                         }
                         if (i.getType() == 2) {
                             Item item = (Item) i;
-                            ps = con.prepareStatement("INSERT INTO mts_items (tab, type, itemid, quantity, seller, price, owner, sellername, sell_ends) VALUES " +
-                            "(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                            ps = con.prepareStatement(
+                                "INSERT INTO mts_items (tab, type, itemid, quantity, seller, price, owner, sellername, sell_ends) " +
+                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                            );
                             ps.setInt(1, 1);
                             ps.setInt(2, 2);
                             ps.setInt(3, item.getItemId());

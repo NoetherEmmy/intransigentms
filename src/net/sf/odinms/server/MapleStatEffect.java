@@ -649,14 +649,16 @@ public class MapleStatEffect implements Serializable {
                        .stream()
                        .map(mmo -> (MapleMonster) mmo)
                        .forEach(mob -> {
-                           int localMin = (int) (min * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.6d);
+                           final boolean immune = mob.isBuffed(MonsterStatus.WEAPON_IMMUNITY);
+                           int localMin = immune ? 1 : (int) (min * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.6d);
                            localMin = Math.max(1, localMin);
-                           int localMax = (int) (max * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.5d);
+                           int localMax = immune ? 1 : (int) (max * (1.0d - 0.01d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) - (double) mob.getWdef() * 0.5d);
                            localMax = Math.max(1, localMax);
                            double chanceToHit =
                                attacker.getAccuracy() / ((1.84d + 0.07d * Math.max(mob.getLevel() - attacker.getLevel(), 0.0d)) * (double) mob.getAvoid()) - 1.0d;
                            if (Math.random() < chanceToHit) {
                                int dmg = (int) ((rand.nextInt(localMax - localMin) + localMin) * mob.getVulnerability());
+                               if (immune) dmg = Math.min(1, dmg);
                                map.broadcastMessage(
                                    attacker,
                                    MaplePacketCreator.damageMonster(
@@ -682,56 +684,79 @@ public class MapleStatEffect implements Serializable {
             applyTo.setStance(0); // TODO: Fix death bug, player doesn't spawn on other screen
         }
         if (isDispel() && makeChanceResult()) {
-            MonsterStatus[] remove = {MonsterStatus.ACC, MonsterStatus.AVOID, MonsterStatus.WEAPON_IMMUNITY, MonsterStatus.MAGIC_IMMUNITY, MonsterStatus.SPEED};
-            for (MapleMapObject _mob : applyFrom.getMap().getMapObjectsInRange(applyFrom.getPosition(), 30000 + applyFrom.getSkillLevel(sourceid) * 1000, MapleMapObjectType.MONSTER)) {
-                MapleMonster mob = (MapleMonster) _mob;
-                if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
+            final MonsterStatus[] remove = {
+                MonsterStatus.ACC, MonsterStatus.AVOID, MonsterStatus.SPEED,
+                MonsterStatus.WEAPON_DEFENSE_UP, MonsterStatus.MAGIC_DEFENSE_UP,
+                MonsterStatus.WEAPON_ATTACK_UP,  MonsterStatus.MAGIC_ATTACK_UP
+            };
+            applyFrom
+                .getMap()
+                .getMapObjectsInRange(
+                    applyFrom.getPosition(),
+                    30000.0d + applyFrom.getSkillLevel(sourceid) * 1000.0d,
+                    MapleMapObjectType.MONSTER
+                )
+                .stream()
+                .map(mmo -> (MapleMonster) mmo)
+                .forEach(mob -> {
+                    if (mob == null || !mob.isAlive() || !mob.isBuffed()) return;
                     for (int i = 0; i < remove.length; ++i) {
-                        if (mob.getMonsterBuffs().contains(remove[i])) {
-                            mob.getMonsterBuffs().remove(remove[i]);
-                            MaplePacket packet = MaplePacketCreator.cancelMonsterStatus(mob.getObjectId(), Collections.singletonMap(remove[i], 1));
-                            mob.getMap().broadcastMessage(packet, mob.getPosition());
-                            if (mob.getController() != null && !mob.getController().isMapObjectVisible(mob)) {
-                                mob.getController().getClient().getSession().write(packet);
-                            }
+                        if (!mob.isBuffed(remove[i])) continue;
+                        mob.removeMonsterBuff(remove[i]);
+                        final MaplePacket packet =
+                            MaplePacketCreator.cancelMonsterStatus(mob.getObjectId(), remove[i]);
+                        mob.getMap().broadcastMessage(packet, mob.getPosition());
+                        if (mob.getController() != null && !mob.getController().isMapObjectVisible(mob)) {
+                            mob.getController().getClient().getSession().write(packet);
                         }
                     }
-                }
-            }
+                });
             applyTo.dispelDebuffs();
         }
         if (isCrash() && makeChanceResult()) {
-            MonsterStatus remove;
+            final MonsterStatus remove, remove2;
             switch (sourceid) {
                 case 1311007: // Power Crash
                     remove = MonsterStatus.WEAPON_ATTACK_UP;
+                    remove2 = MonsterStatus.WEAPON_IMMUNITY;
                     break;
                 case 1211009: // Magic Crash
                     remove = MonsterStatus.MAGIC_DEFENSE_UP;
+                    remove2 = MonsterStatus.MAGIC_IMMUNITY;
                     break;
                 case 1111007: // Armor Crash
                     remove = MonsterStatus.WEAPON_DEFENSE_UP;
+                    remove2 = MonsterStatus.WEAPON_IMMUNITY;
                     break;
-                default:      // ???!!!
-                    remove = MonsterStatus.STUN;
-                    break;
+                default:
+                    throw new RuntimeException("Unrecognized crash skill");
             }
-            List<MapleMapObject> mobsInRange;
-            mobsInRange =
+            final List<MapleMapObject> mobsInRange =
                 applyFrom.getMap()
                     .getMapObjectsInRange(
                         applyFrom.getPosition(),
-                        200000 + applyFrom.getSkillLevel(sourceid) * 10000,
+                        200000.0d + applyFrom.getSkillLevel(sourceid) * 10000.0d,
                         MapleMapObjectType.MONSTER
                     );
             for (MapleMapObject _mob : mobsInRange) {
-                MapleMonster mob = (MapleMonster) _mob;
-                if (mob != null && mob.isAlive() && !mob.getMonsterBuffs().isEmpty()) {
-                    if (mob.getMonsterBuffs().contains(remove)) {
-                        mob.getMonsterBuffs().remove(remove);
+                final MapleMonster mob = (MapleMonster) _mob;
+                if (mob != null && mob.isAlive() && mob.isBuffed()) {
+                    if (mob.isBuffed(remove)) {
+                        mob.removeMonsterBuff(remove);
                         MaplePacket packet = MaplePacketCreator.cancelMonsterStatus(
                             mob.getObjectId(),
-                            Collections.singletonMap(remove, 1)
+                            remove
+                        );
+                        mob.getMap().broadcastMessage(packet, mob.getPosition());
+                        if (mob.getController() != null && !mob.getController().isMapObjectVisible(mob)) {
+                            mob.getController().getClient().getSession().write(packet);
+                        }
+                    }
+                    if (mob.isBuffed(remove2)) {
+                        mob.removeMonsterBuff(remove2);
+                        MaplePacket packet = MaplePacketCreator.cancelMonsterStatus(
+                            mob.getObjectId(),
+                            remove2
                         );
                         mob.getMap().broadcastMessage(packet, mob.getPosition());
                         if (mob.getController() != null && !mob.getController().isMapObjectVisible(mob)) {

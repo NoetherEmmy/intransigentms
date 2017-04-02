@@ -2,6 +2,7 @@ package net.sf.odinms.net.channel.handler;
 
 import net.sf.odinms.client.*;
 import net.sf.odinms.client.MapleCharacter.CancelCooldownAction;
+import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.net.MaplePacket;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.MapleItemInformationProvider;
@@ -43,7 +44,8 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
         if (
             player.getTotalInt() >= 650 &&
             attack.skill == 5121002 &&
-            player.isBareHanded()
+            player.isBareHanded() &&
+            player.canQuestEffectivelyUseSkill(attack.skill)
         ) {
             // Ahimsa
             c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
@@ -54,13 +56,11 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             //}
         }
 
-        if (player.getMap().isDamageMuted()) {
+        if (!player.canQuestEffectivelyUseSkill(attack.skill) || player.getMap().isDamageMuted()) {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 MapleMonster monster = null;
-                if (dmg != null) {
-                    monster = player.getMap().getMonsterByOid(dmg.getLeft());
-                }
+                if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 if (monster == null) continue;
                 List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
                 for (Integer dmgNumber : dmg.getRight()) {
@@ -77,10 +77,9 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
         for (int i = 0; i < attack.allDamage.size(); ++i) {
             Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
             MapleMonster monster = null;
-            if (dmg != null) {
-                monster = player.getMap().getMonsterByOid(dmg.getLeft());
-            }
+            if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
             if (monster == null) continue;
+            if (monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
             ElementalEffectiveness ee = null;
             if (skillUsed != null && skillUsed.getElement() != Element.NEUTRAL) {
                 ee = monster.getAddedEffectiveness(skillUsed.getElement());
@@ -93,8 +92,8 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             }
 
             double multiplier = monster.getVulnerability();
-            List<Integer> additionalDmg = new ArrayList<>();
-            List<Integer> newDmg = new ArrayList<>();
+            List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+            List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
             if (ee != null) {
                 switch (ee) {
                     case WEAK:
@@ -136,6 +135,8 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 if (dmg == null) continue;
+                final MapleMonster m = player.getMap().getMonsterByOid(dmg.getLeft());
+                if (m == null || m.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
                 List<Integer> additionaldmg = new ArrayList<>(dmg.getRight().size());
                 List<Integer> newdmg = new ArrayList<>(dmg.getRight().size());
                 for (Integer dmgnumber : dmg.getRight()) {
@@ -259,8 +260,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 try {
                     MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, projectile, bulletConsume, false, true);
                 } catch (InventoryException ie) {
-                    String projectilename = mii.getName(projectile);
-                    player.dropMessage(5, "You do not have enough " + projectilename + "s to use that skill.");
+                    player.dropMessage(5, "You do not have enough " + mii.getName(projectile) + "s to use that skill.");
                     return;
                 }
             }
@@ -318,7 +318,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                     }
                     player.getMap().broadcastMessage(player, packet, false, true);
                 } catch (Exception e) {
-                    log.warn("Failed to handle ranged attack.", e);
+                    log.warn("Failed to handle ranged attack. ", e);
                 }
 
                 //int basedamage;
@@ -414,12 +414,12 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                                         c.getPlayer(),
                                         attack.skill
                                     ),
-                                    effect_.getCooldown() * 1000
+                                    effect_.getCooldown() * 1000L
                                 );
                         player.addCooldown(
                             attack.skill,
                             System.currentTimeMillis(),
-                            effect_.getCooldown() * 1000,
+                            effect_.getCooldown() * 1000L,
                             timer
                         );
                     }

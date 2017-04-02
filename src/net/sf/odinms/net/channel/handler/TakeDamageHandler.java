@@ -43,41 +43,38 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         boolean dodge = false;
         boolean advaita = false;
 
-        if (player.getMap().isDamageMuted()) {
-            return;
-        }
+        if (player.getMap().isDamageMuted()) return;
 
-        float damageScale = player.getDamageScale();
-        damage = (int) ((float) damage * damageScale);
+        if (damage > 0) {
+            final float damageScale = player.getDamageScale();
+            damage = (int) ((float) damage * damageScale);
+        }
 
         if (damageFrom == -2) {
             int debuffLevel = slea.readByte();
             int debuffId = slea.readByte();
-            if (debuffId == 125) {
-                debuffLevel = debuffLevel - 1;
-            }
+            if (debuffId == 125) debuffLevel = debuffLevel - 1;
             MobSkill skill = MobSkillFactory.getMobSkill(debuffId, debuffLevel);
             if (skill != null) {
-                try {
+                final MapleMapObject mmo = player.getMap().getMapObject(oid);
+                if (mmo != null && mmo.getType() == MapleMapObjectType.MONSTER) {
                     attacker = (MapleMonster) player.getMap().getMapObject(oid);
-                } catch (ClassCastException cce) {
-                    cce.printStackTrace();
                 }
                 if (attacker != null) {
                     skill.applyEffect(player, attacker, false);
+                    player.setLastDamageSource(attacker);
                 }
             }
         } else {
             monsterIdFrom = slea.readInt();
             oid = slea.readInt();
-            try {
+            final MapleMapObject mmo = player.getMap().getMapObject(oid);
+            if (mmo != null && mmo.getType() == MapleMapObjectType.MONSTER) {
                 attacker = (MapleMonster) player.getMap().getMapObject(oid);
-            } catch (ClassCastException ignored) {
             }
-            try {
-                player.setLastDamageSource(MapleLifeFactory.getMonster(monsterIdFrom));
-            } catch (Exception e) {
-                e.printStackTrace();
+            final MapleMonster genericMob = MapleLifeFactory.getMonster(monsterIdFrom);
+            if (genericMob != null) {
+                player.setLastDamageSource(genericMob);
             }
             direction = slea.readByte();
         }
@@ -148,24 +145,23 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
         boolean smokescreened = false;
         try {
-            final Iterator<MapleMapObject> mmoiter = player.getMap().getMapObjects().iterator();
-            while (mmoiter.hasNext()) {
-                MapleMapObject mmo = mmoiter.next();
-                if (mmo instanceof MapleMist) {
-                    MapleMist mist = (MapleMist) mmo;
-                    if (mist.getSourceSkill().getId() == 4221006) { // Smokescreen
-                        List<MapleMapObject> mmoPlayers =
-                            player.getMap()
-                                  .getMapObjectsInRect(
-                                      mist.getBox(),
-                                      MapleMapObjectType.PLAYER
-                                  );
-                        for (MapleMapObject mmoPlayer : mmoPlayers) {
-                            if (player == mmoPlayer) {
-                                removedDamage += damage;
-                                damage = -1;
-                                smokescreened = true;
-                            }
+            final Collection<MapleMapObject> mmos = player.getMap().getMapObjects();
+            for (MapleMapObject mmo : mmos) {
+                if (!(mmo instanceof MapleMist)) continue;
+                final MapleMist mist = (MapleMist) mmo;
+                if (mist.getSourceSkill().getId() == 4221006) { // Smokescreen
+                    final List<MapleMapObject> mmoPlayers =
+                        player
+                            .getMap()
+                            .getMapObjectsInRect(
+                                mist.getBox(),
+                                MapleMapObjectType.PLAYER
+                            );
+                    for (MapleMapObject mmoPlayer : mmoPlayers) {
+                        if (player.equals(mmoPlayer)) {
+                            removedDamage += damage;
+                            damage = -1;
+                            smokescreened = true;
                         }
                     }
                 }
@@ -176,7 +172,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         }
 
         if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got
-                                              // damage removed by smokescreen don't get to stun mobs
+                                              // damage removed by smokescreen don't get to stun mobs.
             int job = player.getJob().getId() / 10 - 40;
             fake = 4020002 + (job * 100000);
             if (damageFrom == -1 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
@@ -274,13 +270,14 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         player.getMap().damageMonster(player, attacker, bounceDamage);
                         damage -= bounceDamage;
                         removedDamage += bounceDamage;
-                        player.getMap()
-                              .broadcastMessage(
-                                  player,
-                                  MaplePacketCreator.damageMonster(oid, bounceDamage),
-                                  false,
-                                  true
-                              );
+                        player
+                            .getMap()
+                            .broadcastMessage(
+                                player,
+                                MaplePacketCreator.damageMonster(oid, bounceDamage),
+                                false,
+                                true
+                            );
                         player.checkMonsterAggro(attacker);
                     }
                     if (damageFrom == -1 && player.getSkillLevel(2310000) != 0) {
@@ -387,13 +384,11 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     }
                     player.addMP(-mpLoss);
                     damage = hpLoss;
-                    if (hypotheticalMpLoss > 0) {
-                        mpLoss = hypotheticalMpLoss;
-                    }
+                    if (hypotheticalMpLoss > 0) mpLoss = hypotheticalMpLoss;
                     removedDamage += mpLoss;
                 } else if (!belowLevelLimit && player.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
                     int oldDamage = damage;
-                    damage = (damage % 2 == 0) ? damage / 2 : (damage / 2) + 1; // Damage rounds up!
+                    damage = (damage % 2 == 0) ? damage / 2 : damage / 2 + 1; // Damage rounds up!
                     removedDamage += oldDamage - damage;
                     int mesoLoss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0d));
                     if (player.getMeso() < mesoLoss) {
@@ -445,6 +440,17 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         float absorbedDamageScaling = 1.0f + 200.0f / (float) p.getTotalInt();
                         p.absorbDamage(absorbed * absorbedDamageScaling, damageFrom);
                     }
+                }
+
+                // Handle attacks from monsters that are in a coma:
+                if (
+                    attacker != null &&
+                    damage > 0 &&
+                    ((damageFrom == -1 && attacker.reduceComa() > 0) || attacker.getComa() > 0)
+                ) {
+                    final int comaReduction = damage / 2;
+                    damage -= comaReduction;
+                    removedDamage += comaReduction;
                 }
 
                 player.addHP(-damage);

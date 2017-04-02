@@ -9,22 +9,17 @@ import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 public class MobSkill {
-    private final int skillId;
-    private final int skillLevel;
+    private final int skillId, skillLevel;
     private int mpCon;
-    private final List<Integer> toSummon = new ArrayList<>();
+    private final List<Integer> toSummon = new ArrayList<>(1);
     private int spawnEffect;
     private int hp;
-    private int x;
-    private int y;
-    private long duration;
-    private long cooltime;
+    private int x, y;
+    private long duration, cooltime;
     private float prop;
     private Point lt, rb;
     private int limit;
@@ -38,10 +33,9 @@ public class MobSkill {
         this.mpCon = mpCon;
     }
 
-    public void addSummons(List<Integer> toSummon) {
-        for (Integer summon : toSummon) {
-            this.toSummon.add(summon);
-        }
+    public void addSummons(Collection<Integer> toSummon) {
+        this.toSummon.addAll(toSummon);
+        ((ArrayList) this.toSummon).trimToSize();
     }
 
     public void setSpawnEffect(int spawnEffect) {
@@ -88,9 +82,7 @@ public class MobSkill {
         boolean dispel = false;
         boolean seduce = false;
         boolean banish = false;
-        if (skillId > 119 && skillId < 140 && player.isGM()) {
-            return;
-        }
+        if (skillId > 119 && skillId < 140 && player.isGM()) return;
         switch (skillId) {
             case 100:
             case 110:
@@ -166,9 +158,7 @@ public class MobSkill {
                             case 8500004: // Pap bomb
                                 //Spawn between -500 and 500 from the monsters X position
                                 xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0d) - 500);
-                                if (ypos != -590) {
-                                    ypos = (int) monster.getPosition().getY();
-                                }
+                                if (ypos != -590) ypos = (int) monster.getPosition().getY();
                                 break;
                             case 8510100: //Pianus bomb
                                 if (Math.ceil(Math.random() * 5) == 1) {
@@ -329,16 +319,39 @@ public class MobSkill {
     }
 
     private List<MapleCharacter> getPlayersInRange(MapleMonster monster, MapleCharacter player) {
-        Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-        List<MapleCharacter> players = new ArrayList<>();
-        players.add(player);
-        return monster.getMap().getPlayersInRect(bounds, players);
+        return
+            monster
+                .getMap()
+                .getPlayersInRect(
+                    calculateBoundingBox(
+                        monster.getPosition(),
+                        monster.isFacingLeft()
+                    ),
+                    player
+                );
     }
 
     private List<MapleMapObject> getObjectsInRange(MapleMonster monster, MapleMapObjectType objectType) {
-        Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-        List<MapleMapObjectType> objectTypes = new ArrayList<>();
-        objectTypes.add(objectType);
-        return monster.getMap().getMapObjectsInRect(bounds, objectTypes);
+        return
+            monster
+                .getMap()
+                .getMapObjectsInRect(
+                    calculateBoundingBox(
+                        monster.getPosition(),
+                        monster.isFacingLeft()
+                    ),
+                    objectType
+                );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (getClass() != o.getClass()) return false;
+        final MobSkill other = (MobSkill) o;
+        return
+            other.getSkillId() == getSkillId() &&
+            other.getSkillLevel() == getSkillLevel();
     }
 }

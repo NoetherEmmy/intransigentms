@@ -3,7 +3,7 @@ package net.sf.odinms.tools;
 import java.io.Serializable;
 
 /**
- * Represents a pair of values.
+ * Represents a pair (2-tuple) of values.
  *
  * @param <E> The type of the left value.
  * @param <F> The type of the right value.
@@ -70,23 +70,20 @@ public class Pair<E, F> implements Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final Pair other = (Pair) obj;
         if (left == null) {
-            if (other.left != null)
-                return false;
-        } else if (!left.equals(other.left))
+            if (other.left != null) return false;
+        } else if (!left.equals(other.left)) {
             return false;
+        }
         if (right == null) {
-            if (other.right != null)
-                return false;
-        } else if (!right.equals(other.right))
+            if (other.right != null) return false;
+        } else if (!right.equals(other.right)) {
             return false;
+        }
         return true;
     }
 }

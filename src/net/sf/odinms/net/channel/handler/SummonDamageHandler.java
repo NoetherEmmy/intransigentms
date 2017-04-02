@@ -5,6 +5,7 @@ import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.client.anticheat.CheatingOffense;
+import net.sf.odinms.client.status.MonsterStatus;
 import net.sf.odinms.client.status.MonsterStatusEffect;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.AutobanManager;
@@ -17,6 +18,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,7 +104,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             additionalDmg.add(new SummonAttackEntry(attackEntry.getMonsterOid(), 0));
         }
 
-        if (summonSkill.getId() == 2311006 || summonSkill.getId() == 2321003) { // Summon Dragon or Bahamut
+        if (summonSkill.getId() == 2311006 || summonSkill.getId() == 2321003) { // Summon Dragon | Bahamut
             double percentPerLevel;
             if (summonSkill.getId() == 2311006) {
                 percentPerLevel = 0.05d;
@@ -114,6 +116,8 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             int baseDmg;
             double skillLevelMultiplier = 1.5d + player.getSkillLevel(summonSkill) * percentPerLevel;
             for (int i = 0; i < allDamage.size(); ++i) {
+                final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
+                if (target == null || target.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) continue;
                 baseDmg = min + (int) (Math.random() * (double) (max - min + 1));
                 int thisDmg = allDamage.get(i).getDamage();
                 int addedDmg = (int) (baseDmg * skillLevelMultiplier);
@@ -126,6 +130,52 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                     )
                 );
                 allDamage.set(i, new SummonAttackEntry(allDamage.get(i).getMonsterOid(), thisDmg));
+            }
+        } else if (summonSkill.getId() == 3111005 || summonSkill.getId() == 3121006) { // Silver Hawk | Phoenix
+            int str = player.getTotalStr();
+            int dex = player.getTotalDex();
+            int pad = summonEffect.getWatk();
+            double mastery = summonSkill.getId() == 3111005 ? 0.6d : 0.8d;
+            double counterWeight = summonSkill.getId() == 3111005 ? 512.0d : 1280.0d;
+            int min = (int) ((str * str * mastery + dex) * pad / counterWeight);
+            int max = (int) ((double) (str * str + dex) * pad / counterWeight);
+            for (int i = 0; i < allDamage.size(); ++i) {
+                final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
+                if (target == null || target.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
+                int addedDmg = min + (int) (Math.random() * (double) (max - min + 1));
+                int thisDmg = allDamage.get(i).getDamage();
+                thisDmg += addedDmg;
+                additionalDmg.set(
+                    i,
+                    new SummonAttackEntry(
+                        additionalDmg.get(i).getMonsterOid(),
+                        additionalDmg.get(i).getDamage() + addedDmg
+                    )
+                );
+                allDamage.set(i, new SummonAttackEntry(allDamage.get(i).getMonsterOid(), thisDmg));
+                if (allDamage.get(i).getDamage() > 0) {
+                    if (summonSkill.getId() == 3111005) {
+                        int x = (int) Math.ceil(2.0d * Math.sqrt(Math.max(0, player.getTotalStr() - 400)) / 100.0d);
+                        MonsterStatusEffect monsterStatusEffect =
+                            new MonsterStatusEffect(
+                                Collections.singletonMap(
+                                    MonsterStatus.ACC,
+                                    x
+                                ),
+                                SkillFactory.getSkill(3221006),
+                                false
+                            );
+                        target.applyStatus(
+                            player,
+                            monsterStatusEffect,
+                            false,
+                            2L * 1000L
+                        );
+                    } else if (player.getStr() >= 512) {
+                        long seconds = (long) Math.ceil((double) player.getSkillLevel(3121006) / 3.0d);
+                        target.applyFlame(player, SkillFactory.getSkill(3121006), seconds * 1000L, false);
+                    }
+                }
             }
         }
 

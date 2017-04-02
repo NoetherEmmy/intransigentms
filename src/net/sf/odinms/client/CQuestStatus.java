@@ -21,12 +21,23 @@ public enum CQuestStatus implements IntValueHolder {
     }
 
     public static CQuestStatus getByValue(int val) {
-        for (CQuestStatus cqc : CQuestStatus.values()) {
-            if (cqc.getValue() == val) return cqc;
+        for (CQuestStatus cqs : CQuestStatus.values()) {
+            if (cqs.getValue() == val) return cqs;
         }
         return null;
     }
 
+    /**
+     * <ul>
+     * <li>pure?: yes</li>
+     * <li>nullable?: no</li>
+     * </ul>
+     *
+     * @param cqc1 The first {@code CQuestStatus} to be compared.
+     * @param cqc2 The second {@code CQuestStatus} to be compared.
+     * @throws NullPointerException when {@code cqc1 == null || cqc2 == null}.
+     * @return The maximum of the two arguments.
+     */
     public static CQuestStatus max(CQuestStatus cqc1, CQuestStatus cqc2) {
         return cqc1.getValue() >= cqc2.getValue() ? cqc1 : cqc2;
     }

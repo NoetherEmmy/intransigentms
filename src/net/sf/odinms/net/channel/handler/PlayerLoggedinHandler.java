@@ -105,7 +105,10 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT SkillID,StartTime,length FROM cooldowns WHERE charid = ?");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "SELECT SkillID, StartTime, length FROM cooldowns WHERE charid = ?"
+                );
             ps.setInt(1, c.getPlayer().getId());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -124,7 +127,10 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         c.getSession().write(MaplePacketCreator.getCharInfo(player));
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages WHERE RecieverId = ? and checked = 1");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "SELECT * FROM dueypackages WHERE RecieverId = ? and checked = 1"
+                );
             ps.setInt(1, c.getPlayer().getId());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -235,7 +241,10 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             }
             if (!reconnect && player.getMap().getPartyQuestInstance() != null) {
                 if (player.getMap().isPQMap() && player.getParty() != null) {
-                    if (player.getMapId() / 100 == player.getParty().getLeader().getMapid() / 100 && player.getMapId() != player.getParty().getLeader().getMapid()) {
+                    if (
+                        player.getMapId() / 100 == player.getParty().getLeader().getMapid() / 100 &&
+                        player.getMapId() != player.getParty().getLeader().getMapid()
+                    ) {
                         player.changeMap(player.getParty().getLeader().getMapid(), 0);
                     } else {
                         player.changeMap(100000000, 0);
@@ -249,8 +258,10 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         player.checkMessenger();
         player.checkBerserk();
-        if (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) == null ||
-            player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) < 1) {
+        if (
+            player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) == null ||
+            player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) < 1
+        ) {
             player.setMagicGuard(false);
             player.setMagicGuardCancelTask(null);
         }
@@ -265,9 +276,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.dropDailyPrizeTime(false);
         player.dropVoteTime();
         player.setInvincible(false);
-        if (player.getZakDc()) {
-            NPCScriptManager.getInstance().start(c, 2030013);
-        }
+        if (player.getZakDc()) NPCScriptManager.getInstance().start(c, 2030013);
         //
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9000014, "Geanie"));
         c.getSession().write(MaplePacketCreator.setNPCScriptable(9010010, "Cassandra"));

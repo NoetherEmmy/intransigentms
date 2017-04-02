@@ -46,34 +46,11 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
             return;
         }
 
-        if (p.getQuestEffectiveLevel() > 0 && p.getQuestEffectiveLevel() < p.getLevel()) {
-            if (skillId < 1000000) { // 0th job skill
-                if (skillId == 1005 && p.getQuestEffectiveLevel() < 200) { // Echo of Hero
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    return;
-                }
-            } else if (skillId / 10000 % 100 == 0) { // 1st job skill
-                if ((skillId / 1000000 != 2 && p.getQuestEffectiveLevel() < 10) || p.getQuestEffectiveLevel() < 8) {
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    return;
-                }
-            } else if (skillId / 10000 % 10 == 0) { // 2nd job skill
-                if (p.getQuestEffectiveLevel() < 30) {
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    return;
-                }
-            } else if (skillId / 10000 % 10 == 1) { // 3rd job skill
-                if (p.getQuestEffectiveLevel() < 70) {
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    return;
-                }
-            } else if (skillId / 10000 % 10 == 2) { // 4th job skill
-                if (p.getQuestEffectiveLevel() < 120) {
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    return;
-                }
-            }
+        if (!p.canQuestEffectivelyUseSkill(skillId)) {
+            c.getSession().write(MaplePacketCreator.enableActions());
+            return;
         }
+
         if (skill.isGMSkill() && !p.isGM()) {
             c.disconnect();
             c.getSession().close();

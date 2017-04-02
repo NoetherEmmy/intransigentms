@@ -85,7 +85,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
 
-    public void sendStyle(String text, int styles[]) {
+    public void sendStyle(String text, int[] styles) {
         getClient().getSession().write(MaplePacketCreator.getNPCTalkStyle(npc, text, styles));
     }
 
@@ -545,28 +545,21 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean isInMonsterTrial() {
-        if (getPlayer().getMapId() >= 1000 && getPlayer().getMapId() <= 1006) {
-            if (getPlayer().getHp() > 0) {
-                return true;
-            }
-        }
-        return false;
+        return
+            getPlayer().getMapId() >= 1000 &&
+            getPlayer().getMapId() <= 1006 &&
+            getPlayer().getHp() > 0;
     }
 
     public boolean canEnterMonsterTrial() {
-        if (System.currentTimeMillis() - getPlayer().getLastTrialTime() >= 7200000L) {
-            if (getPlayer().getLevel() >= 20) {
-                return true;
-            }
-        }
-        return false;
+        return
+            System.currentTimeMillis() - getPlayer().getLastTrialTime() >= 7200000L &&
+            getPlayer().getLevel() >= 20;
     }
 
     public int getMonsterTrialCooldown() {
-        long timesincelast = System.currentTimeMillis() - getPlayer().getLastTrialTime();
-        double inminutes = timesincelast / 60000.0;
-        inminutes = Math.floor(inminutes);
-        return 120 - (int) inminutes;
+        final long timeSinceLast = System.currentTimeMillis() - getPlayer().getLastTrialTime();
+        return 120 - (int) (timeSinceLast / 60000.0d);
     }
 
     public int getMonsterTrialPoints() {
@@ -578,47 +571,24 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public int getTierPoints(int tier) {
-        if (tier < 1) {
-            return 0;
-        }
+        if (tier < 1) return 0;
         return (int) (getTierPoints(tier - 1) + (10 * Math.pow(tier + 1, 2)) * (Math.floor(tier * 1.5d) + 3));
     }
 
     public int calculateLevelGroup(int level) {
         int lg = 0;
-        if (level >= 20) {
-            lg++;
-        }
-        if (level >= 26) {
-            lg++;
-        }
-        if (level >= 31) {
-            lg++;
-        }
-        if (level >= 41) {
-            lg++;
-        }
-        if (level >= 51) {
-            lg++;
-        }
-        if (level >= 71) {
-            lg++;
-        }
-        if (level >= 91) {
-            lg++;
-        }
-        if (level >= 101) {
-            lg++;
-        }
-        if (level >= 121) {
-            lg++;
-        }
-        if (level >= 141) {
-            lg++;
-        }
-        if (level >= 161) {
-            lg++;
-        }
+        if (level >= 20)  lg++;
+        if (level >= 26)  lg++;
+        if (level >= 31)  lg++;
+        if (level >= 41)  lg++;
+        if (level >= 51)  lg++;
+        if (level >= 71)  lg++;
+        if (level >= 91)  lg++;
+        if (level >= 101) lg++;
+        if (level >= 121) lg++;
+        if (level >= 141) lg++;
+        if (level >= 161) lg++;
+        if (level >= 201) lg++;
         return lg;
     }
 
@@ -629,64 +599,67 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
           *                representation corresponding to how many should be spawned. Thus the raw magnitudes of
           *                these ints are ~1 order of magnitude larger than the actual IDs would be.
           */
-        final int monsters[][] = {
+        final int[][] monsters = {
             {22200002, 32200001, 95001692, 95001683}, // 20 - 25
             {95001693, 32200002, 32200011, 95001701}, // 26 - 30
             {32200012, 93000031, 42200011, 95001702, 95003281}, // 31 - 40
             {42200012, 95003281, 52200021, 95001771, 51201001, 95003301}, // 41 - 50
             {52200011, 95001771, 52200031, 95003341, 95001761, 61301011, 62200001, 62200011}, // 51 - 70
-            {62200011, 52200012, 71304002, 71304012, 71304022,
-             93000121, 95001731, 95001741, 63000051, 72200001, 71103003, 90010041}, // 71 - 90
-            {82200021, 82200001, 81301001, 72200021, 93000121, 95001731, 95001741, 94100141}, // 91 - 100
-            {82200011, 94002051, 93001191, 93000391, 95003351, 94001201, 81700001, 81600001}, // 101 - 120
-            {81500001, 93000281, 93000891, 93000901, 93000311, 93000321}, // 121 - 140
-            {81800001, 81800011, 94005361, 85000011}, // 141 - 160
-            {85200001, 94005751, 94000141, 94001211}  // 161+
+            {62200011, 52200012, 71304002, 71304012, 71304022, 93000121, 95001731,
+                95001741, 63000051, 72200001, 71103003, 90010041, 72200031, 82200101}, // 71 - 90
+            {82200021, 82200001, 81301001, 72200021, 93000121,
+                95001731, 95001741, 94100141, 82200101, 82200091, 82200121, 82200141}, // 91 - 100
+            {82200013, 94002052, 93001192,
+                93000392, 95003352, 94001201, 81700003, 81600003, 82200041, 82200141}, // 101 - 120
+            {81500001, 93000281, 93000891, 93000901, 93000311, 93000321, 82200051, 82200061}, // 121 - 140
+            {81800001, 81800011, 94005362, 85000011}, // 141 - 160
+            {85200001, 94005751, 94000141}, // 161 - 200
+            {94005752, 94000142, 94006591, 94001211}  // 201 - 250
         };
-        MapleMap map;
+
         for (int mapid = 1000; mapid <= 1006; ++mapid) {
-            map = c.getChannelServer().getMapFactory().getMap(mapid);
+            final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
             if (map.playerCount() == 0) {
                 map.killAllMonsters(false);
                 getPlayer().setTrialReturnMap(getPlayer().getMapId());
                 getPlayer().changeMap(map, map.getPortal(0));
-                final int returnmapid = getPlayer().getTrialReturnMap();
+                final int returnMapId = getPlayer().getTrialReturnMap();
                 final MapleCharacter player = getPlayer();
                 TimerManager tMan = TimerManager.getInstance();
                 final Runnable endTrialTask = () -> {
                     if (player.getMapId() >= 1000 && player.getMapId() <= 1006) {
-                        player.changeMap(returnmapid, 0);
+                        player.changeMap(returnMapId, 0);
                     }
                 };
                 getPlayer().getClient().getSession().write(MaplePacketCreator.getClock(30 * 60)); // 30 minutes
-                int monsterchoices[] = monsters[calculateLevelGroup(getPlayer().getLevel()) - 1];
-                int monsterchoice = monsterchoices[(int) Math.floor(Math.random() * monsterchoices.length)];
-                int monsterid = (int) Math.floor((double) monsterchoice / 10.0);
-                int monstercount = monsterchoice % 10;
-                Point monsterspawnpoint = new Point(-336, -11); // (-336, 101)
-                for (int i = 0; i < monstercount; ++i) {
+                final int[] monsterChoices = monsters[calculateLevelGroup(getPlayer().getLevel()) - 1];
+                final int monsterChoice = monsterChoices[(int) (Math.random() * monsterChoices.length)];
+                final int monsterId = monsterChoice / 10;
+                final int monsterCount = monsterChoice % 10;
+                final Point monsterSpawnpoint = new Point(-336, -11); // (-336, 101)
+                for (int i = 0; i < monsterCount; ++i) {
                     try {
-                        map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(monsterid), monsterspawnpoint);
+                        map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(monsterId), monsterSpawnpoint);
                     } catch (NullPointerException npe) {
                         System.err.println(
                             "Player " +
                             player.getName() +
-                            " booted from Monster Trials; monsterchoice, monsterid: " +
-                            monsterchoice +
+                            " booted from Monster Trials; monsterChoice, monsterId: " +
+                            monsterChoice +
                             ", " +
-                            monsterid
+                            monsterId
                         );
                         npe.printStackTrace();
                         tMan.schedule(() -> {
-                            player.changeMap(returnmapid, 0);
+                            player.changeMap(returnMapId, 0);
                             player.dropMessage(
                                 "There was an error loading your Monster Trial! Tell a GM about this and try again."
                             );
-                        }, 500);
+                        }, 500L);
                         return true;
                     }
                 }
-                tMan.schedule(endTrialTask, 30 * 60 * 1000); // 30 minutes
+                tMan.schedule(endTrialTask, 30L * 60L * 1000L); // 30 minutes
                 getPlayer().setLastTrialTime(System.currentTimeMillis());
                 return true;
             }
@@ -695,7 +668,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean enterBossMap(int bossid) {
-        int mapId = 3000;
+        final int mapId = 3000;
         MapleMap map;
         List<MapleCharacter> partyMembers = new ArrayList<>(6);
         for (MaplePartyCharacter pm : getPlayer().getParty().getMembers()) {
@@ -720,8 +693,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             partyMembers.forEach(pm ->
                 pm.setForcedWarp(
                     pm.getBossReturnMap(),
-                    40 * 60 * 1000,
-                    mc -> mc.getMapId() == 3000
+                    40L * 60L * 1000L,
+                    mc -> mc.getMapId() == mapId
                 )
             );
 
@@ -746,12 +719,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean canLeaveMonsterTrial() {
-        if (getPlayer().getHp() > 0) {
-            if (getPlayer().getMap().mobCount() < 1) {
-                return true;
-            }
-        }
-        return false;
+        return getPlayer().getHp() > 0 && getPlayer().getMap().mobCount() < 1;
     }
 
     public int getMonsterTrialReturnMap() {
@@ -936,7 +904,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public MapleSquad createMapleSquad(MapleSquadType type) {
-        MapleSquad squad = new MapleSquad(c.getChannel(), getPlayer());
+        final MapleSquad squad = new MapleSquad(c.getChannel(), getPlayer());
         if (getSquadState(type) == 0) {
             c.getChannelServer().addMapleSquad(squad, type);
         } else {
@@ -946,79 +914,59 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public MapleCharacter getSquadMember(MapleSquadType type, int index) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        MapleCharacter ret = null;
-        if (squad != null) {
-            ret = squad.getMembers().get(index);
-        }
-        return ret;
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        return squad != null ? squad.getMembers().get(index) : null;
     }
 
     public int getSquadState(MapleSquadType type) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        if (squad != null) {
-            return squad.getStatus();
-        } else {
-            return 0;
-        }
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        return squad != null ? squad.getStatus() : 0;
     }
 
     public void setSquadState(MapleSquadType type, int state) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        if (squad != null) {
-            squad.setStatus(state);
-        }
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        if (squad != null) squad.setStatus(state);
     }
 
     public boolean checkSquadLeader(MapleSquadType type) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         return squad != null && squad.getLeader().getId() == getPlayer().getId();
     }
 
     public void removeMapleSquad(MapleSquadType type) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        if (squad != null) {
-            if (squad.getLeader().getId() == getPlayer().getId()) {
-                squad.clear();
-                c.getChannelServer().removeMapleSquad(squad, type);
-            }
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        if (squad != null && squad.getLeader().getId() == getPlayer().getId()) {
+            squad.clear();
+            c.getChannelServer().removeMapleSquad(squad, type);
         }
     }
 
     public int numSquadMembers(MapleSquadType type) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        int ret = 0;
-        if (squad != null) {
-            ret = squad.getSquadSize();
-        }
-        return ret;
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        return squad != null ? squad.getSquadSize() : 0;
     }
 
     public boolean isSquadMember(MapleSquadType type) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        boolean ret = false;
-        if (squad.containsMember(getPlayer())) {
-            ret = true;
-        }
-        return ret;
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        return squad.containsMember(getPlayer());
     }
 
     public void addSquadMember(MapleSquadType type) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         if (squad != null) {
             squad.addMember(getPlayer());
         }
     }
 
     public void removeSquadMember(MapleSquadType type, MapleCharacter member, boolean ban) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         if (squad != null) {
             squad.banMember(member, ban);
         }
     }
 
     public void removeSquadMember(MapleSquadType type, int index, boolean ban) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         if (squad != null) {
             MapleCharacter player = squad.getMembers().get(index);
             squad.banMember(player, ban);
@@ -1026,18 +974,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean canAddSquadMember(MapleSquadType type) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
         return squad != null && !squad.isBanned(getPlayer());
     }
 
     public void warpSquadMembers(MapleSquadType type, int mapId) {
-        MapleSquad squad = c.getChannelServer().getMapleSquad(type);
-        MapleMap map = c.getChannelServer().getMapFactory().getMap(mapId);
-        if (squad != null) {
-            if (checkSquadLeader(type)) {
-                for (MapleCharacter member : squad.getMembers()) {
-                    member.changeMap(map, map.getPortal(0));
-                }
+        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapId);
+        if (squad != null && checkSquadLeader(type)) {
+            for (MapleCharacter member : squad.getMembers()) {
+                member.changeMap(map, map.getPortal(0));
             }
         }
     }
@@ -1543,13 +1489,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleInventory etc = c.getPlayer().getInventory(MapleInventoryType.ETC);
         List<Integer> leaveBehind = Arrays.asList(lb1, lb2, lb3, lb4);
         List<IItem> cleared = new LinkedList<>(); // Linked list for a damn reason
-        final int markOfTheBeta = 1002419;
+        final Set<Integer> keep = new HashSet<Integer>() {{
+            add(1002419); /* Mark of the Beta */ add(1002475); /* Mark of the Gamma */
+        }};
 
         int i = 0;
         byte[] equipSlots = new byte[equip.list().size()];
         for (IItem equipItem : equip.list()) {
             if (!leaveBehind.contains((int) equipItem.getPosition())) {
-                if (!ii.isCash(equipItem.getItemId()) && equipItem.getItemId() != markOfTheBeta) {
+                if (!ii.isCash(equipItem.getItemId()) && !keep.contains(equipItem.getItemId())) {
                     equipSlots[i] = equipItem.getPosition();
                     i++;
                 }
@@ -1892,10 +1840,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             mesos = rs.getInt("MerchantMesos");
             rs.close();
             ps.close();
+            return mesos;
         } catch (SQLException sqle) {
             return 0;
         }
-        return mesos;
     }
 
     public void setHiredMerchantMesos(int set) {
@@ -1930,7 +1878,32 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             return redeemed == 0;
         } catch (SQLException sqle) {
-            System.err.print("NPCConversationManager#getBetaTester failed: " + sqle);
+            System.err.println("NPCConversationManager#getBetaTester failed: " + sqle);
+            return false;
+        }
+    }
+
+    public boolean getGammaTester() {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT redeemed FROM gammatesters WHERE name = ?");
+            ps.setString(1, c.getAccountName());
+            ResultSet rs = ps.executeQuery();
+            int redeemed = -1;
+            while (rs.next()) {
+                redeemed = rs.getInt("redeemed");
+            }
+            rs.close();
+            ps.close();
+            if (redeemed == 0) {
+                ps = con.prepareStatement("UPDATE gammatesters SET redeemed = 1 WHERE name = ?");
+                ps.setString(1, c.getAccountName());
+                ps.executeUpdate();
+                ps.close();
+            }
+            return redeemed == 0;
+        } catch (SQLException sqle) {
+            System.err.println("NPCConversationManager#getGammaTester failed: " + sqle);
             return false;
         }
     }
@@ -1954,18 +1927,35 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
 
+    public int gammaTester() {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT redeemed FROM gammatesters WHERE name = ?");
+            ps.setString(1, c.getAccountName());
+            ResultSet rs = ps.executeQuery();
+            int redeemed = -1;
+            while (rs.next()) {
+                redeemed = rs.getInt("redeemed");
+            }
+            rs.close();
+            ps.close();
+            return redeemed;
+        } catch (SQLException sqle) {
+            System.err.print("NPCConversationManager#gammaTester failed: " + sqle);
+            return -1;
+        }
+    }
+
     public void removeHiredMerchantItem(boolean tempItem, int itemId) {
-        String table = "";
-        if (tempItem) table = "temp";
+        String table = tempItem ? "temp" : "";
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement(
-                "DELETE FROM hiredmerchant" +
-                    table +
-                    " WHERE itemid = ? AND ownerid = ? LIMIT 1"
+                "DELETE FROM ? WHERE itemid = ? AND ownerid = ? LIMIT 1"
             );
-            ps.setInt(1, itemId);
-            ps.setInt(2, getPlayer().getId());
+            ps.setString(1, "hiredmerchant" + table);
+            ps.setInt(2, itemId);
+            ps.setInt(3, getPlayer().getId());
             ps.executeUpdate();
             ps.close();
         } catch (SQLException sqle) {
@@ -1974,20 +1964,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean getHiredMerchantItems(boolean tempTable) {
-        boolean temp = false;
-        String table = "";
-        if (tempTable) {
-            table = "temp";
-            temp = true;
-        }
+        String table = tempTable ? "temp" : "";
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement(
-                "SELECT * FROM hiredmerchant" +
-                    table +
-                    " WHERE ownerid = ?"
+                "SELECT * FROM ? WHERE ownerid = ?"
             );
-            ps.setInt(1, getPlayer().getId());
+            ps.setString(1, "hiredmerchant" + table);
+            ps.setInt(2, getPlayer().getId());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("type") == 1) {
@@ -2012,7 +1996,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     spItem.setOwner(rs.getString("owner"));
                     if (!getPlayer().getInventory(MapleInventoryType.EQUIP).isFull()) {
                         MapleInventoryManipulator.addFromDrop(c, spItem, true);
-                        removeHiredMerchantItem(temp, spItem.getItemId());
+                        removeHiredMerchantItem(tempTable, spItem.getItemId());
                     } else {
                         rs.close();
                         ps.close();
@@ -2029,7 +2013,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     MapleInventoryType type = ii.getInventoryType(spItem.getItemId());
                     if (!getPlayer().getInventory(type).isFull()) {
                         MapleInventoryManipulator.addFromDrop(c, spItem, true);
-                        removeHiredMerchantItem(temp, spItem.getItemId());
+                        removeHiredMerchantItem(tempTable, spItem.getItemId());
                     } else {
                         rs.close();
                         ps.close();

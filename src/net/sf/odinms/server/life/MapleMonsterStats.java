@@ -14,12 +14,12 @@ public class MapleMonsterStats {
     private boolean undead;
     private boolean ffaLoot;
     private String name;
-    private final Map<String, Integer> animationTimes = new LinkedHashMap<>();
-    private final Map<Element, ElementalEffectiveness> resistance = new LinkedHashMap<>();
-    private List<Integer> revives = Collections.emptyList();
+    private final Map<String, Integer> animationTimes = new HashMap<>();
+    private final Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
+    private final List<Integer> revives = new ArrayList<>(1);
     private byte tagColor;
     private byte tagBgColor;
-    private final List<Pair<Integer, Integer>> skills = new ArrayList<>();
+    private final List<MobSkill> skills = new ArrayList<>();
     private boolean firstAttack;
     private int buffToGive;
     private boolean explosive;
@@ -105,10 +105,7 @@ public class MapleMonsterStats {
 
     public int getAnimationTime(String name) {
         Integer ret = animationTimes.get(name);
-        if (ret == null) {
-            return 500;
-        }
-        return ret;
+        return ret != null ? ret : 500;
     }
 
     public boolean isMobile() {
@@ -120,7 +117,9 @@ public class MapleMonsterStats {
     }
 
     public void setRevives(List<Integer> revives) {
-        this.revives = revives;
+        this.revives.clear();
+        this.revives.addAll(revives);
+        ((ArrayList) this.revives).trimToSize();
     }
 
     public void setUndead(boolean undead) {
@@ -137,11 +136,7 @@ public class MapleMonsterStats {
 
     public ElementalEffectiveness getEffectiveness(Element e) {
         ElementalEffectiveness elementalEffectiveness = resistance.get(e);
-        if (elementalEffectiveness == null) {
-            return ElementalEffectiveness.NORMAL;
-        } else {
-            return elementalEffectiveness;
-        }
+        return elementalEffectiveness == null ? ElementalEffectiveness.NORMAL : elementalEffectiveness;
     }
 
     public String getName() {
@@ -168,13 +163,27 @@ public class MapleMonsterStats {
         this.tagBgColor = (byte) tagBgColor;
     }
 
-    public void setSkills(List<Pair<Integer, Integer>> skills) {
-        for (Pair<Integer, Integer> skill : skills) {
-            this.skills.add(skill);
-        }
+    public void setSkills(List<Pair<Integer, Integer>> skills, final int mobId) {
+        this.skills.clear();
+        skills.forEach(skill -> {
+            MobSkill s = MobSkillFactory.getMobSkill(skill.getLeft(), skill.getRight());
+            if (s == null) {
+                System.err.println(
+                    "Failed to get mob skill with ID " +
+                        skill.getLeft() +
+                        " and level " +
+                        skill.getRight() +
+                        ". Mob ID: " +
+                        mobId
+                );
+                return;
+            }
+            this.skills.add(s);
+        });
+        ((ArrayList) this.skills).trimToSize();
     }
 
-    public List<Pair<Integer, Integer>> getSkills() {
+    public List<MobSkill> getSkills() {
         return Collections.unmodifiableList(skills);
     }
 
@@ -183,12 +192,7 @@ public class MapleMonsterStats {
     }
 
     public boolean hasSkill(int skillId, int level) {
-        for (Pair<Integer, Integer> skill : skills) {
-            if (skill.getLeft() == skillId && skill.getRight() == level) {
-                return true;
-            }
-        }
-        return false;
+        return skills.contains(MobSkillFactory.getMobSkill(skillId, level));
     }
 
     public void setFirstAttack(boolean firstAttack) {

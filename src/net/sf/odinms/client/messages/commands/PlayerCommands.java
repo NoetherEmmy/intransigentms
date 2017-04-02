@@ -237,14 +237,14 @@ public class PlayerCommands implements Command {
                     return;
                 }
                 mc.dropMessage(cQuest.getQuest().getTitle());
-                cQuest.getQuest().readMonsterTargets().entrySet().forEach(e ->
+                cQuest.getQuest().readMonsterTargets().forEach((mid, qtyAndName) ->
                     mc.dropMessage(
                         "    " +
-                            e.getValue().getRight() +
+                            qtyAndName.getRight() +
                             "s killed: " +
-                            cQuest.getQuestKills(e.getKey()) +
+                            cQuest.getQuestKills(mid) +
                             "/" +
-                            e.getValue().getLeft()
+                            qtyAndName.getLeft()
                     )
                 );
                 cQuest.getQuest().readItemsToCollect().forEach((itemId, qtyAndName) ->
@@ -370,6 +370,10 @@ public class PlayerCommands implements Command {
                         c.getChannelServer().reconnectWorld();
                         return;
                     }
+                }
+                if (victim.isGM()) {
+                    mc.dropMessage("This player is not currently online.");
+                    return;
                 }
                 long blahblah = System.currentTimeMillis() - victim.getAfkTime();
                 if (Math.floor(blahblah / 60000) == 0) { // Less than a minute
@@ -497,24 +501,25 @@ public class PlayerCommands implements Command {
                     System.err.print("@whodrops failed: " + sqle);
                 } catch (NumberFormatException nfe) {
                     try {
-                        String searchstring = "";
+                        StringBuilder searchstring = new StringBuilder();
                         for (int i = 1; i < splitted.length; ++i) {
                             if (i == 1) {
-                                searchstring += splitted[i];
+                                searchstring.append(splitted[i]);
                             } else {
-                                searchstring += " " + splitted[i];
+                                searchstring.append(' ').append(splitted[i]);
                             }
                         }
-                        if (searchstring.isEmpty()) {
+                        if (searchstring.length() == 0) {
                             mc.dropMessage(
                                 "Invalid syntax. Use: @whodrops | @whodrops <search_string> | @whodrops <item_id>"
                             );
                             return;
                         }
                         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                        Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchstring);
-                        Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchstring);
-                        Pair<Integer, String> etccandidate = ii.getEtcByName(searchstring);
+                        String searchstring_ = searchstring.toString();
+                        Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchstring_);
+                        Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchstring_);
+                        Pair<Integer, String> etccandidate = ii.getEtcByName(searchstring_);
                         Pair<Integer, String> candidate = consumecandidate;
                         if (etccandidate != null && (candidate == null || etccandidate.getRight().length() < candidate.getRight().length())) {
                             candidate = etccandidate;
@@ -650,12 +655,12 @@ public class PlayerCommands implements Command {
                 } catch (NumberFormatException nfe) {
                     try {
                         int searchId = 0;
-                        String searchString = null;
+                        StringBuilder searchString = null;
                         MapleInventoryType itemType = null;
                         String itemTypeString = null;
                         for (int i = 1; i < splitted.length; ++i) {
                             if (i == 1) {
-                                searchString = splitted[i];
+                                searchString = new StringBuilder(splitted[i]);
                             } else {
                                 switch (splitted[i].toLowerCase()) {
                                     case "eqp":
@@ -672,7 +677,7 @@ public class PlayerCommands implements Command {
                                         break;
                                     default:
                                         itemType = null;
-                                        searchString += " " + splitted[i];
+                                        searchString.append(' ').append(splitted[i]);
                                         break;
                                 }
                             }
@@ -684,14 +689,14 @@ public class PlayerCommands implements Command {
                             );
                             return;
                         }
-                        searchString = searchString.toUpperCase();
+                        searchString = new StringBuilder(searchString.toString().toUpperCase());
                         Set<String> retItems = new LinkedHashSet<>();
                         String bestMatch = null;
                         Set<Map.Entry<Integer, MapleMonsterStats>> monsterStats =
                             MapleLifeFactory.readMonsterStats().entrySet();
                         for (Map.Entry<Integer, MapleMonsterStats> ms : monsterStats) {
                             String name = ms.getValue().getName();
-                            if (name.toUpperCase().startsWith(searchString)) {
+                            if (name.toUpperCase().startsWith(searchString.toString())) {
                                 if (bestMatch == null || name.length() < bestMatch.length()) {
                                     bestMatch = name;
                                     searchId = ms.getKey();
@@ -707,7 +712,7 @@ public class PlayerCommands implements Command {
                         } else {
                             mc.dropMessage(
                                 "No mobs were found that start with \"" +
-                                    searchString.toLowerCase() +
+                                    searchString.toString().toLowerCase() +
                                     "\"."
                             );
                             return;
@@ -1035,32 +1040,32 @@ public class PlayerCommands implements Command {
                 int hppenalty, mppenalty;
                 switch (player.getJob().getId() / 100) {
                     case 0: // Beginner
-                        hppenalty = 95;
+                        hppenalty = 190;
                         mppenalty = 0;
                         break;
                     case 1: // Warrior
-                        hppenalty = 400;
-                        mppenalty = 60;
+                        hppenalty = 800;
+                        mppenalty = 120;
                         break;
                     case 2: // Mage
-                        hppenalty = 75;
-                        mppenalty = 400;
+                        hppenalty = 150;
+                        mppenalty = 800;
                         break;
                     case 3: // Archer
-                        hppenalty = 135;
-                        mppenalty = 70;
+                        hppenalty = 270;
+                        mppenalty = 140;
                         break;
                     case 4: // Rogue
-                        hppenalty = 145;
-                        mppenalty = 70;
+                        hppenalty = 190;
+                        mppenalty = 140;
                         break;
                     case 5: // Pirate
-                        hppenalty = 135;
-                        mppenalty = 70;
+                        hppenalty = 270;
+                        mppenalty = 140;
                         break;
                     default: // GM, or something went wrong
-                        hppenalty = 135;
-                        mppenalty = 75;
+                        hppenalty = 270;
+                        mppenalty = 150;
                         break;
                 }
                 mc.dropMessage("Current death penalty level: " + player.getDeathPenalty());
@@ -1422,22 +1427,23 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@whoquestdrops")) {
             try {
-                String searchString = "";
+                StringBuilder searchString = new StringBuilder();
                 for (int i = 1; i < splitted.length; ++i) {
                     if (i == 1) {
-                        searchString += splitted[i];
+                        searchString.append(splitted[i]);
                     } else {
-                        searchString += " " + splitted[i];
+                        searchString.append(' ').append(splitted[i]);
                     }
                 }
-                if (searchString.isEmpty()) {
+                if (searchString.length() == 0) {
                     mc.dropMessage("Invalid syntax. Use: @whoquestdrops <search_string>");
                     return;
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchString);
-                Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchString);
-                Pair<Integer, String> etccandidate = ii.getEtcByName(searchString);
+                String searchString_ = searchString.toString();
+                Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchString_);
+                Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchString_);
+                Pair<Integer, String> etccandidate = ii.getEtcByName(searchString_);
                 Pair<Integer, String> candidate = consumecandidate;
                 if (etccandidate != null && (candidate == null || etccandidate.getRight().length() < candidate.getRight().length())) {
                     candidate = etccandidate;

@@ -22,9 +22,7 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
         byte ws = (byte) slea.readShort();
         boolean whiteScroll = false;
         boolean legendarySpirit = false;
-        if ((ws & 2) == 2) {
-            whiteScroll = true;
-        }
+        if ((ws & 2) == 2) whiteScroll = true;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         IEquip toScroll = (IEquip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
         if (c.getPlayer().getSkillLevel(1003) > 0 && dst >= 0) {
@@ -77,7 +75,6 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
 
         if (
             scroll.getItemId() != 2049100 &&
-            scroll.getItemId() != 2049122 &&
             scroll.getItemId() != 2049004 &&
             !ii.isCleanSlate(scroll.getItemId())
         ) {

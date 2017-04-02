@@ -211,7 +211,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 break;
-            case 0x0d:
+            case 0x0D:
                 // Guild rank titles change.
                 if (mc.getGuildId() <= 0 || mc.getGuildRank() != 1) {
                     System.err.println("[hax] " + mc.getName() + " tried to change guild rank titles when s/he does not have permission.");
@@ -228,7 +228,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 break;
-            case 0x0e:
+            case 0x0E:
                 // Rank change.
                 cid = slea.readInt();
                 byte newRank = slea.readByte();
@@ -245,7 +245,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 break;
-            case 0x0f:
+            case 0x0F:
                 // Guild emblem change.
                 if (mc.getGuildId() <= 0 || mc.getGuildRank() != 1 || mc.getMapId() != 200000301) {
                     System.err.println("[hax] " + mc.getName() + " tried to change guild emblem without being the guild leader.");

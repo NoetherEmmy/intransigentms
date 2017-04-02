@@ -161,9 +161,7 @@ public class MapleMap {
 
         public static FieldLimit getByValue(int value) {
             for (FieldLimit fl : FieldLimit.values()) {
-                if (fl.getValue() == value) {
-                    return fl;
-                }
+                if (fl.getValue() == value) return fl;
             }
             return null;
         }
@@ -177,7 +175,7 @@ public class MapleMap {
         }
         fieldLimits = Stream.of(FieldLimit.values())
                             .filter(fl -> (fieldLimit & fl.getValue()) > 0)
-                            .collect(Collectors.toSet());
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public int getFieldLimit() {
@@ -270,10 +268,8 @@ public class MapleMap {
     }
 
     public int getCurrentPartyId() {
-        for (MapleCharacter chr : this.getCharacters()) {
-            if (chr.getPartyId() != -1) {
-                return chr.getPartyId();
-            }
+        for (MapleCharacter chr : getCharacters()) {
+            if (chr.getPartyId() != -1) return chr.getPartyId();
         }
         return -1;
     }
@@ -1069,9 +1065,7 @@ public class MapleMap {
 
     public void updateMonsterController(final MapleMonster monster) {
         synchronized (monster) {
-            if (!monster.isAlive()) {
-                return;
-            }
+            if (!monster.isAlive()) return;
 
             if (monster.getController() != null) {
                 if (monster.getController().getMap() != this) {
@@ -1106,12 +1100,9 @@ public class MapleMap {
     }
 
     public Collection<MapleMapObject> getMapObjects() {
-        List<MapleMapObject> ret = new ArrayList<>();
+        List<MapleMapObject> ret;
         synchronized (mapObjects) {
-            Iterator<MapleMapObject> mmoiter = mapObjects.values().iterator();
-            while (mmoiter.hasNext()) {
-                ret.add(mmoiter.next());
-            }
+            ret = new ArrayList<>(mapObjects.values());
         }
         return ret;
     }
@@ -1122,9 +1113,7 @@ public class MapleMap {
             while (mmoiter.hasNext()) {
                 MapleMapObject obj = mmoiter.next();
                 if (obj.getType() == MapleMapObjectType.NPC) {
-                    if (((MapleNPC) obj).getId() == npcid) {
-                        return true;
-                    }
+                    if (((MapleNPC) obj).getId() == npcid) return true;
                 }
             }
         }
@@ -1139,9 +1128,7 @@ public class MapleMap {
 
     public MapleMonster getMonsterByOid(int oid) {
         MapleMapObject mmo = getMapObject(oid);
-        if (mmo == null) {
-            return null;
-        }
+        if (mmo == null) return null;
         if (mmo.getType() == MapleMapObjectType.MONSTER) {
             return (MapleMonster) mmo;
         }
@@ -1150,9 +1137,7 @@ public class MapleMap {
 
     public MapleReactor getReactorByOid(int oid) {
         MapleMapObject mmo = getMapObject(oid);
-        if (mmo == null) {
-            return null;
-        }
+        if (mmo == null) return null;
         if (mmo.getType() == MapleMapObjectType.REACTOR) {
             return (MapleReactor) mmo;
         }
@@ -1201,9 +1186,7 @@ public class MapleMap {
     public Point getGroundBelow(Point pos) {
         Point spos = new Point(pos.x, pos.y - 1);
         spos = calcPointBelow(spos);
-        if (spos != null) {
-            spos.y -= 1;
-        }
+        if (spos != null) spos.y -= 1;
         return spos;
     }
 
@@ -2006,14 +1989,16 @@ public class MapleMap {
         return ret;
     }
 
+    public List<MapleCharacter> getPlayersInRect(Rectangle box, MapleCharacter chr) {
+        return getPlayersInRect(box, Collections.singletonList(chr));
+    }
+
     public List<MapleCharacter> getPlayersInRect(Rectangle box, List<MapleCharacter> chr) {
         List<MapleCharacter> character = new ArrayList<>();
         synchronized (characters) {
             for (MapleCharacter a : characters) {
-                if (chr.contains(a.getClient().getPlayer())) {
-                    if (box.contains(a.getPosition())) {
-                        character.add(a);
-                    }
+                if (chr.contains(a.getClient().getPlayer()) && box.contains(a.getPosition())) {
+                    character.add(a);
                 }
             }
         }
@@ -2026,9 +2011,7 @@ public class MapleMap {
 
     public MaplePortal getPortal(String portalname) {
         for (MaplePortal port : portals.values()) {
-            if (port.getName().equals(portalname)) {
-                return port;
-            }
+            if (port.getName().equals(portalname)) return port;
         }
         return null;
     }
@@ -2190,9 +2173,7 @@ public class MapleMap {
     }
 
     public MaplePortal findClosestSpawnpointInDirection(final Point from, final Set<Direction> dirs) {
-        if (dirs.isEmpty()) {
-            return null;
-        }
+        if (dirs.isEmpty()) return null;
         return
             portals
                 .values()
@@ -2222,9 +2203,7 @@ public class MapleMap {
     public MaplePortal findClosestSpawnpointInDirection(final Point from,
                                                         final Set<Direction> dirs,
                                                         final Set<Direction> excludedDirs) {
-        if (dirs.isEmpty()) {
-            return null;
-        }
+        if (dirs.isEmpty()) return null;
         return
             portals
                 .values()
@@ -2255,9 +2234,7 @@ public class MapleMap {
                                                         final Direction dir,
                                                         final int yMin,
                                                         final int yMax) {
-        if (dir == null) {
-            return null;
-        }
+        if (dir == null) return null;
         return
             portals
                 .values()
@@ -2442,7 +2419,7 @@ public class MapleMap {
             int ispawnedMonstersOnMap = spawnedMonstersOnMap.get();
             int getMaxSpawn = (int) ((double) getMaxRegularSpawn() * 1.6d);
             int numShouldSpawn = (int) Math.ceil(Math.random() * ((double) playersOnMap / 1.5d + (double) (getMaxSpawn - ispawnedMonstersOnMap)));
-            //int numShouldSpawn = (int) Math.round(Math.random() * (2 + playersOnMap / 1.5 + (getMaxRegularSpawn() - ispawnedMonstersOnMap) / 4.0));
+            //int numShouldSpawn = (int) Math.round(Math.random() * (2.0d + playersOnMap / 1.5d + (getMaxRegularSpawn() - ispawnedMonstersOnMap) / 4.0d));
             if (numShouldSpawn + ispawnedMonstersOnMap > getMaxSpawn) {
                 numShouldSpawn = getMaxSpawn - ispawnedMonstersOnMap;
             }
@@ -2674,13 +2651,9 @@ public class MapleMap {
     }
 
     public int hasBoat() {
-        if (boat && docked) {
-            return 2;
-        } else if (boat) {
-            return 1;
-        } else {
-            return 0;
-        }
+        if (boat && docked) return 2;
+        if (boat) return 1;
+        return 0;
     }
 
     public void setBoat(boolean hasBoat) {
@@ -2755,7 +2728,7 @@ public class MapleMap {
     }
 
     public boolean hasMapleTV() {
-        int tvIds[] =
+        int[] tvIds =
         {
             9250042, 9250043, 9250025, 9250045, 9250044, 9270001, 9270002, 9250023, 9250024, 9270003,
             9270004, 9250026, 9270006, 9270007, 9250046, 9270000, 9201066, 9270005, 9270008, 9270009,
@@ -2774,7 +2747,7 @@ public class MapleMap {
     }
 
     public boolean isPQMap() {
-        switch (getId()) {
+        switch (mapid) {
             case 103000800:
             case 103000804:
             case 922010100:

@@ -279,7 +279,13 @@ public class Admins implements Command {
                 } else {
                     try {
                         Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement("INSERT INTO shopitems (shopid, itemid, price, position) VALUES (" + Integer.parseInt(splitted[1]) + ", " + Integer.parseInt(splitted[2]) + ", " + Integer.parseInt(splitted[3]) + ", " + Integer.parseInt(splitted[4]) + ");");
+                        PreparedStatement ps = con.prepareStatement(
+                            "INSERT INTO shopitems (shopid, itemid, price, position) VALUES (?, ?, ?, ?)"
+                        );
+                        ps.setInt(1, Integer.parseInt(splitted[1]));
+                        ps.setInt(2, Integer.parseInt(splitted[2]));
+                        ps.setInt(3, Integer.parseInt(splitted[3]));
+                        ps.setInt(4, Integer.parseInt(splitted[4]));
                         ps.executeUpdate();
                         ps.close();
                         MapleShopFactory.getInstance().clear();

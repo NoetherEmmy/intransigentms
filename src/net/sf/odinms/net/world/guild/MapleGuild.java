@@ -54,7 +54,8 @@ public class MapleGuild implements java.io.Serializable {
             return;
         }
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM guilds WHERE guildid=" + guildid);
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM guilds WHERE guildid = ?");
+            ps.setInt(1, guildid);
             ResultSet rs = ps.executeQuery();
             if (!rs.first()) {
                 rs.close();

@@ -358,12 +358,12 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         try {
             PreparedStatement ps =
                 con.prepareStatement(
-                    "SELECT COUNT(*) as dueypackages FROM Duey WHERE RecieverId = ?"
+                    "SELECT COUNT(*) as dueysize FROM dueypackages WHERE RecieverId = ?"
                 );
             ps.setInt(1, chr.getId());
             ResultSet rs = ps.executeQuery();
             rs.next();
-            int size = rs.getInt("dueySize");
+            int size = rs.getInt("dueysize");
             rs.close();
             ps.close();
             return size;

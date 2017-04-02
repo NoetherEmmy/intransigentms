@@ -2023,29 +2023,6 @@ public class GM implements Command {
                     }
                 }
                 break;
-            case "!changejob": {
-                int id = c.getPlayer().getId();
-                int job = Integer.parseInt(splitted[1]);
-                Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps;
-                try {
-                    ps = con.prepareStatement("SELECT * FROM jobs WHERE characterid = ? AND jobid = ?");
-                    ps.setInt(1, id);
-                    ps.setInt(2, job);
-                    ResultSet rs = ps.executeQuery();
-                    if (!rs.next()) {
-                        mc.dropMessage("You don't have the following job before you rebirthed.");
-                        ps.close();
-                    }
-                    job = rs.getInt("jobid");
-                    c.getPlayer().changeJob(MapleJob.getById(job), false);
-
-                    ps.close();
-                } catch (SQLException sqle) {
-                    sqle.printStackTrace();
-                }
-                break;
-            }
             case "!resettrialcooldown":
                 player.setLastTrialTime(0L);
                 mc.dropMessage("Your Monster Trial cooldown has been reset.");
@@ -2498,7 +2475,7 @@ public class GM implements Command {
                         return;
                     }
                     Equip item = ii.getEquipByIdAsEquip(itemId);
-                    for (int i = 2; i < splitted.length; ++i) {
+                    for (int i = 2; i < splitted.length; i += 2) {
                         short val = Short.parseShort(splitted[i]);
                         String stat = splitted[i + 1].toLowerCase();
                         switch (stat) {
@@ -2609,7 +2586,7 @@ public class GM implements Command {
                         return;
                     }
                     Equip item = ii.getEquipByIdAsEquip(itemId);
-                    for (int i = 3; i < splitted.length; ++i) {
+                    for (int i = 3; i < splitted.length; i += 2) {
                         short val = Short.parseShort(splitted[i]);
                         String stat = splitted[i + 1].toLowerCase();
                         switch (stat) {
@@ -3040,7 +3017,7 @@ public class GM implements Command {
                     .forEach(cs ->
                         cs.getPlayerStorage()
                           .getAllCharacters()
-                          .forEach(MapleCharacter::reloadCQuests)
+                          .forEach(MapleCharacter::softReloadCQuests)
                     );
                 break;
         }
@@ -3174,7 +3151,6 @@ public class GM implements Command {
             new CommandDefinition("maxmesos", 3),
             new CommandDefinition("fullcharge", 3),
             new CommandDefinition("youlose", 3),
-            new CommandDefinition("changejob", 3),
             new CommandDefinition("resettrialcooldown", 3),
             new CommandDefinition("resetap", 3),
             new CommandDefinition("resetskills", 3),
