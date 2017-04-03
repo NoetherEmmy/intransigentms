@@ -87,7 +87,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
         try {
             tempItems(true, true);
         } catch (SQLException ex) {
-            System.err.println("Error saving " + getOwnerName() + " items: " + ex);
+            System.err.println("Error saving " + ownerName + " items: " + ex);
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
         try {
             tempItems(true, false);
         } catch (SQLException ex) {
-            System.err.println("Error saving " + getOwnerName() + " temporary items: " + ex);
+            System.err.println("Error saving " + ownerName + " temporary items: " + ex);
         }
     }
 
@@ -108,7 +108,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
             ps = DatabaseConnection.getConnection().prepareStatement(
                 "DELETE FROM hiredmerchanttemp WHERE ownerid = ?"
             );
-            ps.setInt(1, getOwnerId());
+            ps.setInt(1, ownerId);
             ps.executeUpdate();
             ps.close();
         }
@@ -151,7 +151,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
                         ps.setString(5, pItems.getItem().getOwner());
                     }
                     ps.setString(1, "hiredmerchant" + table);
-                    ps.setInt(2, getOwnerId());
+                    ps.setInt(2, ownerId);
                     ps.executeUpdate();
                     ps.close();
                 }

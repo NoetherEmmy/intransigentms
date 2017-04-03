@@ -50,7 +50,7 @@ public class MapleShop {
 
     public void sendShop(MapleClient c) {
         c.getPlayer().setShop(this);
-        c.getSession().write(MaplePacketCreator.getNPCShop(c, getNpcId(), items));
+        c.getSession().write(MaplePacketCreator.getNPCShop(c, npcId, items));
     }
 
     public void buy(MapleClient c, int itemId, short quantity) {

@@ -239,6 +239,6 @@ public class MapleQuest {
 
     @Override
     public String toString() {
-        return "quest \"" + getName() + "\", id: " + getId();
+        return "quest \"" + name + "\", id: " + id;
     }
 }

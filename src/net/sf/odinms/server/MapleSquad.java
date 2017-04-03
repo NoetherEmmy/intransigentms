@@ -51,7 +51,7 @@ public class MapleSquad {
         if (isBanned(member)) return false;
         members.add(member);
         MaplePacket packet = MaplePacketCreator.serverNotice(5, member.getName() + " has joined the fight!");
-        getLeader().getClient().getSession().write(packet);
+        leader.getClient().getSession().write(packet);
         return true;
     }
 

@@ -73,7 +73,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@mapleadmin - | - Opens up chat with Maple Adminstrator NPC.");
             mc.dropMessage("@monsterlevels - | - Displays levels and relative XP multipliers for all monsters on the map.");
             mc.dropMessage("@absolutexprate - | - Displays your current XP multiplier before relative multipliers.");
-            mc.dropMessage("@monstersinrange <levels below> <levels above> - | - Lists monsters within the range specified of your level. Both arguments are optional.");
+            mc.dropMessage("@monstersinrange [levels_below] [levels_above] - | - Lists monsters within the range specified of your level. Both arguments are optional.");
             mc.dropMessage("@monstertrialtier - | - Lists your current Monster Trial tier, points, and points needed for next tier.");
             mc.dropMessage("@damagescale - | - Displays the current multiplier by which all incoming damage is multiplied.");
             mc.dropMessage("@votepoints - | - Displays your current vote point count.");
@@ -796,9 +796,8 @@ public class PlayerCommands implements Command {
             int upperrange, lowerrange;
             boolean sortbylevel = false;
             String incorrectsyntax =
-                "Invalid syntax. Use: @monstersinrange [[lowerRange, upperRange], " +
-                    "[sortBy (\"level\"/\"xphpratio\")]]";
-            String note = "Note that if exactly one integer argument is present, it is parsed as `upperRange`.";
+                "Invalid syntax. Use: @monstersinrange [lower_range] [upper_range] " +
+                    "['level'|'xphpratio']";
             switch (splitted.length) {
                 case 1:
                     upperrange = 5;
@@ -815,7 +814,6 @@ public class PlayerCommands implements Command {
                             sortbylevel = false;
                         } else {
                             mc.dropMessage(incorrectsyntax);
-                            mc.dropMessage(note);
                             return;
                         }
                         upperrange = 5;
@@ -829,7 +827,6 @@ public class PlayerCommands implements Command {
                             upperrange = Integer.parseInt(splitted[1]);
                         } catch (NumberFormatException nfe) {
                             mc.dropMessage(incorrectsyntax);
-                            mc.dropMessage(note);
                             return;
                         }
                         lowerrange = 2;
@@ -839,7 +836,6 @@ public class PlayerCommands implements Command {
                             upperrange = Integer.parseInt(splitted[1]);
                         } catch (NumberFormatException nfe) {
                             mc.dropMessage(incorrectsyntax);
-                            mc.dropMessage(note);
                             return;
                         }
                         lowerrange = 2;
@@ -849,7 +845,6 @@ public class PlayerCommands implements Command {
                             lowerrange = Integer.parseInt(splitted[1]);
                         } catch (NumberFormatException nfe) {
                             mc.dropMessage(incorrectsyntax);
-                            mc.dropMessage(note);
                             return;
                         }
                     }
@@ -860,7 +855,6 @@ public class PlayerCommands implements Command {
                         lowerrange = Integer.parseInt(splitted[1]);
                     } catch (NumberFormatException nfe) {
                         mc.dropMessage(incorrectsyntax);
-                        mc.dropMessage(note);
                         return;
                     }
                     if (splitted[3].equalsIgnoreCase("level")) {
@@ -869,16 +863,14 @@ public class PlayerCommands implements Command {
                         sortbylevel = false;
                     } else {
                         mc.dropMessage(incorrectsyntax);
-                        mc.dropMessage(note);
                         return;
                     }
                     break;
                 default:
                     mc.dropMessage(incorrectsyntax);
-                    mc.dropMessage(note);
                     return;
             }
-            if (upperrange >= 0 && upperrange <= 10 && lowerrange >= 0 && lowerrange <= 10) {
+            if (upperrange >= 0 && upperrange <= 30 && lowerrange >= 0 && lowerrange <= 30) {
                 int max = player.getLevel() + upperrange;
                 int min = player.getLevel() - lowerrange;
                 MapleData data;

@@ -136,7 +136,7 @@ public class AbstractPlayerInteraction {
                     if (randomStats) {
                         MapleInventoryManipulator.addFromDrop(
                             c,
-                            ii.randomizeStats(getClient(), (Equip) item),
+                            ii.randomizeStats(c, (Equip) item),
                             false
                         );
                     } else {
@@ -297,7 +297,7 @@ public class AbstractPlayerInteraction {
         MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
-            getClient().getSession().write(MaplePacketCreator.updatePet(pet, true));
+            c.getSession().write(MaplePacketCreator.updatePet(pet, true));
         }
     }
 
@@ -305,7 +305,7 @@ public class AbstractPlayerInteraction {
         for (MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
-                getClient().getSession().write(MaplePacketCreator.updatePet(pet, true));
+                c.getSession().write(MaplePacketCreator.updatePet(pet, true));
             }
         }
     }
@@ -328,7 +328,7 @@ public class AbstractPlayerInteraction {
 
     public void openNpc(int npcid) {
         NPCScriptManager.getInstance().dispose(c);
-        NPCScriptManager.getInstance().start(getClient(), npcid);
+        NPCScriptManager.getInstance().start(c, npcid);
     }
 
     public String serverName() {

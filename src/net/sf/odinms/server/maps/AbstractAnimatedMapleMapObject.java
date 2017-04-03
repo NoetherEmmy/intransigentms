@@ -12,6 +12,6 @@ public abstract class AbstractAnimatedMapleMapObject extends AbstractMapleMapObj
     }
 
     public boolean isFacingLeft() {
-        return getStance() % 2 == 1;
+        return stance % 2 == 1;
     }
 }

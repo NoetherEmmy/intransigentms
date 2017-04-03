@@ -9,8 +9,7 @@ import java.util.zip.Inflater;
 
 public class PNGMapleCanvas implements MapleCanvas {
     private static final int[] ZAHLEN = new int[] {2, 1, 0, 3};
-    private final int height;
-    private final int width;
+    private final int height, width;
     private final int dataLength;
     private final int format;
 
@@ -48,31 +47,32 @@ public class PNGMapleCanvas implements MapleCanvas {
         int maxWriteBuf = 2;
         int maxHeight = 3;
         byte[] writeBuf = new byte[maxWriteBuf];
-        @SuppressWarnings(value = "unused")
-        byte[] rowPointers = new byte[maxHeight];
-        switch (getFormat()) {
+        //byte[] rowPointers = new byte[maxHeight];
+        switch (format) {
             case 1:
             case 513:
-                sizeUncompressed = getHeight() * getWidth() * 4;
+                sizeUncompressed = height * width * 4;
                 break;
             case 2:
-                sizeUncompressed = getHeight() * getWidth() * 8;
+                sizeUncompressed = height * width * 8;
                 break;
             case 517:
-                sizeUncompressed = getHeight() * getWidth() / 128;
+                sizeUncompressed = height * width / 128;
                 break;
         }
-        size8888 = getHeight() * getWidth() * 8;
+        size8888 = height * width * 8;
         if (size8888 > maxWriteBuf) {
             maxWriteBuf = size8888;
             writeBuf = new byte[maxWriteBuf];
         }
-        if (getHeight() > maxHeight) {
-            maxHeight = getHeight();
+        /*
+        if (height > maxHeight) {
+            maxHeight = height;
             rowPointers = new byte[maxHeight]; // ???
         }
+        */
         Inflater dec = new Inflater();
-        dec.setInput(getData(), 0, dataLength);
+        dec.setInput(data, 0, dataLength);
         int declen;
         byte[] uc = new byte[sizeUncompressed];
         try {
@@ -81,17 +81,17 @@ public class PNGMapleCanvas implements MapleCanvas {
             throw new RuntimeException("Error", ex);
         }
         dec.end();
-        if (getFormat() == 1) {
-            for ( int i = 0; i < sizeUncompressed; ++i) {
+        if (format == 1) {
+            for (int i = 0; i < sizeUncompressed; ++i) {
                 byte low = (byte) (uc[i] & 0x0F);
                 byte high = (byte) (uc[i] & 0xF0);
                 writeBuf[(i << 1)] = (byte) (((low << 4) | low) & 0xFF);
                 writeBuf[(i << 1) + 1] = (byte) (high | ((high >>> 4) & 0xF));
             }
-        } else if (getFormat() == 2) {
+        } else if (format == 2) {
             writeBuf = uc;
-        } else if (getFormat() == 513) {
-            for ( int i = 0; i < declen; i += 2) {
+        } else if (format == 513) {
+            for (int i = 0; i < declen; i += 2) {
                 byte bBits = (byte) ((uc[i] & 0x1F) << 3);
                 byte gBits = (byte) (((uc[i + 1] & 0x07) << 5) | ((uc[i] & 0xE0) >> 3));
                 byte rBits = (byte) (uc[i + 1] & 0xF8);
@@ -100,7 +100,7 @@ public class PNGMapleCanvas implements MapleCanvas {
                 writeBuf[(i << 1) + 2] = (byte) (rBits | (rBits >> 5));
                 writeBuf[(i << 1) + 3] = (byte) 0xFF;
             }
-        } else if (getFormat() == 517) {
+        } else if (format == 517) {
             byte b;
             int pixelIndex;
             for (int i = 0; i < declen; ++i) {
@@ -119,10 +119,10 @@ public class PNGMapleCanvas implements MapleCanvas {
         DataBufferByte imgData = new DataBufferByte(writeBuf, sizeUncompressed);
 
         //SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, c.getWidth(), c.getHeight(), 4, c.getWidth() * 4, new int[] {2, 1, 0, 3});
-        SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, getWidth(), getHeight(), 4, getWidth() * 4, ZAHLEN);
+        SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 4, width * 4, ZAHLEN);
         WritableRaster imgRaster = Raster.createWritableRaster(sm, imgData, new Point());
 
-        BufferedImage aa = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage aa = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         aa.setData(imgRaster);
         return aa;
     }

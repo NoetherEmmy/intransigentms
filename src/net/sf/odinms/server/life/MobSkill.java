@@ -188,7 +188,7 @@ public class MobSkill {
                                 break;
                         }
                         toSpawn.setPosition(new Point(xpos, ypos));
-                        monster.getMap().spawnMonsterWithEffect(toSpawn, getSpawnEffect(), toSpawn.getPosition());
+                        monster.getMap().spawnMonsterWithEffect(toSpawn, spawnEffect, toSpawn.getPosition());
                     }
                 }
                 break;
@@ -198,21 +198,21 @@ public class MobSkill {
                 List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
                 if (heal) {
                     for (MapleMapObject mons : objects) {
-                        ((MapleMonster) mons).heal(getX(), getY());
+                        ((MapleMonster) mons).heal(x, y);
                     }
                 } else {
                     for (MapleMapObject mons : objects) {
                         if (!monster.isBuffed(monStat)) {
-                            ((MapleMonster) mons).applyMonsterBuff(monStat, getX(), getSkillId(), getDuration(), this);
+                            ((MapleMonster) mons).applyMonsterBuff(monStat, x, skillId, duration, this);
                         }
                     }
                 }
             } else {
                 if (heal) {
-                    monster.heal(getX(), getY());
+                    monster.heal(x, y);
                 } else {
                     if (!monster.isBuffed(monStat)) {
-                        monster.applyMonsterBuff(monStat, getX(), getSkillId(), getDuration(), this);
+                        monster.applyMonsterBuff(monStat, x, skillId, duration, this);
                     }
                 }
             }
@@ -246,7 +246,7 @@ public class MobSkill {
             }
         }
         monster.usedSkill(skillId, skillLevel, cooltime);
-        monster.setMp(monster.getMp() - getMpCon());
+        monster.setMp(monster.getMp() - mpCon);
     }
 
     public int getSkillId() {
@@ -351,7 +351,7 @@ public class MobSkill {
         if (getClass() != o.getClass()) return false;
         final MobSkill other = (MobSkill) o;
         return
-            other.getSkillId() == getSkillId() &&
-            other.getSkillLevel() == getSkillLevel();
+            other.getSkillId() == skillId &&
+            other.getSkillLevel() == skillLevel;
     }
 }

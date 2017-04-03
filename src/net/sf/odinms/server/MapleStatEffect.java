@@ -522,7 +522,7 @@ public class MapleStatEffect implements Serializable {
                     MapleMonster mob = (MapleMonster) obj;
                     // x is absorb percentage
                     if (!mob.isBoss()) {
-                        int absorbMp = Math.min((int) (mob.getMaxMp() * (getX() / 100.0d)), mob.getMp());
+                        int absorbMp = Math.min((int) (mob.getMaxMp() * (x / 100.0d)), mob.getMp());
                         if (absorbMp > 0) {
                             mob.setMp(mob.getMp() - absorbMp);
                             applyto.addMP(absorbMp);
@@ -639,7 +639,7 @@ public class MapleStatEffect implements Serializable {
                 final MapleMap map = applyFrom.getMap();
                 final MapleCharacter attacker = applyFrom;
                 final Random rand = new Random();
-                final double multiplier = (double) getDamage() / 100.0d;
+                final double multiplier = (double) damage / 100.0d;
 
                 TimerManager tMan = TimerManager.getInstance();
                 final ScheduledFuture<?> ninjaTask = tMan.register(() -> {
@@ -672,7 +672,7 @@ public class MapleStatEffect implements Serializable {
                        });
                 }, 800L);
 
-                tMan.schedule(() -> ninjaTask.cancel(false), getDuration());
+                tMan.schedule(() -> ninjaTask.cancel(false), duration);
             }
         }
         if (!cureDebuffs.isEmpty()) {
@@ -889,7 +889,7 @@ public class MapleStatEffect implements Serializable {
         } else if (isMist()) {
             Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
             MapleMist mist = new MapleMist(bounds, applyFrom, this);
-            applyFrom.getMap().spawnMist(mist, getDuration(), sourceid == 2111003, false);
+            applyFrom.getMap().spawnMist(mist, duration, sourceid == 2111003, false);
         }
         // Time Leap
         if (isTimeLeap()) {
@@ -908,7 +908,7 @@ public class MapleStatEffect implements Serializable {
                 .write(
                     MaplePacketCreator.giveBuff(
                         sourceid,
-                        getDuration(),
+                        duration,
                         pMorphStatup
                     )
                 );
@@ -917,7 +917,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     private boolean isNinjaAmbush() {
-        return isSkill() && (sourceid == 4121004 || sourceid == 4221004);
+        return skill && (sourceid == 4121004 || sourceid == 4221004);
     }
 
     private void applyBuff(final MapleCharacter applyFrom) {
@@ -1104,7 +1104,7 @@ public class MapleStatEffect implements Serializable {
                     MapleMapObjectType.MONSTER
                 );
         final ISkill skill_ = SkillFactory.getSkill(sourceid);
-        Map<MonsterStatus, Integer> localMonsterStatus = getMonsterStati();
+        Map<MonsterStatus, Integer> localMonsterStatus = monsterStatus;
         if (skill_.getId() == 1201006) { // Handing Threaten's scaling with level
             int baseThreatenDebuff = skill_.getEffect(applyFrom.getSkillLevel(skill_)).getX();
             int threatenDebuffScale = applyFrom.getLevel() - 30;
@@ -1127,7 +1127,7 @@ public class MapleStatEffect implements Serializable {
                         false
                     ),
                     isPoison(),
-                    getDuration()
+                    duration
                 );
             }
             i++;
@@ -1150,7 +1150,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     public void silentApplyBuff(final MapleCharacter chr, final long startTime) {
-        final List<Pair<MapleBuffStat, Integer>> localStatups = new ArrayList<>(getStatups());
+        final List<Pair<MapleBuffStat, Integer>> localStatups = new ArrayList<>(statups);
 
         int localDuration = duration;
         localDuration = alchemistModifyVal(chr, localDuration, false);
@@ -1182,7 +1182,7 @@ public class MapleStatEffect implements Serializable {
                 wasShip = true;
             }
         }
-        List<Pair<MapleBuffStat, Integer>> localStatups = new ArrayList<>(getStatups());
+        List<Pair<MapleBuffStat, Integer>> localStatups = new ArrayList<>(statups);
         int localDuration = duration;
         int localSourceId = sourceid;
         int localX = x;
@@ -1225,20 +1225,20 @@ public class MapleStatEffect implements Serializable {
                 localStatups.add(0, new Pair<>(MapleBuffStat.WATK, watt));
             }
             //}
-        } else if (defScaleFactor != -1 && applyFrom.getLevel() > 100 && applyFrom.getSkillLevel(getSourceId()) > 0) { // Making certain defense skills scale with level
+        } else if (defScaleFactor != -1 && applyFrom.getLevel() > 100 && applyFrom.getSkillLevel(sourceid) > 0) { // Making certain defense skills scale with level
             for (int i = 0; i < localStatups.size(); ++i) {
                 Pair<MapleBuffStat, Integer> localStatup = localStatups.get(i);
                 if (localStatup.getLeft() == MapleBuffStat.WDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(getSourceId())).getWdef();
+                    int baseDef = SkillFactory.getSkill(sourceid).getEffect(applyFrom.getSkillLevel(sourceid)).getWdef();
                     int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / defScaleFactor));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 } else if (localStatup.getLeft() == MapleBuffStat.MDEF) {
-                    int baseDef = SkillFactory.getSkill(getSourceId()).getEffect(applyFrom.getSkillLevel(getSourceId())).getMdef();
+                    int baseDef = SkillFactory.getSkill(sourceid).getEffect(applyFrom.getSkillLevel(sourceid)).getMdef();
                     int newDef = (int) (baseDef * (1.0d + (applyFrom.getLevel() - 100.0d) / defScaleFactor));
                     localStatups.set(i, new Pair<>(localStatup.getLeft(), newDef));
                 }
             }
-        } else if (getSourceId() == 2301003 && isSkill()) { // Adding attack speed buff from Invincible if the player is wielding a BW
+        } else if (sourceid == 2301003 && skill) { // Adding attack speed buff from Invincible if the player is wielding a BW
             IItem weaponItem = applyTo.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
             MapleWeaponType weapon = null;
             if (weaponItem != null) {
@@ -1256,9 +1256,9 @@ public class MapleStatEffect implements Serializable {
                 }
                 */
             }
-        } else if (getSourceId() == 2321002 && isSkill() && applyFrom.getTotalStr() >= 200) { // Adding magic defense for Battle Priest's Mana Reflection
+        } else if (sourceid == 2321002 && skill && applyFrom.getTotalStr() >= 200) { // Adding magic defense for Battle Priest's Mana Reflection
             manaReflectionDef = Collections.singletonList(new Pair<>(MapleBuffStat.MDEF, applyFrom.getTotalStr()));
-        } else if (getSourceId() == 5101005 && isSkill() && applyFrom.getInt() >= 250 && applyFrom.isBareHanded()) {
+        } else if (sourceid == 5101005 && skill && applyFrom.getInt() >= 250 && applyFrom.isBareHanded()) {
             // MP Recovery
             localStatups.add(new Pair<>(MapleBuffStat.RECOVERY, 1));
         }
@@ -1442,7 +1442,7 @@ public class MapleStatEffect implements Serializable {
             }
         }
         if (isChakra()) {
-            hpchange += makeHealHP(getY() / 100.0d, applyfrom.getTotalLuk(), 2.3d, 3.5d);
+            hpchange += makeHealHP(y / 100.0d, applyfrom.getTotalLuk(), 2.3d, 3.5d);
         }
         return hpchange;
     }
@@ -1924,11 +1924,11 @@ public class MapleStatEffect implements Serializable {
     }
 
     private int getDefScaleFactor() {
-        if (!isSkill()) return -1;
+        if (!skill) return -1;
         int skillIds[] =     {2001003, 2301004, 5111005, 5121003, 1301006, 1320009, 5221006};
         int scaleFactors[] = {60,      80,      200,     200,     200,     250,     60};
         for (int i = 0; i < skillIds.length; ++i) {
-            if (skillIds[i] == getSourceId()) return scaleFactors[i];
+            if (skillIds[i] == sourceid) return scaleFactors[i];
         }
         return -1;
     }

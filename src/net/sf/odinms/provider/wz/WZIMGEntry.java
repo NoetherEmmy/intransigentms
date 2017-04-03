@@ -39,7 +39,7 @@ public class WZIMGEntry implements MapleData {
     public MapleData getChildByPath(String path) {
         String segments[] = path.split("/");
         if (segments[0].equals("..")) {
-            return ((MapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
+            return ((MapleData) parent).getChildByPath(path.substring(path.indexOf("/") + 1));
         }
 
         MapleData ret = this;
@@ -85,7 +85,7 @@ public class WZIMGEntry implements MapleData {
 
     @Override
     public String toString() {
-        return getName() + ":" + getData();
+        return name + ":" + data;
     }
 
     public MapleDataEntity getParent() {

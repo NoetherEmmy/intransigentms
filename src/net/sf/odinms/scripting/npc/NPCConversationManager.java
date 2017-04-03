@@ -1348,7 +1348,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                         " to player " +
                         getPlayer().getName() +
                         " from NPC with ID " +
-                        this.getNpc() +
+                        npc +
                         ". Function: giveDebuff"
                 );
                 return;

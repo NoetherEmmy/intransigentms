@@ -280,7 +280,7 @@ public class MapleClient {
                 Connection con = DatabaseConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement("UPDATE accounts SET LastLoginInMilliseconds = ? WHERE id = ?");
                 ps.setLong(1, System.currentTimeMillis());
-                ps.setInt(2, getAccID());
+                ps.setInt(2, this.accId);
                 ps.executeUpdate();
                 ps.close();
             } catch (SQLException se) {
@@ -483,7 +483,7 @@ public class MapleClient {
                     "UPDATE accounts SET loggedin = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?"
                 );
             ps.setInt(1, newstate);
-            ps.setInt(2, getAccID());
+            ps.setInt(2, this.accId);
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
@@ -508,7 +508,7 @@ public class MapleClient {
             ps = con.prepareStatement(
                 "SELECT loggedin, lastlogin, UNIX_TIMESTAMP(birthday) as birthday FROM accounts WHERE id = ?"
             );
-            ps.setInt(1, getAccID());
+            ps.setInt(1, this.accId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 rs.close();
@@ -528,7 +528,7 @@ public class MapleClient {
                 if (t + 30000 < now) { // Connecting to channel server timeout.
                     state = LOGIN_NOTLOGGEDIN;
                     updateLoginState(LOGIN_NOTLOGGEDIN);
-                    if (isGuest()) {
+                    if (guest) {
                         deleteAllCharacters();
                     }
                 }
@@ -556,8 +556,8 @@ public class MapleClient {
     }
 
     public void disconnect() {
-        final MapleCharacter chr = getPlayer();
-        if (chr != null && isLoggedIn()) {
+        final MapleCharacter chr = player;
+        if (chr != null && loggedIn) {
             if (chr.getTrade() != null) {
                 MapleTrade.cancelTrade(chr);
             }
@@ -629,7 +629,7 @@ public class MapleClient {
             chr.unequipAllPets();
             chr.setMessenger(null);
             chr.getCheatTracker().dispose();
-            if (!isGuest()) {
+            if (!guest) {
                 chr.saveToDB(true, true);
             }
             chr.getMap().removePlayer(chr);
@@ -644,7 +644,7 @@ public class MapleClient {
                         log.warn("Failed removing party character. Player already removed.", e);
                     }
                 }
-                if (!this.serverTransition && isLoggedIn()) {
+                if (!this.serverTransition && loggedIn) {
                     wci.loggedOff(chr.getName(), chr.getId(), channel, chr.getBuddylist().getBuddyIds());
                 } else {
                     wci.loggedOn(chr.getName(), chr.getId(), channel, chr.getBuddylist().getBuddyIds());
@@ -672,11 +672,11 @@ public class MapleClient {
                     log.error(getLogMessage(this, "No channelserver associated to char {}", chr.getName()));
                 }
             }
-            if (isGuest()) {
+            if (guest) {
                 deleteAllCharacters();
             }
         }
-        if (!serverTransition && isLoggedIn()) {
+        if (!serverTransition && loggedIn) {
             updateLoginState(LOGIN_NOTLOGGEDIN);
         }
         NPCScriptManager npcsm = NPCScriptManager.getInstance();
@@ -697,9 +697,9 @@ public class MapleClient {
                 " ClientKeySet: " +
                 (getSession().getAttribute(CLIENT_KEY) != null) +
                 " loggedin: " +
-                isLoggedIn() +
+                    loggedIn +
                 " has char: " +
-                (getPlayer() != null);
+                (player != null);
         mc.dropMessage(builder);
     }
 
@@ -708,7 +708,7 @@ public class MapleClient {
     }
 
     public ChannelServer getChannelServer() {
-        return ChannelServer.getInstance(getChannel());
+        return ChannelServer.getInstance(channel);
     }
 
     public boolean deleteCharacter(int cid) {
@@ -906,15 +906,15 @@ public class MapleClient {
     }
 
     public void setTimesTalked(int n, int t) {
-        timesTalked.remove(new Pair<>(getPlayer(), n));
-        timesTalked.put(new Pair<>(getPlayer(), n), t);
+        timesTalked.remove(new Pair<>(player, n));
+        timesTalked.put(new Pair<>(player, n), t);
     }
 
     public int getTimesTalked(int n) {
-        if (timesTalked.get(new Pair<>(getPlayer(), n)) == null) {
+        if (timesTalked.get(new Pair<>(player, n)) == null) {
             setTimesTalked(n, 0);
         }
-        return timesTalked.get(new Pair<>(getPlayer(), n));
+        return timesTalked.get(new Pair<>(player, n));
     }
 
     private static class CharNameAndId {

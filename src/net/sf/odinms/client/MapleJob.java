@@ -64,25 +64,29 @@ public enum MapleJob {
 
     public static MapleJob getBy5ByteEncoding(int encoded) {
         switch (encoded) {
-            case 2:
-                return WARRIOR;
-            case 4:
-                return MAGICIAN;
-            case 8:
-                return BOWMAN;
-            case 16:
-                return THIEF;
-            case 32:
-                return PIRATE;
-            default:
-                return BEGINNER;
+            case 2:  return WARRIOR;
+            case 4:  return MAGICIAN;
+            case 8:  return BOWMAN;
+            case 16: return THIEF;
+            case 32: return PIRATE;
+            default: return BEGINNER;
         }
     }
 
     public boolean isA(MapleJob basejob) {
-        return getId() >= basejob.getId() && getId() / 100 == basejob.getId() / 100;
+        return
+            jobid >= basejob.getId() &&
+            jobid / 100 == basejob.getId() / 100 &&
+            (jobid / 10 % 10 == basejob.getId() / 10 % 10 ||
+                basejob.getId() / 10 % 10 == 0);
     }
 
+    /**
+     * <ul>
+     * <li>pure?: true</li>
+     * <li>nullable?: false</li>
+     * </ul>
+     */
     public static String getJobName(int id) {
         switch (id) {
             case 0:   return "Beginner";
@@ -129,7 +133,7 @@ public enum MapleJob {
             case 522: return "Corsair";
             case 900: return "GM";
             case 910: return "Super GM";
-            default: return "";
+            default:  return "";
         }
     }
 }

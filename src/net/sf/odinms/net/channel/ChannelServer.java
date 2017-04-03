@@ -259,11 +259,11 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                     channel
                 );
             acceptor.bind(new InetSocketAddress(port), serverHandler, cfg);
-            System.out.println("Channel " + getChannel() + ": Listening on port: " + port);
+            System.out.println("Channel " + channel + ": Listening on port: " + port);
             wci.serverReady();
             eventSM.init();
         } catch (IOException e) {
-            System.err.println("Binding to port " + port + " failed (ch: " + getChannel() + ") " + e);
+            System.err.println("Binding to port " + port + " failed (ch: " + channel + ") " + e);
         }
     }
 
@@ -471,7 +471,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                     " minutes, please log off safely."
             )
         );
-        TimerManager.getInstance().schedule(new ShutdownServer(getChannel()), time);
+        TimerManager.getInstance().schedule(new ShutdownServer(channel), time);
     }
 
     @Override
@@ -788,7 +788,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     public List<MapleCharacter> getPartyMembers(MapleParty party) {
         List<MapleCharacter> partym = new ArrayList<>();
         for (net.sf.odinms.net.world.MaplePartyCharacter partychar : party.getMembers()) {
-            if (partychar.getChannel() == getChannel()) { // Make sure the thing doesn't get
+            if (partychar.getChannel() == channel) { // Make sure the thing doesn't get
                                                           // duplicate plays due to ccing bug
                 MapleCharacter chr = getPlayerStorage().getCharacterByName(partychar.getName());
                 if (chr != null) {

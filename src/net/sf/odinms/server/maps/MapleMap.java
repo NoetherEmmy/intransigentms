@@ -1688,7 +1688,7 @@ public class MapleMap {
                 }
             }
             sendObjectPlacement(chr.getClient());
-            switch (getId()) {
+            switch (mapid) {
                 case 1:
                 case 2:
                 case 809000101:
@@ -1728,8 +1728,8 @@ public class MapleMap {
                 chr.getClient().getSession().write(MapleTVEffect.packet);
             }
         }
-        if (getTimeLimit() > 0 && getForcedReturnMap() != null) {
-            chr.getClient().getSession().write(MaplePacketCreator.getClock(getTimeLimit()));
+        if (timeLimit > 0 && getForcedReturnMap() != null) {
+            chr.getClient().getSession().write(MaplePacketCreator.getClock(timeLimit));
             chr.startMapTimeLimitTask(this, this.getForcedReturnMap());
         }
         if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted()) {
@@ -1744,8 +1744,8 @@ public class MapleMap {
             int min = cal.get(Calendar.MINUTE);
             int second = cal.get(Calendar.SECOND);
             chr.getClient().getSession().write((MaplePacketCreator.getClockTime(hour, min, second)));
-        } else if (getPartyQuestInstance() != null && getPartyQuestInstance().getPartyQuest().isTimerStarted()) {
-            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (getPartyQuestInstance().getPartyQuest().getTimeLeft() / 1000L)));
+        } else if (partyQuestInstance != null && partyQuestInstance.getPartyQuest().isTimerStarted()) {
+            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (partyQuestInstance.getPartyQuest().getTimeLeft() / 1000L)));
         }
         if (hasBoat() == 2) {
             chr.getClient().getSession().write((MaplePacketCreator.boatPacket(true)));
@@ -2046,7 +2046,7 @@ public class MapleMap {
     }
 
     public void addMonsterSpawn(MapleMonster monster, int mobTime) {
-        if (!((monster.getId() == 9400014 || monster.getId() == 9400575) && this.getId() > 5000)) {
+        if (!((monster.getId() == 9400014 || monster.getId() == 9400575) && mapid > 5000)) {
             Point newpos = calcPointBelow(monster.getPosition());
             if (newpos == null) {
                 Point adjustedpos = monster.getPosition();
@@ -2766,7 +2766,7 @@ public class MapleMap {
             case 922010800:
                 return true;
             default:
-                return getId() / 1000 == 5;
+                return mapid / 1000 == 5;
         }
     }
 

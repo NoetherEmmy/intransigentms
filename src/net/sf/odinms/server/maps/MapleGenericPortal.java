@@ -98,24 +98,24 @@ public class MapleGenericPortal implements MaplePortal {
     @Override
     public void enterPortal(MapleClient c) {
         MapleCharacter player = c.getPlayer();
-        double distanceSq = getPosition().distanceSq(player.getPosition());
+        double distanceSq = position.distanceSq(player.getPosition());
         if (distanceSq > 22500) {
             player.getCheatTracker().registerOffense(CheatingOffense.USING_FARAWAY_PORTAL, "D" + Math.sqrt(distanceSq));
         }
 
         boolean changed = false;
-        if (getScriptName() != null) {
-            if (!FourthJobQuestsPortalHandler.handlePortal(getScriptName(), player)) {
+        if (scriptName != null) {
+            if (!FourthJobQuestsPortalHandler.handlePortal(scriptName, player)) {
                 changed = PortalScriptManager.getInstance().executePortalScript(this, c);
             }
-        } else if (getTargetMapId() != 999999999) {
+        } else if (targetmap != 999999999) {
             MapleMap to;
             if (player.getEventInstance() == null) {
-                to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(getTargetMapId());
+                to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetmap);
             } else {
-                to = player.getEventInstance().getMapInstance(getTargetMapId());
+                to = player.getEventInstance().getMapInstance(targetmap);
             }
-            MaplePortal pto = to.getPortal(getTarget());
+            MaplePortal pto = to.getPortal(target);
             if (pto == null) {
                 pto = to.getPortal(0);
             }

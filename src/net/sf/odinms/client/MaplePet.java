@@ -61,14 +61,14 @@ public class MaplePet extends Item {
             Connection con = DatabaseConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ? WHERE petid = ?");
-            ps.setString(1, getName());
+            ps.setString(1, name);
             if (this.level > 30) {
                 this.level = 30;
             }
-            ps.setInt(2, getLevel());
-            ps.setInt(3, getCloseness());
-            ps.setInt(4, getFullness());
-            ps.setInt(5, getUniqueId());
+            ps.setInt(2, level);
+            ps.setInt(3, closeness);
+            ps.setInt(4, fullness);
+            ps.setInt(5, uniqueid);
             ps.executeUpdate();
             ps.close();
         } catch (SQLException ex) {

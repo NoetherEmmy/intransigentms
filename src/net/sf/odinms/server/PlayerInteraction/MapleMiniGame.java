@@ -43,7 +43,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
 
     @Override
     public byte getShopType() {
-        if (getGameType().equals(MiniGameType.OMOK)) {
+        if (GameType.equals(MiniGameType.OMOK)) {
             return IPlayerInteractionManager.OMOK;
         } else {
             return IPlayerInteractionManager.MATCH_CARD;
