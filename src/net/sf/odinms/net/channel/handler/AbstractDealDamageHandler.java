@@ -301,6 +301,12 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             monster.softSetComa(skillLevel / (attack.skill == 1111005 ? 10 : 7) + 1);
                         }
                         break;
+                    case 4211002: // Assaulter
+                        if (totDamageToOneMonster > 0) {
+                            ISkill assaulter = SkillFactory.getSkill(4211002);
+                            monster.applyBleed(player, assaulter, 6L * 1000L);
+                        }
+                        break;
                     case 3221007: // Snipe
                         //totDamageToOneMonster = (int) (95000 + Math.random() * 5000);
                         int upperRange = player.getCurrentMaxBaseDamage();

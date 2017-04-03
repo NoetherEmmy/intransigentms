@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
+    public static final int MAX_BLEED_COUNT = 4;
     private MapleMonsterStats stats, overrideStats;
     private int hp, mp;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
@@ -59,6 +60,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private ScheduledFuture<?> cancelPanicTask;
     private final AtomicInteger coma = new AtomicInteger();
     private final Map<Integer, Integer> anatomicalThreats = new LinkedHashMap<>(2);
+    private final List<BleedSchedule> bleeds = new LinkedList<>(); // Purposely LinkedList
+    private final AtomicInteger runningBleedId = new AtomicInteger();
 
     public MapleMonster(int id, MapleMonsterStats stats) {
         super(id);
@@ -935,8 +938,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         cancelFlameSchedule();
 
         if (isBuffed(MonsterStatus.MAGIC_IMMUNITY)) return false;
-        ElementalEffectiveness effectiveness = addedEffectiveness.get(skill.getElement());
-        if (effectiveness == null) effectiveness = stats.getEffectiveness(skill.getElement());
+        ElementalEffectiveness effectiveness = addedEffectiveness.get(Element.FIRE);
+        if (effectiveness == null) effectiveness = stats.getEffectiveness(Element.FIRE);
         double damageMultiplier = getVulnerability();
         if (effectiveness != null) {
             switch (effectiveness) {
@@ -1040,6 +1043,77 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (cancelFlameTask != null) cancelFlameTask.cancel(false);
     }
 
+    public boolean applyBleed(MapleCharacter from, ISkill skill, long duration) {
+        if (isBuffed(MonsterStatus.WEAPON_IMMUNITY)) return false;
+
+        TimerManager tMan = TimerManager.getInstance();
+
+        final int bleedId = runningBleedId.getAndIncrement();
+        final Runnable cancelTask = () -> cancelBleedSchedule(bleedId);
+
+        int minBleedDamage, maxBleedDamage, tickTime;
+        int bleedLevel = from.getSkillLevel(skill);
+        switch (skill.getId()) {
+            case 4211002: { // Assaulter
+                tickTime = 500;
+                int str = from.getTotalStr();
+                int d = skill.getEffect(bleedLevel).getDamage();
+                minBleedDamage = str * d / 64;
+                maxBleedDamage = str * d / 48;
+                break;
+            }
+            default:
+                // More bleed skills?
+                return false;
+        }
+        addBleedSchedule(
+            new BleedSchedule(
+                tMan.register(
+                    new BleedTask(minBleedDamage, maxBleedDamage, from, bleedId),
+                    tickTime,
+                    tickTime
+                ),
+                tMan.schedule(cancelTask, duration),
+                bleedId
+            )
+        );
+        return true;
+    }
+
+    public boolean isBleeding() {
+        return !bleeds.isEmpty();
+    }
+
+    public void addBleedSchedule(final BleedSchedule bleedSchedule) {
+        synchronized (bleeds) {
+            while (bleeds.size() >= MAX_BLEED_COUNT) {
+                bleeds.remove(0).dispose();
+            }
+            bleeds.add(bleedSchedule);
+        }
+    }
+
+    public void cancelBleedSchedule(int bleedScheduleId) {
+        synchronized (bleeds) {
+            int i = 0;
+            for (BleedSchedule bleed : bleeds) {
+                if (bleed.getId() == bleedScheduleId) break;
+                i++;
+            }
+            if (i < bleeds.size()) {
+                bleeds.remove(i).dispose();
+            }
+        }
+    }
+
+    public int bleedCount() {
+        return bleeds.size();
+    }
+
+    public void stopBleeding() {
+        bleeds.clear();
+    }
+
     public void setTempEffectiveness(Element e, ElementalEffectiveness ee, int duration) {
         cancelEffectivenessSchedule();
         if (originalEffectiveness.containsKey(e)) {
@@ -1058,9 +1132,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             setEffectiveness(e, ee);
         }
 
-        final Element thiselement = e;
+        final Element thisElement = e;
         TimerManager timerManager = TimerManager.getInstance();
-        final Runnable cancelTask = () -> setEffectiveness(thiselement, originalEffectiveness.get(thiselement));
+        final Runnable cancelTask = () -> setEffectiveness(thisElement, originalEffectiveness.get(thisElement));
 
         ScheduledFuture<?> schedule = timerManager.schedule(cancelTask, duration);
         setCancelEffectivenessTask(schedule);
@@ -1439,6 +1513,85 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private final class BleedTask implements Runnable {
+        private final int minBleedDamage;
+        private final int maxBleedDamage;
+        private final MapleCharacter chr;
+        private final int bleedScheduleId;
+        private final MapleMap map;
+
+        private BleedTask(int minBleedDamage, int maxBleedDamage, MapleCharacter chr, int bleedScheduleId) {
+            this.minBleedDamage = minBleedDamage;
+            this.maxBleedDamage = maxBleedDamage;
+            this.chr = chr;
+            this.bleedScheduleId = bleedScheduleId;
+            this.map = chr.getMap();
+        }
+
+        @Override
+        public void run() {
+            int damage;
+            boolean docancel = false;
+            if (isBuffed(MonsterStatus.WEAPON_IMMUNITY)) {
+                damage = 0;
+                docancel = true;
+            } else if (minBleedDamage == maxBleedDamage) {
+                damage = (int) (minBleedDamage - getWdef() * 0.6d * (1.0d + 0.01d * Math.max(getLevel() - chr.getLevel(), 0.0d)));
+                damage = Math.max(1, damage);
+            } else {
+                int localMinDmg = (int) (minBleedDamage - getWdef() * 0.6d * (1.0d + 0.01d * Math.max(getLevel() - chr.getLevel(), 0.0d)));
+                localMinDmg = Math.max(1, localMinDmg);
+                int localMaxDmg = (int) (maxBleedDamage - getWdef() * 0.5d * (1.0d + 0.01d * Math.max(getLevel() - chr.getLevel(), 0.0d)));
+                localMaxDmg = Math.max(1, localMaxDmg);
+                damage = (int) (localMinDmg + Math.random() * (localMaxDmg - localMinDmg + 1));
+            }
+            if (damage >= hp) docancel = true;
+            if (damage > 0) {
+                map.damageMonster(chr, MapleMonster.this, damage);
+                map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
+            }
+            if (docancel) cancelBleedSchedule(bleedScheduleId);
+        }
+    }
+
+    private final class BleedSchedule {
+        private final ScheduledFuture<?> bleedTask;
+        private final ScheduledFuture<?> cancelTask;
+        private final int id;
+
+        public BleedSchedule(ScheduledFuture<?> bleedTask, ScheduledFuture<?> cancelTask, int id) {
+            this.bleedTask = bleedTask;
+            this.cancelTask = cancelTask;
+            this.id = id;
+        }
+
+        public ScheduledFuture<?> getBleedTask() {
+            return bleedTask;
+        }
+
+        public ScheduledFuture<?> getCancelTask() {
+            return cancelTask;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void dispose() {
+            cancelTask.cancel(false);
+            bleedTask.cancel(false);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null) return false;
+            if (getClass() != o.getClass()) return false;
+            final BleedSchedule other = (BleedSchedule) o;
+            return id == other.id;
         }
     }
 
