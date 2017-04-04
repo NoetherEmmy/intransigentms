@@ -11,13 +11,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ReactorScriptManager extends AbstractScriptManager {
     private static final ReactorScriptManager instance = new ReactorScriptManager();
-    private final Map<Integer, List<DropEntry>> drops = new LinkedHashMap<>();
+    private final Map<Integer, List<DropEntry>> drops = new HashMap<>();
 
     public static synchronized ReactorScriptManager getInstance() {
         return instance;
@@ -27,9 +27,7 @@ public class ReactorScriptManager extends AbstractScriptManager {
         try {
             ReactorActionManager rm = new ReactorActionManager(c, reactor);
             Invocable iv = getInvocable("reactor/" + reactor.getId() + ".js", c);
-            if (iv == null) {
-                return;
-            }
+            if (iv == null) return;
             engine.put("rm", rm);
             ReactorScript rs = iv.getInterface(ReactorScript.class);
             rs.act();
@@ -41,10 +39,13 @@ public class ReactorScriptManager extends AbstractScriptManager {
     public List<DropEntry> getDrops(int rid) {
         List<DropEntry> ret = drops.get(rid);
         if (ret == null) {
-            ret = new ArrayList<>();
+            ret = new ArrayList<>(5);
             try {
                 Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT itemid, chance FROM reactordrops WHERE reactorid = ? AND chance >= 0");
+                PreparedStatement ps =
+                    con.prepareStatement(
+                        "SELECT itemid, chance FROM reactordrops WHERE reactorid = ? AND chance >= 0"
+                    );
                 ps.setInt(1, rid);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {

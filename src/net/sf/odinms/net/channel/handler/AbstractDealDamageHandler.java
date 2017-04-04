@@ -51,7 +51,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         }
     }
 
-    protected synchronized void applyAttack(AttackInfo attack, MapleCharacter player, int attackCount) {
+    protected synchronized void applyAttack(AttackInfo attack, final MapleCharacter player, int attackCount) {
         player.getCheatTracker().resetHPRegen();
         //player.getCheatTracker().checkAttack(attack.skill);
 
@@ -92,13 +92,13 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         final MapleMap map = player.getMap();
 
         if (attack.skill == 4211006 && attack.allDamage != null) { // Meso explosion
-            int delay = 0;
-            for (Pair<Integer, List<Integer>> oned : attack.allDamage) {
+            long delay = 0L;
+            for (final Pair<Integer, List<Integer>> oned : attack.allDamage) {
                 if (oned != null && oned.getLeft() != null) {
-                    MapleMapObject mapObject = map.getMapObject(oned.getLeft());
+                    final MapleMapObject mapObject = map.getMapObject(oned.getLeft());
                     if (mapObject != null && mapObject.getType() == MapleMapObjectType.ITEM) {
                         final MapleMapItem mapItem = (MapleMapItem) mapObject;
-                        if (mapItem != null && mapItem.getMeso() >= 10) {
+                        if (mapItem != null && mapItem.getMeso() > 0) {
                             synchronized (mapItem) {
                                 if (mapItem.isPickedUp()) {
                                     player.getClient().getSession().write(MaplePacketCreator.enableActions());
@@ -106,17 +106,20 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                 }
                                 TimerManager.getInstance().schedule(() -> {
                                     map.removeMapObject(mapItem);
-                                    map.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapItem.getObjectId(), 4, 0), mapItem.getPosition());
+                                    map.broadcastMessage(
+                                        MaplePacketCreator.removeItemFromMap(mapItem.getObjectId(), 4, player.getId()),
+                                        mapItem.getPosition()
+                                    );
                                     mapItem.setPickedUp(true);
                                 }, delay);
-                                delay += 100;
+                                delay += 100L;
                             }
                         } else if (mapItem != null && mapItem.getMeso() == 0) {
                             player.getCheatTracker().registerOffense(CheatingOffense.ETC_EXPLOSION);
                             return;
                         }
-                    } else if (mapObject != null && mapObject.getType() != MapleMapObjectType.MONSTER) {
-                        player.getCheatTracker().registerOffense(CheatingOffense.EXPLODING_NONEXISTANT);
+                    } else if (mapObject == null || mapObject.getType() != MapleMapObjectType.MONSTER) {
+                        player.getClient().getSession().write(MaplePacketCreator.enableActions());
                         return;
                     }
                 }
@@ -127,7 +130,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             player.getClient().getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        for (Pair<Integer, List<Integer>> oned : attack.allDamage) {
+        for (final Pair<Integer, List<Integer>> oned : attack.allDamage) {
             if (oned == null || oned.getLeft() == null) continue;
             final MapleMonster monster = map.getMonsterByOid(oned.getLeft());
 
@@ -148,16 +151,17 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     }
                 }
                 if (totDamageToOneMonster >= 12000000) {
-                    AutobanManager.getInstance()
-                                  .autoban(
-                                      player.getClient(),
-                                      player.getName() +
-                                          " dealt " +
-                                          totDamageToOneMonster +
-                                          " to monster " +
-                                          monster.getId() +
-                                          "."
-                                  );
+                    AutobanManager
+                        .getInstance()
+                        .autoban(
+                            player.getClient(),
+                            player.getName() +
+                                " dealt " +
+                                totDamageToOneMonster +
+                                " to monster " +
+                                monster.getId() +
+                                "."
+                        );
                 }
 
                 double distance = player.getPosition().distanceSq(monster.getPosition());
@@ -395,7 +399,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                                 SkillFactory
                                                     .getSkill(charge)
                                                     .getEffect(player.getSkillLevel(charge))
-                                                    .getY() * 2000L
+                                                    .getY() * 2L * 1000L
                                             );
                                         }
                                         break;
@@ -471,7 +475,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             case 4121003:
                             case 4221003:
                                 // Fixing Taunt skill
-                                Map<MonsterStatus, Integer> tauntStati = new LinkedHashMap<>(5);
+                                final Map<MonsterStatus, Integer> tauntStati = new LinkedHashMap<>(5);
                                 tauntStati.put(MonsterStatus.WDEF, 300);
                                 tauntStati.put(MonsterStatus.MDEF, 300);
                                 tauntStati.put(MonsterStatus.SHOWDOWN, player.getSkillLevel(SkillFactory.getSkill(attack.skill)));
@@ -566,7 +570,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         Point monsterPosition = monster.getPosition();
         ISkill pickPocket = SkillFactory.getSkill(4211003);
 
-        for (Integer eachd : oned.getRight()) {
+        for (final Integer eachd : oned.getRight()) {
             if (pickPocket.getEffect(player.getSkillLevel(pickPocket)).makeChanceResult()) {
                 double perc = (double) eachd / (double) reqDamage;
 
@@ -613,9 +617,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 ret.charge = 0;
                 break;
         }
-        if (ret.skill == 1221011) {
-            ret.isHH = true;
-        }
+        if (ret.skill == 1221011) ret.isHH = true;
         lea.readByte();
         ret.stance = lea.readByte();
         if (ret.skill == 4211006) {
@@ -625,9 +627,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             lea.readByte();
             ret.speed = lea.readByte();
             lea.readByte();
-            ret.direction = lea.readByte(); // Contains direction on some 4th job skills
+            ret.direction = lea.readByte(); // Contains direction on some 4th job skills.
             lea.skip(7);
-            // Hurricane and pierce have extra 4 bytes
+            // Hurricane and pierce have extra 4 bytes.
             switch (ret.skill) {
                 case 3121004:
                 case 3221001:
@@ -641,19 +643,19 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             lea.readByte();
             ret.speed = lea.readByte();
             lea.skip(4);
-        //  if (ret.skill == 5201002) {
-        //      lea.skip(4);
-        //  }
+          //if (ret.skill == 5201002) {
+          //    lea.skip(4);
+          //}
         }
         for (int i = 0; i < ret.numAttacked; ++i) {
             int oid = lea.readInt();
-            // System.out.println("Unk2: " + HexTool.toString(lea.read(14)));
+            //System.out.println("Unk2: " + HexTool.toString(lea.read(14)));
             lea.skip(14);
             List<Integer> allDamageNumbers = new ArrayList<>();
             for (int j = 0; j < ret.numDamage; ++j) {
                 int damage = lea.readInt();
                 if (ret.skill == 3221007) {
-                    damage += 0x80000000; // Critical damage = 0x80000000 + damage
+                    damage += 0x80000000; // Critical damage = 0x80000000 + damage.
                 }
                 allDamageNumbers.add(damage);
             }
@@ -690,7 +692,6 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 }
                 ret.allDamage.add(new Pair<>(oid, allDamageNumbers));
                 lea.skip(4);
-
             } else {
                 int bullets = lea.readByte();
                 for (int j = 0; j < bullets; ++j) {

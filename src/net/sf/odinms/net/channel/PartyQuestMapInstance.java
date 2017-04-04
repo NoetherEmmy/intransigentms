@@ -1,6 +1,7 @@
 package net.sf.odinms.net.channel;
 
 import net.sf.odinms.client.MapleCharacter;
+import net.sf.odinms.scripting.AbstractScriptManager;
 import net.sf.odinms.server.MaplePortal;
 import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.maps.MapleReactor;
@@ -38,10 +39,14 @@ public class PartyQuestMapInstance {
     PartyQuestMapInstance(PartyQuest partyQuest, MapleMap map) {
         this.partyQuest = partyQuest;
         this.map = map;
-        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+        final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
         path = SCRIPT_PATH + this.map.getId() + ".js";
         try {
-            FileReader scriptFile = new FileReader(path);
+            for (final String libName : AbstractScriptManager.libs) {
+                final FileReader libReader = new FileReader("scripts/" + libName + ".js");
+                scriptEngine.eval(libReader);
+            }
+            final FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
             scriptFile.close();
             scriptEngine.put("mi", this);
@@ -59,7 +64,7 @@ public class PartyQuestMapInstance {
             invocable = (Invocable) scriptEngine;
         }
         playerPropertyMap = new LinkedHashMap<>(getPlayers().size() + 1, 0.9f);
-        this.getPlayers().forEach(p -> playerPropertyMap.put(p, new LinkedHashMap<>(4)));
+        getPlayers().forEach(p -> playerPropertyMap.put(p, new LinkedHashMap<>(4)));
         lastPointsHeard = new LinkedHashMap<>(getPlayers().size() + 1, 0.9f);
     }
 
@@ -164,11 +169,13 @@ public class PartyQuestMapInstance {
     }
 
     public Set<MapleCharacter> playersWithProperty(final String property) {
-        return playerPropertyMap.entrySet()
-                                .stream()
-                                .filter(e -> e.getValue().containsKey(property))
-                                .map(Map.Entry::getKey)
-                                .collect(Collectors.toSet());
+        return
+            playerPropertyMap
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue().containsKey(property))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public void setLevelLimit(int ll) {
@@ -193,34 +200,35 @@ public class PartyQuestMapInstance {
 
     public void heardPlayerMovement(final MapleCharacter player, final Point position) {
         final Point lastPointHeard = lastPointsHeard.get(player);
-        obstacles.values()
-                 .stream()
-                 .filter(o ->
-                     o.isClosed() &&
-                     o.getRect().contains(position) &&
-                     (lastPointHeard == null || !o.getRect().contains(lastPointHeard))
-                 )
-                 .findAny()
-                 .ifPresent(o -> {
-                     if (lastPointHeard == null) {
-                         player.changeMap(map, map.findClosestSpawnpoint(position));
-                     } else {
-                         Direction dir = o.simpleCollision(lastPointHeard, position);
-                         if (dir != null) {
-                             MaplePortal to =
-                                 map.findClosestSpawnpointInDirection(
-                                     position,
-                                     dir,
-                                     o.getRect().y,
-                                     o.getRect().y + o.getRect().height
-                                 );
-                             if (to != null) {
-                                 player.changeMap(map, to);
-                             }
-                         }
-                     }
-                     invokeMethod("playerHitObstacle", player, o);
-                 });
+        obstacles
+            .values()
+            .stream()
+            .filter(o ->
+                o.isClosed() &&
+                o.getRect().contains(position) &&
+                (lastPointHeard == null || !o.getRect().contains(lastPointHeard))
+            )
+            .findAny()
+            .ifPresent(o -> {
+                if (lastPointHeard == null) {
+                    player.changeMap(map, map.findClosestSpawnpoint(position));
+                } else {
+                    Direction dir = o.simpleCollision(lastPointHeard, position);
+                    if (dir != null) {
+                        MaplePortal to =
+                            map.findClosestSpawnpointInDirection(
+                                position,
+                                dir,
+                                o.getRect().y,
+                                o.getRect().y + o.getRect().height
+                            );
+                        if (to != null) {
+                            player.changeMap(map, to);
+                        }
+                    }
+                }
+                invokeMethod("playerHitObstacle", player, o);
+            });
         lastPointsHeard.put(player, position);
 
         invokeMethod("heardPlayerMovement", player, player.getPosition());
@@ -260,7 +268,12 @@ public class PartyQuestMapInstance {
     }
 
     public List<Integer> registeredObstacleIds() {
-        return obstacles.keySet().stream().sorted().collect(Collectors.toCollection(ArrayList::new));
+        return
+            obstacles
+                .keySet()
+                .stream()
+                .sorted()
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public Map<Integer, Obstacle> readObstacles() {
@@ -384,37 +397,14 @@ public class PartyQuestMapInstance {
         triggers.clear();
     }
 
-    @Deprecated
-    public void disableSkill(final int skillId) {
-        disabledSkills.add(skillId);
-        getPlayers().forEach(p -> {
-            p.dispelSkill(skillId);
-            p.giveCoolDowns(skillId, System.currentTimeMillis(), 10000000, true);
-        });
-    }
-
-    @Deprecated
-    public void enableSkill(final int skillId) {
-        if (disabledSkills.remove(skillId)) {
-            getPlayers().forEach(p -> p.removeCooldown(skillId));
-        }
-    }
-
-    @Deprecated
-    public void enableAllSkills() {
-        disabledSkills.forEach(ds -> getPlayers().forEach(p -> p.removeCooldown(ds)));
-        disabledSkills.clear();
-    }
-
-    @Deprecated
-    public Set<Integer> readDisabledSkills() {
-        return Collections.unmodifiableSet(disabledSkills);
-    }
-
     public void reloadScript() {
-        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+        final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
         try {
-            FileReader scriptFile = new FileReader(path);
+            for (final String libName : AbstractScriptManager.libs) {
+                final FileReader libReader = new FileReader("scripts/" + libName + ".js");
+                scriptEngine.eval(libReader);
+            }
+            final FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
             scriptFile.close();
             scriptEngine.put("mi", this);

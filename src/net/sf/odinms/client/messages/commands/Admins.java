@@ -311,7 +311,7 @@ public class Admins implements Command {
                     npc.setCustom(true);
                     try {
                         Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, y, mid ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+                        PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type, x, y, mid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         ps.setInt(1, npcId);
                         ps.setInt(2, 0);
                         ps.setInt(3, fh);

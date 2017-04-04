@@ -93,9 +93,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public int getDrop(final MapleCharacter owner) {
-        MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
+        final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
         int lastAssigned = -1, minChance = 1;
-        List<DropEntry> dl =
+        final List<DropEntry> dl =
             mi.retrieveDropChances(getId())
               .stream()
               .filter(de -> {
@@ -110,17 +110,17 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                   }
               })
               .collect(Collectors.toCollection(ArrayList::new));
-        for (DropEntry d : dl) {
+        for (final DropEntry d : dl) {
             if (d.chance > minChance) minChance = d.chance;
         }
-        for (DropEntry d : dl) {
+        for (final DropEntry d : dl) {
             d.assignedRangeStart = lastAssigned + 1;
             d.assignedRangeLength = (int) Math.ceil((1.0d / (double) d.chance) * (double) minChance);
             lastAssigned += d.assignedRangeLength;
         }
-        Random r = new Random();
-        int c = r.nextInt(minChance);
-        for (DropEntry d : dl) {
+        final Random r = new Random();
+        final int c = r.nextInt(minChance);
+        for (final DropEntry d : dl) {
             if (c >= d.assignedRangeStart && c < d.assignedRangeStart + d.assignedRangeLength) {
                 return d.itemId;
             }
@@ -129,16 +129,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public int getSingleDrop() {
-        MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
+        final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
         long cumulativeChances = 0L;
-        List<DropEntry> dropEntries = mi.retrieveDropChances(getId());
-        for (DropEntry d : dropEntries) {
+        final List<DropEntry> dropEntries = mi.retrieveDropChances(getId());
+        for (final DropEntry d : dropEntries) {
             if (d.questId > 0) continue;
             cumulativeChances += (long) (Integer.MAX_VALUE / d.chance);
         }
-        long roll = (long) (Math.random() * cumulativeChances);
+        final long roll = (long) (Math.random() * cumulativeChances);
         long chanceLadder = 0L;
-        for (DropEntry d : dropEntries) {
+        for (final DropEntry d : dropEntries) {
             if (d.questId > 0) continue;
             chanceLadder += (long) (Integer.MAX_VALUE / d.chance);
             if (chanceLadder > roll) return d.itemId;

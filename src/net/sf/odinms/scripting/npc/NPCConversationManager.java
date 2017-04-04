@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
     private final MapleClient c;
@@ -1349,28 +1350,28 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                         getPlayer().getName() +
                         " from NPC with ID " +
                         npc +
-                        ". Function: giveDebuff"
+                        ". Function: NPCConversationManager#giveDebuff"
                 );
                 return;
         }
         getPlayer().giveDebuff(disease, ms);
     }
 
-    public String equipList(MapleClient c, int lb1, int lb2, int lb3, int lb4) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        StringBuilder str = new StringBuilder();
-        MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<Integer> leaveBehind = new ArrayList<>();
-        leaveBehind.add(lb1);
-        leaveBehind.add(lb2);
-        leaveBehind.add(lb3);
-        leaveBehind.add(lb4);
-        List<IItem> equipList = new ArrayList<>(equip.list());
+    public String equipList(final int... leaveBehind_) {
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final StringBuilder str = new StringBuilder();
+        final MapleInventory equip = getPlayer().getInventory(MapleInventoryType.EQUIP);
+        final List<IItem> equipList = new ArrayList<>(equip.list());
+        final Set<Integer> leaveBehind =
+            IntStream
+                .of(leaveBehind_)
+                .boxed()
+                .collect(Collectors.toCollection(HashSet::new));
 
-        // This sorts the items by their position in the inventory
+        // This sorts the items by their position in the inventory.
         equipList.sort(Comparator.comparingInt(IItem::getPosition));
 
-        for (IItem equipItem : equipList) {
+        for (final IItem equipItem : equipList) {
             if (!leaveBehind.contains((int) equipItem.getPosition())) {
                 if (!ii.isCash(equipItem.getItemId())) {
                     str.append("#L")
@@ -1478,24 +1479,24 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return str.toString();
     }
 
-    public void clearItems(MapleClient c) {
-        clearItems(c, -1, -1, -1, -1);
-    }
-
-    public void clearItems(MapleClient c, int lb1, int lb2, int lb3, int lb4) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        MapleInventory equip = c.getPlayer().getInventory(MapleInventoryType.EQUIP);
-        MapleInventory use = c.getPlayer().getInventory(MapleInventoryType.USE);
-        MapleInventory etc = c.getPlayer().getInventory(MapleInventoryType.ETC);
-        List<Integer> leaveBehind = Arrays.asList(lb1, lb2, lb3, lb4);
-        List<IItem> cleared = new LinkedList<>(); // Linked list for a damn reason
+    public void clearItems(final int... leaveBehind_) {
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final MapleInventory equip = getPlayer().getInventory(MapleInventoryType.EQUIP);
+        final MapleInventory use = getPlayer().getInventory(MapleInventoryType.USE);
+        final MapleInventory etc = getPlayer().getInventory(MapleInventoryType.ETC);
+        final Set<Integer> leaveBehind =
+            IntStream
+                .of(leaveBehind_)
+                .boxed()
+                .collect(Collectors.toCollection(HashSet::new));
+        final List<IItem> cleared = new LinkedList<>(); // Linked list for a damn reason
         final Set<Integer> keep = new HashSet<Integer>() {{
             add(1002419); /* Mark of the Beta */ add(1002475); /* Mark of the Gamma */
         }};
 
         int i = 0;
-        byte[] equipSlots = new byte[equip.list().size()];
-        for (IItem equipItem : equip.list()) {
+        final byte[] equipSlots = new byte[equip.list().size()];
+        for (final IItem equipItem : equip.list()) {
             if (!leaveBehind.contains((int) equipItem.getPosition())) {
                 if (!ii.isCash(equipItem.getItemId()) && !keep.contains(equipItem.getItemId())) {
                     equipSlots[i] = equipItem.getPosition();
@@ -1516,8 +1517,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         i = 0;
-        byte[] useslots = new byte[use.list().size()];
-        for (IItem useitem : use.list()) {
+        final byte[] useslots = new byte[use.list().size()];
+        for (final IItem useitem : use.list()) {
             useslots[i] = useitem.getPosition();
             i++;
         }
@@ -1534,8 +1535,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         i = 0;
-        byte[] etcslots = new byte[etc.list().size()];
-        for (IItem etcitem : etc.list()) {
+        final byte[] etcslots = new byte[etc.list().size()];
+        for (final IItem etcitem : etc.list()) {
             etcslots[i] = etcitem.getPosition();
             i++;
         }
@@ -1560,19 +1561,20 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
 
-    public void stripEquips(MapleClient c) {
-        c.getPlayer().unequipEverything();
+    public void stripEquips() {
+        getPlayer().unequipEverything();
     }
 
-    public void resetMaxHpMp(MapleClient c) {
-        c.getPlayer().setHp(50);
-        c.getPlayer().updateSingleStat(MapleStat.HP, 50);
-        c.getPlayer().setMp(5);
-        c.getPlayer().updateSingleStat(MapleStat.MP, 5);
-        c.getPlayer().setMaxHp(50);
-        c.getPlayer().updateSingleStat(MapleStat.MAXHP, 50);
-        c.getPlayer().setMaxMp(5);
-        c.getPlayer().updateSingleStat(MapleStat.MAXMP, 5);
+    public void resetMaxHpMp() {
+        final MapleCharacter p = getPlayer();
+        p.setHp(50);
+        p.updateSingleStat(MapleStat.HP, 50);
+        p.setMp(5);
+        p.updateSingleStat(MapleStat.MP, 5);
+        p.setMaxHp(50);
+        p.updateSingleStat(MapleStat.MAXHP, 50);
+        p.setMaxMp(5);
+        p.updateSingleStat(MapleStat.MAXMP, 5);
     }
 
     public void spawnMonster(int mobid) {
@@ -1584,20 +1586,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void spawnMonsterInMap(int mobid, int mapid) {
-        MapleMap map;
-        map = c.getChannelServer().getMapFactory().getMap(mapid);
+        final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
         map.spawnMonster(MapleLifeFactory.getMonster(mobid));
     }
 
     public void spawnMonsterInMap(MapleMonster mob, int mapid) {
-        MapleMap map;
-        map = c.getChannelServer().getMapFactory().getMap(mapid);
+        final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
         map.spawnMonster(mob);
     }
 
     public void spawnMonsterInMapAtPos(MapleMonster mob, int mapid, int x, int y) {
-        MapleMap map;
-        map = c.getChannelServer().getMapFactory().getMap(mapid);
+        final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
         map.spawnMonsterOnGroudBelow(mob, new Point(x, y));
     }
 
@@ -1606,9 +1605,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void spawnHT() {
-        MapleMonster ht = MapleLifeFactory.getMonster(8810026);
-        MapleMap map;
-        map = c.getChannelServer().getMapFactory().getMap(240060200);
+        final MapleMonster ht = MapleLifeFactory.getMonster(8810026);
+        final MapleMap map = c.getChannelServer().getMapFactory().getMap(240060200);
         map.spawnMonsterOnGroudBelow(ht, new Point(89, 290));
         map.killMonster(ht, getPlayer(), false);
         map.broadcastMessage(
@@ -1617,9 +1615,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String listConsume(char initial) {
-        StringBuilder sb = new StringBuilder();
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Pair<Integer, String>> consumeList = ii.getAllConsume(initial);
+        final StringBuilder sb = new StringBuilder();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final List<Pair<Integer, String>> consumeList = ii.getAllConsume(initial);
 
         if (consumeList.isEmpty()) {
             return "There are no use items with the selected initial letter.";
@@ -1674,16 +1672,19 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String whoDrops(int searchid) {
-        StringBuilder dropString_ = new StringBuilder();
+        final StringBuilder dropString_ = new StringBuilder();
         try {
-            Set<String> retMobs = new LinkedHashSet<>();
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT monsterid FROM monsterdrops WHERE itemid = ?");
+            final Set<String> retMobs = new LinkedHashSet<>();
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement ps =
+                con.prepareStatement(
+                    "SELECT monsterid FROM monsterdrops WHERE itemid = ?"
+                );
             ps.setInt(1, searchid);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                int mobId = rs.getInt("monsterid");
-                MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                final int mobId = rs.getInt("monsterid");
+                final MapleMonster mob = MapleLifeFactory.getMonster(mobId);
                 if (mob != null) {
                     retMobs.add(mob.getName());
                 }
@@ -1691,7 +1692,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             rs.close();
             ps.close();
             if (!retMobs.isEmpty()) {
-                for (String singleRetMob : retMobs) {
+                for (final String singleRetMob : retMobs) {
                     dropString_.append(singleRetMob).append("\r\n");
                 }
             } else {
@@ -1699,10 +1700,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
         } catch (SQLException sqle) {
             System.err.print("NPCConversationManager#whoDrops failed: " + sqle);
-            dropString_ =
-                new StringBuilder("NPCConversationManager#whoDrops failed:\r\n\r\n#r")
-                    .append(sqle)
-                    .append("#k");
+            dropString_
+                .delete(0, dropString_.length())
+                .append("NPCConversationManager#whoDrops failed:\r\n\r\n#r")
+                .append(sqle)
+                .append("#k");
         }
         return dropString_.toString();
     }
@@ -1711,7 +1713,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         boolean ret = true;
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement charps = con.prepareStatement("SELECT id FROM characters WHERE accountid = ?");
+            PreparedStatement charps =
+                con.prepareStatement(
+                    "SELECT id FROM characters WHERE accountid = ?"
+                );
             charps.setInt(1, getPlayer().getAccountID());
             ResultSet charrs = charps.executeQuery();
             while (charrs.next()) {

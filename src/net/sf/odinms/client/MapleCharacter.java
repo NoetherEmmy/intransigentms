@@ -3940,7 +3940,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void dispelSkill(int skillId) {
-        List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
+        final List<MapleBuffStatValueHolder> allBuffs = new ArrayList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (skillId == 0) {
                 if (mbsvh.effect.isSkill()) {
@@ -3959,10 +3959,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                             cancelEffect(mbsvh.effect, false, mbsvh.startTime);
                     }
                 }
-            } else {
-                if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillId) {
-                    cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-                }
+            } else if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillId) {
+                cancelEffect(mbsvh.effect, false, mbsvh.startTime);
             }
         }
     }
@@ -3983,9 +3981,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public int getSkillLevel(ISkill skill) {
         SkillEntry ret = skills.get(skill);
-        if (ret == null) {
-            return 0;
-        }
+        if (ret == null) return 0;
         return ret.skillevel;
     }
 
@@ -5932,11 +5928,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    private static class MapleBuffStatValueHolder {
+    private static final class MapleBuffStatValueHolder {
         public final MapleStatEffect effect;
         public final long startTime;
         public int value;
         public final ScheduledFuture<?> schedule;
+
         public MapleBuffStatValueHolder(MapleStatEffect effect, long startTime, ScheduledFuture<?> schedule, int value) {
             super();
             this.effect = effect;
@@ -5946,7 +5943,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    public static class MapleCoolDownValueHolder {
+    public static final class MapleCoolDownValueHolder {
         public final int skillId;
         public final long startTime;
         public final long length;
@@ -5961,13 +5958,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
     }
 
-    public static class SkillEntry {
+    public static final class SkillEntry {
         public final int skillevel;
         public final int masterlevel;
+
         public SkillEntry(int skillevel, int masterlevel) {
             this.skillevel = skillevel;
             this.masterlevel = masterlevel;
         }
+
         @Override
         public String toString() {
             return skillevel + ":" + masterlevel;

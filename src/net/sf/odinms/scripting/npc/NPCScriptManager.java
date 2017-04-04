@@ -127,7 +127,7 @@ public class NPCScriptManager extends AbstractScriptManager {
 
     public List<Integer> listTalkedNpcsByID(int chrid) {
         List<Integer> npcs = new ArrayList<>();
-        for (Pair<Integer, Integer> p : npcTalk.keySet()) {
+        for (final Pair<Integer, Integer> p : npcTalk.keySet()) {
             if (p.getLeft().equals(chrid)) {
                 npcs.add(p.getRight());
             }
@@ -137,7 +137,7 @@ public class NPCScriptManager extends AbstractScriptManager {
 
     public List<Integer> listAllTalkedNpcs() {
         List<Integer> npcs = new ArrayList<>();
-        for (Pair<Integer, Integer> p : npcTalk.keySet()) {
+        for (final Pair<Integer, Integer> p : npcTalk.keySet()) {
             npcs.add(p.getRight());
         }
         return npcs;
@@ -145,7 +145,7 @@ public class NPCScriptManager extends AbstractScriptManager {
 
     public int talkedTimesByNpc(int npc) {
         int i = 0;
-        for (Pair<Integer, Integer> p : npcTalk.keySet()) {
+        for (final Pair<Integer, Integer> p : npcTalk.keySet()) {
             if (p.getRight().equals(npc)) i += npcTalk.get(p);
         }
         return i;

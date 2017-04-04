@@ -1,6 +1,7 @@
 package net.sf.odinms.scripting.portal;
 
 import net.sf.odinms.client.MapleClient;
+import net.sf.odinms.scripting.AbstractScriptManager;
 import net.sf.odinms.server.MaplePortal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class PortalScriptManager {
 
     private PortalScriptManager() {
         ScriptEngineManager sem = new ScriptEngineManager();
-        sef = sem.getEngineByName("javascript").getFactory();
+        sef = sem.getEngineByName("nashorn").getFactory();
     }
 
     public static PortalScriptManager getInstance() {
@@ -37,13 +38,17 @@ public class PortalScriptManager {
             return null;
         }
         FileReader fr = null;
-        ScriptEngine portal = sef.getScriptEngine();
+        final ScriptEngine portal = sef.getScriptEngine();
         try {
+            for (final String libName : AbstractScriptManager.libs) {
+                final FileReader libReader = new FileReader("scripts/" + libName + ".js");
+                portal.eval(libReader);
+            }
             fr = new FileReader(scriptFile);
             CompiledScript compiled = ((Compilable) portal).compile(fr);
             compiled.eval();
         } catch (ScriptException | IOException e) {
-            log.error("THROW from script " + scriptName + ".js ", e);
+            log.error("THROW from script " + scriptName + ".js", e);
         } finally {
             if (fr != null) {
                 try {

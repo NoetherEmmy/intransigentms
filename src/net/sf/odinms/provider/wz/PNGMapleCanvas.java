@@ -71,14 +71,14 @@ public class PNGMapleCanvas implements MapleCanvas {
             rowPointers = new byte[maxHeight]; // ???
         }
         */
-        Inflater dec = new Inflater();
+        final Inflater dec = new Inflater();
         dec.setInput(data, 0, dataLength);
         int declen;
         byte[] uc = new byte[sizeUncompressed];
         try {
             declen = dec.inflate(uc);
-        } catch ( DataFormatException ex) {
-            throw new RuntimeException("Error", ex);
+        } catch (DataFormatException dfe) {
+            throw new RuntimeException("Error", dfe);
         }
         dec.end();
         if (format == 1) {

@@ -19,9 +19,7 @@ public class QuestScriptManager extends AbstractScriptManager {
     public void start(MapleClient c, int npc, int quest) {
         try {
             QuestActionManager qm = new QuestActionManager(c, npc, quest, true);
-            if (qms.containsKey(c)) {
-                return;
-            }
+            if (qms.containsKey(c)) return;
             qms.put(c, qm);
             Invocable iv = getInvocable("quest/" + quest + ".js", c);
             if (iv == null) {
@@ -53,9 +51,7 @@ public class QuestScriptManager extends AbstractScriptManager {
     public void end(MapleClient c, int npc, int quest) {
         try {
             QuestActionManager qm = new QuestActionManager(c, npc, quest, false);
-            if (qms.containsKey(c)) {
-                return;
-            }
+            if (qms.containsKey(c)) return;
             qms.put(c, qm);
             Invocable iv = getInvocable("quest/" + quest + ".js", c);
             if (iv == null) {
@@ -92,9 +88,7 @@ public class QuestScriptManager extends AbstractScriptManager {
 
     public void dispose(MapleClient c) {
         QuestActionManager qm = qms.get(c);
-        if (qm != null) {
-            dispose(qm, c);
-        }
+        if (qm != null) dispose(qm, c);
     }
 
     public QuestActionManager getQM(MapleClient c) {

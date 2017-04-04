@@ -2400,12 +2400,13 @@ public class GM implements Command {
                 break;
             }
             case "!drop": {
-                if (splitted.length < 2 || splitted.length > 3) {
-                    mc.dropMessage("Invalid syntax. Use: !drop <item_id> [quantity]");
+                if (splitted.length < 2 || splitted.length > 4) {
+                    mc.dropMessage("Invalid syntax. Use: !drop <item_id> [quantity] [separate]");
                     return;
                 }
-                int itemId;
-                short quantity;
+                final int itemId;
+                final short quantity;
+                boolean separate = splitted.length > 3 && Boolean.parseBoolean(splitted[3]);
                 try {
                     itemId = Integer.parseInt(splitted[1]);
                     if (splitted.length > 2) {
@@ -2414,7 +2415,7 @@ public class GM implements Command {
                         quantity = 1;
                     }
                 } catch (NumberFormatException nfe) {
-                    mc.dropMessage("Could not parse numeric argument. Use: !drop <item_id> [quantity]");
+                    mc.dropMessage("Could not parse numeric arguments. Use: !drop <item_id> [quantity]");
                     return;
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -2447,6 +2448,29 @@ public class GM implements Command {
                                     i * 150L
                                 );
                         }
+                    }
+                } else if (separate && quantity > 1) {
+                    final Point pos = new Point(player.getPosition());
+                    for (short i = 0; i < quantity; ++i) {
+                        final int _i = i;
+                        TimerManager
+                            .getInstance()
+                            .schedule(() ->
+                                player
+                                    .getMap()
+                                    .spawnItemDrop(
+                                        player,
+                                        player,
+                                        new Item(itemId, (byte) 0, quantity),
+                                        new Point(
+                                            pos.x + (_i + 1) / 2 * 40 * (_i % 2 == 0 ? 1 : -1),
+                                            pos.y
+                                        ),
+                                        true,
+                                        true
+                                    ),
+                                i * 150L
+                            );
                     }
                 } else {
                     item = new Item(itemId, (byte) 0, quantity);
@@ -2506,6 +2530,8 @@ public class GM implements Command {
                                 break;
                             case "watt":
                             case "watk":
+                            case "atk":
+                            case "att":
                                 item.setWatk(val);
                                 break;
                             case "wdef":
@@ -2617,6 +2643,8 @@ public class GM implements Command {
                                 break;
                             case "watt":
                             case "watk":
+                            case "atk":
+                            case "att":
                                 item.setWatk(val);
                                 break;
                             case "wdef":

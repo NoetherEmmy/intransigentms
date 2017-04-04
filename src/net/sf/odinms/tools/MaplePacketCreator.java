@@ -971,7 +971,7 @@ public class MaplePacketCreator {
      * @param leaveOut Leave out the item if position is zero?
      */
     private static void addItemInfo(MaplePacketLittleEndianWriter mplew, IItem item, boolean zeroPosition, boolean leaveOut) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         boolean ring = false;
         IEquip equip = null;
         if (item.getType() == IItem.EQUIP) {
@@ -1084,13 +1084,13 @@ public class MaplePacketCreator {
 
             if (!masking && !ring) {
                 mplew.write(0);
-                mplew.writeLong(0); // values of these don't seem to matter at all
+                mplew.writeLong(0); // Values of these don't seem to matter at all
             }
         } else {
             mplew.writeShort(item.getQuantity());
             mplew.writeMapleAsciiString(item.getOwner());
-            mplew.writeShort(0); // this seems to end the item entry
-            // but only if its not a THROWING STAR :))9 O.O!
+            mplew.writeShort(0); // This seems to end the item entry
+            // but only if it's not a throwing star or bullet...
 
             if (ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId())) {
                 mplew.write(HexTool.getByteArrayFromHexString("02 00 00 00 54 00 00 34"));
@@ -1745,13 +1745,13 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.DROP_ITEM_FROM_MAPOBJECT.getValue());
-        // mplew.write(1); // 1 with animation, 2 without o.o
+        //mplew.write(1); // 1 with animation, 2 without o.o
         mplew.write(mod);
         mplew.writeInt(itemoid);
-        mplew.write(mesos ? 1 : 0); // 1 = mesos, 0 =item
+        mplew.write(mesos ? 1 : 0);
 
         mplew.writeInt(itemid);
-        mplew.writeInt(ownerid); // owner charid
+        mplew.writeInt(ownerid); // Owner's character ID
 
         mplew.write(0);
         mplew.writeShort(dropto.x);
@@ -1766,25 +1766,18 @@ public class MaplePacketCreator {
         mplew.write(0);
         if (mod != 2) {
             mplew.write(0);
-
             mplew.write(1); //PET Meso pickup
-
         }
         if (!mesos) {
             mplew.write(ITEM_MAGIC);
             // TODO getTheExpirationTimeFromSomewhere o.o
             addExpirationTime(mplew, System.currentTimeMillis(), false);
             mplew.write(1); //pet EQP pickup
-
         }
 
         return mplew.getPacket();
     }
 
-    /* (non-javadoc)
-     * TODO: make MapleCharacter a mapobject, remove the need for passing oid
-     * here.
-     */
     /**
      * Gets a packet spawning a player as a mapobject to other clients.
      *
@@ -2362,13 +2355,8 @@ public class MaplePacketCreator {
     }
 
     /**
-     * animation: 0 - expire<br/> 1 - without animation<br/> 2 - pickup<br/>
-     * 4 - explode<br/> cid is ignored for 0 and 1
-     *
-     * @param oid
-     * @param animation
-     * @param cid
-     * @return
+     * animation:<br/>0 - expire<br/> 1 - without animation<br/> 2 - pickup<br/>
+     * 4 - explode<br/> cid is ignored for 0 and 1.
      */
     public static MaplePacket removeItemFromMap(int oid, int animation, int cid) {
         return removeItemFromMap(oid, animation, cid, false, 0);
@@ -2378,13 +2366,6 @@ public class MaplePacketCreator {
      * animation: 0 - expire<br/> 1 - without animation<br/> 2 - pickup<br/>
      * 4 - explode<br/> cid is ignored for 0 and 1.<br /><br />Flagging pet
      * as true will make a pet pick up the item.
-     *
-     * @param oid
-     * @param animation
-     * @param cid
-     * @param pet
-     * @param slot
-     * @return
      */
     public static MaplePacket removeItemFromMap(int oid, int animation, int cid, boolean pet, int slot) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();

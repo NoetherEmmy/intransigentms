@@ -81,6 +81,15 @@ public enum MapleJob {
                 basejob.getId() / 10 % 10 == 0);
     }
 
+    /** Gets the "advancement" of a job, i.e. if it's 1st job, 2nd job, etc. */
+    public int getAdvancement() {
+        if (jobid == 0) return 0;
+        if (jobid / 10 % 10 == 0) return 1;
+        if (jobid % 10 == 0) return 2;
+        if (jobid % 10 == 1) return 3;
+        return 4;
+    }
+
     /**
      * <ul>
      * <li>pure?: true</li>

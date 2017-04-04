@@ -14,6 +14,7 @@ public abstract class AbstractScriptManager {
     protected ScriptEngine engine;
     private final ScriptEngineManager sem;
     protected static final Logger log = LoggerFactory.getLogger(AbstractScriptManager.class);
+    public static final String[] libs = {"ecma6-array-polyfill", "intransigentms-utils"};
 
     protected AbstractScriptManager() {
         sem = new ScriptEngineManager();
@@ -23,20 +24,20 @@ public abstract class AbstractScriptManager {
         try {
             path = "scripts/" + path;
             engine = null;
-            if (c != null) {
-                engine = c.getScriptEngine(path);
-            }
+            if (c != null) engine = c.getScriptEngine(path);
             if (engine == null) {
-                File scriptFile = new File(path);
+                final File scriptFile = new File(path);
                 if (!scriptFile.exists()) {
                     System.err.println("path0: " + path);
                     return null;
                 }
                 engine = sem.getEngineByName("nashorn");
-                if (c != null) {
-                    c.setScriptEngine(path, engine);
+                if (c != null) c.setScriptEngine(path, engine);
+                for (final String libName : libs) {
+                    final FileReader libReader = new FileReader("scripts/" + libName + ".js");
+                    engine.eval(libReader);
                 }
-                FileReader fr = new FileReader(scriptFile);
+                final FileReader fr = new FileReader(scriptFile);
                 engine.eval(fr);
                 fr.close();
             }
