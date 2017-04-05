@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements InventoryContainer {
     public static final double MAX_VIEW_RANGE_SQ = 850.0d * 850.0d;
+    @Deprecated
     private static final double READING_PRIZE_PROP = 0.017d;
     public static final int[] SKILL_IDS =
     {
@@ -270,7 +271,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                                                 boolean channelserver) throws SQLException {
         // Looking into char's feats to see if they have expanded inventory space.
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT featid FROM feats WHERE characterid = ? AND featid = 44");
+        PreparedStatement ps =
+            con.prepareStatement(
+                "SELECT featid FROM feats WHERE characterid = ? AND featid = 44"
+            );
         ps.setInt(1, charid);
         ResultSet rs = ps.executeQuery();
         byte invLimit = (byte) 100;
@@ -7059,32 +7063,31 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void leaveParty() {
-        WorldChannelInterface wci = ChannelServer.getInstance(client.getChannel()).getWorldInterface();
-        MaplePartyCharacter partyplayer = new MaplePartyCharacter(this);
-        if (party != null) {
-            try {
-                if (partyplayer.equals(party.getLeader())) {
-                    wci.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
-                    if (eventInstance != null) {
-                        eventInstance.disbandParty();
-                    }
-                    if (this.partyQuest != null) {
-                        this.partyQuest.disbandParty();
-                    }
-                } else {
-                    wci.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
-                    if (eventInstance != null) {
-                        eventInstance.leftParty(this);
-                    }
-                    if (this.partyQuest != null) {
-                        this.partyQuest.leftParty(this);
-                    }
+        final WorldChannelInterface wci = ChannelServer.getInstance(client.getChannel()).getWorldInterface();
+        final MaplePartyCharacter partyPlayer = new MaplePartyCharacter(this);
+        if (party == null) return;
+        try {
+            if (partyPlayer.equals(party.getLeader())) {
+                wci.updateParty(party.getId(), PartyOperation.DISBAND, partyPlayer);
+                if (eventInstance != null) {
+                    eventInstance.disbandParty();
                 }
-            } catch (RemoteException re) {
-                client.getChannelServer().reconnectWorld();
+                if (partyQuest != null) {
+                    partyQuest.disbandParty();
+                }
+            } else {
+                wci.updateParty(party.getId(), PartyOperation.LEAVE, partyPlayer);
+                if (eventInstance != null) {
+                    eventInstance.leftParty(this);
+                }
+                if (partyQuest != null) {
+                    partyQuest.leftParty(this);
+                }
             }
-            setParty(null);
+        } catch (RemoteException re) {
+            client.getChannelServer().reconnectWorld();
         }
+        setParty(null);
     }
 
     @Override
