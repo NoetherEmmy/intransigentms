@@ -1085,15 +1085,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public boolean buyWithNx(int amount) {
         if (getNx(1) >= amount) {
-            getPlayer().modifyCSPoints(1, -1 * amount);
+            getPlayer().modifyCSPoints(1, -amount);
             getPlayer().dropMessage(5, "Your account has been charged for " + amount + " NX.");
             return true;
         } else if (getNx(2) >= amount) {
-            getPlayer().modifyCSPoints(2, -1 * amount);
+            getPlayer().modifyCSPoints(2, -amount);
             getPlayer().dropMessage(5, "Your account has been charged for " + amount + " NX.");
             return true;
         } else if (getNx(3) >= amount) {
-            getPlayer().modifyCSPoints(3, -1 * amount);
+            getPlayer().modifyCSPoints(3, -amount);
             getPlayer().dropMessage(5, "Your account has been charged for " + amount + " NX.");
             return true;
         }

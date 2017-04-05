@@ -705,8 +705,12 @@ public class MapleMap {
         return dynamicSpawnWorkers.get(index);
     }
 
-    public Set<DynamicSpawnWorker> getDynamicSpawnWorkersByMobId(int mobId) {
-        return dynamicSpawnWorkers.stream().filter(dsw -> dsw.getMonsterId() == mobId).collect(Collectors.toSet());
+    public Set<DynamicSpawnWorker> getDynamicSpawnWorkersByMobId(final int mobId) {
+        return
+            dynamicSpawnWorkers
+                .stream()
+                .filter(dsw -> dsw.getMonsterId() == mobId)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public void disposeDynamicSpawnWorker(int index) {

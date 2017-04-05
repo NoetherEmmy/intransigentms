@@ -2192,12 +2192,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return 0;
     }
 
+    @Deprecated
     public void setReadingTime(int rt) {
-        this.readingTime = rt;
+        readingTime = rt;
     }
 
+    @Deprecated
     public int getReadingTime() {
-        return this.readingTime;
+        return readingTime;
     }
     //
 
@@ -3313,12 +3315,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         hp = newHp;
 
-        if (!silent) {
-            updatePartyMemberHP();
-        }
-        if (oldHp > hp && !isAlive()) {
-            playerDead();
-        }
+        if (!silent) updatePartyMemberHP();
+        if (oldHp > hp && !isAlive()) playerDead();
         checkBerserk();
     }
 
@@ -3985,17 +3983,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return ret.skillevel;
     }
 
+    public int getMasterLevel(int skillId) {
+        return getMasterLevel(SkillFactory.getSkill(skillId));
+    }
+
     public int getMasterLevel(ISkill skill) {
+        skills.entrySet().iterator();
         SkillEntry ret = skills.get(skill);
         if (ret == null) return 0;
         return ret.masterlevel;
     }
 
     public int getMasterLevelById(int skillId) {
-        ISkill s = SkillFactory.getSkill(skillId);
-        SkillEntry ret = skills.get(s);
-        if (ret == null) return 0;
-        return ret.masterlevel;
+        return getMasterLevel(skillId);
     }
 
     public int getAccuracy() {
@@ -5318,6 +5318,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public void setChair(int chair) {
         this.chair = chair;
+        /*
         if (this.chair > 0 && getMapId() / 100 == 9100000) { // Reading Chair
             setReadingTime((int) (System.currentTimeMillis() / 1000));
 
@@ -5359,15 +5360,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             setReadingTime(0);
             cancelReadingTask();
         }
+        */
     }
 
+    @Deprecated
     public void cancelReadingTask() {
-        if (readingTask != null) {
-            readingTask.cancel(false);
-        }
+        if (readingTask != null) readingTask.cancel(false);
         readingTask = null;
     }
 
+    @Deprecated
     public int getReadingReward() {
         int ret = 0;
         int[] rewardSet = {4031762, 4031755, 4031750, 4031764, 4031753, 4031756};

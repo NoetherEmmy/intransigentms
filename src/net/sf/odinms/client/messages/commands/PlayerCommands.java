@@ -98,7 +98,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@monsterdrops <searchstring> [eqp/etc/use] - | - Lists all items (of the specified type, if specified) that a monster drops.");
             mc.dropMessage("@pqpoints - | - Displays your current PQ point total.");
             mc.dropMessage("@showpqpoints - | - Toggles whether or not your current PQ point total is displayed every time the total is changed.");
-            mc.dropMessage("@readingtime - | - Displays how long you've been reading.");
+            //mc.dropMessage("@readingtime - | - Displays how long you've been reading.");
             mc.dropMessage("@donated - | - Allows access to donator benefits.");
             mc.dropMessage("@voteupdate - | - Updates your total vote point and NX count, for when you vote while still in-game.");
             mc.dropMessage("@vote - | - Displays the amount of time left until you may vote again.");
@@ -1174,7 +1174,7 @@ public class PlayerCommands implements Command {
             player.toggleShowPqPoints();
             String s = player.showPqPoints() ? "on" : "off";
             mc.dropMessage("PQ point display is now turned " + s + ".");
-        } else if (splitted[0].equals("@readingtime")) {
+        } /*else if (splitted[0].equals("@readingtime")) {
             if (player.getReadingTime() > 0) {
                 long sittingTime = System.currentTimeMillis() - ((long) player.getReadingTime() * 1000L);
                 long hours = sittingTime / 3600000L;
@@ -1194,7 +1194,7 @@ public class PlayerCommands implements Command {
             } else {
                 player.dropMessage("It doesn't look like you're reading at the moment.");
             }
-        } else if (splitted[0].equals("@defense") || splitted[0].equals("@defence")) {
+        }*/ else if (splitted[0].equals("@defense") || splitted[0].equals("@defence")) {
             int wdef = player.getTotalWdef();
             int mdef = player.getTotalMdef();
             double dodgeChance;
@@ -1694,7 +1694,7 @@ public class PlayerCommands implements Command {
             new CommandDefinition("vote", 0),
             new CommandDefinition("sell", 0),
             new CommandDefinition("showpqpoints", 0),
-            new CommandDefinition("readingtime", 0),
+            //new CommandDefinition("readingtime", 0),
             new CommandDefinition("defense", 0),
             new CommandDefinition("defence", 0),
             new CommandDefinition("ria", 0),

@@ -940,15 +940,15 @@ public class MapleItemInformationProvider {
 
     public void cacheCashEquips() {
         if (!cashEquipsCached) {
-            final List<String> excludes = Arrays.asList("Afterimage", "TamingMob", "Face", "Hair", "PetEquip");
-            MapleDataDirectoryEntry root = equipData.getRoot();
-            root.getSubdirectories().forEach((topDir) -> {
+            final Set<String> excludes = new HashSet<String>() {{
+                add("Afterimage"); add("TamingMob"); add("Face"); add("Hair");
+            }};
+            final MapleDataDirectoryEntry root = equipData.getRoot();
+            root.getSubdirectories().forEach(topDir -> {
                 if (!excludes.contains(topDir.getName())) {
-                    topDir.getFiles().forEach((iFile) -> {
-                        int id = Integer.parseInt(iFile.getName().substring(1, 8));
-                        if (isCash(id)) {
-                            cashEquips.put(getName(id), id);
-                        }
+                    topDir.getFiles().forEach(iFile -> {
+                        final int id = Integer.parseInt(iFile.getName().substring(1, 8));
+                        if (isCash(id)) cashEquips.put(getName(id), id);
                     });
                 }
             });
@@ -973,15 +973,18 @@ public class MapleItemInformationProvider {
         if (query.length() < 1) return 0;
         query = query.toUpperCase();
         Map.Entry<String, Integer> bestMatch = null;
-        for (Map.Entry<String, Integer> e : cashEquips.entrySet()) {
+        for (final Map.Entry<String, Integer> e : cashEquips.entrySet()) {
             if (e.getKey() == null) continue;
-            String newKey = e.getKey().toUpperCase();
-            String bestKey = bestMatch == null ? null : bestMatch.getKey().toUpperCase();
-            if ((bestKey == null &&  newKey.contains(query))
-                                 || (bestKey != null && newKey.contains(query)
-                                 && (newKey.indexOf(query) < bestKey.indexOf(query)
-                                 || (newKey.indexOf(query) == bestKey.indexOf(query)
-                                 &&  newKey.length() < bestKey.length())))) {
+            final String newKey = e.getKey().toUpperCase();
+            final String bestKey = bestMatch == null ? null : bestMatch.getKey().toUpperCase();
+            if (
+                (bestKey == null && newKey.contains(query)) ||
+                (bestKey != null &&
+                    newKey.contains(query) &&
+                    (newKey.indexOf(query) < bestKey.indexOf(query) ||
+                        (newKey.indexOf(query) == bestKey.indexOf(query) &&
+                            newKey.length() < bestKey.length())))
+            ) {
                 bestMatch = e;
             }
         }
@@ -991,31 +994,31 @@ public class MapleItemInformationProvider {
     public List<Integer> cashEquipSearch(String query) {
         if (query.length() < 1) return Collections.emptyList();
         query = query.toUpperCase();
-        final List<String> splitQuery = Arrays.stream(query.split("\\s+"))
-                                              .distinct()
-                                              .collect(Collectors.toCollection(ArrayList::new));
+        final Set<String> splitQuery =
+            Arrays
+                .stream(query.split("\\s+"))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         splitQuery.remove("");
         if (splitQuery.isEmpty()) return Collections.emptyList();
-        return cashEquips
+        return
+            cashEquips
                 .entrySet()
                 .stream()
                 .filter(e -> {
                     if (e.getKey() == null || e.getValue() == null) return false;
-                    String name = e.getKey().toUpperCase();
-                    for (String token : splitQuery) {
+                    final String name = e.getKey().toUpperCase();
+                    for (final String token : splitQuery) {
                         if (name.contains(token)) return true;
                     }
                     return false;
                 })
                 .sorted((e1, e2) -> {
-                    String name1 = e1.getKey().toUpperCase();
-                    String name2 = e2.getKey().toUpperCase();
+                    final String name1 = e1.getKey().toUpperCase();
+                    final String name2 = e2.getKey().toUpperCase();
                     if (name1.equals(name2)) return 0;
-                    int tokenCount1 = 0;
-                    int tokenCount2 = 0;
-                    int combinedIndices1 = 0;
-                    int combinedIndices2 = 0;
-                    for (String token : splitQuery) {
+                    int tokenCount1 = 0,      tokenCount2 = 0,
+                        combinedIndices1 = 0, combinedIndices2 = 0;
+                    for (final String token : splitQuery) {
                         if (name1.contains(token)) {
                             tokenCount1++;
                             combinedIndices1 += name1.indexOf(token);
@@ -1035,17 +1038,24 @@ public class MapleItemInformationProvider {
     }
 
     public List<Integer> cashEquipsByType(final int type) {
-        return cashEquips.values().stream().filter((id) -> {
-            int t = id / 10000;
-            return t == type;
-        }).collect(Collectors.toCollection(ArrayList::new));
+        return
+            cashEquips
+                .values()
+                .stream()
+                .filter(id -> id / 10000 == type)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<Integer> cashEquipsByType(final int lowerType, final int upperType) {
-        return cashEquips.values().stream().filter((id) -> {
-            int type = id / 10000;
-            return type >= lowerType && type <= upperType;
-        }).collect(Collectors.toCollection(ArrayList::new));
+        return
+            cashEquips
+                .values()
+                .stream()
+                .filter(id -> {
+                    final int type = id / 10000;
+                    return type >= lowerType && type <= upperType;
+                })
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public int getReqLevel(int itemId) {
@@ -1054,7 +1064,7 @@ public class MapleItemInformationProvider {
     }
 
     public List<Integer> getScrollReqs(int itemId) {
-        List<Integer> ret = new ArrayList<>();
+        final List<Integer> ret = new ArrayList<>();
         MapleData data = getItemData(itemId);
         data = data.getChildByPath("req");
         if (data == null) return ret;
@@ -1069,49 +1079,30 @@ public class MapleItemInformationProvider {
     }
 
     public MapleWeaponType getWeaponType(int itemId) {
-        int cat = itemId / 10000;
-        cat = cat % 100;
+        final int cat = (itemId / 10000) % 100;
         switch (cat) {
-            case 30:
-                return MapleWeaponType.SWORD1H;
-            case 31:
-                return MapleWeaponType.AXE1H;
-            case 32:
-                return MapleWeaponType.BLUNT1H;
-            case 33:
-                return MapleWeaponType.DAGGER;
-            case 37:
-                return MapleWeaponType.WAND;
-            case 38:
-                return MapleWeaponType.STAFF;
-            case 40:
-                return MapleWeaponType.SWORD2H;
-            case 41:
-                return MapleWeaponType.AXE2H;
-            case 42:
-                return MapleWeaponType.BLUNT2H;
-            case 43:
-                return MapleWeaponType.SPEAR;
-            case 44:
-                return MapleWeaponType.POLE_ARM;
-            case 45:
-                return MapleWeaponType.BOW;
-            case 46:
-                return MapleWeaponType.CROSSBOW;
-            case 47:
-                return MapleWeaponType.CLAW;
-            case 48:
-                return MapleWeaponType.KNUCKLE;
-            case 49:
-                return MapleWeaponType.GUN;
+            case 30: return MapleWeaponType.SWORD1H;
+            case 31: return MapleWeaponType.AXE1H;
+            case 32: return MapleWeaponType.BLUNT1H;
+            case 33: return MapleWeaponType.DAGGER;
+            case 37: return MapleWeaponType.WAND;
+            case 38: return MapleWeaponType.STAFF;
+            case 40: return MapleWeaponType.SWORD2H;
+            case 41: return MapleWeaponType.AXE2H;
+            case 42: return MapleWeaponType.BLUNT2H;
+            case 43: return MapleWeaponType.SPEAR;
+            case 44: return MapleWeaponType.POLE_ARM;
+            case 45: return MapleWeaponType.BOW;
+            case 46: return MapleWeaponType.CROSSBOW;
+            case 47: return MapleWeaponType.CLAW;
+            case 48: return MapleWeaponType.KNUCKLE;
+            case 49: return MapleWeaponType.GUN;
+            default: return MapleWeaponType.NOT_A_WEAPON;
         }
-        return MapleWeaponType.NOT_A_WEAPON;
     }
 
     public boolean isShield(int itemId) {
-        int cat = itemId / 10000;
-        cat = cat % 100;
-        return cat == 9;
+        return (itemId / 10000) % 100 == 9;
     }
 
     public boolean isEquip(int itemId) {
@@ -1127,7 +1118,6 @@ public class MapleItemInformationProvider {
                 return true;
         }
         return false;
-
     }
 
     public IItem scrollEquipWithId(MapleClient c, IItem equip, int scrollId, boolean usingWhiteScroll) {
