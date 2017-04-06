@@ -389,7 +389,6 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
     public void addAlliance(int id, MapleAlliance alliance) {
         synchronized (alliances) {
             if (!alliances.containsKey(id)) alliances.put(id, alliance);
-
         }
     }
 

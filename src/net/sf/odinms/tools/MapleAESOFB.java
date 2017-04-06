@@ -83,7 +83,7 @@ public class MapleAESOFB {
      * @param key The 256 bit AES key to use.
      * @param iv The 4-byte IV to use.
      */
-    public MapleAESOFB(byte key[], byte iv[], short mapleVersion) {
+    public MapleAESOFB(byte[] key, byte[] iv, short mapleVersion) {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Logger log = LoggerFactory.getLogger(MapleAESOFB.class);
         try {
@@ -93,7 +93,7 @@ public class MapleAESOFB {
         }
         try {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        } catch (InvalidKeyException e) {
+        } catch (InvalidKeyException ike) {
             log.error(
                 "Error initalizing the encryption cipher. " +
                     "Make sure you're using the Unlimited Strength cryptography jar files."

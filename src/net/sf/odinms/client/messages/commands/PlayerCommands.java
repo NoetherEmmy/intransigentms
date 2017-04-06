@@ -1495,7 +1495,7 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("You don't currently have a quest effective level.");
                 return;
             }
-            final DecimalFormat df = new DecimalFormat("#.000");
+            final DecimalFormat df = new DecimalFormat("0.000");
             mc.dropMessage("Your current quest effective level: " + player.getQuestEffectiveLevel());
             mc.dropMessage(
                 "    Outgoing damage multiplier: " +
@@ -1504,7 +1504,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage(
                 "    Incoming damage multiplier: " +
                     df.format(
-                        1.0f + (float) (player.getLevel() - player.getQuestEffectiveLevel()) / 80.0f
+                        1.0f + (float) (player.getLevel() - player.getQuestEffectiveLevel()) / 32.0f
                     )
             );
         } else if (splitted[0].equals("@music")) {

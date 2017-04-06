@@ -1986,7 +1986,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public double getQuestEffectiveLevelDmgMulti() {
         if (questEffectiveLevel > 0 && questEffectiveLevel < level) {
             return Math.max(
-                (100.0d - Math.sqrt((level - questEffectiveLevel) * Math.pow(level, 1.5d) / 64.0d)) / 100.0d,
+                (100.0d - Math.sqrt((level - questEffectiveLevel) * Math.pow(level, 1.5d) / 16.0d)) / 100.0d,
                 0.01d
             );
         }
