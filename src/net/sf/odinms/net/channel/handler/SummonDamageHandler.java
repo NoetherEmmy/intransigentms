@@ -116,6 +116,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             int baseDmg;
             double skillLevelMultiplier = 1.5d + player.getSkillLevel(summonSkill) * percentPerLevel;
             for (int i = 0; i < allDamage.size(); ++i) {
+                if (allDamage.get(i).getDamage() < 1) continue;
                 final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
                 if (target == null || target.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) continue;
                 baseDmg = min + (int) (Math.random() * (double) (max - min + 1));
@@ -140,6 +141,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             int min = (int) ((str * str * mastery + dex) * pad / counterWeight);
             int max = (int) ((double) (str * str + dex) * pad / counterWeight);
             for (int i = 0; i < allDamage.size(); ++i) {
+                if (allDamage.get(i).getDamage() < 1) continue;
                 final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
                 if (target == null || target.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
                 int addedDmg = min + (int) (Math.random() * (double) (max - min + 1));

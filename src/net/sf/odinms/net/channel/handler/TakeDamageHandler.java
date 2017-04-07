@@ -10,6 +10,7 @@ import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.server.maps.MapleMist;
+import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
@@ -65,6 +66,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     player.setLastDamageSource(attacker);
                 }
             }
+            System.out.println("TakeDamageHandler: " + HexTool.toString(slea));
+            System.out.println();
         } else {
             monsterIdFrom = slea.readInt();
             oid = slea.readInt();
