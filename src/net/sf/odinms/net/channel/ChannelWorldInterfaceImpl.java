@@ -96,7 +96,7 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
     }
 
     @Override
-    public void loggedOn(String name, int characterId, int channel, int buddies[]) throws RemoteException {
+    public void loggedOn(String name, int characterId, int channel, int[] buddies) throws RemoteException {
         updateBuddies(characterId, channel, buddies, false);
     }
 

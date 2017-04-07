@@ -47,6 +47,14 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
         }
 
         if (!p.canQuestEffectivelyUseSkill(skillId)) {
+            p.dropMessage(
+                5,
+                "Your quest effective level (" +
+                    p.getQuestEffectiveLevel() +
+                    ") is too low to use " +
+                    SkillFactory.getSkillName(skillId) +
+                    "."
+            );
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }

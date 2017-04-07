@@ -3,6 +3,7 @@ package net.sf.odinms.net.channel.handler;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.MapleStat;
+import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
@@ -29,19 +30,30 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
 
         AttackInfo attack = parseDamage(slea, false);
 
-        if (!player.canQuestEffectivelyUseSkill(5110001) || player.getMap().isDamageMuted()) {
+        final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(5110001);
+        if (questEffectiveBlock || player.getMap().isDamageMuted()) {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
-                Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 MapleMonster monster = null;
                 if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 if (monster == null) continue;
-                List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                final List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
                 for (Integer dmgNumber : dmg.getRight()) {
                     additionalDmg.add(-dmgNumber);
                 }
                 for (Integer additionald : additionalDmg) {
                     c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                 }
+            }
+            if (questEffectiveBlock) {
+                player.dropMessage(
+                    5,
+                    "Your quest effective level (" +
+                        player.getQuestEffectiveLevel() +
+                        ") is too low to use " +
+                        SkillFactory.getSkillName(attack.skill) +
+                        "."
+                );
             }
             return;
         }
@@ -102,7 +114,6 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                                     2
                                 )
                             );
-
                         affected.getMap().broadcastMessage(
                             affected,
                             MaplePacketCreator.showBuffeffect(

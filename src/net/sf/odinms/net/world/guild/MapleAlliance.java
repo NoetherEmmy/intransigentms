@@ -22,7 +22,7 @@ public class MapleAlliance implements java.io.Serializable {
     private int capacity;
     private String name;
     private String notice = "";
-    private String rankTitles[] = new String[5];
+    private String[] rankTitles = new String[5];
 
     public MapleAlliance() {
     }

@@ -1498,9 +1498,9 @@ public class MapleItemInformationProvider {
 
     public String getName(int itemId) {
         if (nameCache.containsKey(itemId)) return nameCache.get(itemId);
-        MapleData strings = getStringData(itemId);
+        final MapleData strings = getStringData(itemId);
         if (strings == null) return null;
-        String ret = MapleDataTool.getString("name", strings, null);
+        final String ret = MapleDataTool.getString("name", strings, null);
         nameCache.put(itemId, ret);
         return ret;
     }

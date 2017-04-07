@@ -6,7 +6,7 @@ public interface LittleEndianWriter {
      *
      * @param b The bytes to write.
      */
-    void write(byte b[]);
+    void write(byte[] b);
 
     /**
      * Write a byte to the sequence.

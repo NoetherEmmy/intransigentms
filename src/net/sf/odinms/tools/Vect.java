@@ -275,9 +275,9 @@ public class Vect implements IVect {
         }
         Vect cross = new Vect(dim());
         if (dim() == 3) {
-            int multiTable[][] = {{ 0,  3, -2},
-                                  {-3,  0,  1},
-                                  { 2, -1,  0}};
+            int[][] multiTable = {{0, 3, -2},
+                {-3, 0, 1},
+                {2, -1, 0}};
             for (int i = 0; i < multiTable.length; ++i) {
                 for (int j = 0; j < multiTable[i].length; ++j) {
                     if (multiTable[i][j] != 0) {
@@ -287,13 +287,13 @@ public class Vect implements IVect {
                 }
             }
         } else {
-            int multiTable[][] = {{ 0,  3, -2,  5, -4, -7,  6},
-                                  {-3,  0,  1,  6,  7, -4, -5},
-                                  { 2, -1,  0,  7, -6,  5, -4},
-                                  {-5, -6, -7,  0,  1,  2,  3},
-                                  { 4, -7,  6, -1,  0, -3,  2},
-                                  { 7,  4, -5, -2,  3,  0, -1},
-                                  {-6,  5,  4, -3, -2,  1,  0}};
+            int[][] multiTable = {{0, 3, -2, 5, -4, -7, 6},
+                {-3, 0, 1, 6, 7, -4, -5},
+                {2, -1, 0, 7, -6, 5, -4},
+                {-5, -6, -7, 0, 1, 2, 3},
+                {4, -7, 6, -1, 0, -3, 2},
+                {7, 4, -5, -2, 3, 0, -1},
+                {-6, 5, 4, -3, -2, 1, 0}};
             for (int i = 0; i < multiTable.length; ++i) {
                 for (int j = 0; j < multiTable[i].length; ++j) {
                     if (multiTable[i][j] != 0) {

@@ -1925,8 +1925,8 @@ public class MapleStatEffect implements Serializable {
 
     private int getDefScaleFactor() {
         if (!skill) return -1;
-        int skillIds[] =     {2001003, 2301004, 5111005, 5121003, 1301006, 1320009, 5221006};
-        int scaleFactors[] = {60,      80,      200,     200,     200,     250,     60};
+        int[] skillIds = {2001003, 2301004, 5111005, 5121003, 1301006, 1320009, 5221006};
+        int[] scaleFactors = {60, 80, 200, 200, 200, 250, 60};
         for (int i = 0; i < skillIds.length; ++i) {
             if (skillIds[i] == sourceid) return scaleFactors[i];
         }

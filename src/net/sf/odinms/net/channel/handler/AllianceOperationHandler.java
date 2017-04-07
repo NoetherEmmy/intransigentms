@@ -38,7 +38,7 @@ public class AllianceOperationHandler extends AbstractMaplePacketHandler {
                     c.getChannelServer().getWorldInterface().allianceMessage(alliance.getId(), MaplePacketCreator.allianceNotice(alliance.getId(), notice), -1, -1);
                     break;
                 case 0x08:
-                    String ranks[] = new String[5];
+                    String[] ranks = new String[5];
                     for (int i = 0; i < 5; ++i) {
                         ranks[i] = slea.readMapleAsciiString();
                     }

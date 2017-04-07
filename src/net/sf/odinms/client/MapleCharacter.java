@@ -6614,18 +6614,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         return absLevelMultiplier >= 1 ? absLevelMultiplier * currentExpBonus : currentExpBonus;
     }
 
-    public double getRelativeXp(int monsterLevel) {
+    public double getRelativeXp(final int monsterLevel) {
         final double factor;
         if (monsterLevel - level >= 0) {
             factor = 0.1d;
         } else if (level < 70) {
-            factor = 0.07d;
+            factor = 0.08d;
         } else if (level < 100) {
-            factor = 0.05d;
+            factor = 0.06d;
         } else if (level < 120) {
-            factor = 0.03d;
+            factor = 0.04d;
         } else if (level < 150) {
-            factor = 0.01d;
+            factor = 0.02d;
         } else {
             return 1.0d;
         }

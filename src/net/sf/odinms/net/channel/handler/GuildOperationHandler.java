@@ -217,7 +217,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     System.err.println("[hax] " + mc.getName() + " tried to change guild rank titles when s/he does not have permission.");
                     return;
                 }
-                String ranks[] = new String[5];
+                String[] ranks = new String[5];
                 for (int i = 0; i < 5; ++i)
                     ranks[i] = slea.readMapleAsciiString();
                 try {

@@ -149,7 +149,7 @@ public class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.getMap().addPlayer(player);
         try {
             Collection<BuddylistEntry> buddies = player.getBuddylist().getBuddies();
-            int buddyIds[] = player.getBuddylist().getBuddyIds();
+            int[] buddyIds = player.getBuddylist().getBuddyIds();
             cserv.getWorldInterface().loggedOn(player.getName(), player.getId(), c.getChannel(), buddyIds);
             if (player.getParty() != null) {
                 channelServer.getWorldInterface().updateParty(player.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(player));

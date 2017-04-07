@@ -43,7 +43,7 @@ public class XMLDomMapleData implements MapleData {
 
     @Override
     public MapleData getChildByPath(String path) {
-        String segments[] = path.split("/");
+        String[] segments = path.split("/");
         if (segments[0].equals("..")) {
             return ((MapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
         }

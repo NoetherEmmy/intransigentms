@@ -41,11 +41,12 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                          )
                   );
                   */
+        final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(attack.skill);
         if (
             player.getTotalInt() >= 650 &&
             attack.skill == 5121002 &&
             player.isBareHanded() &&
-            player.canQuestEffectivelyUseSkill(attack.skill)
+            !questEffectiveBlock
         ) {
             // Ahimsa
             c.getSession().write(MaplePacketCreator.giveEnergyCharge(0));
@@ -56,9 +57,9 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
             //}
         }
 
-        if (!player.canQuestEffectivelyUseSkill(attack.skill) || player.getMap().isDamageMuted()) {
+        if (questEffectiveBlock || player.getMap().isDamageMuted()) {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
-                Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 MapleMonster monster = null;
                 if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 if (monster == null) continue;
@@ -70,12 +71,22 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                     c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                 }
             }
+            if (questEffectiveBlock) {
+                player.dropMessage(
+                    5,
+                    "Your quest effective level (" +
+                        player.getQuestEffectiveLevel() +
+                        ") is too low to use " +
+                        SkillFactory.getSkillName(attack.skill) +
+                        "."
+                );
+            }
             return;
         }
 
         ISkill skillUsed = SkillFactory.getSkill(attack.skill);
         for (int i = 0; i < attack.allDamage.size(); ++i) {
-            Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+            final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
             MapleMonster monster = null;
             if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
             if (monster == null) continue;

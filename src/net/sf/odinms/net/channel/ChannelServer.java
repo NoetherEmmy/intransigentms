@@ -271,7 +271,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         shutdown = true;
         List<CloseFuture> futures = new LinkedList<>();
         Collection<MapleCharacter> allchars = players.getAllCharacters();
-        MapleCharacter chrs[] = allchars.toArray(new MapleCharacter[allchars.size()]);
+        MapleCharacter[] chrs = allchars.toArray(new MapleCharacter[allchars.size()]);
         for (MapleCharacter chr : chrs) {
             if (chr.getTrade() != null) {
                 MapleTrade.cancelTrade(chr);
@@ -659,7 +659,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         }
     }
 
-    public static void main(String args[]) throws IOException,
+    public static void main(String[] args) throws IOException,
                                                   NotBoundException,
                                                   InstanceAlreadyExistsException,
                                                   MBeanRegistrationException,

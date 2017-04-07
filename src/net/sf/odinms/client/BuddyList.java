@@ -79,7 +79,7 @@ public class BuddyList {
     }
 
     public int[] getBuddyIds() {
-        int buddyIds[] = new int[buddies.size()];
+        int[] buddyIds = new int[buddies.size()];
         int i = 0;
         for (BuddylistEntry ble : buddies.values()) {
             buddyIds[i++] = ble.getCharacterId();

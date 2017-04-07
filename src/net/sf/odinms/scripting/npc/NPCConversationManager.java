@@ -1372,6 +1372,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         equipList.sort(Comparator.comparingInt(IItem::getPosition));
 
         for (final IItem equipItem : equipList) {
+            if (equipItem.getItemId() / 10000 == 111) continue; // Can't keep rings
             if (!leaveBehind.contains((int) equipItem.getPosition())) {
                 if (!ii.isCash(equipItem.getItemId())) {
                     str.append("#L")
@@ -1493,12 +1494,19 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         final Set<Integer> keep = new HashSet<Integer>() {{
             add(1002419); /* Mark of the Beta */ add(1002475); /* Mark of the Gamma */
         }};
+        final Set<Integer> cashRemove = new HashSet<Integer>() {{
+            add(1112500); /* Ring of Transcendence */ add(1112501); /* Ring of David */
+        }};
 
         int i = 0;
         final byte[] equipSlots = new byte[equip.list().size()];
         for (final IItem equipItem : equip.list()) {
             if (!leaveBehind.contains((int) equipItem.getPosition())) {
-                if (!ii.isCash(equipItem.getItemId()) && !keep.contains(equipItem.getItemId())) {
+                if (
+                    (!ii.isCash(equipItem.getItemId()) ||
+                        cashRemove.contains(equipItem.getItemId())) &&
+                    !keep.contains(equipItem.getItemId())
+                ) {
                     equipSlots[i] = equipItem.getPosition();
                     i++;
                 }

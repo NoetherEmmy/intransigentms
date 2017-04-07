@@ -3049,7 +3049,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getNPCTalkStyle(int npc, String talk, int styles[]) {
+    public static MaplePacket getNPCTalkStyle(int npc, String talk, int[] styles) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.NPC_TALK.getValue());

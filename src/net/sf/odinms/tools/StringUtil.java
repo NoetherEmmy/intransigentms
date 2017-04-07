@@ -44,7 +44,7 @@ public class StringUtil {
      * @param start Starting from which string.
      * @return The joined strings.
      */
-    public static String joinStringFrom(String arr[], int start) {
+    public static String joinStringFrom(String[] arr, int start) {
         return joinStringFrom(arr, start, " ");
     }
 
@@ -56,7 +56,7 @@ public class StringUtil {
      * @param start Starting from which string.
      * @return The joined strings.
      */
-    public static String joinStringFrom(String arr[], int start, String sep) {
+    public static String joinStringFrom(String[] arr, int start, String sep) {
         StringBuilder builder = new StringBuilder();
         for (int i = start; i < arr.length; ++i) {
             builder.append(arr[i]);

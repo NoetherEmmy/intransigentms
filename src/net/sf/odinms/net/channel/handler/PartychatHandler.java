@@ -17,7 +17,7 @@ public class PartychatHandler extends AbstractMaplePacketHandler {
         c.getPlayer().resetAfkTime();
         int type = slea.readByte(); // 0 for buddys, 1 for partys
         int numRecipients = slea.readByte();
-        int recipients[] = new int[numRecipients];
+        int[] recipients = new int[numRecipients];
         for (int i = 0; i < numRecipients; ++i) {
             recipients[i] = slea.readInt();
         }

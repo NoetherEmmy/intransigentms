@@ -27,7 +27,8 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         AttackInfo attack = parseDamage(slea, false);
         final MapleCharacter player = c.getPlayer();
 
-        if (!player.canQuestEffectivelyUseSkill(attack.skill) || player.getMap().isDamageMuted()) {
+        final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(attack.skill);
+        if (questEffectiveBlock || player.getMap().isDamageMuted()) {
             for (int i = 0; i < attack.allDamage.size(); ++i) {
                 Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                 MapleMonster monster = null;
@@ -40,6 +41,16 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 for (Integer additionald : additionalDmg) {
                     c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                 }
+            }
+            if (questEffectiveBlock) {
+                player.dropMessage(
+                    5,
+                    "Your quest effective level (" +
+                        player.getQuestEffectiveLevel() +
+                        ") is too low to use " +
+                        SkillFactory.getSkillName(attack.skill) +
+                        "."
+                );
             }
             return;
         }

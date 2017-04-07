@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.*;
 
-public class MapleLifeFactory {
+public final class MapleLifeFactory {
     private static final Logger log = LoggerFactory.getLogger(MapleMapFactory.class);
     private static final MapleDataProvider data =
         MapleDataProviderFactory.getDataProvider(
@@ -154,7 +154,7 @@ public class MapleLifeFactory {
 
             monsterStats.put(mid, stats);
         }
-        return new MapleMonster(mid, stats);
+        return stats == null ? null : new MapleMonster(mid, stats);
     }
 
     public static void decodeElementalString (MapleMonsterStats stats, String elemAttr) {

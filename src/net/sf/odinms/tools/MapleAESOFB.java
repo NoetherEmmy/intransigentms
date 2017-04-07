@@ -12,7 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class MapleAESOFB {
-    private byte iv[];
+    private byte[] iv;
     private Cipher cipher;
     private final short mapleVersion;
     private static final byte[] funnyBytes = new byte[] {
@@ -218,7 +218,7 @@ public class MapleAESOFB {
      *         otherwise.
      */
     public boolean checkPacket(int packetHeader) {
-        byte packetHeaderBuf[] = new byte[2];
+        byte[] packetHeaderBuf = new byte[2];
         packetHeaderBuf[0] = (byte) ((packetHeader >> 24) & 0xFF);
         packetHeaderBuf[1] = (byte) ((packetHeader >> 16) & 0xFF);
         return checkPacket(packetHeaderBuf);
@@ -230,7 +230,7 @@ public class MapleAESOFB {
      * @param oldIv The old IV to get a new IV from.
      * @return The new IV.
      */
-    public static byte[] getNewIv(byte oldIv[]) {
+    public static byte[] getNewIv(byte[] oldIv) {
         byte[] in = {
             (byte)0xf2, (byte)0x53, (byte)0x50, (byte)0xc6
         };

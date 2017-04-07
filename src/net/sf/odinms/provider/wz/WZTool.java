@@ -62,7 +62,7 @@ public class WZTool {
                 leo.write(-s.length());
             else
                 leo.writeInt(s.length());
-            char str[] = new char[s.length()];
+            char[] str = new char[s.length()];
             for (int i = 0; i < s.length(); ++i) {
                 byte b2 = (byte) s.charAt(i);
                 b2 ^= mask;
