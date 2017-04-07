@@ -12,14 +12,12 @@ public interface MapleMapObject {
     MapleMapObjectType getType();
 
     /**
-     * returns a copy of the current position
-     * @return
+     * Returns a copy of the current position.
      */
     Point getPosition();
 
     /**
-     * sets the current position of the object to the position given in the point.
-     * @param position
+     * Sets the current position of the object to the position given in the {@code Point}.
      */
     void setPosition(Point position);
 

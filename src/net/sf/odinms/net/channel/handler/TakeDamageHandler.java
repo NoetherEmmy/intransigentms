@@ -53,12 +53,12 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         if (damageFrom == -2) {
             int debuffLevel = slea.readByte();
             int debuffId = slea.readByte();
-            if (debuffId == 125) debuffLevel = debuffLevel - 1;
-            MobSkill skill = MobSkillFactory.getMobSkill(debuffId, debuffLevel);
+            if (debuffId == 125) debuffLevel -= 1;
+            final MobSkill skill = MobSkillFactory.getMobSkill(debuffId, debuffLevel);
             if (skill != null) {
                 final MapleMapObject mmo = player.getMap().getMapObject(oid);
                 if (mmo != null && mmo.getType() == MapleMapObjectType.MONSTER) {
-                    attacker = (MapleMonster) player.getMap().getMapObject(oid);
+                    attacker = (MapleMonster) mmo;
                 }
                 if (attacker != null) {
                     skill.applyEffect(player, attacker, false);
@@ -70,7 +70,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             oid = slea.readInt();
             final MapleMapObject mmo = player.getMap().getMapObject(oid);
             if (mmo != null && mmo.getType() == MapleMapObjectType.MONSTER) {
-                attacker = (MapleMonster) player.getMap().getMapObject(oid);
+                attacker = (MapleMonster) mmo;
             }
             final MapleMonster genericMob = MapleLifeFactory.getMonster(monsterIdFrom);
             if (genericMob != null) {
@@ -446,7 +446,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 if (
                     attacker != null &&
                     damage > 0 &&
-                    ((damageFrom == -1 && attacker.reduceComa() > 0) || attacker.getComa() > 0)
+                    ((damageFrom == -1 && attacker.reduceComa() > 0) || attacker.hasComa())
                 ) {
                     final int comaReduction = damage / 2;
                     damage -= comaReduction;

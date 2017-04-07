@@ -1397,6 +1397,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return coma.get();
     }
 
+    public boolean hasComa() {
+        return coma.get() > 0;
+    }
+
     private final class PoisonTask implements Runnable {
         private final int minPoisonDamage, maxPoisonDamage;
         private final MapleCharacter chr;
@@ -1460,10 +1464,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
             }
             if (hp > 1 && damage > 0) {
-                damage(chr, damage, false);
                 if (shadowWeb || minPoisonDamage != maxPoisonDamage) {
                     map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
                 }
+                damage(chr, damage, false);
             }
         }
     }
@@ -1502,8 +1506,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
             if (damage >= hp) docancel = true;
             if (damage > 0) {
-                map.damageMonster(chr, MapleMonster.this, damage);
                 map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
+                map.damageMonster(chr, MapleMonster.this, damage);
             }
             if (docancel) {
                 try {
@@ -1550,8 +1554,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
             if (damage >= hp) docancel = true;
             if (damage > 0) {
-                map.damageMonster(chr, MapleMonster.this, damage);
                 map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
+                map.damageMonster(chr, MapleMonster.this, damage);
             }
             if (docancel) cancelBleedSchedule(bleedScheduleId);
         }
@@ -1626,8 +1630,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     minPanicDamage + rand.nextInt(maxPanicDamage - minPanicDamage + 1) - 10 * getWdef();
             if (selfDamage >= hp) doCancel = true;
             if (selfDamage > 0) {
-                map.damageMonster(chr, MapleMonster.this, selfDamage);
                 map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), selfDamage), getPosition());
+                map.damageMonster(chr, MapleMonster.this, selfDamage);
             }
             // Then damage up to 6 nearby mobs:
             map.getMapObjectsInRange(
@@ -1644,8 +1648,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                         1 :
                         minPanicDamage + rand.nextInt(maxPanicDamage - minPanicDamage + 1) - 10 * m.getWdef();
                 if (damage > 0) {
-                    map.damageMonster(chr, m, damage);
                     map.broadcastMessage(MaplePacketCreator.damageMonster(m.getObjectId(), damage), m.getPosition());
+                    map.damageMonster(chr, m, damage);
                 }
             });
             // Cancel if the mob is dead:

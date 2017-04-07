@@ -2716,7 +2716,7 @@ public class GM implements Command {
                         Double.POSITIVE_INFINITY,
                         MapleMapObjectType.MONSTER
                     );
-                for (MapleMapObject monstermo : monsters) {
+                for (final MapleMapObject monstermo : monsters) {
                     MapleMonster monster = (MapleMonster) monstermo;
                     map.killMonster(monster, player, true);
                 }

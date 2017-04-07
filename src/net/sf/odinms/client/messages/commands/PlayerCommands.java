@@ -1611,6 +1611,15 @@ public class PlayerCommands implements Command {
                         "Invalid syntax. Use: @music | @music <section_number> | @music <section_number> <title>"
                     );
             }
+        } else if (splitted[0].equals("@coma")) {
+            player
+                .getMap()
+                .getAllMonsters()
+                .stream()
+                .filter(m -> m.getComa() > 0)
+                .sorted(Comparator.comparingInt(MapleMonster::getObjectId))
+                .map(m -> m.getName() + " | OID: " + m.getObjectId() + " | Coma: +" + m.getComa())
+                .forEach(mc::dropMessage);
         }
     }
 
@@ -1712,7 +1721,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("engage", 0),
             new CommandDefinition("whoquestdrops", 0),
             new CommandDefinition("questeffectivelevel", 0),
-            new CommandDefinition("music", 0)
+            new CommandDefinition("music", 0),
+            new CommandDefinition("coma", 0)
         };
     }
 }

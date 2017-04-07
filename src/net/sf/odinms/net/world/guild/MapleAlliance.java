@@ -202,14 +202,13 @@ public class MapleAlliance implements java.io.Serializable {
                 }
                 rs.close();
                 if (avail != -1) { // Empty slot.
-                    ps = con.prepareStatement("UPDATE alliance SET ? = ? WHERE id = ?");
-                    ps.setString(1, "guild" + avail);
+                    ps = con.prepareStatement("UPDATE alliance SET " + ("guild" + avail) + " = ? WHERE id = ?");
                     if (add) {
-                        ps.setInt(2, gid);
+                        ps.setInt(1, gid);
                     } else {
-                        ps.setInt(2, -1);
+                        ps.setInt(1, -1);
                     }
-                    ps.setInt(3, this.allianceId);
+                    ps.setInt(2, this.allianceId);
                     ps.executeUpdate();
                     ret = true;
                 }

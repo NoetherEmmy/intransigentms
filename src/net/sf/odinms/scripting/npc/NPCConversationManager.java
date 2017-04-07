@@ -1964,11 +1964,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement(
-                "DELETE FROM ? WHERE itemid = ? AND ownerid = ? LIMIT 1"
+                "DELETE FROM " + ("hiredmerchant" + table) + " WHERE itemid = ? AND ownerid = ? LIMIT 1"
             );
-            ps.setString(1, "hiredmerchant" + table);
-            ps.setInt(2, itemId);
-            ps.setInt(3, getPlayer().getId());
+            ps.setInt(1, itemId);
+            ps.setInt(2, getPlayer().getId());
             ps.executeUpdate();
             ps.close();
         } catch (SQLException sqle) {
@@ -1981,10 +1980,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement(
-                "SELECT * FROM ? WHERE ownerid = ?"
+                "SELECT * FROM " + ("hiredmerchant" + table) + " WHERE `ownerid` = ?"
             );
-            ps.setString(1, "hiredmerchant" + table);
-            ps.setInt(2, getPlayer().getId());
+            ps.setInt(1, getPlayer().getId());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("type") == 1) {
