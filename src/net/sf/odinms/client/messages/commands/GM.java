@@ -673,7 +673,7 @@ public class GM implements Command {
                         range,
                         MapleMapObjectType.MONSTER
                     );
-                for (MapleMapObject monstermo : monsters) {
+                for (final MapleMapObject monstermo : monsters) {
                     MapleMonster monster = (MapleMonster) monstermo;
                     map.killMonster(monster, player, false);
                 }

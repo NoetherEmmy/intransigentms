@@ -27,7 +27,7 @@ public class MobSkillFactory {
         MobSkill ret = mobSkills.get(new Pair<>(skillId, level));
         if (ret != null) return ret;
         synchronized (mobSkills) {
-            // see if someone else that's also synchronized has loaded the skill by now
+            // See if someone else that's also synchronized has loaded the skill by now:
             ret = mobSkills.get(new Pair<>(skillId, level));
             if (ret == null) {
                 MapleData skillData = skillRoot.getChildByPath(skillId + "/level/" + level);

@@ -113,13 +113,12 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             }
             final int min = player.calculateMinBaseDamage();
             final int max = player.calculateMaxBaseDamage();
-            int baseDmg;
             double skillLevelMultiplier = 1.5d + player.getSkillLevel(summonSkill) * percentPerLevel;
             for (int i = 0; i < allDamage.size(); ++i) {
                 if (allDamage.get(i).getDamage() < 1) continue;
                 final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
                 if (target == null || target.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) continue;
-                baseDmg = min + (int) (Math.random() * (double) (max - min + 1));
+                int baseDmg = min + (int) (Math.random() * (double) (max - min + 1));
                 int thisDmg = allDamage.get(i).getDamage();
                 int addedDmg = (int) (baseDmg * skillLevelMultiplier);
                 thisDmg += addedDmg;
@@ -183,7 +182,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
 
         for (int i = 0; i < allDamage.size(); ++i) {
             SummonAttackEntry attackEntry = allDamage.get(i);
-            MapleMonster target = player.getMap().getMonsterByOid(attackEntry.getMonsterOid());
+            final MapleMonster target = player.getMap().getMonsterByOid(attackEntry.getMonsterOid());
             if (target == null) continue;
 
             ElementalEffectiveness ee = null;
@@ -249,12 +248,9 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                             summonSkill,
                             false
                         );
-                    target.applyStatus(player, monsterStatusEffect, summonEffect.isPoison(), 4000);
+                    target.applyStatus(player, monsterStatusEffect, summonEffect.isPoison(), 4L * 1000L);
                 }
             }
-
-            player.getMap().damageMonster(player, target, damage);
-            player.checkMonsterAggro(target);
         }
 
         player
@@ -278,5 +274,13 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 )
             )
         );
+
+        for (int i = 0; i < allDamage.size(); ++i) {
+            final SummonAttackEntry attackEntry = allDamage.get(i);
+            final MapleMonster target = player.getMap().getMonsterByOid(attackEntry.getMonsterOid());
+            if (target == null) continue;
+            player.getMap().damageMonster(player, target, attackEntry.getDamage());
+            player.checkMonsterAggro(target);
+        }
     }
 }

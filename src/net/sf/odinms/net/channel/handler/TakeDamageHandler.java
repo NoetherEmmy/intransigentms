@@ -270,7 +270,6 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     if (damageFrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) {
                         int bounceDamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / 100.0d));
                         bounceDamage = Math.min(bounceDamage, attacker.getMaxHp() / 10);
-                        player.getMap().damageMonster(player, attacker, bounceDamage);
                         damage -= bounceDamage;
                         removedDamage += bounceDamage;
                         player
@@ -281,6 +280,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 false,
                                 true
                             );
+                        player.getMap().damageMonster(player, attacker, bounceDamage);
                         player.checkMonsterAggro(attacker);
                     }
                     if (damageFrom == -1 && player.getSkillLevel(2310000) != 0) {
@@ -318,12 +318,12 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 if (bounceDamage > attacker.getMaxHp() * 0.2d) {
                                     bounceDamage = (int) (attacker.getMaxHp() * 0.2d);
                                 }
-                                player.getMap().damageMonster(player, attacker, bounceDamage);
                                 player.getMap().broadcastMessage(
                                     player,
                                     MaplePacketCreator.damageMonster(oid, bounceDamage),
                                     true
                                 );
+                                player.getMap().damageMonster(player, attacker, bounceDamage);
                                 player.getClient()
                                       .getSession()
                                       .write(MaplePacketCreator.showOwnBuffEffect(manaReflect, 5));
@@ -448,8 +448,9 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 // Handle attacks from monsters that are in a coma:
                 if (
                     attacker != null &&
+                    damageFrom != -2 &&
                     damage > 0 &&
-                    ((damageFrom == -1 && attacker.reduceComa() > 0) || attacker.hasComa())
+                    attacker.reduceComa() > 0
                 ) {
                     final int comaReduction = damage / 2;
                     damage -= comaReduction;

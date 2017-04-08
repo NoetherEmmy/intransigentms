@@ -40,10 +40,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 mySkill = SkillFactory.getSkill(skill);
             }
             int skillLevel = chr.getSkillLevel(mySkill);
-            if (skillLevel == 0) {
-                return null;
-            }
-            return mySkill.getEffect(skillLevel);
+            return skillLevel == 0 ? null : mySkill.getEffect(skillLevel);
         }
 
         public MapleStatEffect getAttackEffect(MapleCharacter chr) {
@@ -302,7 +299,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     case 1111006: // Coma: Axe
                         if (totDamageToOneMonster > 0) {
                             int skillLevel = player.getSkillLevel(attack.skill);
-                            monster.softSetComa(skillLevel / (attack.skill == 1111005 ? 10 : 7) + 1);
+                            monster.softSetComa(skillLevel / (attack.skill == 1111005 ? 7 : 5) + 1);
                         }
                         break;
                     case 4211002: // Assaulter

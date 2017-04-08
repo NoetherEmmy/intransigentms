@@ -158,14 +158,14 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 } else {
                     skillDamage = 1.0d;
                 }
-                int minDmg = (int) (((double) (3 * player.getTotalInt() / 4) * 0.9d * mastery + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
-                int maxDmg = (int) (((double) (3 * player.getTotalInt() / 4) + (double) player.getTotalDex() * 2.0d) * effectiveMagic / 100.0d);
+                int minDmg = (int) ((Math.log(player.getTotalInt()) * 0.9d * mastery + 2.0d * (double) player.getTotalDex()) * effectiveMagic / 32.0d);
+                int maxDmg = (int) ((Math.log(player.getTotalInt()) + 2.0d * (double) player.getTotalDex()) * effectiveMagic / 32.0d);
 
                 final Random rand = new Random();
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
-                    Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                    List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
+                    final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                    final List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                    final List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
                     final MapleMonster m = map.getMonsterByOid(dmg.getLeft());
                     double critMulti = 1.0d;
                     if (dmg.getRight() == null) continue;
@@ -173,7 +173,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     if (stunMasteryLevel > 0) {
                         boolean stunned = m.isBuffed(MonsterStatus.STUN);
                         if (stunned) {
-                            MapleStatEffect stunMasteryEffect =
+                            final MapleStatEffect stunMasteryEffect =
                                 SkillFactory
                                     .getSkill(5110000)
                                     .getEffect(stunMasteryLevel);
@@ -182,7 +182,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                 critMulti = (double) stunMasteryEffect.getDamage() / 100.0d + critDamage;
                             }
                         } else if (critRate > 0.0d) {
-                            MapleStatEffect stunMasteryEffect =
+                            final MapleStatEffect stunMasteryEffect =
                                 SkillFactory
                                     .getSkill(5110000)
                                     .getEffect(stunMasteryLevel);
@@ -342,19 +342,23 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                                 for (Integer dmgNumber : strike.getRight()) {
                                     if (dmgNumber == null || dmgNumber < 1) continue;
                                     final int inflicted = immune ? 1 : (int) (dmgNumber * multiplier * target.getVulnerability());
-                                    player.getMap().damageMonster(player, target, inflicted);
-                                    TimerManager.getInstance().schedule(() ->
-                                        player
-                                            .getMap()
-                                            .broadcastMessage(
-                                                player,
-                                                MaplePacketCreator.damageMonster(
-                                                    target.getObjectId(),
-                                                    inflicted
-                                                ),
-                                                true,
-                                                true
-                                            ), i * animationInterval);
+                                    TimerManager.getInstance().schedule(
+                                        () -> {
+                                            player
+                                                .getMap()
+                                                .broadcastMessage(
+                                                    player,
+                                                    MaplePacketCreator.damageMonster(
+                                                        target.getObjectId(),
+                                                        inflicted
+                                                    ),
+                                                    true,
+                                                    true
+                                                );
+                                            player.getMap().damageMonster(player, target, inflicted);
+                                        },
+                                        i * animationInterval
+                                    );
                                 }
                                 player.checkMonsterAggro(target);
                                 i++;
@@ -409,11 +413,11 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             if (isCrit) {
                 double critMultiplier = 1.5d + 0.08d * (double) mpEaterLevel;
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
-                    Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                    final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     final MapleMonster m = player.getMap().getMonsterByOid(dmg.getLeft());
                     if (m == null || m.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
-                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                    List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
+                    final List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                    final List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
                     for (Integer dmgNumber : dmg.getRight()) {
                         additionalDmg.add((int) (dmgNumber * (critMultiplier - 1.0d)));
                         newDmg.add((int) (dmgNumber * critMultiplier));
@@ -443,11 +447,11 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             if (critShot != null && critShot.makeChanceResult()) {
                 double critMultiplier = (double) critShot.getDamage() / 100.0d;
                 for (int i = 0; i < attack.allDamage.size(); ++i) {
-                    Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+                    final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
                     final MapleMonster m = player.getMap().getMonsterByOid(dmg.getLeft());
                     if (m == null || m.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
-                    List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                    List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
+                    final List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+                    final List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
                     for (Integer dmgNumber : dmg.getRight()) {
                         additionalDmg.add((int) (dmgNumber * (critMultiplier - 1.0d)));
                         newDmg.add((int) (dmgNumber * critMultiplier));
@@ -490,7 +494,7 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
         ISkill skillUsed = SkillFactory.getSkill(attack.skill);
         for (int i = 0; i < attack.allDamage.size(); ++i) {
-            Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+            final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
             MapleMonster monster = null;
             if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
             if (monster == null || monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
@@ -505,8 +509,8 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                 }
             }
             double multiplier = monster.getVulnerability();
-            List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-            List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
+            final List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
+            final List<Integer> newDmg = new ArrayList<>(dmg.getRight().size());
             if (ee != null) {
                 switch (ee) {
                     case WEAK:

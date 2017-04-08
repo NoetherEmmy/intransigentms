@@ -1988,7 +1988,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket moveMonster(int useskill, int skill, int skill_1, int skill_2, int skill_3, int oid, Point startPos, List<LifeMovementFragment> moves) {
+    public static MaplePacket moveMonster(int useskill,
+                                          int skill,
+                                          int skill_1,
+                                          int skill_2,
+                                          int skill_3,
+                                          int oid,
+                                          Point startPos,
+                                          List<LifeMovementFragment> moves) {
         /*
          * A0 00 C8 00 00 00 00 FF 00 00 00 00 48 02 7D FE 02 00 1C 02 7D FE 9C FF 00 00 2A 00 03 BD 01 00 DC 01 7D FE
          * 9C FF 00 00 2B 00 03 7B 02
@@ -2011,7 +2018,10 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket summonAttack(int cid, int summonSkillId, int newStance, List<SummonAttackEntry> allDamage) {
+    public static MaplePacket summonAttack(int cid,
+                                           int summonSkillId,
+                                           int newStance,
+                                           List<SummonAttackEntry> allDamage) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SUMMON_ATTACK.getValue());
@@ -2032,14 +2042,19 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket closeRangeAttack(int cid, int skill, int stance, int numAttackedAndDamage, List<Pair<Integer, List<Integer>>> damage, int speed) {
+    public static MaplePacket closeRangeAttack(int cid,
+                                               int skill,
+                                               int stance,
+                                               int numAttackedAndDamage,
+                                               List<Pair<Integer, List<Integer>>> damage,
+                                               int speed) {
         // 7D 00 #30 75 00 00# 12 00 06 02 0A 00 00 00 00 01 00 00 00 00 97 02 00 00 97 02 00 00
         // 7D 00 #30 75 00 00# 11 00 06 02 0A 00 00 00 00 20 00 00 00 49 06 00 00
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.CLOSE_RANGE_ATTACK.getValue());
         // mplew.writeShort(0x7F); // 47 7D
-        if (skill == 4211006) { // meso explosion
+        if (skill == 4211006) { // Meso explosion
             addMesoExplosion(mplew, cid, skill, stance, numAttackedAndDamage, 0, damage, speed);
         } else {
             addAttackBody(mplew, cid, skill, stance, numAttackedAndDamage, 0, damage, speed);

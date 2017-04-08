@@ -316,7 +316,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             attacker = new SingleAttackerEntry(from, from.getClient().getChannelServer());
         }
         boolean replaced = false;
-        for (AttackerEntry aentry : attackers) {
+        for (final AttackerEntry aentry : attackers) {
             if (aentry.equals(attacker)) {
                 attacker = aentry;
                 replaced = true;
@@ -1324,8 +1324,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         switch (skill.getId()) {
             case 1111003:   // Panic: Sword
             case 1111004: { // Panic: Axe
-                tickTime = 250;
-                proc = 0.125d;
+                tickTime = 125;
+                proc = 0.0625d;
                 final int pad = getPADamage();
                 minPanicDamage = pad * pad / 4;
                 maxPanicDamage = pad * pad / 3;
@@ -1343,7 +1343,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 tickTime
             )
         );
-        ScheduledFuture<?> schedule = tMan.schedule(cancelTask, duration);
+        final ScheduledFuture<?> schedule = tMan.schedule(cancelTask, duration);
         setCancelPanicTask(schedule);
         return true;
     }
@@ -1641,6 +1641,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             )
             .stream()
             .map(mmo -> (MapleMonster) mmo)
+            .filter(m -> m != null && !MapleMonster.this.equals(m))
             .limit(6L)
             .forEach(m -> {
                 int damage =

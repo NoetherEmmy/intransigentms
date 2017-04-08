@@ -29,7 +29,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         int oid = slea.readInt();
         short moveId = slea.readShort();
         final MapleMap map = c.getPlayer().getMap();
-        MapleMapObject mmo = map.getMapObject(oid);
+        final MapleMapObject mmo = map.getMapObject(oid);
         if (mmo == null || mmo.getType() != MapleMapObjectType.MONSTER) {
             /*
             if (mmo != null) {
@@ -54,7 +54,6 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         @SuppressWarnings("unused")
         int skill_4 = slea.readByte();
         MobSkill toUse = null;
-        boolean damagingSkill = true;
         final Random rand = new Random();
         if (skillByte == 1 && monster.getNoSkills() > 0) {
             final int random = rand.nextInt(monster.getNoSkills());
@@ -66,7 +65,6 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
             MobSkill skillData = MobSkillFactory.getMobSkill(skill_1, skill_2);
             if (skillData != null && monster.canUseSkill(skillData)) {
                 skillData.applyEffect(c.getPlayer(), monster, true);
-                damagingSkill = false;
             }
         }
         slea.readByte();
@@ -95,7 +93,6 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         final boolean aggro = monster.isControllerHasAggro();
 
         if (toUse != null) {
-            if (damagingSkill) monster.reduceComa();
             c.getSession().write(
                 MaplePacketCreator.moveMonsterResponse(
                     oid,
