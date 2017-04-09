@@ -110,7 +110,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         TimerManager.getInstance().schedule(() -> hitReactor(c), delay);
     }
 
-    // hitReactor command for item-triggered reactors
+    /** {@code hitReactor} command for item-triggered reactors. */
     public void hitReactor(MapleClient c) {
         hitReactor(0, (short) 0, c);
     }

@@ -8,10 +8,10 @@ import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
 
 import java.io.File;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
-public class MapleReactorFactory {
+public final class MapleReactorFactory {
     //private static Logger log = LoggerFactory.getLogger(MapleReactorFactory.class);
     private static final MapleDataProvider data =
         MapleDataProviderFactory.getDataProvider(
@@ -19,7 +19,7 @@ public class MapleReactorFactory {
                 System.getProperty("net.sf.odinms.wzpath") + "/Reactor.wz"
             )
         );
-    private static final Map<Integer, MapleReactorStats> reactorStats = new LinkedHashMap<>();
+    private static final Map<Integer, MapleReactorStats> reactorStats = new HashMap<>();
 
     public static MapleReactorStats getReactor(int rid) {
         MapleReactorStats stats = reactorStats.get(rid);

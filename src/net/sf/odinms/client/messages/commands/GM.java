@@ -1325,7 +1325,7 @@ public class GM implements Command {
                 mc.dropMessage("1112809 - silverswan");
                 break;
             case "!ring":
-                Map<String, Integer> rings = new LinkedHashMap<>();
+                final Map<String, Integer> rings = new LinkedHashMap<>();
                 rings.put("clover", 1112800);
                 rings.put("crush", 1112001);
                 rings.put("flower", 1112801);
@@ -1341,17 +1341,14 @@ public class GM implements Command {
                         case -2:
                             mc.dropMessage("Partner number 1 was not found.");
                             break;
-
                         case -1:
                             mc.dropMessage("Partner number 2 was not found.");
                             break;
-
                         case 0:
-                            mc.dropMessage("Error. One of the players already posesses a ring");
+                            mc.dropMessage("Error: One of the players already posesses a ring.");
                             break;
-
                         default:
-                            mc.dropMessage("Sucess !");
+                            mc.dropMessage("Success!");
                     }
                 } else {
                     mc.dropMessage("Ring name was not found.");
@@ -1448,9 +1445,7 @@ public class GM implements Command {
                     overrideStats.setHp(newhp);
                     overrideStats.setExp(newexp);
                     overrideStats.setMp(onemob.getMaxMp());
-                    if (num > 20) {
-                        num = 20;
-                    }
+                    if (num > 20) num = 20;
                     for (int i = 0; i < num; ++i) {
                         MapleMonster mob = MapleLifeFactory.getMonster(mid);
                         if (mob == null) continue;
@@ -2892,7 +2887,7 @@ public class GM implements Command {
             case "!hackcheck": {
                 StringBuilder builder = new StringBuilder();
                 final String victimName = splitted[1];
-                MapleCharacter victim =
+                final MapleCharacter victim =
                     ChannelServer
                         .getAllInstances()
                         .stream()
@@ -2917,7 +2912,7 @@ public class GM implements Command {
                 mc.dropMessage("MACs:");
                 victim.getClient().getMacs().stream().map(m -> "    " + m).forEach(mc::dropMessage);
 
-                Set<Integer> accounts = new LinkedHashSet<>();
+                final Set<Integer> accounts = new LinkedHashSet<>();
                 mc.dropMessage("Accounts with same password:");
                 Connection con = DatabaseConnection.getConnection();
                 try {
@@ -2935,7 +2930,7 @@ public class GM implements Command {
                     ps.close();
 
                     mc.dropMessage("Accounts with same MAC(s):");
-                    for (String mac : victim.getClient().getMacs()) {
+                    for (final String mac : victim.getClient().getMacs()) {
                         mc.dropMessage("    " + mac + ":");
                         ps = con.prepareStatement("SELECT id, name FROM accounts WHERE macs LIKE ? AND id != ?");
                         ps.setString(1, "%" + mac + "%");
@@ -2951,7 +2946,7 @@ public class GM implements Command {
 
                     mc.dropMessage("Accounts with same IP:");
                     ps = con.prepareStatement("SELECT id, name FROM accounts WHERE lastknownip = ? AND id != ?");
-                    String sockAddr = victim.getClient().getSession().getRemoteAddress().toString();
+                    final String sockAddr = victim.getClient().getSession().getRemoteAddress().toString();
                     ps.setString(1, sockAddr.substring(1, sockAddr.lastIndexOf(':')));
                     ps.setInt(2, victim.getAccountID());
                     rs = ps.executeQuery();
@@ -2980,7 +2975,7 @@ public class GM implements Command {
                     ps.close();
 
                     mc.dropMessage("Suspicious account info:");
-                    for (Integer aid : accounts) {
+                    for (final Integer aid : accounts) {
                         ps = con.prepareStatement(
                             "SELECT name, lastlogin, banned, banreason FROM accounts WHERE id = ?"
                         );

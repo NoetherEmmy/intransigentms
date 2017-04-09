@@ -134,7 +134,7 @@ public final class MapleLifeFactory {
                 MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
                 if (monsterSkillData != null) {
                     int i = 0;
-                    List<Pair<Integer, Integer>> skills = new ArrayList<>();
+                    final List<Pair<Integer, Integer>> skills = new ArrayList<>();
                     while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
                         skills.add(
                             new Pair<>(

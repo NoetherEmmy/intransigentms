@@ -324,14 +324,14 @@ public class MapleMapFactory {
     }
 
     private MapleReactor loadReactor(MapleData reactor, String id) {
-        MapleReactor myReactor =
+        final MapleReactor myReactor =
             new MapleReactor(
                 MapleReactorFactory.getReactor(Integer.parseInt(id)),
                 Integer.parseInt(id)
             );
 
-        int x = MapleDataTool.getInt(reactor.getChildByPath("x"));
-        int y = MapleDataTool.getInt(reactor.getChildByPath("y"));
+        final int x = MapleDataTool.getInt(reactor.getChildByPath("x"));
+        final int y = MapleDataTool.getInt(reactor.getChildByPath("y"));
         myReactor.setPosition(new Point(x, y));
 
         myReactor.setDelay(MapleDataTool.getInt(reactor.getChildByPath("reactorTime")) * 1000);

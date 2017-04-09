@@ -10,7 +10,6 @@ import net.sf.odinms.server.life.*;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.server.maps.MapleMist;
-import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
@@ -22,9 +21,9 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         final MapleCharacter player = c.getPlayer();
-        slea.readInt();
-        int damageFrom = slea.readByte();
-        slea.readByte();
+        final int unk0 = slea.readInt();
+        final int damageFrom = slea.readByte();
+        final byte unk1 = slea.readByte();
         int damage = slea.readInt();
         int oid = 0;
         int monsterIdFrom = 0;
@@ -41,8 +40,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         int removedDamage = 0;
         boolean belowLevelLimit = player.getMap().getPartyQuestInstance() != null &&
                                   player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
-        boolean dodge = false;
-        boolean advaita = false;
+        boolean dodge = false, advaita = false;
 
         if (player.getMap().isDamageMuted()) return;
 
@@ -53,21 +51,14 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
         if (damageFrom == -2) {
             int debuffLevel = slea.readByte();
-            int debuffId = slea.readByte();
+            final int debuffId = slea.readByte();
             if (debuffId == 125) debuffLevel -= 1;
             final MobSkill skill = MobSkillFactory.getMobSkill(debuffId, debuffLevel);
+            /*
             if (skill != null) {
-                final MapleMapObject mmo = player.getMap().getMapObject(oid);
-                if (mmo != null && mmo.getType() == MapleMapObjectType.MONSTER) {
-                    attacker = (MapleMonster) mmo;
-                }
-                if (attacker != null) {
-                    skill.applyEffect(player, attacker, false);
-                    player.setLastDamageSource(attacker);
-                }
+                skill.applyEffect(player, attacker, false);
             }
-            System.out.println("TakeDamageHandler: " + HexTool.toString(slea));
-            System.out.println();
+            */
         } else {
             monsterIdFrom = slea.readInt();
             oid = slea.readInt();
@@ -199,7 +190,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 player.getClient(),
                 player.getName() + " took " + damage + " of damage."
             );
-        } else if (damage > 60000) {
+        } else if (damage > 90000) {
             System.err.println(
                 player.getName() +
                     " received an abnormal amount of damage and so was disconnected: " +

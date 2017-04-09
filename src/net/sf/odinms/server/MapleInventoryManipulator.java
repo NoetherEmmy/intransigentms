@@ -480,7 +480,7 @@ public class MapleInventoryManipulator {
             c.disconnect();
             return;
         }
-        Point dropPos = new Point(c.getPlayer().getPosition());
+        final Point dropPos = new Point(c.getPlayer().getPosition());
         if (quantity < source.getQuantity() && !ii.isThrowingStar(itemId) && !ii.isBullet(itemId)) {
             IItem target = source.copy();
             target.setQuantity(quantity);
@@ -508,11 +508,13 @@ public class MapleInventoryManipulator {
             }
         } else {
             c.getPlayer().getInventory(type).removeSlot(src);
-            c.getSession().write(MaplePacketCreator.dropInventoryItem(
-            (src < 0 ? MapleInventoryType.EQUIP : type), src));
-            if (src < 0) {
-                c.getPlayer().equipChanged();
-            }
+            c.getSession().write(
+                MaplePacketCreator.dropInventoryItem(
+                    src < 0 ? MapleInventoryType.EQUIP : type,
+                    src
+                )
+            );
+            if (src < 0) c.getPlayer().equipChanged();
             if (c.getPlayer().getMap().getEverlast()) {
                 if (!c.getChannelServer().allowUndroppablesDrop() && ii.isDropRestricted(itemId)) {
                     c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), source, dropPos);

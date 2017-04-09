@@ -5206,7 +5206,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public FameStatus canGiveFame(MapleCharacter from) {
-        if (lastFameTime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
+        if (lastFameTime >= System.currentTimeMillis() - 60L * 60L * 24L * 1000L) {
             return FameStatus.NOT_TODAY;
         } else if (lastMonthFameIds.contains(from.getId())) {
             return FameStatus.NOT_THIS_MONTH;
@@ -5980,7 +5980,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public enum FameStatus {
-        OK, NOT_TODAY, NOT_THIS_MONTH
+        OK,
+        NOT_TODAY,
+        NOT_THIS_MONTH
     }
 
     public int getBuddyCapacity() {
@@ -6770,19 +6772,45 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         try {
             int accountid = -1;
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT accountid FROM characters WHERE name = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT accountid FROM characters WHERE name LIKE ?");
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) accountid = rs.getInt("accountid");
             ps.close();
             rs.close();
             if (accountid == -1) return false;
-            ps = con.prepareStatement("UPDATE accounts SET banned = -1 WHERE id = ?");
+            ps = con.prepareStatement("UPDATE accounts SET banned = 0, banreason = NULL, greason = NULL WHERE id = ?");
             ps.setInt(1, accountid);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException e) {
-            sqlException(e);
+            String macs = null, lastknownip = null;
+            ps = con.prepareStatement("SELECT macs, lastknownip FROM accounts WHERE id = ?");
+            ps.setInt(1, accountid);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                macs = rs.getString("macs");
+                lastknownip = rs.getString("lastknownip");
+            }
+            ps.close();
+            rs.close();
+            if (macs == null || lastknownip == null) return false;
+            final String[] macArray = macs.split(", ");
+            final StringBuilder macComparison = new StringBuilder();
+            int i = 0;
+            for (final String mac : macArray) {
+                macComparison.append("mac LIKE '%").append(mac).append("%'");
+                if (i < macArray.length - 1) macComparison.append(" OR ");
+                i++;
+            }
+            ps = con.prepareStatement("DELETE FROM macbans WHERE " + macComparison);
+            ps.executeUpdate();
+            ps.close();
+            ps = con.prepareStatement("DELETE FROM ipbans WHERE ip LIKE ?");
+            ps.setString(1, "%" + lastknownip + "%");
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
             return false;
         }
         return true;

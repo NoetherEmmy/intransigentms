@@ -930,7 +930,7 @@ public class MapleMap {
     }
 
     public void killMonster(int monsId) {
-        for (MapleMapObject mmo : getMapObjects()) {
+        for (final MapleMapObject mmo : getMapObjects()) {
             if (mmo instanceof MapleMonster) {
                 if (((MapleMonster) mmo).getId() == monsId) {
                     this.killMonster((MapleMonster) mmo, (MapleCharacter) getAllPlayers().get(0), false);
@@ -1042,7 +1042,7 @@ public class MapleMap {
     }
 
     public void shuffleReactors() {
-        List<Point> points = new ArrayList<>();
+        final List<Point> points = new ArrayList<>();
         synchronized (mapObjects) {
             Iterator<MapleMapObject> mmoiter1 = mapObjects.values().iterator();
             while (mmoiter1.hasNext()) {
@@ -1255,7 +1255,7 @@ public class MapleMap {
             spos.y -= 1;
             monster.setPosition(spos);
             monster.disableDrops();
-            synchronized (this.mapObjects) {
+            synchronized (mapObjects) {
                 spawnAndAddRangedMapObject(monster, c ->
                     c.getSession().write(
                         MaplePacketCreator.spawnMonster(
@@ -1263,7 +1263,8 @@ public class MapleMap {
                             true,
                             effect
                         )
-                    ), null
+                    ),
+                    null
                 );
                 updateMonsterController(monster);
             }
@@ -1275,7 +1276,7 @@ public class MapleMap {
     public void spawnFakeMonster(final MapleMonster monster) {
         monster.setMap(this);
         monster.setFake(true);
-        synchronized (this.mapObjects) {
+        synchronized (mapObjects) {
             spawnAndAddRangedMapObject(monster, c -> c.getSession().write(MaplePacketCreator.spawnFakeMonster(monster, 0)), null);
         }
         spawnedMonstersOnMap.incrementAndGet();
@@ -1288,7 +1289,7 @@ public class MapleMap {
 
     public void spawnReactor(final MapleReactor reactor) {
         reactor.setMap(this);
-        synchronized (this.mapObjects) {
+        synchronized (mapObjects) {
             spawnAndAddRangedMapObject(reactor, c -> c.getSession().write(reactor.makeSpawnData()), null);
         }
     }
@@ -1300,7 +1301,7 @@ public class MapleMap {
     }
 
     public void spawnDoor(final MapleDoor door) {
-        synchronized (this.mapObjects) {
+        synchronized (mapObjects) {
             spawnAndAddRangedMapObject(door, c -> {
                 c.getSession().write(MaplePacketCreator.spawnDoor(door.getOwner().getId(), door.getTargetPosition(), false));
                 if (door.getOwner().getParty() != null && (door.getOwner() == c.getPlayer() || door.getOwner().getParty().containsMembers(new MaplePartyCharacter(c.getPlayer())))) {
@@ -1349,13 +1350,16 @@ public class MapleMap {
         } else {
             poisonSchedule = null;
         }
-        tMan.schedule(() -> {
-            removeMapObject(mist);
-            if (poisonSchedule != null) {
-                poisonSchedule.cancel(false);
-            }
-            broadcastMessage(mist.makeDestroyData());
-        }, duration);
+        tMan.schedule(
+            () -> {
+                removeMapObject(mist);
+                if (poisonSchedule != null) {
+                    poisonSchedule.cancel(false);
+                }
+                broadcastMessage(mist.makeDestroyData());
+            },
+            duration
+        );
     }
 
     public void disappearingItemDrop(final MapleMapObject dropper,
@@ -1387,39 +1391,48 @@ public class MapleMap {
         TimerManager tMan = TimerManager.getInstance();
         final Point droppos = calcDropPos(pos, pos);
         final MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner);
-        spawnAndAddRangedMapObject(drop, c ->
-            c.getSession()
-             .write(MaplePacketCreator.dropItemFromMapObject(
-                 item.getItemId(),
-                 drop.getObjectId(),
-                 0,
-                 ffaDrop ? 0 : owner.getId(),
-                 dropper.getPosition(),
-                 droppos,
-                 (byte) 1)
-             ), null);
-        broadcastMessage(MaplePacketCreator.dropItemFromMapObject(
-            item.getItemId(),
-            drop.getObjectId(),
-            0,
-            ffaDrop ? 0 : owner.getId(),
-            dropper.getPosition(),
-            droppos,
-            (byte) 0
-        ), drop.getPosition());
+        spawnAndAddRangedMapObject(
+            drop,
+            c ->
+                c.getSession()
+                 .write(
+                     MaplePacketCreator.dropItemFromMapObject(
+                         item.getItemId(),
+                         drop.getObjectId(),
+                         0,
+                         ffaDrop ? 0 : owner.getId(),
+                         dropper.getPosition(),
+                         droppos,
+                         (byte) 1
+                     )
+                 ),
+            null
+        );
+        broadcastMessage(
+            MaplePacketCreator.dropItemFromMapObject(
+                item.getItemId(),
+                drop.getObjectId(),
+                0,
+                ffaDrop ? 0 : owner.getId(),
+                dropper.getPosition(),
+                droppos,
+                (byte) 0
+            ),
+            drop.getPosition()
+        );
         if (expire) {
             tMan.schedule(new ExpireMapItemJob(drop), dropLife);
         }
         activateItemReactors(drop);
     }
 
-    public boolean hasPeriodicMonsterDrop(int monsterOid) {
-        return periodicMonsterDrops.stream().anyMatch((pmd) -> pmd.getLeft().getMonsterOid() == monsterOid);
+    public boolean hasPeriodicMonsterDrop(final int monsterOid) {
+        return periodicMonsterDrops.stream().anyMatch(pmd -> pmd.getLeft().getMonsterOid() == monsterOid);
     }
 
     private void cancelCancelPeriodicMonsterDrop(final int monsterOid) {
         synchronized (periodicMonsterDrops) {
-            periodicMonsterDrops.forEach((pmdh) -> {
+            periodicMonsterDrops.forEach(pmdh -> {
                 if (pmdh.getLeft().getMonsterOid() == monsterOid) {
                     pmdh.getRight().cancel(false);
                 }
@@ -1449,7 +1462,7 @@ public class MapleMap {
     private void cancelPeriodicMonsterDrop(final PeriodicMonsterDrop pmd) {
         synchronized (periodicMonsterDrops) {
             Pair<PeriodicMonsterDrop, ScheduledFuture<?>> pmdh = null;
-            for (Pair<PeriodicMonsterDrop, ScheduledFuture<?>> _pmdh : periodicMonsterDrops) {
+            for (final Pair<PeriodicMonsterDrop, ScheduledFuture<?>> _pmdh : periodicMonsterDrops) {
                 if (_pmdh.getLeft().equals(pmd)) {
                     pmdh = _pmdh;
                     break;
@@ -1492,7 +1505,7 @@ public class MapleMap {
                             map2wa2.getMapName() +
                             ".";
                     broadcastMessage(MaplePacketCreator.serverNotice(6, warpmsg));
-                    for (MapleCharacter chr : getCharacters()) {
+                    for (final MapleCharacter chr : getCharacters()) {
                         try {
                             if (chr.getLevel() >= minWarp && chr.getLevel() <= maxWarp) {
                                 chr.changeMap(map2wa2, map2wa2.getPortal(0));
@@ -1511,7 +1524,7 @@ public class MapleMap {
                                    );
                             }
                         } catch (Exception e) {
-                            String errormsg = "There was a problem warping you. Please contact a GM.";
+                            final String errormsg = "There was a problem warping you. Please contact a GM.";
                             chr.getClient().getSession().write(MaplePacketCreator.serverNotice(5, errormsg));
                         }
                     }
@@ -1720,7 +1733,7 @@ public class MapleMap {
             chr.getMap().spawnSummon(summon);
             updateMapObjectVisibility(chr, summon);
         }
-        MapleStatEffect morphStat = chr.getStatForBuff(MapleBuffStat.MORPH);
+        final MapleStatEffect morphStat = chr.getStatForBuff(MapleBuffStat.MORPH);
         if (morphStat != null && morphStat.isPirateMorph()) {
             List<Pair<MapleBuffStat, Integer>> pmorphstatup =
                 Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, morphStat.getMorph(chr)));
@@ -1806,7 +1819,7 @@ public class MapleMap {
 
     private void broadcastMessage(MapleCharacter source, MaplePacket packet, double rangeSq, Point rangedFrom) {
         synchronized (characters) {
-            for (MapleCharacter chr : characters) {
+            for (final MapleCharacter chr : characters) {
                 if (chr != source && !chr.isFake()) {
                     if (rangeSq < Double.POSITIVE_INFINITY) {
                         if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
@@ -1830,7 +1843,7 @@ public class MapleMap {
 
     private void broadcastGMMessage(MapleCharacter source, MaplePacket packet, double rangeSq, Point rangedFrom) {
         synchronized (characters) {
-            for (MapleCharacter chr : characters) {
+            for (final MapleCharacter chr : characters) {
                 if (chr != source && !chr.isFake() && chr.isGM()) {
                     if (rangeSq < Double.POSITIVE_INFINITY) {
                         if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
@@ -1854,7 +1867,7 @@ public class MapleMap {
 
     private void broadcastNONGMMessage(MapleCharacter source, MaplePacket packet, double rangeSq, Point rangedFrom) {
         synchronized (characters) {
-            for (MapleCharacter chr : characters) {
+            for (final MapleCharacter chr : characters) {
                 if (chr != source && !chr.isFake() && !chr.isGM()) {
                     if (rangeSq < Double.POSITIVE_INFINITY) {
                         if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
@@ -1890,7 +1903,7 @@ public class MapleMap {
                 updateMonsterController((MapleMonster) o);
             }
         }
-        MapleCharacter chr = mapleClient.getPlayer();
+        final MapleCharacter chr = mapleClient.getPlayer();
 
         if (chr != null) {
             List<MapleMapObject> mapObjects_ =

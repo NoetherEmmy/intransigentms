@@ -11,25 +11,30 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 public class GiveFameHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        c.getPlayer().resetAfkTime();
-        int who = slea.readInt();
-        int mode = slea.readByte();
-        int famechange = mode == 0 ? -1 : 1;
-        MapleCharacter target = (MapleCharacter) c.getPlayer().getMap().getMapObject(who);
-        if (target == c.getPlayer()) {
-            c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.FAMING_SELF);
+        final MapleCharacter p = c.getPlayer();
+        p.resetAfkTime();
+        final int who = slea.readInt();
+        final int mode = slea.readByte();
+        final int famechange = mode == 0 ? -1 : 1;
+        final MapleCharacter target = (MapleCharacter) p.getMap().getMapObject(who);
+        if (target == p) {
+            p.getCheatTracker().registerOffense(CheatingOffense.FAMING_SELF);
             return;
-        } else if (c.getPlayer().getLevel() < 15) {
-            c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.FAMING_UNDER_15);
+        } else if (p.getLevel() < 15) {
+            p.getCheatTracker().registerOffense(CheatingOffense.FAMING_UNDER_15);
             return;
         }
-        switch (c.getPlayer().canGiveFame(target)) {
+        if (target == null) {
+            c.getSession().write(MaplePacketCreator.enableActions());
+            return;
+        }
+        switch (p.canGiveFame(target)) {
             case OK:
                 if (Math.abs(target.getFame()) < 30000) {
                     target.addFame(famechange);
                     target.updateSingleStat(MapleStat.FAME, target.getFame());
                 }
-                c.getPlayer().hasGivenFame(target);
+                p.hasGivenFame(target);
                 c.getSession()
                  .write(
                      MaplePacketCreator.giveFameResponse(
@@ -44,7 +49,7 @@ public class GiveFameHandler extends AbstractMaplePacketHandler {
                     .write(
                         MaplePacketCreator.receiveFame(
                             mode,
-                            c.getPlayer().getName()
+                            p.getName()
                         )
                     );
                 break;

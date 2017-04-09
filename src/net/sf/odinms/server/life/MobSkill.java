@@ -133,16 +133,19 @@ public class MobSkill {
                 banish = true;
                 break;
             case 140:
+                if (monster == null) return;
                 if (makeChanceResult() && !monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) {
                     monStat = MonsterStatus.WEAPON_IMMUNITY;
                 }
                 break;
             case 141:
+                if (monster == null) return;
                 if (makeChanceResult() && !monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) {
                     monStat = MonsterStatus.MAGIC_IMMUNITY;
                 }
                 break;
             case 200:
+                if (monster == null) return;
                 if (monster.getMap().getSpawnedMonstersOnMap() < 80) {
                     for (Integer mobId : getSummons()) {
                         MapleMonster toSpawn = MapleLifeFactory.getMonster(mobId);
@@ -193,7 +196,7 @@ public class MobSkill {
                 }
                 break;
         }
-        if (monStat != null || heal) {
+        if (monStat != null || heal && monster != null) {
             if (lt != null && rb != null && skill) {
                 List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
                 if (heal) {
