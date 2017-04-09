@@ -26,8 +26,8 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int oid = slea.readInt();
-        short moveId = slea.readShort();
+        final int oid = slea.readInt();
+        final short moveId = slea.readShort();
         final MapleMap map = c.getPlayer().getMap();
         final MapleMapObject mmo = map.getMapObject(oid);
         if (mmo == null || mmo.getType() != MapleMapObjectType.MONSTER) {
@@ -45,7 +45,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
             return;
         }
         final MapleMonster monster = (MapleMonster) mmo;
-        List<LifeMovementFragment> res;
+        final List<LifeMovementFragment> res;
         int skillByte = slea.readByte();
         int skill = slea.readByte();
         int skill_1 = slea.readByte() & 0xFF;
@@ -62,7 +62,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
             if (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) toUse = null;
         }
         if (skill_1 >= 100 && skill_1 <= 200 && monster.hasSkill(skill_1, skill_2)) {
-            MobSkill skillData = MobSkillFactory.getMobSkill(skill_1, skill_2);
+            final MobSkill skillData = MobSkillFactory.getMobSkill(skill_1, skill_2);
             if (skillData != null && monster.canUseSkill(skillData)) {
                 skillData.applyEffect(c.getPlayer(), monster, true);
             }
@@ -143,7 +143,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
             }
             return;
         }
-        MaplePacket packet =
+        final MaplePacket packet =
             MaplePacketCreator.moveMonster(
                 skillByte,
                 skill,

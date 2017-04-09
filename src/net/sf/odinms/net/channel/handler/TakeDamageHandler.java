@@ -21,9 +21,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         final MapleCharacter player = c.getPlayer();
-        final int unk0 = slea.readInt();
+        @SuppressWarnings("unused")
+        final int timeStamp = slea.readInt();
         final int damageFrom = slea.readByte();
-        final byte unk1 = slea.readByte();
+        slea.readByte(); // null
         int damage = slea.readInt();
         int oid = 0;
         int monsterIdFrom = 0;
@@ -50,11 +51,14 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         }
 
         if (damageFrom == -2) {
+            slea.readByte();
+            slea.readByte();
+            player.setLastDamageSource(null);
+            /*
             int debuffLevel = slea.readByte();
             final int debuffId = slea.readByte();
             if (debuffId == 125) debuffLevel -= 1;
             final MobSkill skill = MobSkillFactory.getMobSkill(debuffId, debuffLevel);
-            /*
             if (skill != null) {
                 skill.applyEffect(player, attacker, false);
             }
@@ -67,13 +71,11 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 attacker = (MapleMonster) mmo;
             }
             final MapleMonster genericMob = MapleLifeFactory.getMonster(monsterIdFrom);
-            if (genericMob != null) {
-                player.setLastDamageSource(genericMob);
-            }
+            player.setLastDamageSource(genericMob);
             direction = slea.readByte();
         }
 
-        if (c.getChannelServer().getTrackMissGodmode() && attacker != null) {
+        if (attacker != null && c.getChannelServer().getTrackMissGodmode()) {
             if (damage < 1) {
                 double difference = (double) Math.max(player.getLevel() - attacker.getLevel(), 0);
                 double chanceToBeHit = (double) attacker.getAccuracy() / ((1.84d + 0.07d * difference) * (double) player.getAvoidability()) - 1.0d;
@@ -115,7 +117,11 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 if (attackInfo != null && attackInfo.isDeadlyAttack()) {
                     deadlyAttack = true;
                     mpAttack = 0; // mpAttack = player.getMp() - 1;
-                    if (damage != 0) damage = 0; else return;
+                    if (damage != 0) {
+                        damage = 0;
+                    } else {
+                        return;
+                    }
                 } else {
                     if (attackInfo != null) {
                         mpAttack += attackInfo.getMpBurn();
@@ -140,7 +146,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         boolean smokescreened = false;
         try {
             final Collection<MapleMapObject> mmos = player.getMap().getMapObjects();
-            for (MapleMapObject mmo : mmos) {
+            for (final MapleMapObject mmo : mmos) {
                 if (!(mmo instanceof MapleMist)) continue;
                 final MapleMist mist = (MapleMist) mmo;
                 if (mist.getSourceSkill().getId() == 4221006) { // Smokescreen
@@ -151,7 +157,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                 mist.getBox(),
                                 MapleMapObjectType.PLAYER
                             );
-                    for (MapleMapObject mmoPlayer : mmoPlayers) {
+                    for (final MapleMapObject mmoPlayer : mmoPlayers) {
                         if (player.equals(mmoPlayer)) {
                             removedDamage += damage;
                             damage = -1;
@@ -167,14 +173,14 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
         if (damage == -1 && !smokescreened) { // Players with Guardian skill and shield that got
                                               // damage removed by smokescreen don't get to stun mobs.
-            int job = player.getJob().getId() / 10 - 40;
+            final int job = player.getJob().getId() / 10 - 40;
             fake = 4020002 + (job * 100000);
             if (damageFrom == -1 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
                 int[] guardianSkillId = {1120005, 1220006};
-                for (int guardian : guardianSkillId) {
+                for (final int guardian : guardianSkillId) {
                     ISkill guardianSkill = SkillFactory.getSkill(guardian);
                     if (player.getSkillLevel(guardianSkill) > 0 && attacker != null) {
-                        MonsterStatusEffect monsterStatusEffect =
+                        final MonsterStatusEffect monsterStatusEffect =
                             new MonsterStatusEffect(
                                 Collections.singletonMap(MonsterStatus.STUN, 1),
                                 guardianSkill,

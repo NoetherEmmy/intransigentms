@@ -23,6 +23,7 @@ public class MobSkill {
     private float prop;
     private Point lt, rb;
     private int limit;
+    private final Random rand = new Random();
 
     public MobSkill(int skillId, int level) {
         this.skillId = skillId;
@@ -75,14 +76,15 @@ public class MobSkill {
         this.limit = limit;
     }
 
-    public void applyEffect(MapleCharacter player, MapleMonster monster, boolean skill) {
+    public void applyEffect(MapleCharacter player, final MapleMonster monster, boolean skill) {
+        if (monster == null) return;
         MonsterStatus monStat = null;
         MapleDisease disease = null;
         boolean heal = false;
         boolean dispel = false;
         boolean seduce = false;
         boolean banish = false;
-        if (skillId > 119 && skillId < 140 && player.isGM()) return;
+        //if (skillId > 119 && skillId < 140 && player.isGM()) return;
         switch (skillId) {
             case 100:
             case 110:
@@ -115,7 +117,8 @@ public class MobSkill {
             case 123:
                 disease = MapleDisease.STUN;
                 break;
-            case 124: // Curse TODO
+            case 124: // Curse
+                disease = MapleDisease.CURSE;
                 break;
             case 125:
                 disease = MapleDisease.POISON;
@@ -133,19 +136,16 @@ public class MobSkill {
                 banish = true;
                 break;
             case 140:
-                if (monster == null) return;
                 if (makeChanceResult() && !monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) {
                     monStat = MonsterStatus.WEAPON_IMMUNITY;
                 }
                 break;
             case 141:
-                if (monster == null) return;
                 if (makeChanceResult() && !monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) {
                     monStat = MonsterStatus.MAGIC_IMMUNITY;
                 }
                 break;
             case 200:
-                if (monster == null) return;
                 if (monster.getMap().getSpawnedMonstersOnMap() < 80) {
                     for (Integer mobId : getSummons()) {
                         MapleMonster toSpawn = MapleLifeFactory.getMonster(mobId);
@@ -196,7 +196,7 @@ public class MobSkill {
                 }
                 break;
         }
-        if (monStat != null || heal && monster != null) {
+        if (monStat != null || heal) {
             if (lt != null && rb != null && skill) {
                 List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
                 if (heal) {
@@ -221,7 +221,7 @@ public class MobSkill {
             }
         }
         if (disease != null || dispel || seduce || banish) {
-            if (new Random().nextInt(6) < 4) { // Makes a number between 0 - 5. If 0, 1, 2, or 3 then give disease.
+            if (rand.nextInt(6) < 4) { // Makes a number between 0 - 5. If 0, 1, 2, or 3 then give disease.
                 if (skill && lt != null && rb != null) {
                     int i = 0;
                     List<MapleCharacter> characters = getPlayersInRange(monster, player);
@@ -230,7 +230,7 @@ public class MobSkill {
                             character.dispel();
                         } else if (banish) {
                             MapleMap to = player.getMap().getReturnMap();
-                            MaplePortal pto = to.getPortal(new Random().nextInt(to.getPortals().size()));
+                            MaplePortal pto = to.getPortal(rand.nextInt(to.getPortals().size()));
                             character.changeMap(to, pto);
                         } else if (seduce && i < 10) {
                             character.giveDebuff(MapleDisease.SEDUCE, this);
