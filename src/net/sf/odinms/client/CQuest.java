@@ -185,6 +185,7 @@ public class CQuest {
     }
 
     public void complete() {
+        final int playerLevel = player.getLevel();
         final MapleClient c = player.getClient();
         final AbstractPlayerInteraction api = new AbstractPlayerInteraction(c);
         final boolean firstTime = !player.completedCQuest(quest.getId()) || quest.isRepeatable();
@@ -200,7 +201,7 @@ public class CQuest {
             quest.getCompletionLevel(
                 effectivePlayerLevel > 0 ?
                     effectivePlayerLevel :
-                    player.getLevel()
+                    playerLevel
             );
         player.setCQuestCompleted(quest.getId(), completionLevel);
         c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
