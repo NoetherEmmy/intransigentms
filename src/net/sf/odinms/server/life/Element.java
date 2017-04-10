@@ -11,7 +11,7 @@ public enum Element {
                 return ICE;
             case 'L':
                 return LIGHTING;
-            case 'P': //
+            case 'P':
             case 'S':
                 return POISON;
             case 'H':

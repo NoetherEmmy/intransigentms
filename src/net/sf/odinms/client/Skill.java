@@ -270,7 +270,7 @@ public class Skill implements ISkill {
         boolean output = false;
         String idString = String.valueOf(id);
         if (idString.length() == 4 || idString.length() == 1) {
-            output = true;
+            return true;
         }
         return output;
     }

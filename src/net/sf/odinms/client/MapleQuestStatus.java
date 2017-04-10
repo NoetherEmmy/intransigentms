@@ -24,7 +24,7 @@ public class MapleQuestStatus {
         }
 
         public static Status getById(int id) {
-            for (Status l : Status.values()) {
+            for (final Status l : Status.values()) {
                 if (l.getId() == id) return l;
             }
             return null;
@@ -37,7 +37,6 @@ public class MapleQuestStatus {
     private long completionTime;
     private int forfeited;
 
-    /** Creates a new instance of MapleQuestStatus */
     public MapleQuestStatus(MapleQuest quest, Status status) {
         this.quest = quest;
         setStatus(status);

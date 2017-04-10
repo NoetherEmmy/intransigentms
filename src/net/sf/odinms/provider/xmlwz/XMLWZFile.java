@@ -55,9 +55,9 @@ public class XMLWZFile implements MapleDataProvider {
         final XMLDomMapleData domMapleData;
         try {
             if (exists) {
-                domMapleData = new XMLDomMapleData(fis, imageDataDir.getParentFile());
+                return new XMLDomMapleData(fis, imageDataDir.getParentFile());
             } else {
-                domMapleData = null;
+                return null;
                 /*
                 System.err.println(
                     "Datafile " +
@@ -75,7 +75,6 @@ public class XMLWZFile implements MapleDataProvider {
                 throw new RuntimeException(e);
             }
         }
-        return domMapleData;
     }
 
     @Override

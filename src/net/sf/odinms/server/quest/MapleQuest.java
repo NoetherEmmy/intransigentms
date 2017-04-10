@@ -35,20 +35,19 @@ public class MapleQuest {
     protected MapleQuest() {
     }
 
-    /** Creates a new instance of MapleQuest */
     private MapleQuest(int id) {
         this.id = id;
         // Read requirements
         MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
         startReqs = new ArrayList<>();
         if (startReqData != null) {
-            for (MapleData startReq : startReqData.getChildren()) {
+            for (final MapleData startReq : startReqData.getChildren()) {
                 MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
                 if (type.equals(MapleQuestRequirementType.INTERVAL))
                     repeatable = true;
                 MapleQuestRequirement req = new MapleQuestRequirement(this, type, startReq);
                 if (req.getType().equals(MapleQuestRequirementType.MOB)) {
-                    for (MapleData mob : startReq.getChildren()) {
+                    for (final MapleData mob : startReq.getChildren()) {
                         relevantMobs.add(MapleDataTool.getInt(mob.getChildByPath("id")));
                     }
                 }
@@ -58,7 +57,7 @@ public class MapleQuest {
         MapleData completeReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("1");
         completeReqs = new ArrayList<>();
         if (completeReqData != null) {
-            for (MapleData completeReq : completeReqData.getChildren()) {
+            for (final MapleData completeReq : completeReqData.getChildren()) {
                 MapleQuestRequirement req =
                     new MapleQuestRequirement(
                         this,
@@ -68,7 +67,7 @@ public class MapleQuest {
                         completeReq
                     );
                 if (req.getType().equals(MapleQuestRequirementType.MOB)) {
-                    for (MapleData mob : completeReq.getChildren()) {
+                    for (final MapleData mob : completeReq.getChildren()) {
                         relevantMobs.add(MapleDataTool.getInt(mob.getChildByPath("id")));
                     }
                 }
@@ -78,7 +77,7 @@ public class MapleQuest {
         MapleData startActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("0");
         startActs = new ArrayList<>();
         if (startActData != null) {
-            for (MapleData startAct : startActData.getChildren()) {
+            for (final MapleData startAct : startActData.getChildren()) {
                 MapleQuestActionType questActionType = MapleQuestActionType.getByWZName(startAct.getName());
                 startActs.add(new MapleQuestAction(questActionType, startAct, this));
             }
@@ -124,7 +123,7 @@ public class MapleQuest {
             }
             quests.put(id, ret);
         } else {
-            ret = quests.get(id);
+            return quests.get(id);
         }
         return ret;
     }
@@ -228,12 +227,12 @@ public class MapleQuest {
     }
 
     public List<Integer> getQuestItemsToShowOnlyIfQuestIsActivated() {
-        Set<Integer> delta = new LinkedHashSet<>();
-        for (MapleQuestRequirement mqr : completeReqs) {
+        final Set<Integer> delta = new LinkedHashSet<>();
+        for (final MapleQuestRequirement mqr : completeReqs) {
             if (mqr.getType() != MapleQuestRequirementType.ITEM) continue;
             delta.addAll(mqr.getQuestItemsToShowOnlyIfQuestIsActivated());
         }
-        List<Integer> returnThis = new ArrayList<>(delta);
+        final List<Integer> returnThis = new ArrayList<>(delta);
         return Collections.unmodifiableList(returnThis);
     }
 

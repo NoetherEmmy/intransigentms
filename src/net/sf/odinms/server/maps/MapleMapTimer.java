@@ -9,26 +9,25 @@ import java.util.concurrent.ScheduledFuture;
 
 public class MapleMapTimer {
     private final Calendar predictedStopTime;
-    private int mapToWarpTo = -1;
-    private int minLevelToWarp;
-    private int maxLevelToWarp = 256;
+    private final int mapToWarpTo;
+    private final int minLevelToWarp, maxLevelToWarp;
     private final ScheduledFuture<?> sf0F;
 
     public MapleMapTimer(ScheduledFuture<?> sfO, int newDuration, int mapToWarpToP, int minLevelToWarpP, int maxLevelToWarpP) {
         Calendar startTime = Calendar.getInstance();
-        this.predictedStopTime = Calendar.getInstance();
-        this.predictedStopTime.add(Calendar.SECOND, newDuration);
-        this.mapToWarpTo = mapToWarpToP;
-        this.minLevelToWarp = minLevelToWarpP;
-        this.maxLevelToWarp = maxLevelToWarpP;
-        this.sf0F = sfO;
+        predictedStopTime = Calendar.getInstance();
+        predictedStopTime.add(Calendar.SECOND, newDuration);
+        mapToWarpTo = mapToWarpToP;
+        minLevelToWarp = minLevelToWarpP;
+        maxLevelToWarp = maxLevelToWarpP;
+        sf0F = sfO;
     }
 
     public MaplePacket makeSpawnData() {
-        int timeLeft;
-        long StopTimeStamp = this.predictedStopTime.getTimeInMillis();
-        long CurrentTimeStamp = Calendar.getInstance().getTimeInMillis();
-        timeLeft =(int) (StopTimeStamp - CurrentTimeStamp) / 1000;
+        final int timeLeft;
+        final long stopTimeStamp = predictedStopTime.getTimeInMillis();
+        final long currentTimeStamp = Calendar.getInstance().getTimeInMillis();
+        timeLeft = (int) (stopTimeStamp - currentTimeStamp) / 1000;
         return MaplePacketCreator.getClock(timeLeft);
     }
 
@@ -41,22 +40,20 @@ public class MapleMapTimer {
     }
 
     public int warpToMap() {
-        return this.mapToWarpTo;
+        return mapToWarpTo;
     }
 
     public int minLevelToWarp() {
-        return this.minLevelToWarp;
+        return minLevelToWarp;
     }
 
     public int maxLevelToWarp() {
-        return this.maxLevelToWarp;
+        return maxLevelToWarp;
     }
 
     public int getTimeLeft() {
-        int timeLeft;
-        long StopTimeStamp = predictedStopTime.getTimeInMillis();
-        long CurrentTimeStamp = Calendar.getInstance().getTimeInMillis();
-        timeLeft =(int) (StopTimeStamp - CurrentTimeStamp) / 1000;
-        return timeLeft;
+        final long stopTimeStamp = predictedStopTime.getTimeInMillis();
+        final long currentTimeStamp = Calendar.getInstance().getTimeInMillis();
+        return (int) (stopTimeStamp - currentTimeStamp) / 1000;
     }
 }

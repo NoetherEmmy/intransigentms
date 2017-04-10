@@ -12,6 +12,7 @@ import net.sf.odinms.server.life.MapleLifeFactory;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.life.MobSkill;
 import net.sf.odinms.server.life.MobSkillFactory;
+import net.sf.odinms.server.maps.BossMapMonitor;
 import net.sf.odinms.server.maps.MapleMap;
 import net.sf.odinms.server.quest.MapleQuest;
 import net.sf.odinms.tools.MaplePacketCreator;
@@ -879,22 +880,22 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         warpParty(mapId, 0, 0);
     }
 
-    public void warpParty(int mapId, int exp, int meso) {
-        for (MaplePartyCharacter chr_ : getPlayer().getParty().getMembers()) {
+    public void warpParty(final int mapId, final int exp, final int meso) {
+        for (final MaplePartyCharacter chr_ : getPlayer().getParty().getMembers()) {
             if (chr_ == null || !chr_.isOnline()) continue;
-            MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr_.getName());
+            final MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr_.getName());
             if (curChar == null || curChar.isDead() || curChar.getMapId() == 100) continue;
-            if ((curChar.getEventInstance() == null && getPlayer().getEventInstance() == null) ||
-                    curChar.getEventInstance() == getPlayer().getEventInstance()) {
-                if ((curChar.getPartyQuest() == null && getPlayer().getPartyQuest() == null) ||
-                        curChar.getPartyQuest() == getPlayer().getPartyQuest()) {
+            if (
+                (curChar.getEventInstance() == null && getPlayer().getEventInstance() == null) ||
+                curChar.getEventInstance() == getPlayer().getEventInstance()
+            ) {
+                if (
+                    (curChar.getPartyQuest() == null && getPlayer().getPartyQuest() == null) ||
+                    curChar.getPartyQuest() == getPlayer().getPartyQuest()
+                ) {
                     curChar.changeMap(mapId);
-                    if (exp > 0) {
-                        curChar.gainExp(exp, true, false, true);
-                    }
-                    if (meso > 0) {
-                        curChar.gainMeso(meso, true);
-                    }
+                    if (exp > 0) curChar.gainExp(exp, true, false, true);
+                    if (meso > 0) curChar.gainMeso(meso, true);
                 }
             }
         }
@@ -1586,7 +1587,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void spawnMonster(int mobid) {
-        getPlayer().getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(mobid), getPlayer().getPosition());
+        getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mobid), getPlayer().getPosition());
     }
 
     public void spawnMonsterInMap(int mobid) {
@@ -1605,7 +1606,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void spawnMonsterInMapAtPos(MapleMonster mob, int mapid, int x, int y) {
         final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
-        map.spawnMonsterOnGroudBelow(mob, new Point(x, y));
+        map.spawnMonsterOnGroundBelow(mob, new Point(x, y));
     }
 
     public MapleMonster getMonster(int mobid) {
@@ -1613,13 +1614,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void spawnHT() {
-        final MapleMonster ht = MapleLifeFactory.getMonster(8810026);
         final MapleMap map = c.getChannelServer().getMapFactory().getMap(240060200);
-        map.spawnMonsterOnGroudBelow(ht, new Point(89, 290));
+        map.broadcastMessage(MaplePacketCreator.musicChange("Bgm14/HonTale"));
+        final MapleMonster ht = MapleLifeFactory.getMonster(8810026);
+        map.spawnMonsterOnGroundBelow(ht, new Point(71, 260));
         map.killMonster(ht, getPlayer(), false);
         map.broadcastMessage(
-            MaplePacketCreator.serverNotice(0, "As the cave shakes and rattles, here comes Horntail.")
+            MaplePacketCreator.serverNotice(0, "From the depths of his cave, Horntail emerges!")
         );
+        final MapleMap pMap = c.getChannelServer().getMapFactory().getMap(240050400);
+        final MaplePortal portal = pMap.getPortal("sp");
+        new BossMapMonitor(map, pMap, portal);
     }
 
     public String listConsume(char initial) {
@@ -1633,7 +1638,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         consumeList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
 
-        for (Pair<Integer, String> itempair : consumeList) {
+        for (final Pair<Integer, String> itempair : consumeList) {
             sb.append("#L").append(itempair.getLeft()).append('#');
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
@@ -1642,9 +1647,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String listEqp(char initial) {
-        StringBuilder sb = new StringBuilder();
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Pair<Integer, String>> eqpList = ii.getAllEqp(initial);
+        final StringBuilder sb = new StringBuilder();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final List<Pair<Integer, String>> eqpList = ii.getAllEqp(initial);
 
         if (eqpList.isEmpty()) {
             return "There are no equipment items with the selected initial letter.";
@@ -1652,7 +1657,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         eqpList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
 
-        for (Pair<Integer, String> itempair : eqpList) {
+        for (final Pair<Integer, String> itempair : eqpList) {
             sb.append("#L").append(itempair.getLeft()).append('#');
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");
@@ -1661,9 +1666,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public String listEtc(char initial) {
-        StringBuilder sb = new StringBuilder();
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Pair<Integer, String>> etcList = ii.getAllEtc(initial);
+        final StringBuilder sb = new StringBuilder();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final List<Pair<Integer, String>> etcList = ii.getAllEtc(initial);
 
         if (etcList.isEmpty()) {
             return "There are no etc items with the selected initial letter.";
@@ -1671,7 +1676,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         etcList.sort((o1, o2) -> o1.getRight().compareToIgnoreCase(o2.getRight()));
 
-        for (Pair<Integer, String> itempair : etcList) {
+        for (final Pair<Integer, String> itempair : etcList) {
             sb.append("#L").append(itempair.getLeft()).append('#');
             sb.append("#i").append(itempair.getLeft()).append("# ");
             sb.append(itempair.getRight()).append("#l\r\n");

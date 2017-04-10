@@ -160,7 +160,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
             }
             rs.close();
             ps.close();
-            ret = new WorldLoginInterfaceImpl();
+            return new WorldLoginInterfaceImpl();
         } catch (Exception e) {
             log.error("Encountered database error while authenticating loginserver", e);
         }

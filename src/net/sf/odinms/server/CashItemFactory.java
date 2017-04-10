@@ -69,7 +69,7 @@ public class CashItemFactory {
                         packageItems.add(item.getId());
                     }
                 }
-                break;
+                return packageItems;
             }
         }
         return packageItems;

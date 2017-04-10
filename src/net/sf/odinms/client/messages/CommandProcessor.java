@@ -193,9 +193,9 @@ public class CommandProcessor implements CommandProcessorMBean {
         }
     }
 
-    private void registerCommand(Command command) {
-        CommandDefinition[] definition = command.getDefinition();
-        for (CommandDefinition def : definition) {
+    private void registerCommand(final Command command) {
+        final CommandDefinition[] definition = command.getDefinition();
+        for (final CommandDefinition def : definition) {
             commands.put(def.getCommand().toLowerCase(), new DefinitionCommandPair(command, def));
         }
     }
@@ -205,7 +205,7 @@ public class CommandProcessor implements CommandProcessorMBean {
         int startEntry = (page - 1) * 20;
         mc.dropMessage("Commands Page: " + page);
         for (int i = startEntry; i < startEntry + 20 && i < allCommands.size(); ++i) {
-            CommandDefinition commandDefinition = allCommands.get(i).getDefinition();
+            final CommandDefinition commandDefinition = allCommands.get(i).getDefinition();
             if (chr.getGMLevel() == commandDefinition.getRequiredLevel()) {
                 dropHelpForDefinition(mc, commandDefinition);
             }

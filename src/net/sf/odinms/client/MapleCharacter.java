@@ -227,6 +227,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     private boolean invincible = false;
     private ScheduledFuture<?> bossHpTask;
     private ScheduledFuture<?> bossHpCancelTask;
+    private ScheduledFuture<?> showVulnTask;
+    private ScheduledFuture<?> showVulnCancelTask;
     private int initialVotePoints, initialNx;
     private boolean zakDc = false;
     private final Map<IItem, Short> buyBacks = new LinkedHashMap<>();
@@ -1008,7 +1010,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     "INSERT INTO skills (characterid, skillid, skilllevel, masterlevel) VALUES (?, ?, ?, ?)"
                 );
                 ps.setInt(1, id);
-                for (Map.Entry<ISkill, SkillEntry> skill_ : skills.entrySet()) {
+                for (final Map.Entry<ISkill, SkillEntry> skill_ : skills.entrySet()) {
                     ps.setInt(2, skill_.getKey().getId());
                     ps.setInt(3, skill_.getValue().skillevel);
                     ps.setInt(4, skill_.getValue().masterlevel);
@@ -1020,7 +1022,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                     "INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)"
                 );
                 ps.setInt(1, id);
-                for (Map.Entry<Integer, MapleKeyBinding> keybinding : keymap.entrySet()) {
+                for (final Map.Entry<Integer, MapleKeyBinding> keybinding : keymap.entrySet()) {
                     ps.setInt(2, keybinding.getKey());
                     ps.setInt(3, keybinding.getValue().getType());
                     ps.setInt(4, keybinding.getValue().getAction());
@@ -3711,7 +3713,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void gainExp(int gain, boolean show, boolean inChat, boolean white, boolean etcLose) {
-        int levelCap = client.getChannelServer().getLevelCap();
+        if (diseases.contains(MapleDisease.CURSE)) gain /= 2;
+        final int levelCap = client.getChannelServer().getLevelCap();
         if (!etcLose && gain < 0) {
             gain += Integer.MAX_VALUE;
             if (level < levelCap) levelUp();
@@ -5220,7 +5223,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         lastMonthFameIds.add(to.getId());
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)");
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)"
+                );
             ps.setInt(1, id);
             ps.setInt(2, to.getId());
             ps.executeUpdate();
@@ -5682,7 +5688,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public void setBossHpTask(long repeatTime, long duration) {
         cancelBossHpTask();
         TimerManager tMan = TimerManager.getInstance();
-        final DecimalFormat df = new DecimalFormat("#.00");
+        final DecimalFormat df = new DecimalFormat("##0.0##");
         bossHpTask = tMan.register(() -> {
             map.getMapObjectsInRange(
                 new Point(),
@@ -5716,6 +5722,49 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         bossHpTask = null;
         bossHpCancelTask = null;
+        return didCancel;
+    }
+
+    public void setShowVulnTask(long repeatTime, long duration) {
+        cancelShowVulnTask();
+        final TimerManager tMan = TimerManager.getInstance();
+        final DecimalFormat df = new DecimalFormat("##0.0###");
+        showVulnTask = tMan.register(
+            () ->
+                map
+                    .getAllMonsters()
+                    .stream()
+                    .filter(mob -> mob.getVulnerability() > 1.0d)
+                    .forEach(mob ->
+                        dropMessage(
+                            "Monster: " +
+                                mob.getName() +
+                                ", HP: " +
+                                df.format(mob.getVulnerability() * 100.0d) +
+                                "%"
+                        )
+                    ),
+            repeatTime
+        );
+
+        showVulnCancelTask = tMan.schedule(() -> showVulnTask.cancel(false), duration);
+    }
+
+    public boolean hasShowVulnTask() {
+        return showVulnTask != null;
+    }
+
+    public boolean cancelShowVulnTask() {
+        boolean didCancel = false;
+        if (showVulnTask != null) {
+            showVulnTask.cancel(false);
+            didCancel = true;
+        }
+        if (showVulnCancelTask != null) {
+            showVulnCancelTask.cancel(false);
+        }
+        showVulnTask = null;
+        showVulnCancelTask = null;
         return didCancel;
     }
 
@@ -6611,7 +6660,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getAbsoluteXp() {
-        int absLevelMultiplier = Math.max(level / 10, pastLifeExp);
+        int absLevelMultiplier = Math.max(level < 200 ? level / 10 : 38 - level / 10, pastLifeExp);
         int currentExpBonus = expbonus ? expbonusmulti : 1;
         return absLevelMultiplier >= 1 ? absLevelMultiplier * currentExpBonus : currentExpBonus;
     }
@@ -6716,10 +6765,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void unequipEverything() {
-        MapleInventory equipped = getInventory(MapleInventoryType.EQUIPPED);
-        List<Byte> position = new ArrayList<>();
+        final MapleInventory equipped = getInventory(MapleInventoryType.EQUIPPED);
+        final List<Byte> position = new ArrayList<>();
 
-        MapleInventory equip = getInventory(MapleInventoryType.EQUIP);
+        final MapleInventory equip = getInventory(MapleInventoryType.EQUIP);
 
         if (equip.getSlotLimit() - equip.getSize() < equipped.getSize()) {
             int numtodelete = equipped.getSize() - (equip.getSlotLimit() - equip.getSize());
@@ -6743,10 +6792,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
 
-        for (IItem item : equipped.list()) {
+        for (final IItem item : equipped.list()) {
             position.add(item.getPosition());
         }
-        for (byte pos : position) {
+        for (final byte pos : position) {
             MapleInventoryManipulator.unequip(
                 client,
                 pos,
@@ -6917,8 +6966,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     @SuppressWarnings("unchecked")
     public void removeJobSkills() {
-        HashMap<Integer, MapleKeyBinding> keymapCloned = (HashMap<Integer, MapleKeyBinding>) keymap.clone();
-        for (Integer keys : keymapCloned.keySet()) {
+        final LinkedHashMap<Integer, MapleKeyBinding> keymapCloned =
+            (LinkedHashMap<Integer, MapleKeyBinding>) keymap.clone();
+        for (final Integer keys : keymapCloned.keySet()) {
             if (SkillFactory.getSkillName(keys) != null) {
                 if (keymapCloned.get(keys).getAction() >= 1000000) {
                     keymap.remove(keys);

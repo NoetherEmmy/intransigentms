@@ -21,13 +21,13 @@ public final class MapleReactorFactory {
         );
     private static final Map<Integer, MapleReactorStats> reactorStats = new HashMap<>();
 
-    public static MapleReactorStats getReactor(int rid) {
+    public static MapleReactorStats getReactor(final int rid) {
         MapleReactorStats stats = reactorStats.get(rid);
         if (stats == null) {
             int infoId = rid;
             MapleData reactorData =
                 data.getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
-            MapleData link = reactorData.getChildByPath("info/link");
+            final MapleData link = reactorData.getChildByPath("info/link");
             if (link != null) {
                 infoId = MapleDataTool.getIntConvert("info/link", reactorData);
                 stats = reactorStats.get(infoId);

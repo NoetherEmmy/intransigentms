@@ -90,6 +90,7 @@ public class XMLDomMapleData implements MapleData {
                     }
                 }
             }
+            return ret;
         } catch (NullPointerException npe) {
             /*
             try {
@@ -100,7 +101,6 @@ public class XMLDomMapleData implements MapleData {
             */
             return Collections.emptyList();
         }
-        return ret;
     }
 
     @Override
@@ -149,40 +149,27 @@ public class XMLDomMapleData implements MapleData {
 
     @Override
     public MapleDataType getType() {
-        String nodeName = node.getNodeName();
+        final String nodeName = node.getNodeName();
         switch (nodeName) {
-            case "imgdir":
-                return MapleDataType.PROPERTY;
-            case "canvas":
-                return MapleDataType.CANVAS;
-            case "convex":
-                return MapleDataType.CONVEX;
-            case "sound":
-                return MapleDataType.SOUND;
-            case "uol":
-                return MapleDataType.UOL;
-            case "double":
-                return MapleDataType.DOUBLE;
-            case "float":
-                return MapleDataType.FLOAT;
-            case "int":
-                return MapleDataType.INT;
-            case "short":
-                return MapleDataType.SHORT;
-            case "string":
-                return MapleDataType.STRING;
-            case "vector":
-                return MapleDataType.VECTOR;
-            case "null":
-                return MapleDataType.IMG_0x00;
+            case "imgdir": return MapleDataType.PROPERTY;
+            case "canvas": return MapleDataType.CANVAS;
+            case "convex": return MapleDataType.CONVEX;
+            case "sound":  return MapleDataType.SOUND;
+            case "uol":    return MapleDataType.UOL;
+            case "double": return MapleDataType.DOUBLE;
+            case "float":  return MapleDataType.FLOAT;
+            case "int":    return MapleDataType.INT;
+            case "short":  return MapleDataType.SHORT;
+            case "string": return MapleDataType.STRING;
+            case "vector": return MapleDataType.VECTOR;
+            case "null":   return MapleDataType.IMG_0x00;
         }
-        System.err.print(
+        System.err.println(
             "Returning null in XMLDomMapleData.getType(): node's name: " +
                 nodeName +
                 ", " +
                 "node's URI: " +
-                node.getBaseURI() +
-                "\n"
+                node.getBaseURI()
         );
         return null;
     }
@@ -190,9 +177,7 @@ public class XMLDomMapleData implements MapleData {
     @Override
     public MapleDataEntity getParent() {
         Node parentNode = node.getParentNode();
-        if (parentNode.getNodeType() == Node.DOCUMENT_NODE) {
-                return null;
-        }
+        if (parentNode.getNodeType() == Node.DOCUMENT_NODE) return null;
         XMLDomMapleData parentData = new XMLDomMapleData(parentNode);
         parentData.imageDataDir = imageDataDir.getParentFile();
         return parentData;

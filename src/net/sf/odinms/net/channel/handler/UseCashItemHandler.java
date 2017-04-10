@@ -539,72 +539,62 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
         switch (mapId) {
             case 270010000:
                 if (player.completedCQuest(questIds[0])) {
-                    canGo = true;
-                    break;
+                    return true;
                 }
                 player.dropMessage(
                     1,
                     "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane."
                 );
-                break;
+                return canGo;
             case 270010500:
                 if (player.completedCQuest(questIds[1])) {
-                    canGo = true;
-                    break;
+                    return true;
                 }
                 player.dropMessage(1, "You may not go to that map prior to completing Regrets Run Rampant.");
-                break;
+                return canGo;
             case 270020500:
                 if (player.completedCQuest(questIds[2])) {
-                    canGo = true;
-                    break;
+                    return true;
                 }
                 player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
-                break;
+                return canGo;
             case 270030500:
                 if (player.completedCQuest(questIds[2])) {
-                    canGo = true;
-                    break;
+                    return true;
                 }
                 player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
-                break;
+                return canGo;
             case 270040000:
                 if (player.completedCQuest(questIds[2])) {
-                    canGo = true;
-                    break;
+                    return true;
                 }
                 player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
-                break;
+                return canGo;
             default:
                 int mapStage = (mapId / 10000) % 10;
                 if (mapStage == 1) {
                     if (player.completedCQuest(questIds[0])) {
-                        canGo = true;
-                        break;
+                        return true;
                     }
                     player.dropMessage(
                         1,
                         "You may not go to that map prior to completing The One Who Wants To Walk Down Memory Lane."
                     );
-                    break;
+                    return canGo;
                 } else if (mapStage == 2) {
                     if (player.completedCQuest(questIds[1])) {
-                        canGo = true;
-                        break;
+                        return true;
                     }
                     player.dropMessage(1, "You may not go to that map prior to completing Regrets Run Rampant.");
-                    break;
+                    return canGo;
                 } else if (mapStage > 2) {
                     if (player.completedCQuest(questIds[2])) {
-                        canGo = true;
-                        break;
+                        return true;
                     }
                     player.dropMessage(1, "You may not go to that map prior to completing Onward Unto Oblivion.");
-                    break;
+                    return canGo;
                 }
-                canGo = true;
-                break;
+                return true;
         }
-        return canGo;
     }
 }

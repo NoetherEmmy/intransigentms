@@ -105,10 +105,10 @@ public class MapleAlliance implements java.io.Serializable {
             }
             ps.close();
             rs.close();
+            return ret;
         } catch (SQLException e) {
             return false;
         }
-        return ret;
     }
 
     public static MapleAlliance createAlliance(MapleCharacter chr1, MapleCharacter chr2, String name) {
@@ -142,11 +142,11 @@ public class MapleAlliance implements java.io.Serializable {
             chr2.saveGuildStatus();
             wci.addAlliance(id, alliance);
             wci.allianceMessage(id, MaplePacketCreator.makeNewAlliance(alliance, chr1.getClient()), -1, -1);
+            return alliance;
         } catch (RemoteException e) {
             chr1.getClient().getChannelServer().reconnectWorld();
             return null;
         }
-        return alliance;
     }
 
     public void saveToDB() {

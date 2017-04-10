@@ -36,39 +36,39 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     }
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
-        List<DropEntry> chances = getDropChances();
-        List<DropEntry> items = new ArrayList<>();
+        final List<DropEntry> chances = getDropChances();
+        final List<DropEntry> items = new ArrayList<>();
         int numItems = 0;
 
         if (meso && Math.random() < (1 / (double) mesoChance)) {
             items.add(new DropEntry(0, mesoChance));
         }
 
-        // Narrow list down by chances
+        // Narrow list down by chances.
         Iterator<DropEntry> iter = chances.iterator();
-        // for (DropEntry d : chances){
+        //for (DropEntry d : chances) {
         while (iter.hasNext()) {
-            DropEntry d = iter.next();
+            final DropEntry d = iter.next();
             if (Math.random() < (1.0d / (double) d.chance)) {
                 numItems++;
                 items.add(d);
             }
         }
 
-        // If a minimum number of drops is required, add meso
+        // If a minimum number of drops is required, add mesos.
         while (items.size() < minItems) {
             items.add(new DropEntry(0, mesoChance));
             numItems++;
         }
 
-        // Randomize drop order
+        // Randomize drop order.
         java.util.Collections.shuffle(items);
 
         final Point dropPos = reactor.getPosition();
 
         dropPos.x -= 12 * numItems;
 
-        for (DropEntry d : items) {
+        for (final DropEntry d : items) {
             if (d.itemId == 0) {
                 int range = maxMeso - minMeso;
                 int displayDrop = (int) (Math.random() * range) + minMeso;
@@ -143,7 +143,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     private void spawnMonster(int id, int qty, Point pos) {
         for (int i = 0; i < qty; ++i) {
             MapleMonster mob = MapleLifeFactory.getMonster(id);
-            reactor.getMap().spawnMonsterOnGroudBelow(mob, pos);
+            reactor.getMap().spawnMonsterOnGroundBelow(mob, pos);
         }
     }
 

@@ -508,43 +508,43 @@ public class GM implements Command {
             case "!coke":
                 int[] coke = {9500144, 9500151, 9500152, 9500153, 9500154, 9500143, 9500145, 9500149, 9500147};
                 for (int i = 0; i < coke.length; ++i) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(coke[i]), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(coke[i]), player.getPosition());
                 }
                 break;
             case "!papu":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8500001), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8500001), player.getPosition());
                 }
                 break;
             case "!zakum":
                 for (int m = 8800003; m <= 8800010; ++m) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(m), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(m), player.getPosition());
                 }
-                player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8800000), player.getPosition());
+                player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8800000), player.getPosition());
                 player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(0, "The almighty Zakum has awakened!"));
                 break;
             case "!ergoth":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9300028), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300028), player.getPosition());
                 }
                 break;
             case "!ludimini":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8160000), player.getPosition());
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8170000), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8160000), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8170000), player.getPosition());
                 }
                 break;
             case "!cornian":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8150201), player.getPosition());
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8150200), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8150201), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8150200), player.getPosition());
                 }
                 break;
             case "!balrog":
                 int[] balrog = {8130100, 8150000, 9400536};
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     for (int i = 0; i < balrog.length; ++i) {
-                        player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(balrog[i]), player.getPosition());
+                        player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(balrog[i]), player.getPosition());
                     }
                 }
                 break;
@@ -552,14 +552,14 @@ public class GM implements Command {
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     int[] mushmom = {6130101, 6300005, 9400205};
                     for (int i = 0; i < mushmom.length; ++i) {
-                        player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(mushmom[i]), player.getPosition());
+                        player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mushmom[i]), player.getPosition());
                     }
                 }
                 break;
             case "!wyvern":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     for (int i = 8150300; i <= 8150302; ++i) {
-                        player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(i), player.getPosition());
+                        player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(i), player.getPosition());
                     }
                 }
                 break;
@@ -567,7 +567,7 @@ public class GM implements Command {
                 int[] pirate = {9300119, 9300107, 9300105, 9300106};
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     for (int i = 0; i < pirate.length; ++i) {
-                        player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(pirate[i]), player.getPosition());
+                        player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(pirate[i]), player.getPosition());
                     }
                 }
                 break;
@@ -575,82 +575,82 @@ public class GM implements Command {
                 int[] clone = {9001002, 9001003, 9001000, 9001001};
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     for (int i = 0; i < clone.length; ++i) {
-                        player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(clone[i]), player.getPosition());
+                        player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(clone[i]), player.getPosition());
                     }
                 }
                 break;
             case "!anego":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9400121), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400121), player.getPosition());
                 }
                 break;
             case "!theboss":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9400300), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400300), player.getPosition());
                 }
                 break;
             case "!snackbar":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9500179), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9500179), player.getPosition());
                 }
                 break;
             case "!papapixie":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9300039), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300039), player.getPosition());
                 }
                 break;
             case "!nxslimes":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9400202), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400202), player.getPosition());
                 }
                 break;
             case "!horseman":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9400549), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400549), player.getPosition());
                 }
                 break;
             case "!blackcrow":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9400014), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400014), player.getPosition());
                 }
                 break;
             case "!leafreboss":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9400014), player.getPosition());
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8180001), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400014), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8180001), player.getPosition());
                 }
                 break;
             case "!shark":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8150101), player.getPosition());
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8150100), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8150101), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8150100), player.getPosition());
                 }
                 break;
             case "!franken":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9300139), player.getPosition());
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9300140), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300139), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300140), player.getPosition());
                 }
                 break;
             case "!bird":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9300090), player.getPosition());
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9300089), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300090), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300089), player.getPosition());
                 }
                 break;
             case "!pianus":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8510000), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8510000), player.getPosition());
                 }
                 break;
             case "!centipede":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    player.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(9500177), player.getPosition());
+                    player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9500177), player.getPosition());
                 }
                 break;
             case "!horntail":
                 MapleMonster ht = MapleLifeFactory.getMonster(8810026);
-                player.getMap().spawnMonsterOnGroudBelow(ht, player.getPosition());
+                player.getMap().spawnMonsterOnGroundBelow(ht, player.getPosition());
                 player.getMap().killMonster(ht, player, false);
                 player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(0, "As the cave shakes and rattles, here comes Horntail."));
                 break;
@@ -1451,7 +1451,7 @@ public class GM implements Command {
                         if (mob == null) continue;
                         mob.setHp(newhp);
                         mob.setOverrideStats(overrideStats);
-                        player.getMap().spawnMonsterOnGroudBelow(mob, player.getPosition());
+                        player.getMap().spawnMonsterOnGroundBelow(mob, player.getPosition());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2140,59 +2140,69 @@ public class GM implements Command {
             case "!showdpm":
                 final DecimalFormat df = new DecimalFormat("#.000");
                 TimerManager tMan = TimerManager.getInstance();
-                int duration, repeatTime;
-                switch (splitted.length) {
-                    case 1:
-                        player.getMap()
-                              .getMapObjectsInRange(
-                                  player.getPosition(),
-                                  Double.POSITIVE_INFINITY,
-                                  MapleMapObjectType.MONSTER
-                              )
-                              .stream()
-                              .map(mmo -> (MapleMonster) mmo)
-                              .forEach(mob ->
-                                  player.dropMessage(
-                                      mob.getName() +
-                                          ", oid: " +
-                                          mob.getObjectId() +
-                                          ", incoming DPM: " +
-                                          df.format(mob.avgIncomingDpm())
-                                  )
-                              );
-                        return;
-                    case 2:
-                        duration = Integer.parseInt(splitted[1]) * 1000;
-                        repeatTime = 5000;
-                        break;
-                    case 3:
-                        duration = Integer.parseInt(splitted[1]) * 1000;
-                        repeatTime = Integer.parseInt(splitted[2]) * 1000;
-                        break;
-                    default:
-                        player.dropMessage("Invalid syntax.");
-                        return;
+                final long duration, repeatTime;
+                try {
+                    switch (splitted.length) {
+                        case 1:
+                            player
+                                .getMap()
+                                .getMapObjectsInRange(
+                                    player.getPosition(),
+                                    Double.POSITIVE_INFINITY,
+                                    MapleMapObjectType.MONSTER
+                                )
+                                .stream()
+                                .map(mmo -> (MapleMonster) mmo)
+                                .forEach(mob ->
+                                    player.dropMessage(
+                                        mob.getName() +
+                                            ", oid: " +
+                                            mob.getObjectId() +
+                                            ", incoming DPM: " +
+                                            df.format(mob.avgIncomingDpm())
+                                    )
+                                );
+                            return;
+                        case 2:
+                            duration = Integer.parseInt(splitted[1]) * 1000L;
+                            repeatTime = 5L * 1000L;
+                            break;
+                        case 3:
+                            duration = Integer.parseInt(splitted[1]) * 1000L;
+                            repeatTime = Integer.parseInt(splitted[2]) * 1000L;
+                            break;
+                        default:
+                            player.dropMessage("Invalid syntax. Use: !showdpm [duration] [repeat_time]");
+                            return;
+                    }
+                } catch (NumberFormatException nfe) {
+                    player.dropMessage("Invalid syntax. Use: !showdpm [duration] [repeat_time]");
+                    return;
                 }
-                final ScheduledFuture<?> showDpmTask = tMan.register(() ->
-                        player.getMap()
-                              .getMapObjectsInRange(
-                                  player.getPosition(),
-                                  Double.POSITIVE_INFINITY,
-                                  MapleMapObjectType.MONSTER
-                              )
-                              .stream()
-                              .map(mmo -> (MapleMonster) mmo)
-                              .filter(MapleMonster::isBoss)
-                              .forEach(mob ->
-                                  player.dropMessage(
-                                      mob.getName() +
-                                          ", oid: " +
-                                          mob.getObjectId() +
-                                          ", incoming DPM: " +
-                                          df.format(mob.avgIncomingDpm())
-                                  )
-                              ),
-                    repeatTime, 0);
+                final ScheduledFuture<?> showDpmTask = tMan.register(
+                    () ->
+                        player
+                            .getMap()
+                            .getMapObjectsInRange(
+                                player.getPosition(),
+                                Double.POSITIVE_INFINITY,
+                                MapleMapObjectType.MONSTER
+                            )
+                            .stream()
+                            .map(mmo -> (MapleMonster) mmo)
+                            .filter(MapleMonster::isBoss)
+                            .forEach(mob ->
+                                player.dropMessage(
+                                    mob.getName() +
+                                        ", oid: " +
+                                        mob.getObjectId() +
+                                        ", incoming DPM: " +
+                                        df.format(mob.avgIncomingDpm())
+                                )
+                            ),
+                    repeatTime,
+                    0L
+                );
                 tMan.schedule(() -> showDpmTask.cancel(false), duration);
                 break;
             case "!toggletrackmissgodmode":

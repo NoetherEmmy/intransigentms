@@ -399,15 +399,15 @@ public class DueyHandler extends AbstractMaplePacketHandler {
     private int getFee(int meso) {
         int fee = 0;
         if (meso >= 10000000) {
-            fee = (int) Math.round(0.04d * meso);
+            return (int) Math.round(0.04d * meso);
         } else if (meso >= 5000000) {
-            fee = (int) Math.round(0.03d * meso);
+            return (int) Math.round(0.03d * meso);
         } else if (meso >= 1000000) {
-            fee = (int) Math.round(0.02d * meso);
+            return (int) Math.round(0.02d * meso);
         } else if (meso >= 100000) {
-            fee = (int) Math.round(0.01d * meso);
+            return (int) Math.round(0.01d * meso);
         } else if (meso >= 50000) {
-            fee = (int) Math.round(0.005d * meso);
+            return (int) Math.round(0.005d * meso);
         }
         return fee;
     }
@@ -454,15 +454,14 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                 eq.setSpeed((short) rs.getInt("speed"));
                 eq.setJump((short) rs.getInt("jump"));
                 eq.setOwner(rs.getString("owner"));
-                dueypack = new DueyPackages(rs.getInt("PackageId"), eq);
+                return new DueyPackages(rs.getInt("PackageId"), eq);
             } else if (rs.getInt("type") == 2) {
                 Item newItem = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
                 newItem.setOwner(rs.getString("owner"));
-                dueypack = new DueyPackages(rs.getInt("PackageId"), newItem);
+                return new DueyPackages(rs.getInt("PackageId"), newItem);
             } else {
-                dueypack = new DueyPackages(rs.getInt("PackageId"));
+                return new DueyPackages(rs.getInt("PackageId"));
             }
-            return dueypack;
         } catch (SQLException sqle) {
             sqle.printStackTrace();
             return null;

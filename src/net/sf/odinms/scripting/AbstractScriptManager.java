@@ -14,7 +14,10 @@ public abstract class AbstractScriptManager {
     protected ScriptEngine engine;
     private final ScriptEngineManager sem;
     protected static final Logger log = LoggerFactory.getLogger(AbstractScriptManager.class);
-    public static final String[] libs = {"ecma6-array-polyfill.min", "intransigentms-utils.min"};
+    public static final String[] libs = {
+        "ecma6-array-polyfill.min",
+        "intransigentms-utils.min"
+    };
 
     protected AbstractScriptManager() {
         sem = new ScriptEngineManager();

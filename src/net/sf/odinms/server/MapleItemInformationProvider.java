@@ -777,7 +777,7 @@ public class MapleItemInformationProvider {
                                 )
                                 .collect(Collectors.toCollection(ArrayList::new))
                     );
-                    break;
+                    return ret;
                 }
             }
         } else { // Hair
@@ -801,7 +801,7 @@ public class MapleItemInformationProvider {
                                 )
                                 .collect(Collectors.toCollection(ArrayList::new))
                     );
-                    break;
+                    return ret;
                 }
             }
         }
@@ -1585,7 +1585,7 @@ public class MapleItemInformationProvider {
         int size = data.getChildren().size();
         for (int i = 0; i < size; ++i) {
             curPetId = MapleDataTool.getInt("spec/" + Integer.toString(i), data, 0);
-            if (curPetId == 0) break;
+            if (curPetId == 0) return ret;
             ret.add(curPetId);
         }
         return ret;

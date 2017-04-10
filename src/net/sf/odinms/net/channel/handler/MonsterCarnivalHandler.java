@@ -55,40 +55,28 @@ public class MonsterCarnivalHandler extends AbstractMaplePacketHandler {
         num++;
         switch (num) {
             case 1:
-                mid = 3000005;
-                break;
+                return 3000005;
             case 2:
-                mid = 3230302;
-                break;
+                return 3230302;
             case 3:
-                mid = 3110102;
-                break;
+                return 3110102;
             case 4:
-                mid = 3230306;
-                break;
+                return 3230306;
             case 5:
-                mid = 3230305;
-                break;
+                return 3230305;
             case 6:
-                mid = 4230113;
-                break;
+                return 4230113;
             case 7:
-                mid = 4230111;
-                break;
+                return 4230111;
             case 8:
-                mid = 3230103;
-                break;
+                return 3230103;
             case 9:
-                mid = 4230115;
-                break;
+                return 4230115;
             case 10:
-                mid = 4130103;
-                break;
+                return 4130103;
             default:
-                mid = 210100;
-                break;
+                return 210100;
         }
-        return mid;
     }
 
     private static int rand(int lbound, int ubound) {

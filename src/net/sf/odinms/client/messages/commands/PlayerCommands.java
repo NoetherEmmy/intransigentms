@@ -88,7 +88,8 @@ public class PlayerCommands implements Command {
             mc.dropMessage("@defense/@defence - | - Displays your true current weapon and magic defense.");
             mc.dropMessage("@magic - | - Displays your true current magic attack.");
             mc.dropMessage("@monsterhp - | - Displays the current HP % of all mobs on the map.");
-            mc.dropMessage("@bosshp <repeat_time_in_milliseconds> - | - Displays the current HP % of all bosses on the map once, or optionally repeating (if specified). Cancels previous @bosshp displays.");
+            mc.dropMessage("@bosshp [repeat_time_in_milliseconds] - | - Displays the current HP % of all bosses on the map once, or optionally repeating (if specified). Cancels previous @bosshp displays.");
+            mc.dropMessage("@showvuln [repeat_time_in_milliseconds] - | - Same as @bosshp, but instead displays the vulnerability of all monsters in the map that have a vulnerability greater than 100%.");
             mc.dropMessage("@truedamage - | - Toggles the display of true damage received.");
             mc.dropMessage("@whodrops - | - Allows selection of an item and lists monsters who drop the selected item.");
             mc.dropMessage("@whodrops <itemid> - | - Lists monsters who drop the item with that ID.");
@@ -1115,7 +1116,7 @@ public class PlayerCommands implements Command {
                     }
                     break;
                 default:
-                    mc.dropMessage("Invalid syntax. Use: @bosshp <repeat_time_in_milliseconds>");
+                    mc.dropMessage("Invalid syntax. Use: @bosshp [repeat_time_in_milliseconds]");
                     return;
             }
             if (repeatTime > 0) {
@@ -1124,19 +1125,23 @@ public class PlayerCommands implements Command {
                 if (player.cancelBossHpTask()) {
                     mc.dropMessage("@bosshp display has been stopped.");
                 }
-                final DecimalFormat df = new DecimalFormat("#.00");
-                player.getMap().getMapObjectsInRange(
-                    new Point(),
-                    Double.POSITIVE_INFINITY,
-                    MapleMapObjectType.MONSTER
-                )
-                .stream()
-                .map(mmo -> (MapleMonster) mmo)
-                .filter(MapleMonster::isBoss)
-                .forEach(mob -> {
-                    double hpPercentage = (double) mob.getHp() / ((double) mob.getMaxHp()) * 100.0d;
-                    player.dropMessage("Monster: " + mob.getName() + ", HP: " + df.format(hpPercentage) + "%");
-                });
+                final DecimalFormat df = new DecimalFormat("##0.0##");
+                player
+                    .getMap()
+                    .getAllMonsters()
+                    .stream()
+                    .filter(MapleMonster::isBoss)
+                    .forEach(mob -> {
+                        final double hpPercentage =
+                            (double) mob.getHp() / ((double) mob.getMaxHp()) * 100.0d;
+                        player.dropMessage(
+                            "Monster: " +
+                                mob.getName() +
+                                ", HP: " +
+                                df.format(hpPercentage) +
+                                "%"
+                        );
+                    });
             }
         } else if (splitted[0].equals("@donated")) {
             NPCScriptManager npc = NPCScriptManager.getInstance();
@@ -1495,7 +1500,7 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("You don't currently have a quest effective level.");
                 return;
             }
-            final DecimalFormat df = new DecimalFormat("0.000");
+            final DecimalFormat df = new DecimalFormat("#0.000");
             mc.dropMessage("Your current quest effective level: " + player.getQuestEffectiveLevel());
             mc.dropMessage(
                 "    Outgoing damage multiplier: " +
@@ -1611,6 +1616,52 @@ public class PlayerCommands implements Command {
                         "Invalid syntax. Use: @music | @music <section_number> | @music <section_number> <title>"
                     );
             }
+        } else if (splitted[0].equals("@showvuln")) {
+            final long repeatTime;
+            switch (splitted.length) {
+                case 1:
+                    repeatTime = 0L;
+                    break;
+                case 2:
+                    try {
+                        repeatTime = Integer.parseInt(splitted[1]);
+                    } catch (NumberFormatException nfe) {
+                        mc.dropMessage(
+                            "Could not parse repeat time for @showvuln. Make sure you are entering a valid integer."
+                        );
+                        return;
+                    }
+                    if (repeatTime < 1000L || repeatTime > 300000L) {
+                        mc.dropMessage("Make sure the repeat time is between 1000 and 300000 milliseconds.");
+                        return;
+                    }
+                    break;
+                default:
+                    mc.dropMessage("Invalid syntax. Use: @showvuln [repeat_time_in_milliseconds]");
+                    return;
+            }
+            if (repeatTime > 0L) {
+                player.setShowVulnTask(repeatTime, 1000L * 60L * 60L);
+            } else {
+                if (player.cancelShowVulnTask()) {
+                    mc.dropMessage("@showvuln display has been stopped.");
+                }
+                final DecimalFormat df = new DecimalFormat("##0.0###");
+                player
+                    .getMap()
+                    .getAllMonsters()
+                    .stream()
+                    .filter(mob -> mob.getVulnerability() > 1.0d)
+                    .forEach(mob ->
+                        player.dropMessage(
+                            "Monster: " +
+                                mob.getName() +
+                                ", HP: " +
+                                df.format(mob.getVulnerability() * 100.0d) +
+                                "%"
+                        )
+                    );
+            }
         }
     }
 
@@ -1712,7 +1763,8 @@ public class PlayerCommands implements Command {
             new CommandDefinition("engage", 0),
             new CommandDefinition("whoquestdrops", 0),
             new CommandDefinition("questeffectivelevel", 0),
-            new CommandDefinition("music", 0)
+            new CommandDefinition("music", 0),
+            new CommandDefinition("showvuln", 0)
         };
     }
 }

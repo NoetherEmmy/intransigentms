@@ -769,7 +769,7 @@ public class MapleMap {
                                 if (object == null) continue;
                                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
                                 if (mons != null && mons.getId() == 8810018) {
-                                    damageMonster(chr, mons, monsterHp);
+                                    damageMonster(chr, mons, 21 * monsterHp / 20);
                                 }
                             }
                         }
@@ -780,7 +780,7 @@ public class MapleMap {
                                 if (object == null) continue;
                                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
                                 if (mons != null && mons.getId() == 8810018) {
-                                    damageMonster(chr, mons, damage);
+                                    damageMonster(chr, mons, 21 * damage / 20);
                                 }
                             }
                         }
@@ -834,7 +834,7 @@ public class MapleMap {
             MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
             MapleStatEffect statEffect = mii.getItemEffect(monster.getBuffToGive());
             synchronized (characters) {
-                for (MapleCharacter character : characters) {
+                for (final MapleCharacter character : characters) {
                     if (character.isAlive()) {
                         statEffect.applyTo(character);
                         broadcastMessage(
@@ -1158,6 +1158,7 @@ public class MapleMap {
         return null;
     }
 
+    @Deprecated
     public void spawnMonsterOnGroudBelow(MapleMonster mob, Point pos) {
         spawnMonsterOnGroundBelow(mob, pos);
     }
@@ -1563,38 +1564,44 @@ public class MapleMap {
     }
 
     public int clearDrops() {
-        double range = Double.POSITIVE_INFINITY;
-        List<MapleMapObject> items = getMapObjectsInRange(new Point(), range, MapleMapObjectType.ITEM);
-        for (MapleMapObject itemmo : items) {
+        final List<MapleMapObject> items =
+            getMapObjectsInRange(
+                new Point(),
+                Double.POSITIVE_INFINITY,
+                MapleMapObjectType.ITEM
+            );
+        for (final MapleMapObject itemmo : items) {
             removeMapObject(itemmo);
             broadcastMessage(MaplePacketCreator.removeItemFromMap(itemmo.getObjectId(), 0, 0));
         }
         return items.size();
     }
 
-    private void activateItemReactors(MapleMapItem drop) {
-        IItem item = drop.getItem();
+    private void activateItemReactors(final MapleMapItem drop) {
+        final IItem item = drop.getItem();
         final TimerManager tMan = TimerManager.getInstance();
-        Iterator<MapleMapObject> mmoiter = mapObjects.values().iterator();
-        while (mmoiter.hasNext()) {
-            MapleMapObject o = mmoiter.next();
-            if (o.getType() == MapleMapObjectType.REACTOR) {
-                MapleReactor reactor = (MapleReactor) o;
-                if (reactor.getReactorType() == 100) {
-                    if (
-                        reactor.getReactItem().getLeft() == item.getItemId() &&
-                        reactor.getReactItem().getRight() <= item.getQuantity()
-                    ) {
-                        Rectangle area = reactor.getArea();
+        synchronized (mapObjects) {
+            final Iterator<MapleMapObject> mmoiter = mapObjects.values().iterator();
+            while (mmoiter.hasNext()) {
+                final MapleMapObject o = mmoiter.next();
+                if (o.getType() == MapleMapObjectType.REACTOR) {
+                    final MapleReactor reactor = (MapleReactor) o;
+                    if (reactor.getReactorType() == 100) {
+                        if (
+                            reactor.getReactItem().getLeft()  == item.getItemId() &&
+                            reactor.getReactItem().getRight() <= item.getQuantity()
+                        ) {
+                            final Rectangle area = reactor.getArea();
 
-                        if (area.contains(drop.getPosition())) {
-                            MapleClient ownerClient = null;
-                            if (drop.getOwner() != null) {
-                                ownerClient = drop.getOwner().getClient();
-                            }
-                            if (!reactor.isTimerActive()) {
-                                tMan.schedule(new ActivateItemReactor(drop, reactor, ownerClient), 5000L);
-                                reactor.setTimerActive(true);
+                            if (area.contains(drop.getPosition())) {
+                                final MapleClient ownerClient =
+                                    drop.getOwner() == null ?
+                                        null :
+                                        drop.getOwner().getClient();
+                                if (!reactor.isTimerActive()) {
+                                    tMan.schedule(new ActivateItemReactor(drop, reactor, ownerClient), 5L * 1000L);
+                                    reactor.setTimerActive(true);
+                                }
                             }
                         }
                     }
@@ -1605,7 +1612,7 @@ public class MapleMap {
 
     public void AriantPQStart() {
         int i = 1;
-        for (MapleCharacter chars2 : this.getCharacters()) {
+        for (final MapleCharacter chars2 : getCharacters()) {
             broadcastMessage(MaplePacketCreator.updateAriantPQRanking(chars2.getName(), 0, false));
             broadcastMessage(
                 MaplePacketCreator.serverNotice(
@@ -1617,7 +1624,7 @@ public class MapleMap {
                     ).toString()
                 )
             );
-            if (this.getCharacters().size() > i) {
+            if (getCharacters().size() > i) {
                 broadcastMessage(MaplePacketCreator.updateAriantPQRanking(null, 0, true));
                 broadcastMessage(
                     MaplePacketCreator.serverNotice(
@@ -2411,18 +2418,26 @@ public class MapleMap {
             if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId())) {
                 synchronized (mapitem) {
                     TimerManager tMan = TimerManager.getInstance();
-                    if (mapitem.isPickedUp()) {
-                        return;
-                    }
-                    MapleMap.this.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 0, 0), mapitem.getPosition());
+                    if (mapitem.isPickedUp()) return;
+                    MapleMap.this.broadcastMessage(
+                        MaplePacketCreator.removeItemFromMap(
+                            mapitem.getObjectId(),
+                            0,
+                            0
+                        ),
+                        mapitem.getPosition()
+                    );
                     MapleMap.this.removeMapObject(mapitem);
                     reactor.hitReactor(c);
                     reactor.setTimerActive(false);
                     if (reactor.getDelay() > 0) {
-                        tMan.schedule(() -> {
-                            reactor.setState((byte) 0);
-                            broadcastMessage(MaplePacketCreator.triggerReactor(reactor, 0));
-                        }, reactor.getDelay());
+                        tMan.schedule(
+                            () -> {
+                                reactor.setState((byte) 0);
+                                broadcastMessage(MaplePacketCreator.triggerReactor(reactor, 0));
+                            },
+                            reactor.getDelay()
+                        );
                     }
                 }
             }

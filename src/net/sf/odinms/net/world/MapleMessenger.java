@@ -74,16 +74,15 @@ public class MapleMessenger implements Serializable {
         if (pos0) {
             if (pos1) {
                 this.pos2 = true;
-                position = 2;
+                return 2;
             } else {
                 this.pos1 = true;
-                position = 1;
+                return 1;
             }
         } else {
             this.pos0 = true;
-            position = 0;
+            return 0;
         }
-        return position;
     }
 
     public int getPositionByName(String name) {

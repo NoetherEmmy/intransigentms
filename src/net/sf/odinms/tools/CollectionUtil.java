@@ -23,7 +23,7 @@ public class CollectionUtil {
         for (T elem : list) {
             ret.add(elem);
             if (i++ > count) {
-                break;
+                return ret;
             }
         }
         return ret;

@@ -292,14 +292,11 @@ public class MapleMiniGame extends PlayerInteractionManager {
         int cardid = 0;
         switch (matchestowin) {
             case 6:
-                cardid = list4x3.get(slot - 1);
-                break;
+                return list4x3.get(slot - 1);
             case 10:
-                cardid = list5x4.get(slot - 1);
-                break;
+                return list5x4.get(slot - 1);
             case 15:
-                cardid = list6x5.get(slot - 1);
-                break;
+                return list6x5.get(slot - 1);
         }
         return cardid;
     }
@@ -409,7 +406,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 piece[slot + 45] == type &&
                 piece[slot + 60] == type
             ) {
-                winner = true;
+                return true;
             }
         }
 
@@ -436,7 +433,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 piece[slot + 42] == type &&
                 piece[slot + 56] == type
             ) {
-                winner = true;
+                return true;
             }
         }
 

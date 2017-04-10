@@ -10,12 +10,12 @@ public class BossMapMonitor {
     private final MapleMap map, pMap;
     private final ScheduledFuture<?> schedule;
 
-    public BossMapMonitor(final MapleMap map, MapleMap pMap, MaplePortal portal) {
+    public BossMapMonitor(final MapleMap map, final MapleMap pMap, final MaplePortal portal) {
         this.map = map;
         this.pMap = pMap;
         this.portal = portal;
         schedule = TimerManager.getInstance().register(() -> {
-            if (map.playerCount() <= 0) BossMapMonitor.this.run();
+            if (map.playerCount() <= 0) run();
         }, 10L * 1000L);
     }
 
@@ -27,7 +27,9 @@ public class BossMapMonitor {
         if (map.mobCount() == 0 && map.playerCount() == 0) {
             schedule.cancel(false);
         } else {
-            System.err.println("ERROR: map.mobCount() == 0 && map.playerCount() == 0 in BossMapMonitor.");
+            System.err.println(
+                "ERROR: map.mobCount() == 0 && map.playerCount() == 0 in BossMapMonitor"
+            );
         }
     }
 }

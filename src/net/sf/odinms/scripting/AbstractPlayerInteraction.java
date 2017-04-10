@@ -63,21 +63,18 @@ public class AbstractPlayerInteraction {
     }
 
     public void warpRandom(int mapId) {
-        MapleMap target = c.getChannelServer().getMapFactory().getMap(mapId);
+        final MapleMap target = c.getChannelServer().getMapFactory().getMap(mapId);
         getPlayer().changeMap(target, target.getRandomPortal());
     }
 
     private MapleMap getWarpMap(int map) {
-        MapleMap target;
         if (getPlayer().getEventInstance() == null) {
-            target = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(map);
-        } else {
-            target = getPlayer().getEventInstance().getMapInstance(map);
+            return ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(map);
         }
-        return target;
+        return getPlayer().getEventInstance().getMapInstance(map);
     }
 
-    public MapleMap getMap(int map) { // WTF IS THIS.
+    public MapleMap getMap(int map) {
         return getWarpMap(map);
     }
 

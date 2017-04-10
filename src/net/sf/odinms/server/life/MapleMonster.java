@@ -449,13 +449,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         int totalBaseExp = (int) Math.min(Integer.MAX_VALUE, totalBaseExpL);
         AttackerEntry highest = null;
         int highDamage = 0;
-        for (AttackerEntry attackEntry : attackers) {
+        for (final AttackerEntry attackEntry : attackers) {
             if (attackEntry.getDamage() > highDamage) {
                 highest = attackEntry;
                 highDamage = attackEntry.getDamage();
             }
         }
-        for (AttackerEntry attackEntry : attackers) {
+        for (final AttackerEntry attackEntry : attackers) {
             int baseExp = (int) Math.ceil((double) totalBaseExp * ((double) attackEntry.getDamage() / (double) getMaxHp()));
             attackEntry.killedMob(killer.getMap(), baseExp, attackEntry == highest, isBoss());
         }
@@ -470,10 +470,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
         final List<Integer> toSpawn = getRevives();
         if (toSpawn != null) {
-            final MapleMap reviveMap = killer.getMap();
+            final MapleMap reviveMap = map;
             TimerManager.getInstance().schedule(() -> {
-                for (Integer mid : toSpawn) {
-                    MapleMonster mob = MapleLifeFactory.getMonster(mid);
+                for (final Integer mid : toSpawn) {
+                    final MapleMonster mob = MapleLifeFactory.getMonster(mid);
                     if (mob == null) continue;
                     if (eventInstance != null) eventInstance.registerMonster(mob);
                     mob.setPosition(getPosition());
@@ -486,7 +486,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             eventInstance.unregisterMonster(this);
         }
         synchronized (listeners) {
-            for (MonsterListener listener : listeners) { //.toArray(new MonsterListener[listeners.size()])
+            for (final MonsterListener listener : listeners) { //.toArray(new MonsterListener[listeners.size()])
                 listener.monsterKilled(this);
             }
         }
@@ -1327,8 +1327,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 tickTime = 125;
                 proc = 0.0625d;
                 final int pad = getPADamage();
-                minPanicDamage = pad * pad / 4;
-                maxPanicDamage = pad * pad / 3;
+                minPanicDamage = pad * pad / 6;
+                maxPanicDamage = pad * pad / 4;
                 break;
             }
             default:
@@ -1627,7 +1627,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             int selfDamage =
                 isBuffed(MonsterStatus.WEAPON_IMMUNITY) ?
                     1 :
-                    minPanicDamage + rand.nextInt(maxPanicDamage - minPanicDamage + 1) - 10 * getWdef();
+                    Math.max(
+                        minPanicDamage + rand.nextInt(maxPanicDamage - minPanicDamage + 1) - (int) (8.0d * getWdef() * Math.log(getWdef())),
+                        1
+                    );
             if (selfDamage >= hp) doCancel = true;
             if (selfDamage > 0) {
                 map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), selfDamage), getPosition());
@@ -1644,10 +1647,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             .filter(m -> m != null && !MapleMonster.this.equals(m))
             .limit(6L)
             .forEach(m -> {
-                int damage =
+                final int damage =
                     m.isBuffed(MonsterStatus.WEAPON_IMMUNITY) ?
                         1 :
-                        minPanicDamage + rand.nextInt(maxPanicDamage - minPanicDamage + 1) - 10 * m.getWdef();
+                        Math.max(
+                            minPanicDamage + rand.nextInt(maxPanicDamage - minPanicDamage + 1) - (int) (8.0d * m.getWdef() * Math.log(m.getWdef())),
+                            1
+                        );
                 if (damage > 0) {
                     map.broadcastMessage(MaplePacketCreator.damageMonster(m.getObjectId(), damage), m.getPosition());
                     map.damageMonster(chr, m, damage);

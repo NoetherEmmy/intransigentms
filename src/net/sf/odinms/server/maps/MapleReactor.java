@@ -121,6 +121,7 @@ public class MapleReactor extends AbstractMapleMapObject {
                 map.getPartyQuestInstance().trigger(trigger);
             }
         }
+
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
             // Type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
             if (!(stats.getType(state) == 2 && (charPos == 0 || charPos == 2))) {
