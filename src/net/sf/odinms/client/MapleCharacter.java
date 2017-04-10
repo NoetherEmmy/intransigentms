@@ -5739,7 +5739,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                         dropMessage(
                             "Monster: " +
                                 mob.getName() +
-                                ", HP: " +
+                                ", vulnerability: " +
                                 df.format(mob.getVulnerability() * 100.0d) +
                                 "%"
                         )

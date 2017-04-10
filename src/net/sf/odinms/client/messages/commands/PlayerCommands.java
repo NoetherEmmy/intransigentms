@@ -1656,7 +1656,7 @@ public class PlayerCommands implements Command {
                         player.dropMessage(
                             "Monster: " +
                                 mob.getName() +
-                                ", HP: " +
+                                ", vulnerability: " +
                                 df.format(mob.getVulnerability() * 100.0d) +
                                 "%"
                         )

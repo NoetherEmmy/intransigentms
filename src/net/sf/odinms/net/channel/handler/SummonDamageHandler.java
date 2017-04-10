@@ -136,9 +136,9 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             int dex = player.getTotalDex();
             int pad = summonEffect.getWatk();
             double mastery = summonSkill.getId() == 3111005 ? 0.6d : 0.8d;
-            double counterWeight = summonSkill.getId() == 3111005 ? 512.0d : 1280.0d;
-            int min = (int) ((str * str * mastery + dex) * pad / counterWeight);
-            int max = (int) ((double) (str * str + dex) * pad / counterWeight);
+            double counterWeight = summonSkill.getId() == 3111005 ? 4.0d : 12.0d;
+            int min = (int) ((str * Math.log(str) * mastery + dex) * pad / counterWeight);
+            int max = (int) ((str * Math.log(str) + dex) * pad / counterWeight);
             for (int i = 0; i < allDamage.size(); ++i) {
                 if (allDamage.get(i).getDamage() < 1) continue;
                 final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
