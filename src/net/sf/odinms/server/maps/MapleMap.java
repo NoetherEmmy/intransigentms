@@ -2524,7 +2524,9 @@ public class MapleMap {
 
         public DynamicSpawnWorker(int monsterId, Point spawnPoint, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod) {
             if (MapleLifeFactory.getMonster(monsterId) == null) {
-                throw new IllegalArgumentException("Monster ID for DynamicSpawnWorker must be a valid monster ID!");
+                throw new IllegalArgumentException(
+                    "Monster ID for DynamicSpawnWorker must be a valid monster ID!"
+                );
             }
             spawnArea = null;
             this.spawnPoint = spawnPoint;
@@ -2546,7 +2548,9 @@ public class MapleMap {
 
         public DynamicSpawnWorker(int monsterId, Rectangle spawnArea, int period, int duration, boolean putPeriodicMonsterDrops, int monsterDropPeriod, MapleMonsterStats overrideStats) {
             if (MapleLifeFactory.getMonster(monsterId) == null) {
-                throw new IllegalArgumentException("Monster ID for DynamicSpawnWorker must be a valid monster ID!");
+                throw new IllegalArgumentException(
+                    "Monster ID for DynamicSpawnWorker must be a valid monster ID!"
+                );
             }
             this.spawnArea = spawnArea;
             spawnPoint = null;
@@ -2559,61 +2563,60 @@ public class MapleMap {
         }
 
         public void start() {
-            if (spawnTask == null) {
-                TimerManager tMan = TimerManager.getInstance();
-                if (spawnArea != null) {
-                    spawnTask = tMan.register(() -> {
-                        final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
-                        if (overrideStats != null) {
-                            toSpawn.setOverrideStats(overrideStats);
-                            if (overrideStats.getHp() > 0) {
-                                toSpawn.setHp(overrideStats.getHp());
-                            }
-                            if (overrideStats.getMp() > 0) {
-                                toSpawn.setMp(overrideStats.getMp());
-                            }
+            if (spawnTask != null) return;
+            final TimerManager tMan = TimerManager.getInstance();
+            if (spawnArea != null) {
+                spawnTask = tMan.register(() -> {
+                    final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
+                    if (overrideStats != null) {
+                        toSpawn.setOverrideStats(overrideStats);
+                        if (overrideStats.getHp() > 0) {
+                            toSpawn.setHp(overrideStats.getHp());
                         }
-
-                        for (int i = 0; i < 10; ++i) {
-                            try {
-                                int x = (int) (spawnArea.x + Math.random() * (spawnArea.getWidth() + 1));
-                                int y = (int) (spawnArea.y + Math.random() * (spawnArea.getHeight() + 1));
-                                toSpawn.setPosition(new Point(x, y));
-                                MapleMap.this.spawnMonster(toSpawn);
-
-                                if (putPeriodicMonsterDrops) {
-                                    MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
-                                }
-                                break;
-                            } catch (Exception ignored) {
-                            }
+                        if (overrideStats.getMp() > 0) {
+                            toSpawn.setMp(overrideStats.getMp());
                         }
-                    }, period);
-                } else {
-                    spawnTask = tMan.register(() -> {
-                        final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
-                        if (overrideStats != null) {
-                            toSpawn.setOverrideStats(overrideStats);
-                            if (overrideStats.getHp() > 0) {
-                                toSpawn.setHp(overrideStats.getHp());
+                    }
+
+                    for (int i = 0; i < 10; ++i) {
+                        try {
+                            int x = (int) (spawnArea.x + Math.random() * (spawnArea.getWidth() + 1));
+                            int y = (int) (spawnArea.y + Math.random() * (spawnArea.getHeight() + 1));
+                            toSpawn.setPosition(new Point(x, y));
+                            MapleMap.this.spawnMonster(toSpawn);
+
+                            if (putPeriodicMonsterDrops) {
+                                MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
                             }
-                            if (overrideStats.getMp() > 0) {
-                                toSpawn.setMp(overrideStats.getMp());
-                            }
+                            break;
+                        } catch (Exception ignored) {
                         }
-
-                        toSpawn.setPosition(spawnPoint);
-                        MapleMap.this.spawnMonster(toSpawn);
-
-                        if (putPeriodicMonsterDrops) {
-                            MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
+                    }
+                }, period);
+            } else {
+                spawnTask = tMan.register(() -> {
+                    final MapleMonster toSpawn = MapleLifeFactory.getMonster(monsterId);
+                    if (overrideStats != null) {
+                        toSpawn.setOverrideStats(overrideStats);
+                        if (overrideStats.getHp() > 0) {
+                            toSpawn.setHp(overrideStats.getHp());
                         }
-                    }, period);
-                }
+                        if (overrideStats.getMp() > 0) {
+                            toSpawn.setMp(overrideStats.getMp());
+                        }
+                    }
 
-                if (duration > 0) {
-                    cancelTask = tMan.schedule(() -> MapleMap.this.disposeDynamicSpawnWorker(this), duration);
-                }
+                    toSpawn.setPosition(spawnPoint);
+                    MapleMap.this.spawnMonster(toSpawn);
+
+                    if (putPeriodicMonsterDrops) {
+                        MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
+                    }
+                }, period);
+            }
+
+            if (duration > 0) {
+                cancelTask = tMan.schedule(() -> MapleMap.this.disposeDynamicSpawnWorker(this), duration);
             }
         }
 

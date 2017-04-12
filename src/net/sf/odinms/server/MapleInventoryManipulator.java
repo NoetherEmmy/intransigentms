@@ -258,9 +258,9 @@ public class MapleInventoryManipulator {
     }
 
     public static void removeById(MapleClient c, MapleInventoryType type, int itemId, int quantity, boolean fromDrop, boolean consume) {
-        List<IItem> items = c.getPlayer().getInventory(type).listById(itemId);
+        final List<IItem> items = c.getPlayer().getInventory(type).listById(itemId);
         int remremove = quantity;
-        for (IItem item : items) {
+        for (final IItem item : items) {
             if (remremove <= item.getQuantity()) {
                 removeFromSlot(c, type, item.getPosition(), (short) remremove, fromDrop, consume);
                 remremove = 0;

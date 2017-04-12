@@ -43,8 +43,6 @@ import java.util.stream.Collectors;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements InventoryContainer {
     public static final double MAX_VIEW_RANGE_SQ = 850.0d * 850.0d;
-    @Deprecated
-    private static final double READING_PRIZE_PROP = 0.017d;
     public static final int[] SKILL_IDS =
     {
         1000,    1001,    1002,    1000000, 1000001, 1000002, 1001003, 1001004, 1001005, 2000000, 2000001,
@@ -1201,8 +1199,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
     }
-    //
+
     private void resetAllQuestProgress() {
+        quests.forEach(
+            (q, qs) ->
+                client.getSession().write(
+                    MaplePacketCreator.forfeitQuest((short) qs.getQuest().getId())
+                )
+        );
         quests.clear();
     }
 
@@ -1988,8 +1992,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public double getQuestEffectiveLevelDmgMulti() {
         if (questEffectiveLevel > 0 && questEffectiveLevel < level) {
             return Math.max(
-                (100.0d - Math.sqrt((level - questEffectiveLevel) * Math.pow(level, 1.5d) / 16.0d)) / 100.0d,
-                0.01d
+                (100.0d - Math.sqrt((level - questEffectiveLevel) * Math.pow(level, 1.5d) / 12.0d)) / 100.0d,
+                0.005d
             );
         }
         return 1.0d;
@@ -2207,7 +2211,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public int getReadingTime() {
         return readingTime;
     }
-    //
 
     private void deleteWhereCharacterId(Connection con, String sql) throws SQLException {
         PreparedStatement ps = con.prepareStatement(sql);
@@ -3060,17 +3063,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public void changeMap(int map, int portal) {
-        MapleMap warpMap = client.getChannelServer().getMapFactory().getMap(map);
+        final MapleMap warpMap = client.getChannelServer().getMapFactory().getMap(map);
         changeMap(warpMap, warpMap.getPortal(portal));
     }
 
     public void changeMap(int map, String portal) {
-        MapleMap warpMap = client.getChannelServer().getMapFactory().getMap(map);
+        final MapleMap warpMap = client.getChannelServer().getMapFactory().getMap(map);
         changeMap(warpMap, warpMap.getPortal(portal));
     }
 
     public void changeMap(int map, MaplePortal portal) {
-        MapleMap warpMap = client.getChannelServer().getMapFactory().getMap(map);
+        final MapleMap warpMap = client.getChannelServer().getMapFactory().getMap(map);
         changeMap(warpMap, portal);
     }
 
@@ -3093,8 +3096,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (anticheat.Spam(2000, 5)) {
             client.getSession().write(MaplePacketCreator.enableActions());
         } else {
-            if (this.partyQuest != null && !to.isPQMap()) {
-                this.partyQuest.playerDisconnected(this);
+            if (partyQuest != null && !to.isPQMap()) {
+                partyQuest.playerDisconnected(this);
             }
             warpPacket.setOnSend(() -> {
                 IPlayerInteractionManager interaction1 = interaction;
@@ -3137,7 +3140,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
             });
             if (hasFakeChar()) {
-                for (FakeCharacter ch : fakes) {
+                for (final FakeCharacter ch : fakes) {
                     if (ch.follow()) {
                         ch.getFakeChar().getMap().removePlayer(ch.getFakeChar());
                     }
@@ -3395,10 +3398,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setMaxHp(50);
         setMaxMp(5);
         setExp(0);
-        resetQuestEffectiveLevel();
         updateSingleStat(MapleStat.EXP, 0);
+        resetQuestEffectiveLevel();
         final StringBuilder questProgress = new StringBuilder();
-        for (Map.Entry<Integer, CQuestStatus> completed : completedCQuests.entrySet()) {
+        for (final Map.Entry<Integer, CQuestStatus> completed : completedCQuests.entrySet()) {
             questProgress
                 .append("    ")
                 .append(completed.getKey())
@@ -3408,7 +3411,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         }
         completedCQuests.clear();
         cQuests.clear();
-        CQuest newQuest = new CQuest(this);
+        final CQuest newQuest = new CQuest(this);
         newQuest.loadQuest(0);
         cQuests.add(newQuest);
         setQuestSlots((byte) 1);
@@ -3419,10 +3422,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setMonsterTrialPoints(0);
         setMonsterTrialTier(0);
         setLastTrialTime(0L);
-        resetAllQuestProgress();
         final StringBuilder fourthJobSkills = new StringBuilder();
         if (job.getId() % 10 == 2) { // Fourth job
-            for (int skillId : MapleCharacter.SKILL_IDS) {
+            for (final int skillId : MapleCharacter.SKILL_IDS) {
                 if (
                     skillId / 10000 == job.getId() &&
                     (getMasterLevelById(skillId) > 10 || skillId == 2321006 || skillId == 2321008)
@@ -3435,7 +3437,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
                 }
             }
         }
-        for (int s : SKILL_IDS) {
+        for (final int s : SKILL_IDS) {
             changeSkillLevel(SkillFactory.getSkill(s), 0, 0);
         }
         setRemainingSp(0);
@@ -3468,8 +3470,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setMaxMp(5);
         updateSingleStat(MapleStat.MAXHP, 50);
         updateSingleStat(MapleStat.MAXMP, 5);
-        if (this.partyQuest != null) {
-            this.partyQuest.playerDead(this);
+        if (partyQuest != null) {
+            partyQuest.playerDead(this);
         }
         checkBerserk();
         addNewPastLife(levelAchieved, jobAchieved.getId(), lds);
@@ -3484,8 +3486,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
             */
         }).start();
+        resetAllQuestProgress();
         updatePastLifeExp();
-        String jobachieved = MapleJob.getJobName(jobAchieved.getId());
+        final String jobachieved = MapleJob.getJobName(jobAchieved.getId());
         String causeofdeath;
         if (lastdamagesource == null) {
             causeofdeath = "by their own hand";
@@ -3506,7 +3509,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         } else {
             causeofdeath = "by their own hand";
         }
-        MaplePacket packet = MaplePacketCreator.serverNotice(
+        final MaplePacket packet = MaplePacketCreator.serverNotice(
            6,
            "[Graveyard] " +
                name +
@@ -3520,12 +3523,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         );
         try {
             client.getChannelServer().getWorldInterface().broadcastMessage(name, packet.getBytes());
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             client.getChannelServer().reconnectWorld();
         }
         recalcLocalStats();
-        NPCScriptManager npc = NPCScriptManager.getInstance();
-        npc.start(client, 1061000);
+        NPCScriptManager.getInstance().start(client, 1061000);
         client.getSession().write(MaplePacketCreator.enableActions());
     }
 
@@ -3985,7 +3987,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getSkillLevel(ISkill skill) {
-        SkillEntry ret = skills.get(skill);
+        final SkillEntry ret = skills.get(skill);
         if (ret == null) return 0;
         return ret.skillevel;
     }
@@ -3996,7 +3998,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public int getMasterLevel(ISkill skill) {
         skills.entrySet().iterator();
-        SkillEntry ret = skills.get(skill);
+        final SkillEntry ret = skills.get(skill);
         if (ret == null) return 0;
         return ret.masterlevel;
     }
@@ -4970,7 +4972,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             return true;
         }
 
-        int spSpentInCurrJob =
+        final int spSpentInCurrJob =
             skills
                 .entrySet()
                 .stream()
@@ -4982,7 +4984,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (skillJob % 10 == 2) {
             possibleSpInCurrJob += 2;
         }
-        int minLvlReqForJob;
+        final int minLvlReqForJob;
         if (skillJob % 10 == 0) {
             minLvlReqForJob = 30;
         } else if (skillJob % 10 == 1) {
@@ -6285,8 +6287,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         this.level = level;
     }
 
-    private void setMap(int PmapId) {
-        this.mapid = PmapId;
+    private void setMap(int mapId) {
+        mapid = mapId;
     }
 
     public List<Integer> getQuestItemsToShow() {
@@ -6660,7 +6662,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getAbsoluteXp() {
-        int absLevelMultiplier = Math.max(level < 200 ? level / 10 : 38 - level / 10, pastLifeExp);
+        int absLevelMultiplier = Math.max(level < 200 ? level / 10 : 38 - level / 5, pastLifeExp);
         int currentExpBonus = expbonus ? expbonusmulti : 1;
         return absLevelMultiplier >= 1 ? absLevelMultiplier * currentExpBonus : currentExpBonus;
     }
@@ -6668,14 +6670,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     public double getRelativeXp(final int monsterLevel) {
         final double factor;
         if (monsterLevel - level >= 0) {
-            factor = 0.1d;
-        } else if (level < 70) {
             factor = 0.08d;
+        } else if (level < 70) {
+            factor = 0.1d;
         } else if (level < 100) {
-            factor = 0.06d;
+            factor = 0.08d;
         } else if (level < 120) {
-            factor = 0.04d;
+            factor = 0.06d;
         } else if (level < 150) {
+            factor = 0.04d;
+        } else if (level < 180) {
             factor = 0.02d;
         } else {
             return 1.0d;
@@ -6692,15 +6696,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         float scale;
         if (level < 110) {
             scale = 3.2f - (float) (level / 10) / 5.0f;
-        } else if (level < 120) {
-            scale = 1.1f;
         } else if (level < 160) {
             scale = 1.2f;
         } else {
             scale = 1.3f;
         }
         if (questEffectiveLevel > 0 && questEffectiveLevel < level) {
-            scale *= 1.0f + (float) (level - questEffectiveLevel) / 32.0f;
+            scale *= 1.0f + (float) (level - questEffectiveLevel) / 16.0f;
         }
         return scale;
     }

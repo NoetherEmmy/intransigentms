@@ -2729,8 +2729,8 @@ public class GM implements Command {
                 break;
             }
             case "!itemquantity": {
-                if (splitted.length != 3) {
-                    mc.dropMessage("Invalid syntax. Use: !itemquantity <player_name> <item_id>");
+                if (splitted.length != 3 && splitted.length != 4) {
+                    mc.dropMessage("Invalid syntax. Use: !itemquantity <player_name> <item_id> [check_equipped]");
                     return;
                 }
                 MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
@@ -2745,7 +2745,13 @@ public class GM implements Command {
                     mc.dropMessage("Could not parse integer argument for item ID.");
                     return;
                 }
-                int q = victim.getItemQuantity(itemId, false);
+                final boolean checkEquipped;
+                if (splitted.length == 4) {
+                    checkEquipped = Boolean.parseBoolean(splitted[3]);
+                } else {
+                    checkEquipped = false;
+                }
+                int q = victim.getItemQuantity(itemId, checkEquipped);
                 mc.dropMessage(victim.getName() + " has " + q + " of item " + itemId + ".");
                 break;
             }

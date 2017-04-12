@@ -154,7 +154,7 @@ public class CQuest {
      * this is a no-op and returns {@code null}.
      */
     public Integer incrementObjectiveProgress(String objective, final int amount) {
-        Integer ret = otherObjectiveProgress.computeIfPresent(objective, (obj, oldVal) -> oldVal + amount);
+        final Integer ret = otherObjectiveProgress.computeIfPresent(objective, (obj, oldVal) -> oldVal + amount);
         if (ret != null && getObjectiveProgress(objective) <= quest.getNumberOfOtherObjective(objective)) {
             player.sendHint(
                 "#e" +
@@ -189,7 +189,11 @@ public class CQuest {
         final MapleClient c = player.getClient();
         final AbstractPlayerInteraction api = new AbstractPlayerInteraction(c);
         final boolean firstTime = !player.completedCQuest(quest.getId()) || quest.isRepeatable();
-        double expMulti = (double) player.getExpEffectiveLevel() / (firstTime ? 10.0d : 20.0d);
+        final double expMulti =
+            Math.max(
+                (double) (playerLevel - quest.getFearless()) / 5.0d,
+                1.0d
+            ) * (double) player.getExpEffectiveLevel() / (firstTime ? 10.0d : 20.0d);
         player.gainExp((int) (quest.getExpReward() * expMulti), true, true);
         player.gainMeso(quest.getMesoReward() / (firstTime ? 1 : 2), true, false, true);
         quest.readItemsToCollect().forEach((itemId, qtyAndName) -> api.gainItem(itemId, (short) -qtyAndName.getLeft()));
@@ -197,7 +201,7 @@ public class CQuest {
             quest.readItemRewards().forEach((itemId, count) -> api.gainItem(itemId, count.shortValue()));
             quest.readOtherRewards().forEach(consumer -> consumer.accept(player));
         }
-        CQuestStatus completionLevel =
+        final CQuestStatus completionLevel =
             quest.getCompletionLevel(
                 effectivePlayerLevel > 0 ?
                     effectivePlayerLevel :
@@ -206,7 +210,7 @@ public class CQuest {
         player.setCQuestCompleted(quest.getId(), completionLevel);
         c.getSession().write(MaplePacketCreator.playSound("Dojan/clear"));
         c.getSession().write(MaplePacketCreator.showEffect("dojang/end/clear"));
-        String completionColor;
+        final String completionColor;
         switch (completionLevel) {
             case FEARLESS:
                 completionColor = "#d";

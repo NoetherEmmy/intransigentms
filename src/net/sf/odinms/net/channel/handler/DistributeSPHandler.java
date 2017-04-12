@@ -41,7 +41,7 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
                 int snailsLevel = player.getSkillLevel(1000);
                 int recoveryLevel = player.getSkillLevel(1001);
                 int nimbleFeetLevel = player.getSkillLevel(1002);
-                remainingSp = Math.min((player.getLevel() - 1), 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
+                remainingSp = Math.min(player.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
         }
 
         int maxlevel =

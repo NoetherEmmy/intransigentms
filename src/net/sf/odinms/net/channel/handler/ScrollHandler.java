@@ -23,7 +23,7 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
         boolean whiteScroll = false;
         boolean legendarySpirit = false;
         if ((ws & 2) == 2) whiteScroll = true;
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         IEquip toScroll = (IEquip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
         if (c.getPlayer().getSkillLevel(1003) > 0 && dst >= 0) {
             legendarySpirit = true;
@@ -35,8 +35,8 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
         }
         byte oldLevel = toScroll.getLevel();
 
-        MapleInventory useInventory = c.getPlayer().getInventory(MapleInventoryType.USE);
-        IItem scroll = useInventory.getItem(slot);
+        final MapleInventory useInventory = c.getPlayer().getInventory(MapleInventoryType.USE);
+        final IItem scroll = useInventory.getItem(slot);
         IItem wscroll;
         if (scroll == null || (toScroll.getUpgradeSlots() < 1 && scroll.getItemId() != 2049004)) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
@@ -59,6 +59,14 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
                         c.getPlayer().getName()
                     }
                 );
+            }
+            if (ii.getEquipStats(scroll.getItemId()).get("success") >= 100) {
+                c.getPlayer().dropMessage(
+                    5,
+                    "White scrolls may not be used in combination with 100% success scrolls."
+                );
+                c.getSession().write(MaplePacketCreator.enableActions());
+                return;
             }
         } else {
             wscroll = useInventory.findById(2340000);
@@ -86,10 +94,8 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             }
         }
 
-        if (scroll.getQuantity() <= 0) {
-            throw new InventoryException("<= 0 quantity when scrolling");
-        }
-        IEquip scrolled = (IEquip) ii.scrollEquipWithId(c, toScroll, scroll.getItemId(), whiteScroll);
+        if (scroll.getQuantity() <= 0) throw new InventoryException("<= 0 quantity when scrolling");
+        final IEquip scrolled = (IEquip) ii.scrollEquipWithId(c, toScroll, scroll.getItemId(), whiteScroll);
         ScrollResult scrollSuccess = IEquip.ScrollResult.FAIL; // Failure
 
         if (scrolled == null) {

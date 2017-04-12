@@ -7,7 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
-public class LoginCrypto {
+public final class LoginCrypto {
     private LoginCrypto() {
     }
 
@@ -142,8 +142,7 @@ public class LoginCrypto {
         int oDataLen = (iLen * 4 + 2) / 3;
         int oLen = ((iLen + 2) / 3) * 4;
         char[] out = new char[oLen];
-        int ip = 0;
-        int op = 0;
+        int ip = 0, op = 0;
         while (ip < iLen) {
             int i0 = Input[ip++] & 0xff;
             int i1 = ip < iLen ? Input[ip++] & 0xff : 0;

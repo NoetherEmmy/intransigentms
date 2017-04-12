@@ -905,7 +905,7 @@ public class MapleItemInformationProvider {
         return pEntry;
     }
 
-    protected Map<String, Integer> getEquipStats(int itemId) {
+    public Map<String, Integer> getEquipStats(int itemId) {
         if (equipStatsCache.containsKey(itemId)) return equipStatsCache.get(itemId);
         Map<String, Integer> ret = new LinkedHashMap<>();
         MapleData item = getItemData(itemId);
@@ -1128,9 +1128,9 @@ public class MapleItemInformationProvider {
         if (c.getPlayer().isGM()) isGM = true;
 
         if (equip instanceof Equip) {
-            Equip nEquip = (Equip) equip;
-            Map<String, Integer> stats = getEquipStats(scrollId);
-            Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
+            final Equip nEquip = (Equip) equip;
+            final Map<String, Integer> stats = getEquipStats(scrollId);
+            final Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
             if (
                 (nEquip.getUpgradeSlots() > 0 || isCleanSlate(scrollId) || scrollId == 2049004) &&
                 Math.ceil(Math.random() * 100.0d) <= stats.get("success") ||
@@ -1290,14 +1290,13 @@ public class MapleItemInformationProvider {
         return getEquipById(equipId, -1);
     }
 
-    public IItem getEquipById(int equipId, int ringId) {
+    public IItem getEquipById(final int equipId, final int ringId) {
         if (equipCache.containsKey(equipId)) return equipCache.get(equipId).copy();
-        Equip nEquip;
-        nEquip = new Equip(equipId, (byte) 0, ringId);
+        final Equip nEquip = new Equip(equipId, (byte) 0, ringId);
         nEquip.setQuantity((short) 1);
-        Map<String, Integer> stats = getEquipStats(equipId);
+        final Map<String, Integer> stats = getEquipStats(equipId);
         if (stats != null) {
-            for (Map.Entry<String, Integer> stat : stats.entrySet()) {
+            for (final Map.Entry<String, Integer> stat : stats.entrySet()) {
                 final String k = stat.getKey();
                 final short val = (short) stat.getValue().intValue();
                 switch (k) {
@@ -1345,7 +1344,6 @@ public class MapleItemInformationProvider {
                         break;
                     case "tuc":
                         nEquip.setUpgradeSlots((byte) stat.getValue().intValue());
-                        break;
                 }
             }
         }

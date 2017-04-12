@@ -387,8 +387,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                           getPlayer().getLevel()
                   )
                   .append("#k\r\n");
-                String[] questInfoSplit = cQuest.getQuest().getInfo().split(" ");
-                StringBuilder questInfo = new StringBuilder("\t\t");
+                final String[] questInfoSplit = cQuest.getQuest().getInfo().split(" ");
+                final StringBuilder questInfo = new StringBuilder("\t\t");
                 int currLineLength = 0;
                 for (final String word : questInfoSplit) {
                     if (word.length() < 1) continue;
