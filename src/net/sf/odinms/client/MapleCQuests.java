@@ -219,7 +219,7 @@ public class MapleCQuests {
             // Data is stored using Unix line endings (LF) because that's our locale,
             // but the client expects Windows-style (CRLF), so we replace the line
             // endings here since clients will have to display `info`.
-            q.info = t.getString("info").replaceAll("([^\\r])\\n", "$1\r\n\r\n");
+            q.info = t.getString("info").replaceAll("\\n\\n", "\r\n\r\n").replaceAll("([^\\r])\\n", "$1\r\n");
             final Boolean repeatable = t.getBoolean("repeatable");
             if (repeatable != null) q.repeatable = repeatable;
 
@@ -239,7 +239,7 @@ public class MapleCQuests {
                             ScriptObjectMirror objMirror =
                                 (ScriptObjectMirror) engine.eval(code);
                             @SuppressWarnings("unchecked")
-                            Predicate<MapleCharacter> p = objMirror.to(Predicate.class);
+                            final Predicate<MapleCharacter> p = objMirror.to(Predicate.class);
                             return p;
                         } catch (Exception e) {
                             System.err.println("Failed to load MapleCQuests " + id);
@@ -296,10 +296,10 @@ public class MapleCQuests {
                     .map(s -> {
                         final String code = (String) s;
                         try {
-                            ScriptObjectMirror objMirror =
+                            final ScriptObjectMirror objMirror =
                                 (ScriptObjectMirror) engine.eval(code);
                             @SuppressWarnings("unchecked")
-                            Consumer<MapleCharacter> c = objMirror.to(Consumer.class);
+                            final Consumer<MapleCharacter> c = objMirror.to(Consumer.class);
                             return c;
                         } catch (Exception e) {
                             System.err.println("Failed to load MapleCQuests " + id);
