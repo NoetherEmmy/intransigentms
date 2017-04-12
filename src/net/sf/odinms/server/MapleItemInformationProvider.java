@@ -1172,7 +1172,7 @@ public class MapleItemInformationProvider {
                             nEquip.setWatk(newStat);
                         }
                         if (nEquip.getWdef() > 0) {
-                            short newStat = (short) (nEquip.getWdef() + Math.ceil(Math.random() * 50.0d) * increase);
+                            short newStat = (short) (nEquip.getWdef() + Math.ceil(Math.random() * 10.0d) * increase);
                             nEquip.setWdef(newStat);
                         }
                         if (nEquip.getMatk() > 0) {
@@ -1188,7 +1188,7 @@ public class MapleItemInformationProvider {
                             nEquip.setAcc(newStat);
                         }
                         if (nEquip.getAvoid() > 0) {
-                            short newStat = (short) (nEquip.getAvoid() + Math.ceil(Math.random() * 50.0d) * increase);
+                            short newStat = (short) (nEquip.getAvoid() + Math.ceil(Math.random() * 10.0d) * increase);
                             nEquip.setAvoid(newStat);
                         }
                         if (nEquip.getSpeed() > 0) {
@@ -1200,16 +1200,16 @@ public class MapleItemInformationProvider {
                             nEquip.setJump(newStat);
                         }
                         if (nEquip.getHp() > 0) {
-                            short newStat = (short) (nEquip.getHp() + Math.ceil(Math.random() * 50.0d) * increase);
+                            short newStat = (short) (nEquip.getHp() + Math.ceil(Math.random() * 10.0d) * increase);
                             nEquip.setHp(newStat);
                         }
                         if (nEquip.getMp() > 0) {
-                            short newStat = (short) (nEquip.getMp() + Math.ceil(Math.random() * 50.0d) * increase);
+                            short newStat = (short) (nEquip.getMp() + Math.ceil(Math.random() * 10.0d) * increase);
                             nEquip.setMp(newStat);
                         }
                         break;
                     case 2049004: // Innocence Scroll 60%
-                        Map<String, Integer> innoStats = getEquipStats(nEquip.getItemId());
+                        final Map<String, Integer> innoStats = getEquipStats(nEquip.getItemId());
                         nEquip.setStr(innoStats.getOrDefault("STR", 0).shortValue());
                         nEquip.setDex(innoStats.getOrDefault("DEX", 0).shortValue());
                         nEquip.setInt(innoStats.getOrDefault("INT", 0).shortValue());
@@ -1228,7 +1228,7 @@ public class MapleItemInformationProvider {
                         nEquip.setLevel((byte) 0);
                         break;
                     default:
-                        for (Map.Entry<String, Integer> stat : stats.entrySet()) {
+                        for (final Map.Entry<String, Integer> stat : stats.entrySet()) {
                             if (stat.getKey().equals("STR")) {
                                 nEquip.setStr((short) (nEquip.getStr() + stat.getValue()));
                             } else if (stat.getKey().equals("DEX")) {
