@@ -32,7 +32,7 @@ public class MapleCQuests {
     private int adventuresome, valiant, fearless;
     private boolean repeatable = false;
 
-    public MapleCQuests(int id) {
+    public MapleCQuests(final int id) {
         this.id = id;
     }
 
@@ -61,19 +61,19 @@ public class MapleCQuests {
     }
 
     /** Nullable */
-    public Integer getNumberToKill(int monsterId) {
+    public Integer getNumberToKill(final int monsterId) {
         if (!monsterTargets.containsKey(monsterId)) return null;
         return monsterTargets.get(monsterId).getLeft();
     }
 
     /** Nullable */
-    public Integer getNumberToCollect(int itemId) {
+    public Integer getNumberToCollect(final int itemId) {
         if (!itemsToCollect.containsKey(itemId)) return null;
         return itemsToCollect.get(itemId).getLeft();
     }
 
     /** Nullable */
-    public Integer getNumberOfOtherObjective(String otherObjective) {
+    public Integer getNumberOfOtherObjective(final String otherObjective) {
         if (!otherObjectives.containsKey(otherObjective)) return null;
         return otherObjectives.get(otherObjective);
     }
@@ -115,26 +115,26 @@ public class MapleCQuests {
     }
 
     /** Nullable */
-    public String getTargetName(int monsterId) {
+    public String getTargetName(final int monsterId) {
         if (!monsterTargets.containsKey(monsterId)) return null;
         return monsterTargets.get(monsterId).getRight();
     }
 
     /** Nullable */
-    public String getItemName(int itemId) {
+    public String getItemName(final int itemId) {
         if (!itemsToCollect.containsKey(itemId)) return null;
         return itemsToCollect.get(itemId).getRight();
     }
 
-    public boolean requiresTarget(int monsterId) {
+    public boolean requiresTarget(final int monsterId) {
         return monsterTargets.containsKey(monsterId);
     }
 
-    public boolean requiresItem(int itemId) {
+    public boolean requiresItem(final int itemId) {
         return itemsToCollect.containsKey(itemId);
     }
 
-    public boolean requiresOtherObjective(String otherObjective) {
+    public boolean requiresOtherObjective(final String otherObjective) {
         return otherObjectives.containsKey(otherObjective);
     }
 
@@ -189,7 +189,7 @@ public class MapleCQuests {
             prereqQuests.stream().allMatch(c::completedCQuest);
     }
 
-    public CQuestStatus getCompletionLevel(int playerLevel) {
+    public CQuestStatus getCompletionLevel(final int playerLevel) {
         if (playerLevel > adventuresome) return CQuestStatus.UNIMPRESSED;
         if (playerLevel > valiant) return CQuestStatus.ADVENTURESOME;
         if (playerLevel > fearless) return CQuestStatus.VALIANT;
@@ -201,7 +201,7 @@ public class MapleCQuests {
     }
 
     /** Nullable */
-    public static synchronized MapleCQuests loadQuest(int questId) {
+    public static synchronized MapleCQuests loadQuest(final int questId) {
         if (quests.containsKey(questId)) return quests.get(questId);
         return readQuest(questId);
     }
@@ -210,7 +210,7 @@ public class MapleCQuests {
     private static MapleCQuests readQuest(final int id) {
         final MapleCQuests q = new MapleCQuests(id);
         try {
-            Toml t = new Toml().parse(new FileInputStream("quests/" + id + ".toml"));
+            final Toml t = new Toml().parse(new FileInputStream("quests/" + id + ".toml"));
 
             q.title = t.getString("title");
             q.startNpc = t.getString("npc");
@@ -219,11 +219,11 @@ public class MapleCQuests {
             // Data is stored using Unix line endings (LF) because that's our locale,
             // but the client expects Windows-style (CRLF), so we replace the line
             // endings here since clients will have to display `info`.
-            q.info = t.getString("info").replaceAll("([^\\r])\\n", "$1\r\n");
-            Boolean repeatable = t.getBoolean("repeatable");
+            q.info = t.getString("info").replaceAll("([^\\r])\\n", "$1\r\n\r\n");
+            final Boolean repeatable = t.getBoolean("repeatable");
             if (repeatable != null) q.repeatable = repeatable;
 
-            Toml reqTable = t.getTable("requirements");
+            final Toml reqTable = t.getTable("requirements");
             if (reqTable != null && !reqTable.isEmpty()) {
                 reqTable
                     .getList("quests")
@@ -278,11 +278,11 @@ public class MapleCQuests {
                 )
             );
 
-            Toml rewardsTable = t.getTable("rewards");
+            final Toml rewardsTable = t.getTable("rewards");
             if (rewardsTable != null && !rewardsTable.isEmpty()) {
-                Long exp = rewardsTable.getLong("exp");
+                final Long exp = rewardsTable.getLong("exp");
                 if (exp != null) q.expReward = exp.intValue();
-                Long mesos = rewardsTable.getLong("mesos");
+                final Long mesos = rewardsTable.getLong("mesos");
                 if (mesos != null) q.mesoReward = mesos.intValue();
                 rewardsTable.getTables("items").forEach(it ->
                     q.itemRewards.put(
@@ -311,13 +311,13 @@ public class MapleCQuests {
                 if (q.otherRewards.contains(null)) return null;
             }
 
-            Toml parTable = t.getTable("par");
+            final Toml parTable = t.getTable("par");
             if (parTable != null && !parTable.isEmpty()) {
                 q.fearless = parTable.getLong("fearless").intValue();
                 q.valiant = parTable.getLong("valiant").intValue();
                 q.adventuresome = parTable.getLong("adventuresome").intValue();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.println("Failed to load MapleCQuests " + id);
             e.printStackTrace();
             return null;
@@ -326,10 +326,10 @@ public class MapleCQuests {
         return q;
     }
 
-    public static boolean questExists(int questId) {
+    public static boolean questExists(final int questId) {
         try {
-            FileInputStream fis = new FileInputStream("quests/" + questId + ".toml");
-        } catch (Exception e) {
+            final FileInputStream fis = new FileInputStream("quests/" + questId + ".toml");
+        } catch (final Exception e) {
             return false;
         }
         return true;
@@ -338,7 +338,7 @@ public class MapleCQuests {
     public static Collection<MapleCQuests> getAllQuests() {
         try {
             loadAllQuests();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return getCachedQuests();
@@ -347,7 +347,7 @@ public class MapleCQuests {
     public static Map<Integer, MapleCQuests> getAllQuestsMap() {
         try {
             loadAllQuests();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return getQuestCache();
@@ -356,7 +356,7 @@ public class MapleCQuests {
     public static Set<Integer> getAllQuestIds() {
         try {
             loadAllQuests();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return getCachedQuestIds();
