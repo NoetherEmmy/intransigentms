@@ -107,16 +107,16 @@ public class MapleFootholdTree {
     }
 
     public MapleFoothold findBelow(Point p) {
-        List<MapleFoothold> relevants = getRelevants(p);
+        final List<MapleFoothold> relevants = getRelevants(p);
         // Find fhs with matching x-coordinates
-        List<MapleFoothold> xMatches = new ArrayList<>();
-        for (MapleFoothold fh : relevants) {
+        final List<MapleFoothold> xMatches = new ArrayList<>();
+        for (final MapleFoothold fh : relevants) {
             if (fh.getX1() <= p.x && fh.getX2() >= p.x) xMatches.add(fh);
         }
         Collections.sort(xMatches);
-        for (MapleFoothold fh : xMatches) {
+        for (final MapleFoothold fh : xMatches) {
             if (!fh.isWall() && fh.getY1() != fh.getY2()) {
-                int calcY;
+                final int calcY;
                 double s1 = Math.abs(fh.getY2() - fh.getY1());
                 double s2 = Math.abs(fh.getX2() - fh.getX1());
                 double s4 = Math.abs(p.x - fh.getX1());

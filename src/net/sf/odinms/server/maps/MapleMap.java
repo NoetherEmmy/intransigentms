@@ -327,11 +327,9 @@ public class MapleMap {
         removeMapObject(obj.getObjectId());
     }
 
-    private Point calcPointBelow(Point initial) {
-        MapleFoothold fh = footholds.findBelow(initial);
-        if (fh == null) {
-            return null;
-        }
+    private Point calcPointBelow(final Point initial) {
+        final MapleFoothold fh = footholds.findBelow(initial);
+        if (fh == null) return null;
         int dropY = fh.getY1();
         if (!fh.isWall() && fh.getY1() != fh.getY2()) {
             double s1 = Math.abs(fh.getY2() - fh.getY1());
@@ -350,10 +348,8 @@ public class MapleMap {
     }
 
     private Point calcDropPos(Point initial, Point fallback) {
-        Point ret = calcPointBelow(new Point(initial.x, initial.y - 99));
-        if (ret == null) {
-            return fallback;
-        }
+        final Point ret = calcPointBelow(new Point(initial.x, initial.y - 99));
+        if (ret == null) return fallback;
         return ret;
     }
 

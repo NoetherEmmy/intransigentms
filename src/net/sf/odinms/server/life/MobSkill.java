@@ -159,11 +159,11 @@ public class MobSkill {
                                 toSpawn.setFh((int) Math.ceil(Math.random() * 19.0d));
                                 ypos = -590;
                             case 8500004: // Pap bomb
-                                //Spawn between -500 and 500 from the monsters X position
+                                // Spawn between -500 and 500 from the monsters X position
                                 xpos = (int) (monster.getPosition().getX() + Math.ceil(Math.random() * 1000.0d) - 500);
                                 if (ypos != -590) ypos = (int) monster.getPosition().getY();
                                 break;
-                            case 8510100: //Pianus bomb
+                            case 8510100: // Pianus bomb
                                 if (Math.ceil(Math.random() * 5) == 1) {
                                     ypos = 78;
                                     xpos = (int) (0 + Math.ceil(Math.random() * 5)) + ((Math.ceil(Math.random() * 2) == 1) ? 180 : 0);
@@ -175,7 +175,7 @@ public class MobSkill {
                         // Get spawn coordinates (This fixes monster lock)
                         // TODO: Get map left and right wall.
                         switch (monster.getMap().getId()) {
-                            case 220080001: //Pap map
+                            case 220080001: // Pap map
                                 if (xpos < -890) {
                                     xpos = (int) (-890 + Math.ceil(Math.random() * 150));
                                 } else if (xpos > 230) {
@@ -224,14 +224,22 @@ public class MobSkill {
             if (rand.nextInt(6) < 4) { // Makes a number between 0 - 5. If 0, 1, 2, or 3 then give disease.
                 if (skill && lt != null && rb != null) {
                     int i = 0;
-                    List<MapleCharacter> characters = getPlayersInRange(monster, player);
-                    for (MapleCharacter character : characters) {
+                    final List<MapleCharacter> characters = getPlayersInRange(monster, player);
+                    for (final MapleCharacter character : characters) {
                         if (dispel) {
                             character.dispel();
                         } else if (banish) {
-                            MapleMap to = player.getMap().getReturnMap();
-                            MaplePortal pto = to.getPortal(rand.nextInt(to.getPortals().size()));
-                            character.changeMap(to, pto);
+                            final MapleMap to = player.getMap().getReturnMap();
+                            if (to == null) {
+                                System.err.println(
+                                    "No return map for map " +
+                                        player.getMap().getId() +
+                                        ", MobSkill#applyEffect"
+                                );
+                            } else {
+                                final MaplePortal pto = to.getRandomPortal();
+                                character.changeMap(to, pto);
+                            }
                         } else if (seduce && i < 10) {
                             character.giveDebuff(MapleDisease.SEDUCE, this);
                             i++;
@@ -309,8 +317,7 @@ public class MobSkill {
     }
 
     private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
-        Point mylt;
-        Point myrb;
+        final Point mylt, myrb;
         if (facingLeft) {
             mylt = new Point(lt.x + posFrom.x, lt.y + posFrom.y);
             myrb = new Point(rb.x + posFrom.x, rb.y + posFrom.y);

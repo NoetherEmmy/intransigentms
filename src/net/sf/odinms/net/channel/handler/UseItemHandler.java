@@ -19,11 +19,11 @@ public class UseItemHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         slea.readInt();
-        byte slot = (byte) slea.readShort();
-        int itemId = slea.readInt();
-        IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
+        final byte slot = (byte) slea.readShort();
+        final int itemId = slea.readInt();
+        final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (itemId == 2022118) {
             c.getPlayer().dropMessage(1, "Please keep this item for scrolling purposes. Gives you 100% scroll rate.");
@@ -118,7 +118,7 @@ public class UseItemHandler extends AbstractMaplePacketHandler {
     }
 
     private void warpRandom(MapleClient c, int mapId) {
-        MapleMap target = c.getChannelServer().getMapFactory().getMap(mapId);
+        final MapleMap target = c.getChannelServer().getMapFactory().getMap(mapId);
         c.getPlayer().changeMap(target, target.getRandomPortal());
     }
 }

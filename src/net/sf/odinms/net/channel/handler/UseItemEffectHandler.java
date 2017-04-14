@@ -14,9 +14,6 @@ import org.slf4j.LoggerFactory;
 public class UseItemEffectHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(UseItemHandler.class);
 
-    public UseItemEffectHandler() {
-    }
-
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
         int itemId = slea.readInt();

@@ -38,14 +38,13 @@ public class MapleQuest {
     private MapleQuest(int id) {
         this.id = id;
         // Read requirements
-        MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
+        final MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
         startReqs = new ArrayList<>();
         if (startReqData != null) {
             for (final MapleData startReq : startReqData.getChildren()) {
-                MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
-                if (type.equals(MapleQuestRequirementType.INTERVAL))
-                    repeatable = true;
-                MapleQuestRequirement req = new MapleQuestRequirement(this, type, startReq);
+                final MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
+                if (type.equals(MapleQuestRequirementType.INTERVAL)) repeatable = true;
+                final MapleQuestRequirement req = new MapleQuestRequirement(this, type, startReq);
                 if (req.getType().equals(MapleQuestRequirementType.MOB)) {
                     for (final MapleData mob : startReq.getChildren()) {
                         relevantMobs.add(MapleDataTool.getInt(mob.getChildByPath("id")));
@@ -54,11 +53,11 @@ public class MapleQuest {
                 startReqs.add(req);
             }
         }
-        MapleData completeReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("1");
+        final MapleData completeReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("1");
         completeReqs = new ArrayList<>();
         if (completeReqData != null) {
             for (final MapleData completeReq : completeReqData.getChildren()) {
-                MapleQuestRequirement req =
+                final MapleQuestRequirement req =
                     new MapleQuestRequirement(
                         this,
                         MapleQuestRequirementType.getByWZName(
@@ -74,18 +73,18 @@ public class MapleQuest {
                 completeReqs.add(req);
             }
         }
-        MapleData startActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("0");
+        final MapleData startActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("0");
         startActs = new ArrayList<>();
         if (startActData != null) {
             for (final MapleData startAct : startActData.getChildren()) {
-                MapleQuestActionType questActionType = MapleQuestActionType.getByWZName(startAct.getName());
+                final MapleQuestActionType questActionType = MapleQuestActionType.getByWZName(startAct.getName());
                 startActs.add(new MapleQuestAction(questActionType, startAct, this));
             }
         }
-        MapleData completeActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("1");
+        final MapleData completeActData = actions.getChildByPath(String.valueOf(id)).getChildByPath("1");
         completeActs = new ArrayList<>();
         if (completeActData != null) {
-            for (MapleData completeAct : completeActData.getChildren()) {
+            for (final MapleData completeAct : completeActData.getChildren()) {
                 completeActs.add(
                     new MapleQuestAction(
                         MapleQuestActionType.getByWZName(
@@ -97,7 +96,7 @@ public class MapleQuest {
                 );
             }
         }
-        MapleData questInfo = info.getChildByPath(String.valueOf(id));
+        final MapleData questInfo = info.getChildByPath(String.valueOf(id));
         autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
         autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
         name = MapleDataTool.getString("name", questInfo, "MISSINGNO");

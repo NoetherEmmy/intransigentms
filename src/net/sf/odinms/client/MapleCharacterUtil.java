@@ -2,7 +2,7 @@ package net.sf.odinms.client;
 
 import java.util.regex.Pattern;
 
-public class MapleCharacterUtil {
+public final class MapleCharacterUtil {
     private MapleCharacterUtil() {
     }
 
@@ -16,7 +16,7 @@ public class MapleCharacterUtil {
     }
 
     public static boolean hasSymbols(String name) {
-        String[] symbols =
+        final String[] symbols =
         {
             "`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
             "_", "-", "=", "+", "{", "[", "]", "}", "|", ";", ":", "'",
@@ -28,7 +28,7 @@ public class MapleCharacterUtil {
         return false;
     }
 
-    public static String makeMapleReadable(String in) {
+    public static String makeMapleReadable(final String in) {
         String wui = in.replace('I', 'i');
         wui = wui.replace('l', 'L');
         wui = wui.replace("rn", "Rn");

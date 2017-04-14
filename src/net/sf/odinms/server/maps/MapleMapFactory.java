@@ -80,16 +80,16 @@ public class MapleMapFactory {
                     map.addPortal(myPortal);
                 }
                 List<MapleFoothold> allFootholds = new ArrayList<>();
-                Point lBound = new Point();
-                Point uBound = new Point();
-                for (MapleData footRoot : mapData.getChildByPath("foothold")) {
-                    for (MapleData footCat : footRoot) {
-                        for (MapleData footHold : footCat) {
-                            int x1 = MapleDataTool.getInt(footHold.getChildByPath("x1"));
-                            int y1 = MapleDataTool.getInt(footHold.getChildByPath("y1"));
-                            int x2 = MapleDataTool.getInt(footHold.getChildByPath("x2"));
-                            int y2 = MapleDataTool.getInt(footHold.getChildByPath("y2"));
-                            MapleFoothold fh =
+                final Point lBound = new Point();
+                final Point uBound = new Point();
+                for (final MapleData footRoot : mapData.getChildByPath("foothold")) {
+                    for (final MapleData footCat : footRoot) {
+                        for (final MapleData footHold : footCat) {
+                            final int x1 = MapleDataTool.getInt(footHold.getChildByPath("x1"));
+                            final int y1 = MapleDataTool.getInt(footHold.getChildByPath("y1"));
+                            final int x2 = MapleDataTool.getInt(footHold.getChildByPath("x2"));
+                            final int y2 = MapleDataTool.getInt(footHold.getChildByPath("y2"));
+                            final MapleFoothold fh =
                                 new MapleFoothold(
                                     new Point(x1, y1),
                                     new Point(x2, y2),
@@ -106,8 +106,8 @@ public class MapleMapFactory {
                         }
                     }
                 }
-                MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
-                for (MapleFoothold fh : allFootholds) {
+                final MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
+                for (final MapleFoothold fh : allFootholds) {
                     fTree.insert(fh);
                 }
                 map.setFootholds(fTree);
@@ -129,19 +129,19 @@ public class MapleMapFactory {
                     ps.setInt(1, omapid);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
-                        int id = rs.getInt("idd");
-                        int f = rs.getInt("f");
-                        boolean hide = false;
-                        String type = rs.getString("type");
-                        int fh = rs.getInt("fh");
-                        int cy = rs.getInt("cy");
-                        int rx0 = rs.getInt("rx0");
-                        int rx1 = rs.getInt("rx1");
-                        int x = rs.getInt("x");
-                        int y = rs.getInt("y");
-                        int mobTime = rs.getInt("mobtime");
+                        final int id = rs.getInt("idd");
+                        final int f = rs.getInt("f");
+                        final boolean hide = false;
+                        final String type = rs.getString("type");
+                        final int fh = rs.getInt("fh");
+                        final int cy = rs.getInt("cy");
+                        final int rx0 = rs.getInt("rx0");
+                        final int rx1 = rs.getInt("rx1");
+                        final int x = rs.getInt("x");
+                        final int y = rs.getInt("y");
+                        final int mobTime = rs.getInt("mobtime");
 
-                        AbstractLoadedMapleLife myLife = loadLife(id, f, hide, fh, cy, rx0, rx1, x, y, type);
+                        final AbstractLoadedMapleLife myLife = loadLife(id, f, hide, fh, cy, rx0, rx1, x, y, type);
 
                         if (type.equals("n")) {
                             map.addMapObject(myLife);

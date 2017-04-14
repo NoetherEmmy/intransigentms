@@ -805,11 +805,13 @@ public class MapleStatEffect implements Serializable {
             if (applyTo.getMap().getReturnMapId() != applyTo.getMapId()) {
                 MapleMap target;
                 if (moveTo == 999999999) {
-                    try {
-                        target = applyTo.getMap().getReturnMap();
-                    } catch (NullPointerException npe) {
-                        System.err.println("NPE getting return map for map " + applyTo.getMap().getId());
-                        return false;
+                    target = applyTo.getMap().getReturnMap();
+                    if (target == null) {
+                        System.err.println(
+                            "No return map for map " +
+                                applyTo.getMap().getId() +
+                                ", MapleStatEffect#applyTo"
+                        );
                     }
                 } else {
                     target =

@@ -38,7 +38,16 @@ public class MapleFoothold implements Comparable<MapleFoothold> {
     }
 
     @Override
-    public int compareTo(MapleFoothold other) {
+    public int compareTo(final MapleFoothold other) {
+        /*
+        if (p2.y < other.getY1() && p1.y >= other.getY2()) {
+            return -1;
+        }
+        */
+        return p1.y - other.getY1();
+
+        // The comparator below is intransitive:
+        /*
         if (p2.y < other.getY1()) {
             return -1;
         } else if (p1.y > other.getY2()) {
@@ -46,6 +55,7 @@ public class MapleFoothold implements Comparable<MapleFoothold> {
         } else {
             return 0;
         }
+        */
     }
 
     public int getId() {

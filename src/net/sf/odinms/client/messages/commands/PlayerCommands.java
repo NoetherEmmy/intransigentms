@@ -578,7 +578,7 @@ public class PlayerCommands implements Command {
                 );
             } else {
                 try {
-                    int searchId = Integer.parseInt(splitted[1]);
+                    final int searchId = Integer.parseInt(splitted[1]);
                     MapleInventoryType itemType = null;
                     String itemTypeString = null;
                     if (splitted.length > 2) {
@@ -603,8 +603,8 @@ public class PlayerCommands implements Command {
                                 return;
                         }
                     }
-                    Set<String> retItems = new LinkedHashSet<>();
-                    MapleMonster mob = MapleLifeFactory.getMonster(searchId);
+                    final Set<String> retItems = new LinkedHashSet<>();
+                    final MapleMonster mob = MapleLifeFactory.getMonster(searchId);
                     if (mob == null) {
                         mc.dropMessage("There is no such monster with that ID.");
                         return;
@@ -1509,7 +1509,7 @@ public class PlayerCommands implements Command {
             mc.dropMessage(
                 "    Incoming damage multiplier: " +
                     df.format(
-                        1.0f + (float) (player.getLevel() - player.getQuestEffectiveLevel()) / 32.0f
+                        1.0f + (float) (player.getLevel() - player.getQuestEffectiveLevel()) / 16.0f
                     )
             );
         } else if (splitted[0].equals("@music")) {
@@ -1569,7 +1569,7 @@ public class PlayerCommands implements Command {
                     }
                     String section = null;
                     int i = 1;
-                    for (String section_ : sip.getAllBgmNames().keySet()) {
+                    for (final String section_ : sip.getAllBgmNames().keySet()) {
                         if (i > sectionNumber) break;
                         section = section_;
                         i++;

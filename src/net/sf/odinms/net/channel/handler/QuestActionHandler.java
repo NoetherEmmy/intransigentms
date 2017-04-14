@@ -12,21 +12,27 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 public class QuestActionHandler extends AbstractMaplePacketHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.getPlayer().resetAfkTime();
-        byte action = slea.readByte();
-        short quest = slea.readShort();
-        MapleCharacter player = c.getPlayer();
+        final byte action = slea.readByte();
+        final short quest = slea.readShort();
+        final MapleCharacter player = c.getPlayer();
+        final MapleQuest q = MapleQuest.getInstance(quest);
+        if (q == null) {
+            c.getPlayer().dropMessage(5, "There's no quest data for the quest you're trying to access.");
+            System.err.println("QuestActionHandler: No quest data for quest ID " + quest);
+            return;
+        }
         if (action == 1) { // Start quest
             int npc = slea.readInt();
             slea.readInt();
-            MapleQuest.getInstance(quest).start(player, npc);
+            q.start(player, npc);
         } else if (action == 2) { // Complete quest
             int npc = slea.readInt();
             slea.readInt();
             if (slea.available() >= 4) {
                 int selection = slea.readInt();
-                MapleQuest.getInstance(quest).complete(player, npc, selection);
+                q.complete(player, npc, selection);
             } else {
-                MapleQuest.getInstance(quest).complete(player, npc);
+                q.complete(player, npc);
             }
             c.getSession().write(MaplePacketCreator.showOwnBuffEffect(0, 9)); // Quest completion
             player
@@ -50,7 +56,7 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
             // 11 = due to the equipment currently being worn wtf o.o
             // 12 = you may not posess more than one of this item
         } else if (action == 3) { // Forfeit quest
-            MapleQuest.getInstance(quest).forfeit(player);
+            q.forfeit(player);
         } else if (action == 4) { // Scripted start quest
             int npc = slea.readInt();
             slea.readInt();
@@ -73,7 +79,7 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
                 theNpc
                     .getPosition()
                     .distanceSq(player.getPosition()) < 1.5d * MapleCharacter.MAX_VIEW_RANGE_SQ &&
-                MapleQuest.getInstance(quest).canComplete(player, npc)
+                q.canComplete(player, npc)
             ) {
                 QuestScriptManager.getInstance().end(c, npc, quest);
             } else {

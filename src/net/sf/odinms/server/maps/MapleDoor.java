@@ -25,6 +25,13 @@ public class MapleDoor extends AbstractMapleMapObject {
         this.targetPosition = targetPosition;
         setPosition(this.targetPosition);
         town = target.getReturnMap();
+        if (town == null) {
+            System.err.println(
+                "No return map for map " +
+                    target.getId() +
+                    ", new MapleDoor(MapleCharacter, Point)"
+            );
+        }
         townPortal = getFreePortal();
     }
 

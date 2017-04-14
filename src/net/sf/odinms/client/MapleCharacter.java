@@ -6662,7 +6662,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public int getAbsoluteXp() {
-        int absLevelMultiplier = Math.max(level < 200 ? level / 10 : 38 - level / 5, pastLifeExp);
+        int absLevelMultiplier = Math.max(level < 200 ? level / 10 : 58 - level / 5, pastLifeExp);
         int currentExpBonus = expbonus ? expbonusmulti : 1;
         return absLevelMultiplier >= 1 ? absLevelMultiplier * currentExpBonus : currentExpBonus;
     }

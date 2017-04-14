@@ -9,22 +9,22 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 public class CreateCharHandler extends AbstractMaplePacketHandler {
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        String name = slea.readMapleAsciiString();
-        int face = slea.readInt();
-        int hair = slea.readInt();
-        int hairColor = slea.readInt();
-        int skinColor = slea.readInt();
-        int top = slea.readInt();
-        int bottom = slea.readInt();
-        int shoes = slea.readInt();
-        int weapon = slea.readInt();
-        int gender = slea.readByte();
-        int str = slea.readByte();
-        int dex = slea.readByte();
-        int _int = slea.readByte();
-        int luk = slea.readByte();
+        final String name = slea.readMapleAsciiString();
+        final int face = slea.readInt();
+        final int hair = slea.readInt();
+        final int hairColor = slea.readInt();
+        final int skinColor = slea.readInt();
+        final int top = slea.readInt();
+        final int bottom = slea.readInt();
+        final int shoes = slea.readInt();
+        final int weapon = slea.readInt();
+        final int gender = slea.readByte();
+        final int str = slea.readByte();
+        final int dex = slea.readByte();
+        final int _int = slea.readByte();
+        final int luk = slea.readByte();
 
-        MapleCharacter newchar = MapleCharacter.getDefault(c);
+        final MapleCharacter newchar = MapleCharacter.getDefault(c);
         newchar.setWorld(c.getWorld());
         newchar.setFace(face);
         newchar.setHair(hair + hairColor);
@@ -107,7 +107,7 @@ public class CreateCharHandler extends AbstractMaplePacketHandler {
         if (MapleCharacterUtil.hasSymbols(name)) {
             charok = false;
         }
-        if (name.length() < 4 || name.length() > 12) {
+        if (name.length() < 3 || name.length() > 12) {
             charok = false;
         }
         newchar.setTrueDamage(true);
