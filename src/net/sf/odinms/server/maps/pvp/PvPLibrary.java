@@ -12,7 +12,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 import java.util.Collections;
 
-public class PvPLibrary {
+public final class PvPLibrary {
     private static int pvpDamage;
     public static int maxDis;
     public static int maxHeight;
@@ -23,11 +23,11 @@ public class PvPLibrary {
     private static boolean magicrecovery = false;
     private static boolean magicguard = false;
     private static boolean mesguard = false;
-    private static double multi = 0;
-    private static int skill = 0;
+    private static double multi;
+    private static int skill;
     private static ISkill skil;
     private static boolean ignore = false;
-    private static int attackedDamage = 0;
+    private static int attackedDamage;
     private static MapleMonster pvpMob;
     private static Integer combo;
     private static final int MAX_PVP_DAMAGE = 30000;
@@ -39,7 +39,7 @@ public class PvPLibrary {
         final int luk = player.getTotalLuk();
         final int watk = player.getTotalWatk();
         switch (attack.skill) {
-            case 0: // normal attack
+            case 0: // Normal attack
                 multi = 1;
                 maxHeight = 35;
                 isAoe = false;
@@ -59,9 +59,9 @@ public class PvPLibrary {
             case 2001004:    // Energy Bolt
                 skil = SkillFactory.getSkill(2001004);
                 multi = skil.getEffect(player.getSkillLevel(skil)).getMatk();
-                final double mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
+                double mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d);
-                final int min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
+                int min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
                 maxDis = 200;
                 maxHeight = 35;
