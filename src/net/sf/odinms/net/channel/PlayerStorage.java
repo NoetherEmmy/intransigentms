@@ -10,21 +10,21 @@ public class PlayerStorage implements IPlayerStorage {
     final Map<String, MapleCharacter> nameToChar = new LinkedHashMap<>();
     final Map<Integer, MapleCharacter> idToChar = new LinkedHashMap<>();
 
-    public void registerPlayer(MapleCharacter chr) {
+    public void registerPlayer(final MapleCharacter chr) {
         nameToChar.put(chr.getName().toLowerCase(), chr);
         idToChar.put(chr.getId(), chr);
     }
 
-    public void deregisterPlayer(MapleCharacter chr) {
+    public void deregisterPlayer(final MapleCharacter chr) {
         nameToChar.remove(chr.getName().toLowerCase());
         idToChar.remove(chr.getId());
     }
 
-    public MapleCharacter getCharacterByName(String name) {
+    public MapleCharacter getCharacterByName(final String name) {
         return nameToChar.get(name.toLowerCase());
     }
 
-    public MapleCharacter getCharacterById(int id) {
+    public MapleCharacter getCharacterById(final int id) {
         return idToChar.get(id);
     }
 

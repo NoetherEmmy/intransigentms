@@ -9,13 +9,13 @@ import java.util.Random;
 
 public class PetCommandHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter p = c.getPlayer();
         p.resetAfkTime();
         //System.out.println(slea.toString());
-        int petId = slea.readInt();
-        int petIndex = p.getPetIndex(petId);
-        MaplePet pet;
+        final int petId = slea.readInt();
+        final int petIndex = p.getPetIndex(petId);
+        final MaplePet pet;
         if (petIndex == -1) {
             return;
         } else {
@@ -23,11 +23,11 @@ public class PetCommandHandler extends AbstractMaplePacketHandler {
         }
         slea.readInt();
         slea.readByte();
-        byte command = slea.readByte();
-        PetCommand petCommand = PetDataFactory.getPetCommand(pet.getItemId(), (int) command);
+        final byte command = slea.readByte();
+        final PetCommand petCommand = PetDataFactory.getPetCommand(pet.getItemId(), (int) command);
         boolean success = false;
-        Random rand = new Random();
-        int random = rand.nextInt(101);
+        final Random rand = new Random();
+        final int random = rand.nextInt(101);
         if (random <= petCommand.getProbability()) {
             success = true;
             if (pet.getCloseness() < 30000) {

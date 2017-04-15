@@ -21,7 +21,7 @@ public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
      *
      * @param size The size of the underlying stream.
      */
-    public MaplePacketLittleEndianWriter(int size) {
+    public MaplePacketLittleEndianWriter(final int size) {
         this.baos = new ByteArrayOutputStream(size);
         setByteOutputStream(new BAOSByteOutputStream(baos));
     }

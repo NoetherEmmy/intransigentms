@@ -21,12 +21,12 @@ import java.sql.SQLException;
 
 public class GuestLoginHandler implements MaplePacketHandler {
     @Override
-    public boolean validateState(MapleClient c) {
+    public boolean validateState(final MapleClient c) {
         return !c.isLoggedIn();
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         /*
         Connection con = DatabaseConnection.getConnection();
         Random r = new Random();
@@ -77,12 +77,12 @@ public class GuestLoginHandler implements MaplePacketHandler {
     }
 
     private String createRandomPass() {
-        Random r = new Random();
-        int passwordlength = r.nextInt(5) + 5;
-        StringBuilder sb = new StringBuilder();
-        char[] sLetters = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-        char[] cLetters = "abcdefghijklmnopqrstuvwxyz".toUpperCase().toCharArray(); // LOL GOD IM LAZY
-        char[] numbers = "0123456789".toCharArray();
+        final Random r = new Random();
+        final int passwordlength = r.nextInt(5) + 5;
+        final StringBuilder sb = new StringBuilder();
+        final char[] sLetters = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+        final char[] cLetters = "abcdefghijklmnopqrstuvwxyz".toUpperCase().toCharArray(); // LOL GOD IM LAZY
+        final char[] numbers = "0123456789".toCharArray();
         for (int i = 0; i < passwordlength; ++i) {
             switch (r.nextInt(3)) {
                 case 0:

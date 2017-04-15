@@ -10,7 +10,7 @@ public class BAOSByteOutputStream implements ByteOutputStream {
      *
      * @param baos <code>The ByteArrayOutputStream</code> to wrap this around.
      */
-    public BAOSByteOutputStream(ByteArrayOutputStream baos) {
+    public BAOSByteOutputStream(final ByteArrayOutputStream baos) {
         super();
         this.baos = baos;
     }
@@ -22,7 +22,7 @@ public class BAOSByteOutputStream implements ByteOutputStream {
      * @see net.sf.odinms.tools.data.output.ByteOutputStream#writeByte(byte)
      */
     @Override
-    public void writeByte(byte b) {
+    public void writeByte(final byte b) {
         baos.write(b);
     }
 }

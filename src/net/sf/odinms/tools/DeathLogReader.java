@@ -15,7 +15,7 @@ public final class DeathLogReader {
     private static File f;
     private static final Map<String, List<List<String>>> itemLogCache = new LinkedHashMap<>(3, 0.8f);
 
-    private DeathLogReader(File file) {
+    private DeathLogReader(final File file) {
         if (file == null) {
             throw new NullPointerException("Passing in null file to DeathLogReader");
         }
@@ -30,20 +30,20 @@ public final class DeathLogReader {
         return instance;
     }
 
-    public synchronized List<IItem> readDeathItems(String playerName) throws IOException, RuntimeException {
+    public synchronized List<IItem> readDeathItems(final String playerName) throws IOException, RuntimeException {
         return readDeathItems(playerName, 0, false);
     }
 
-    public synchronized List<IItem> readDeathItems(String playerName, int offset, boolean useCache) throws IOException, RuntimeException {
+    public synchronized List<IItem> readDeathItems(String playerName, final int offset, final boolean useCache) throws IOException, RuntimeException {
         if (offset < 0) {
             throw new IllegalArgumentException("Offset for readDeathItems may not be negative");
         }
 
         playerName = playerName.toLowerCase();
-        List<String> deathItemList;
+        final List<String> deathItemList;
         if (useCache) {
             if (itemLogCache.containsKey(playerName)) {
-                List<List<String>> deathItemLists = itemLogCache.get(playerName);
+                final List<List<String>> deathItemLists = itemLogCache.get(playerName);
                 if (offset < deathItemLists.size()) {
                     deathItemList = deathItemLists.get(deathItemLists.size() - 1 - offset);
                 } else {
@@ -62,14 +62,14 @@ public final class DeathLogReader {
                 );
             }
         } else {
-            Scanner scanner = new Scanner(f);
-            Pattern namePattern = Pattern.compile("(?i)Cleared items for " + playerName + " \\(Account: .*");
-            Pattern itemPattern = Pattern.compile("[0-9]{7} [^;].*");
-            List<List<String>> deathItemLists = new ArrayList<>(3);
+            final Scanner scanner = new Scanner(f);
+            final Pattern namePattern = Pattern.compile("(?i)Cleared items for " + playerName + " \\(Account: .*");
+            final Pattern itemPattern = Pattern.compile("[0-9]{7} [^;].*");
+            final List<List<String>> deathItemLists = new ArrayList<>(3);
 
             boolean gotName = false;
             while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
+                final String line = scanner.nextLine();
                 if (!gotName) {
                     if (namePattern.matcher(line).matches()) {
                         gotName = true;

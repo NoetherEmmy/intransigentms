@@ -6,7 +6,7 @@ public class MapleShopItem {
     private short availible;
 
     /** Creates a new instance of MapleShopItem */
-    public MapleShopItem(short buyable, int itemId, int price) {
+    public MapleShopItem(final short buyable, final int itemId, final int price) {
         this.buyable = buyable;
         this.itemId = itemId;
         this.price = price;
@@ -20,7 +20,7 @@ public class MapleShopItem {
         return availible;
     }
 
-    public void setAvailible(short set) {
+    public void setAvailible(final short set) {
         availible = set;
     }
 

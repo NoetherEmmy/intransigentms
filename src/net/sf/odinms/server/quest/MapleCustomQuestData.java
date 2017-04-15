@@ -17,13 +17,13 @@ public class MapleCustomQuestData implements MapleData, Serializable {
     private final Object data;
     private final MapleDataEntity parent;
 
-    public MapleCustomQuestData(String name, Object data, MapleDataEntity parent) {
+    public MapleCustomQuestData(final String name, final Object data, final MapleDataEntity parent) {
         this.name = name;
         this.data = data;
         this.parent = parent;
     }
 
-    public void addChild(MapleData child) {
+    public void addChild(final MapleData child) {
         children.add((MapleCustomQuestData) child);
     }
 
@@ -39,10 +39,10 @@ public class MapleCustomQuestData implements MapleData, Serializable {
         return new ArrayList<>(children);
     }
 
-    public MapleData getChildByPath(String name) {
+    public MapleData getChildByPath(final String name) {
         if (name.equals(this.name)) return this;
-        String lookup;
-        String nextName;
+        final String lookup;
+        final String nextName;
         if (!name.contains("/")) {
             lookup = name;
             nextName = name;
@@ -50,7 +50,7 @@ public class MapleCustomQuestData implements MapleData, Serializable {
             lookup = name.substring(0, name.indexOf("/"));
             nextName = name.substring(name.indexOf("/") + 1);
         }
-        for (MapleData child : children) {
+        for (final MapleData child : children) {
             if (child.getName().equals(lookup)) {
                 return child.getChildByPath(nextName);
             }

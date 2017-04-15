@@ -17,7 +17,7 @@ public class ByteBufferLittleEndianWriter extends GenericLittleEndianWriter {
      *
      * @param size The size of the fixed bytebuffer.
      */
-    public ByteBufferLittleEndianWriter(int size) {
+    public ByteBufferLittleEndianWriter(final int size) {
         this(size, false);
     }
 
@@ -27,7 +27,7 @@ public class ByteBufferLittleEndianWriter extends GenericLittleEndianWriter {
      * @param initialSize The size of the fixed bytebuffer.
      * @param autoExpand Expand if needed.
      */
-    public ByteBufferLittleEndianWriter(int initialSize, boolean autoExpand) {
+    public ByteBufferLittleEndianWriter(final int initialSize, final boolean autoExpand) {
         bb = ByteBuffer.allocate(initialSize);
         bb.setAutoExpand(autoExpand);
         setByteOutputStream(new ByteBufferOutputstream(bb));

@@ -13,13 +13,13 @@ import java.util.Random;
 
 public class PetFoodHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         if (c.getPlayer().getNoPets() == 0) {
             return;
         }
         int slot = 0;
-        MaplePet[] pets = c.getPlayer().getPets();
+        final MaplePet[] pets = c.getPlayer().getPets();
         for (int i = 0; i < 3; ++i) {
             if (pets[i] != null) {
                 if (pets[i].getFullness() < 100) {
@@ -29,12 +29,12 @@ public class PetFoodHandler extends AbstractMaplePacketHandler {
                 break;
             }
         }
-        MaplePet pet = c.getPlayer().getPet(slot);
+        final MaplePet pet = c.getPlayer().getPet(slot);
         slea.readInt();
         slea.readShort();
-        int itemId = slea.readInt();
+        final int itemId = slea.readInt();
         if (c.getPlayer().haveItem(itemId, 1, false, true)) {
-            boolean gainCloseness = new Random().nextInt(101) <= 50;
+            final boolean gainCloseness = new Random().nextInt(101) <= 50;
             int newFullness = pet.getFullness() + 30;
             if (pet.getFullness() < 100) {
                 if (newFullness > 100) {

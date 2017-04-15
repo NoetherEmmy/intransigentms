@@ -11,7 +11,7 @@ public enum CQuestStatus implements IntValueHolder {
     FEARLESS(4);
     private final int i;
 
-    CQuestStatus(int i) {
+    CQuestStatus(final int i) {
         this.i = i;
     }
 
@@ -20,8 +20,8 @@ public enum CQuestStatus implements IntValueHolder {
         return i;
     }
 
-    public static CQuestStatus getByValue(int val) {
-        for (CQuestStatus cqs : CQuestStatus.values()) {
+    public static CQuestStatus getByValue(final int val) {
+        for (final CQuestStatus cqs : CQuestStatus.values()) {
             if (cqs.getValue() == val) return cqs;
         }
         return null;
@@ -38,7 +38,7 @@ public enum CQuestStatus implements IntValueHolder {
      * @throws NullPointerException when {@code cqc1 == null || cqc2 == null}.
      * @return The maximum of the two arguments.
      */
-    public static CQuestStatus max(CQuestStatus cqc1, CQuestStatus cqc2) {
+    public static CQuestStatus max(final CQuestStatus cqc1, final CQuestStatus cqc2) {
         return cqc1.getValue() >= cqc2.getValue() ? cqc1 : cqc2;
     }
 }

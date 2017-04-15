@@ -21,13 +21,13 @@ public class MapleReactor extends AbstractMapleMapObject {
     private Integer trigger;
     //private static Logger log = LoggerFactory.getLogger(MapleReactor.class);
 
-    public MapleReactor(MapleReactorStats stats, int rid) {
+    public MapleReactor(final MapleReactorStats stats, final int rid) {
         this.stats = stats;
         this.rid = rid;
         alive = true;
     }
 
-    public void setTimerActive(boolean active) {
+    public void setTimerActive(final boolean active) {
         this.timerActive = active;
     }
 
@@ -39,7 +39,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         return rid;
     }
 
-    public void setState(byte state) {
+    public void setState(final byte state) {
         this.state = state;
     }
 
@@ -51,7 +51,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         return rid;
     }
 
-    public void setDelay(int delay) {
+    public void setDelay(final int delay) {
         this.delay = delay;
     }
 
@@ -68,7 +68,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         return stats.getType(state);
     }
 
-    public void setMap(MapleMap map) {
+    public void setMap(final MapleMap map) {
         this.map = map;
     }
 
@@ -84,12 +84,12 @@ public class MapleReactor extends AbstractMapleMapObject {
         return alive;
     }
 
-    public void setAlive(boolean alive) {
+    public void setAlive(final boolean alive) {
         this.alive = alive;
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         client.getSession().write(makeDestroyData());
     }
 
@@ -98,7 +98,7 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         client.getSession().write(makeSpawnData());
     }
 
@@ -106,16 +106,16 @@ public class MapleReactor extends AbstractMapleMapObject {
         return MaplePacketCreator.spawnReactor(this);
     }
 
-    public void delayedHitReactor(final MapleClient c, long delay) {
+    public void delayedHitReactor(final MapleClient c, final long delay) {
         TimerManager.getInstance().schedule(() -> hitReactor(c), delay);
     }
 
     /** {@code hitReactor} command for item-triggered reactors. */
-    public void hitReactor(MapleClient c) {
+    public void hitReactor(final MapleClient c) {
         hitReactor(0, (short) 0, c);
     }
 
-    public void hitReactor(int charPos, short stance, MapleClient c) {
+    public void hitReactor(final int charPos, final short stance, final MapleClient c) {
         if (trigger != null) {
             if (map.getPartyQuestInstance() != null) {
                 map.getPartyQuestInstance().trigger(trigger);
@@ -154,15 +154,15 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     public Rectangle getArea() {
-        int height = stats.getBR().y - stats.getTL().y;
-        int width  = stats.getBR().x - stats.getTL().x;
-        int origX  = getPosition().x + stats.getTL().x;
-        int origY  = getPosition().y + stats.getTL().y;
+        final int height = stats.getBR().y - stats.getTL().y;
+        final int width  = stats.getBR().x - stats.getTL().x;
+        final int origX  = getPosition().x + stats.getTL().x;
+        final int origY  = getPosition().y + stats.getTL().y;
 
         return new Rectangle(origX, origY, width, height);
     }
 
-    public void setTrigger(int trigger) {
+    public void setTrigger(final int trigger) {
         this.trigger = trigger;
     }
 
@@ -178,7 +178,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 

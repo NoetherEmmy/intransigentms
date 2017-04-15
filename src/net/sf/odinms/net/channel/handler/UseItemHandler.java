@@ -13,7 +13,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class UseItemHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         if (!c.getPlayer().isAlive()) {
             c.getSession().write(MaplePacketCreator.enableActions());
@@ -117,7 +117,7 @@ public class UseItemHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private void warpRandom(MapleClient c, int mapId) {
+    private void warpRandom(final MapleClient c, final int mapId) {
         final MapleMap target = c.getChannelServer().getMapFactory().getMap(mapId);
         c.getPlayer().changeMap(target, target.getRandomPortal());
     }

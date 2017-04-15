@@ -16,7 +16,7 @@ public final class PacketProcessor {
 
     private PacketProcessor() {
         int maxRecvOp = 0;
-        for (RecvPacketOpcode op : RecvPacketOpcode.values()) {
+        for (final RecvPacketOpcode op : RecvPacketOpcode.values()) {
             if (op.getValue() > maxRecvOp) {
                 maxRecvOp = op.getValue();
             }
@@ -24,22 +24,22 @@ public final class PacketProcessor {
         handlers = new MaplePacketHandler[maxRecvOp + 1];
     }
 
-    public MaplePacketHandler getHandler(short packetId) {
+    public MaplePacketHandler getHandler(final short packetId) {
         if (packetId > handlers.length) return null;
-        MaplePacketHandler handler = handlers[packetId];
+        final MaplePacketHandler handler = handlers[packetId];
         if (handler != null) return handler;
         return null;
     }
 
-    public void registerHandler(RecvPacketOpcode code, MaplePacketHandler handler) {
+    public void registerHandler(final RecvPacketOpcode code, final MaplePacketHandler handler) {
         try {
             handlers[code.getValue()] = handler;
-        } catch (ArrayIndexOutOfBoundsException aiobe) {
+        } catch (final ArrayIndexOutOfBoundsException aiobe) {
             System.err.println("Check your Recv packet opcodes -- something is wrong.");
         }
     }
 
-    public static synchronized PacketProcessor getProcessor(Mode mode) {
+    public static synchronized PacketProcessor getProcessor(final Mode mode) {
         if (instance == null) {
             instance = new PacketProcessor();
             instance.reset(mode);
@@ -47,7 +47,7 @@ public final class PacketProcessor {
         return instance;
     }
 
-    public void reset(Mode mode) {
+    public void reset(final Mode mode) {
         handlers = new MaplePacketHandler[handlers.length];
         registerHandler(RecvPacketOpcode.PONG, new KeepAliveHandler());
         if (mode == Mode.LOGINSERVER) {

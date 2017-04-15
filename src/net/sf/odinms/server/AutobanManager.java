@@ -5,19 +5,20 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AutobanManager implements Runnable {
     private static class ExpirationEntry implements Comparable<ExpirationEntry> {
         public final long time;
         public final int acc, points;
 
-        public ExpirationEntry(long time, int acc, int points) {
+        public ExpirationEntry(final long time, final int acc, final int points) {
             this.time = time;
             this.acc = acc;
             this.points = points;
         }
 
-        public int compareTo(AutobanManager.ExpirationEntry o) {
+        public int compareTo(final AutobanManager.ExpirationEntry o) {
             return (int) (time - o.time);
         }
     }
@@ -33,16 +34,16 @@ public class AutobanManager implements Runnable {
         return instance;
     }
 
-    public void autoban(MapleClient c, String reason) {
+    public void autoban(final MapleClient c, final String reason) {
         if (c.getPlayer().isGM()) return;
         addPoints(c, AUTOBAN_POINTS, 0, reason);
     }
 
-    public synchronized void addPoints(MapleClient c, int points, long expiration, String reason) {
+    public synchronized void addPoints(final MapleClient c, final int points, final long expiration, final String reason) {
         if (c.getPlayer().isGM()) return;
 
-        int acc = c.getPlayer().getAccountID();
-        List<String> reasonList;
+        final int acc = c.getPlayer().getAccountID();
+        final List<String> reasonList;
 
         if (this.points.containsKey(acc)) {
             if (this.points.get(acc) >= AUTOBAN_POINTS) {
@@ -59,15 +60,11 @@ public class AutobanManager implements Runnable {
         }
 
         if (this.points.get(acc) >= AUTOBAN_POINTS) {
-            String name = c.getPlayer().getName();
-            StringBuilder banReason = new StringBuilder();
-
-            for (String s : reasons.get(acc)) {
-                banReason.append(s);
-            }
+            final String name = c.getPlayer().getName();
+            final String banReason = reasons.get(acc).stream().collect(Collectors.joining());
 
             if (c.getChannelServer().AutoBan()) {
-                c.getPlayer().ban(banReason.toString(), true);
+                c.getPlayer().ban(banReason, true);
                 try {
                     c.getChannelServer()
                      .getWorldInterface()
@@ -78,7 +75,7 @@ public class AutobanManager implements Runnable {
                              name + " has been banned by the system. (Reason: " + reason + ")"
                          ).getBytes()
                      );
-                } catch (RemoteException e) {
+                } catch (final RemoteException e) {
                     c.getChannelServer().reconnectWorld();
                 }
             }
@@ -91,8 +88,8 @@ public class AutobanManager implements Runnable {
     }
 
     public void run() {
-        long now = System.currentTimeMillis();
-        for (ExpirationEntry e : expirations) {
+        final long now = System.currentTimeMillis();
+        for (final ExpirationEntry e : expirations) {
             if (e.time <= now) {
                 this.points.put(e.acc, this.points.get(e.acc) - e.points);
             } else {

@@ -26,9 +26,9 @@ public class HexTool {
      * @param  byteValue The byte to convert.
      * @return The hexadecimal representation of {@code byteValue}
      */
-    public static String toString(byte byteValue) {
-        int tmp = byteValue << 8;
-        char[] retstr = new char[] {
+    public static String toString(final byte byteValue) {
+        final int tmp = byteValue << 8;
+        final char[] retstr = new char[] {
             HEX[(tmp >> 12) & 0x0F],
             HEX[(tmp >> 8) & 0x0F]
         };
@@ -42,11 +42,11 @@ public class HexTool {
      * @param  buf The <code>ByteBuffer</code> to convert.
      * @return The hexadecimal representation of <code>buf</code>.
      */
-    public static String toString(ByteBuffer buf) {
+    public static String toString(final ByteBuffer buf) {
         buf.flip();
-        byte[] arr = new byte[buf.remaining()];
+        final byte[] arr = new byte[buf.remaining()];
         buf.get(arr);
-        String ret = toString(arr);
+        final String ret = toString(arr);
         buf.flip();
         buf.put(arr);
         return ret;
@@ -58,7 +58,7 @@ public class HexTool {
      * @param  intValue The integer to transform.
      * @return The hexadecimal representation of <code>intValue</code>.
      */
-    public static String toString(int intValue) {
+    public static String toString(final int intValue) {
         return Integer.toHexString(intValue);
     }
 
@@ -68,8 +68,8 @@ public class HexTool {
      * @param  bytes The bytes to convert.
      * @return The hexadecimal representation of {@code bytes}.
      */
-    public static String toString(byte[] bytes) {
-        StringBuilder hexed = new StringBuilder();
+    public static String toString(final byte[] bytes) {
+        final StringBuilder hexed = new StringBuilder();
         for (int i = 0; i < bytes.length; ++i) {
             hexed.append(toString(bytes[i]));
             hexed.append(' ');
@@ -86,9 +86,9 @@ public class HexTool {
      * @param  lea The {@code LittleEndianAccessor} to read from.
      * @return The hexadecimal representation of the byes read from {@code lea}.
      */
-    public static String toString(LittleEndianAccessor lea) {
+    public static String toString(final LittleEndianAccessor lea) {
         final int restLen = (int) lea.available();
-        byte[] bytes = new byte[restLen];
+        final byte[] bytes = new byte[restLen];
         for (int i = 0; i < restLen; ++i) {
             bytes[i] = lea.readByte();
         }
@@ -102,22 +102,22 @@ public class HexTool {
      * @param  bytes The bytes to convert.
      * @return The ASCII hexadecimal representation of <code>bytes</code>
      */
-    public static String toStringFromAscii(byte[] bytes) {
-        char[] ret = new char[bytes.length];
+    public static String toStringFromAscii(final byte[] bytes) {
+        final char[] ret = new char[bytes.length];
         for (int x = 0; x < bytes.length; ++x) {
             if (bytes[x] < 32 && bytes[x] >= 0) {
                 ret[x] = '.';
             } else {
-                int chr = ((short) bytes[x]) & 0xFF;
+                final int chr = ((short) bytes[x]) & 0xFF;
                 ret[x] = (char) chr;
             }
         }
         return String.valueOf(ret);
     }
 
-    public static String toPaddedStringFromAscii(byte[] bytes) {
-        String str = toStringFromAscii(bytes);
-        StringBuilder ret = new StringBuilder(str.length() * 3);
+    public static String toPaddedStringFromAscii(final byte[] bytes) {
+        final String str = toStringFromAscii(bytes);
+        final StringBuilder ret = new StringBuilder(str.length() * 3);
         for (int i = 0; i < str.length(); ++i) {
             ret.append(str.charAt(i));
             ret.append("  ");
@@ -131,15 +131,15 @@ public class HexTool {
      * @param  hex The string to convert.
      * @return The byte array representation of {@code hex}
      */
-    public static byte[] getByteArrayFromHexString(String hex) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public static byte[] getByteArrayFromHexString(final String hex) {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int nexti = 0, nextb = 0;
         boolean highoc = true;
         outer: for (;;) {
             int number = -1;
             while (number == -1) {
                 if (nexti == hex.length()) break outer;
-                char chr = hex.charAt(nexti);
+                final char chr = hex.charAt(nexti);
                 if (chr >= '0' && chr <= '9') {
                     number = chr - '0';
                 } else if (chr >= 'a' && chr <= 'f') {

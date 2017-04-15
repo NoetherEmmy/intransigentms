@@ -11,18 +11,18 @@ import java.awt.*;
 
 public class MonsterCarnivalHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int tab = slea.readByte();
-        int num = slea.readByte();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int tab = slea.readByte();
+        final int num = slea.readByte();
         c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playerSummoned(c.getPlayer().getName(), tab, num));
         if (tab == 0) {
-            MapleMonster mob = MapleLifeFactory.getMonster(getMonsterIdByNum(num));
+            final MapleMonster mob = MapleLifeFactory.getMonster(getMonsterIdByNum(num));
             //c.getPlayer().getMap().spawnMonsterOnGroundBelow(mob, randomizePosition(c.getPlayer().getMapId()));
             c.getPlayer().getMap().spawnMonsterOnGroundBelow(mob, randomizePosition(c.getPlayer().getMapId(), 1));
         }
     }
 
-    public Point randomizePosition(int mapid, int team) {
+    public Point randomizePosition(final int mapid, final int team) {
         int posx = 0;
         int posy = 0;
         if (mapid == 980000301) { // Room 3 iirc
@@ -79,7 +79,7 @@ public class MonsterCarnivalHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private static int rand(int lbound, int ubound) {
+    private static int rand(final int lbound, final int ubound) {
         return (int) ((Math.random() * (ubound - lbound + 1)) + lbound);
     }
 }

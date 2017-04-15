@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class AbstractPlayerInteraction {
     private final MapleClient c;
 
-    public AbstractPlayerInteraction(MapleClient c) {
+    public AbstractPlayerInteraction(final MapleClient c) {
         this.c = c;
     }
 
@@ -35,23 +35,23 @@ public class AbstractPlayerInteraction {
         return c.getPlayer();
     }
 
-    public void warp(int map) {
+    public void warp(final int map) {
         try {
             getPlayer().changeMap(map);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void warp(int map, int portal) {
+    public void warp(final int map, final int portal) {
         getPlayer().changeMap(map, portal);
     }
 
-    public void warp(int map, String portal) {
+    public void warp(final int map, final String portal) {
         getPlayer().changeMap(map, portal);
     }
 
-    public boolean warp(int map, String curPortal, String nextPortal) {
+    public boolean warp(final int map, final String curPortal, final String nextPortal) {
         if (getPlayer().getMap().getPortal(curPortal).getPortalState()) {
             getPlayer().changeMap(map, nextPortal);
             return true;
@@ -62,54 +62,54 @@ public class AbstractPlayerInteraction {
         }
     }
 
-    public void warpRandom(int mapId) {
+    public void warpRandom(final int mapId) {
         final MapleMap target = c.getChannelServer().getMapFactory().getMap(mapId);
         getPlayer().changeMap(target, target.getRandomPortal());
     }
 
-    private MapleMap getWarpMap(int map) {
+    private MapleMap getWarpMap(final int map) {
         if (getPlayer().getEventInstance() == null) {
             return ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(map);
         }
         return getPlayer().getEventInstance().getMapInstance(map);
     }
 
-    public MapleMap getMap(int map) {
+    public MapleMap getMap(final int map) {
         return getWarpMap(map);
     }
 
-    public boolean haveItem(int itemid) {
+    public boolean haveItem(final int itemid) {
         return haveItem(itemid, 1);
     }
 
-    public boolean haveItem(int itemid, int quantity) {
+    public boolean haveItem(final int itemid, final int quantity) {
         return haveItem(itemid, quantity, false, true);
     }
 
-    public boolean haveItem(int itemid, int quantity, boolean checkEquipped, boolean greaterOrEquals) {
+    public boolean haveItem(final int itemid, final int quantity, final boolean checkEquipped, final boolean greaterOrEquals) {
         return getPlayer().haveItem(itemid, quantity, checkEquipped, greaterOrEquals);
     }
 
-    public boolean canHold(int itemid) {
-        MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(itemid);
-        MapleInventory iv = getPlayer().getInventory(type);
+    public boolean canHold(final int itemid) {
+        final MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(itemid);
+        final MapleInventory iv = getPlayer().getInventory(type);
 
         return iv.getNextFreeSlot() > -1;
     }
 
-    public MapleQuestStatus.Status getQuestStatus(int id) {
+    public MapleQuestStatus.Status getQuestStatus(final int id) {
         return getPlayer().getQuest(MapleQuest.getInstance(id)).getStatus();
     }
 
-    public boolean gainItem(int id) {
+    public boolean gainItem(final int id) {
         return gainItem(id, (short) 1);
     }
 
-    public boolean gainItem(int id, short quantity) {
+    public boolean gainItem(final int id, final short quantity) {
         return gainItem(id, quantity, false, true);
     }
 
-    public boolean gainItem(int id, short quantity, boolean show) {
+    public boolean gainItem(final int id, final short quantity, final boolean show) {
         return gainItem(id, quantity, false, show);
     }
 
@@ -119,11 +119,11 @@ public class AbstractPlayerInteraction {
      *
      * @param randomStats Give random stats to the generated equip.
      */
-    public boolean gainItem(int id, short quantity, boolean randomStats, boolean show) {
+    public boolean gainItem(final int id, short quantity, final boolean randomStats, final boolean show) {
         if (quantity >= 0) {
-            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            IItem item = ii.getEquipById(id);
-            MapleInventoryType type = ii.getInventoryType(id);
+            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            final IItem item = ii.getEquipById(id);
+            final MapleInventoryType type = ii.getInventoryType(id);
             if (
                 type.equals(MapleInventoryType.EQUIP) &&
                 !ii.isThrowingStar(item.getItemId()) &&
@@ -152,7 +152,7 @@ public class AbstractPlayerInteraction {
             } else if (MapleInventoryManipulator.checkSpace(c, id, quantity, "")) {
                 if (id >= 5000000 && id <= 5000100) {
                     if (quantity > 1) quantity = 1;
-                    int petId = MaplePet.createPet(id);
+                    final int petId = MaplePet.createPet(id);
                     MapleInventoryManipulator.addById(c, id, (short) 1, null, petId);
                     if (show) c.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity));
                 } else {
@@ -182,33 +182,33 @@ public class AbstractPlayerInteraction {
         return true;
     }
 
-    public void changeMusic(String songName) {
+    public void changeMusic(final String songName) {
         getPlayer().getMap().broadcastMessage(MaplePacketCreator.musicChange(songName));
     }
 
     // Default playerMessage and mapMessage to use type 5
-    public void playerMessage(String message) {
+    public void playerMessage(final String message) {
         playerMessage(5, message);
     }
 
-    public void mapMessage(String message) {
+    public void mapMessage(final String message) {
         mapMessage(5, message);
     }
 
-    public void guildMessage(String message) {
+    public void guildMessage(final String message) {
         guildMessage(5, message);
     }
 
-    public void playerMessage(int type, String message) {
+    public void playerMessage(final int type, final String message) {
         getPlayer().dropMessage(type, message);
     }
 
-    public void mapMessage(int type, String message) {
+    public void mapMessage(final int type, final String message) {
         getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(type, message));
     }
 
-    public void guildMessage(int type, String message) {
-        MapleGuild guild = getGuild();
+    public void guildMessage(final int type, final String message) {
+        final MapleGuild guild = getGuild();
         if (guild != null) {
             guild.guildMessage(MaplePacketCreator.serverNotice(type, message));
         }
@@ -217,7 +217,7 @@ public class AbstractPlayerInteraction {
     public MapleGuild getGuild() {
         try {
             return c.getChannelServer().getWorldInterface().getGuild(getPlayer().getGuildId(), null);
-        } catch (RemoteException ex) {
+        } catch (final RemoteException ex) {
             Logger.getLogger(AbstractPlayerInteraction.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -234,9 +234,9 @@ public class AbstractPlayerInteraction {
     /**
      * PQ method: Gives items/exp to all party members.
      */
-    public void givePartyItems(int id, short quantity, List<MapleCharacter> party) {
-        for (MapleCharacter chr : party) {
-            MapleClient cl = chr.getClient();
+    public void givePartyItems(final int id, final short quantity, final List<MapleCharacter> party) {
+        for (final MapleCharacter chr : party) {
+            final MapleClient cl = chr.getClient();
             if (quantity >= 0) {
                 MapleInventoryManipulator.addById(cl, id, quantity);
             } else {
@@ -250,7 +250,7 @@ public class AbstractPlayerInteraction {
      * PQ gain EXP: Multiplied by channel rate and absolute EXP multiplier here
      * to allow global values to be input direct into NPCs.
      */
-    public void givePartyExp(final int amount, List<MapleCharacter> party) {
+    public void givePartyExp(final int amount, final List<MapleCharacter> party) {
         party.forEach(chr ->
             chr.gainExp(amount * c.getChannelServer().getExpRate() * chr.getAbsoluteXp(), true, true)
         );
@@ -260,9 +260,9 @@ public class AbstractPlayerInteraction {
      * Remove all items of type from party.
      * Combination of {@code haveItem} and {@code gainItem}.
      */
-    public void removeFromParty(int id, List<MapleCharacter> party) {
-        for (MapleCharacter chr : party) {
-            int possesed = chr.getItemQuantity(id, false);
+    public void removeFromParty(final int id, final List<MapleCharacter> party) {
+        for (final MapleCharacter chr : party) {
+            final int possesed = chr.getItemQuantity(id, false);
 
             if (possesed > 0) {
                 MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(id), id, possesed, true, false);
@@ -271,7 +271,7 @@ public class AbstractPlayerInteraction {
         }
     }
 
-    public void removeAll(int id) {
+    public void removeAll(final int id) {
         removeAll(id, false);
     }
 
@@ -286,20 +286,20 @@ public class AbstractPlayerInteraction {
      * {@link AbstractPlayerInteraction#gainItem}.
      * </p>
      */
-    public void removeAll(int id, boolean checkEquipped) {
+    public void removeAll(final int id, final boolean checkEquipped) {
         MapleInventoryManipulator.removeAllById(c, id, checkEquipped);
     }
 
-    public void gainCloseness(int closeness, int index) {
-        MaplePet pet = getPlayer().getPet(index);
+    public void gainCloseness(final int closeness, final int index) {
+        final MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
             c.getSession().write(MaplePacketCreator.updatePet(pet, true));
         }
     }
 
-    public void gainClosenessAll(int closeness) {
-        for (MaplePet pet : getPlayer().getPets()) {
+    public void gainClosenessAll(final int closeness) {
+        for (final MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
                 c.getSession().write(MaplePacketCreator.updatePet(pet, true));
@@ -311,19 +311,19 @@ public class AbstractPlayerInteraction {
         return getPlayer().getMap().getId();
     }
 
-    public int getPlayerCount(int mapid) {
+    public int getPlayerCount(final int mapid) {
         return c.getChannelServer().getMapFactory().getMap(mapid).getCharacters().size();
     }
 
-    public int getCurrentPartyId(int mapId) {
+    public int getCurrentPartyId(final int mapId) {
         return getMap(mapId).getCurrentPartyId();
     }
 
-    public void showInstruction(String msg, int width, int height) {
+    public void showInstruction(final String msg, final int width, final int height) {
         c.getSession().write(MaplePacketCreator.sendHint(msg, width, height));
     }
 
-    public void openNpc(int npcid) {
+    public void openNpc(final int npcid) {
         NPCScriptManager.getInstance().dispose(c);
         NPCScriptManager.getInstance().start(c, npcid);
     }
@@ -332,15 +332,15 @@ public class AbstractPlayerInteraction {
         return c.getChannelServer().getServerName();
     }
 
-    public void startMapEffect(String msg) {
+    public void startMapEffect(final String msg) {
         getPlayer().getMap().startMapEffect(msg, 5120008); // Might work?
     }
 
     /**
      * Spawns an NPC at a custom position.
      */
-    public void spawnNpc(int npcId, Point pos) {
-        MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+    public void spawnNpc(final int npcId, final Point pos) {
+        final MapleNPC npc = MapleLifeFactory.getNPC(npcId);
         if (!npc.getName().equals("MISSINGNO")) {
             npc.setPosition(pos);
             npc.setCy(pos.y);

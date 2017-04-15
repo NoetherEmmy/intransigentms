@@ -21,7 +21,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     private final MapleReactor reactor;
     //private static final Logger log = LoggerFactory.getLogger(ReactorActionManager.class);
 
-    public ReactorActionManager(MapleClient c, MapleReactor reactor) {
+    public ReactorActionManager(final MapleClient c, final MapleReactor reactor) {
         super(c);
         this.reactor = reactor;
     }
@@ -31,11 +31,11 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         dropItems(false, 0, 0, 0, 0);
     }
 
-    public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso) {
+    public void dropItems(final boolean meso, final int mesoChance, final int minMeso, final int maxMeso) {
         dropItems(meso, mesoChance, minMeso, maxMeso, 0);
     }
 
-    public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
+    public void dropItems(final boolean meso, final int mesoChance, final int minMeso, final int maxMeso, final int minItems) {
         final List<DropEntry> chances = getDropChances();
         final List<DropEntry> items = new ArrayList<>();
         int numItems = 0;
@@ -45,7 +45,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         }
 
         // Narrow list down by chances.
-        Iterator<DropEntry> iter = chances.iterator();
+        final Iterator<DropEntry> iter = chances.iterator();
         //for (DropEntry d : chances) {
         while (iter.hasNext()) {
             final DropEntry d = iter.next();
@@ -70,13 +70,13 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
         for (final DropEntry d : items) {
             if (d.itemId == 0) {
-                int range = maxMeso - minMeso;
-                int displayDrop = (int) (Math.random() * range) + minMeso;
-                int mesoDrop = displayDrop * ChannelServer.getInstance(getClient().getChannel()).getMesoRate();
+                final int range = maxMeso - minMeso;
+                final int displayDrop = (int) (Math.random() * range) + minMeso;
+                final int mesoDrop = displayDrop * ChannelServer.getInstance(getClient().getChannel()).getMesoRate();
                 reactor.getMap().spawnMesoDrop(mesoDrop, displayDrop, dropPos, reactor, getPlayer(), meso);
             } else {
-                IItem drop;
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final IItem drop;
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 if (ii.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
                     drop = new Item(d.itemId, (byte) 0, (short) 1);
                 } else {
@@ -88,22 +88,22 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         }
     }
 
-    public void dropItem(int itemId) {
+    public void dropItem(final int itemId) {
         dropItem(itemId, 1);
     }
 
-    public void dropItem(int itemId, int qty) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Point dropPos = new Point(reactor.getPosition().x, reactor.getPosition().y);
+    public void dropItem(final int itemId, final int qty) {
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final Point dropPos = new Point(reactor.getPosition().x, reactor.getPosition().y);
 
         dropPos.x -= 12 * qty;
 
         for (int i = 0; i < qty; ++i) {
             if (itemId == 0) {
-                int mesoDrop = qty * ChannelServer.getInstance(getClient().getChannel()).getMesoRate();
+                final int mesoDrop = qty * ChannelServer.getInstance(getClient().getChannel()).getMesoRate();
                 reactor.getMap().spawnMesoDrop(mesoDrop, qty, dropPos, reactor, getPlayer(), true);
             } else {
-                IItem drop;
+                final IItem drop;
                 if (ii.getInventoryType(itemId) != MapleInventoryType.EQUIP) {
                     drop = new Item(itemId, (byte) 0, (short) 1);
                 } else {
@@ -120,36 +120,36 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     }
 
     // Summon one monster on reactor location
-    public void spawnMonster(int id) {
+    public void spawnMonster(final int id) {
         spawnMonster(id, 1, getPosition());
     }
 
     // Summon one monster, remote location
-    public void spawnMonster(int id, int x, int y) {
+    public void spawnMonster(final int id, final int x, final int y) {
         spawnMonster(id, 1, new Point(x, y));
     }
 
     // Multiple monsters, reactor location
-    public void spawnMonster(int id, int qty) {
+    public void spawnMonster(final int id, final int qty) {
         spawnMonster(id, qty, getPosition());
     }
 
     // Multiple monsters, remote location
-    public void spawnMonster(int id, int qty, int x, int y) {
+    public void spawnMonster(final int id, final int qty, final int x, final int y) {
         spawnMonster(id, qty, new Point(x, y));
     }
 
     // Handler for all spawnMonster
-    private void spawnMonster(int id, int qty, Point pos) {
+    private void spawnMonster(final int id, final int qty, final Point pos) {
         for (int i = 0; i < qty; ++i) {
-            MapleMonster mob = MapleLifeFactory.getMonster(id);
+            final MapleMonster mob = MapleLifeFactory.getMonster(id);
             reactor.getMap().spawnMonsterOnGroundBelow(mob, pos);
         }
     }
 
     // Returns slightly above the reactor's position for monster spawns
     public Point getPosition() {
-        Point pos = reactor.getPosition();
+        final Point pos = reactor.getPosition();
         pos.y -= 10;
         return pos;
     }
@@ -157,14 +157,14 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     /**
      * Spawns an NPC at the reactor's location
      */
-    public void spawnNpc(int npcId) {
+    public void spawnNpc(final int npcId) {
         spawnNpc(npcId, getPosition());
     }
 
     /**
      * Spawns an NPC at a custom position
      */
-    public void spawnNpc(int npcId, int x, int y) {
+    public void spawnNpc(final int npcId, final int x, final int y) {
         spawnNpc(npcId, new Point(x, y));
     }
 
@@ -172,29 +172,29 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         return reactor;
     }
 
-    public void spawnFakeMonster(int id) {
+    public void spawnFakeMonster(final int id) {
         spawnFakeMonster(id, 1, getPosition());
     }
 
     // Summon one monster, remote location
-    public void spawnFakeMonster(int id, int x, int y) {
+    public void spawnFakeMonster(final int id, final int x, final int y) {
         spawnFakeMonster(id, 1, new Point(x, y));
     }
 
     // Multiple monsters, reactor location
-    public void spawnFakeMonster(int id, int qty) {
+    public void spawnFakeMonster(final int id, final int qty) {
         spawnFakeMonster(id, qty, getPosition());
     }
 
     // Multiple monsters, remote location
-    public void spawnFakeMonster(int id, int qty, int x, int y) {
+    public void spawnFakeMonster(final int id, final int qty, final int x, final int y) {
         spawnFakeMonster(id, qty, new Point(x, y));
     }
 
     // Handler for all spawnFakeMonster
-    private void spawnFakeMonster(int id, int qty, Point pos) {
+    private void spawnFakeMonster(final int id, final int qty, final Point pos) {
         for (int i = 0; i < qty; ++i) {
-            MapleMonster mob = MapleLifeFactory.getMonster(id);
+            final MapleMonster mob = MapleLifeFactory.getMonster(id);
             reactor.getMap().spawnFakeMonsterOnGroundBelow(mob, pos);
         }
     }
@@ -203,29 +203,29 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         reactor.getMap().killAllMonsters(false);
     }
 
-    public void killMonster(int monsId) {
+    public void killMonster(final int monsId) {
         reactor.getMap().killMonster(monsId);
     }
 
-    public void closePortal(int mapid, String pName) {
+    public void closePortal(final int mapid, final String pName) {
         getClient().getChannelServer().getMapFactory().getMap(mapid).getPortal(pName).setPortalState(MaplePortal.CLOSE);
     }
 
-    public void openPortal(int mapid, String pName) {
+    public void openPortal(final int mapid, final String pName) {
         getClient().getChannelServer().getMapFactory().getMap(mapid).getPortal(pName).setPortalState(MaplePortal.OPEN);
     }
 
-    public void closeDoor(int mapid) {
+    public void closeDoor(final int mapid) {
         getClient().getChannelServer().getMapFactory().getMap(mapid).setReactorState();
     }
 
-    public void openDoor(int mapid) {
+    public void openDoor(final int mapid) {
         getClient().getChannelServer().getMapFactory().getMap(mapid).resetReactors();
     }
 
-    public void createMapMonitor(int pMapId, String pName) {
-        MapleMap pMap = getClient().getChannelServer().getMapFactory().getMap(pMapId);
-        MaplePortal portal = pMap.getPortal(pName);
-        BossMapMonitor bmm = new BossMapMonitor(getPlayer().getMap(), pMap, portal);
+    public void createMapMonitor(final int pMapId, final String pName) {
+        final MapleMap pMap = getClient().getChannelServer().getMapFactory().getMap(pMapId);
+        final MaplePortal portal = pMap.getPortal(pName);
+        final BossMapMonitor bmm = new BossMapMonitor(getPlayer().getMap(), pMap, portal);
     }
 }

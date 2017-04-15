@@ -9,7 +9,7 @@ public class MesoDropHandler extends AbstractMaplePacketHandler {
     public MesoDropHandler() {
     }
 
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         slea.readInt();
         final int meso = slea.readInt();

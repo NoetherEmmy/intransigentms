@@ -15,7 +15,7 @@ public class PNGMapleCanvas implements MapleCanvas {
 
     private final byte[] data;
 
-    public PNGMapleCanvas(int width, int height, int dataLength, int format, byte[] data) {
+    public PNGMapleCanvas(final int width, final int height, final int dataLength, final int format, final byte[] data) {
         super();
         this.height = height;
         this.width = width;
@@ -43,9 +43,9 @@ public class PNGMapleCanvas implements MapleCanvas {
     @Override
     public BufferedImage getImage() {
         int sizeUncompressed = 0;
-        int size8888;
+        final int size8888;
         int maxWriteBuf = 2;
-        int maxHeight = 3;
+        final int maxHeight = 3;
         byte[] writeBuf = new byte[maxWriteBuf];
         //byte[] rowPointers = new byte[maxHeight];
         switch (format) {
@@ -73,18 +73,18 @@ public class PNGMapleCanvas implements MapleCanvas {
         */
         final Inflater dec = new Inflater();
         dec.setInput(data, 0, dataLength);
-        int declen;
-        byte[] uc = new byte[sizeUncompressed];
+        final int declen;
+        final byte[] uc = new byte[sizeUncompressed];
         try {
             declen = dec.inflate(uc);
-        } catch (DataFormatException dfe) {
+        } catch (final DataFormatException dfe) {
             throw new RuntimeException("Error", dfe);
         }
         dec.end();
         if (format == 1) {
             for (int i = 0; i < sizeUncompressed; ++i) {
-                byte low = (byte) (uc[i] & 0x0F);
-                byte high = (byte) (uc[i] & 0xF0);
+                final byte low = (byte) (uc[i] & 0x0F);
+                final byte high = (byte) (uc[i] & 0xF0);
                 writeBuf[(i << 1)] = (byte) (((low << 4) | low) & 0xFF);
                 writeBuf[(i << 1) + 1] = (byte) (high | ((high >>> 4) & 0xF));
             }
@@ -92,9 +92,9 @@ public class PNGMapleCanvas implements MapleCanvas {
             writeBuf = uc;
         } else if (format == 513) {
             for (int i = 0; i < declen; i += 2) {
-                byte bBits = (byte) ((uc[i] & 0x1F) << 3);
-                byte gBits = (byte) (((uc[i + 1] & 0x07) << 5) | ((uc[i] & 0xE0) >> 3));
-                byte rBits = (byte) (uc[i + 1] & 0xF8);
+                final byte bBits = (byte) ((uc[i] & 0x1F) << 3);
+                final byte gBits = (byte) (((uc[i + 1] & 0x07) << 5) | ((uc[i] & 0xE0) >> 3));
+                final byte rBits = (byte) (uc[i + 1] & 0xF8);
                 writeBuf[(i << 1)] = (byte) (bBits | (bBits >> 5));
                 writeBuf[(i << 1) + 1] = (byte) (gBits | (gBits >> 6));
                 writeBuf[(i << 1) + 2] = (byte) (rBits | (rBits >> 5));
@@ -116,13 +116,13 @@ public class PNGMapleCanvas implements MapleCanvas {
                 }
             }
         }
-        DataBufferByte imgData = new DataBufferByte(writeBuf, sizeUncompressed);
+        final DataBufferByte imgData = new DataBufferByte(writeBuf, sizeUncompressed);
 
         //SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, c.getWidth(), c.getHeight(), 4, c.getWidth() * 4, new int[] {2, 1, 0, 3});
-        SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 4, width * 4, ZAHLEN);
-        WritableRaster imgRaster = Raster.createWritableRaster(sm, imgData, new Point());
+        final SampleModel sm = new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 4, width * 4, ZAHLEN);
+        final WritableRaster imgRaster = Raster.createWritableRaster(sm, imgData, new Point());
 
-        BufferedImage aa = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage aa = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         aa.setData(imgRaster);
         return aa;
     }

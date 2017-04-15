@@ -15,17 +15,17 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class PetLootHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter p = c.getPlayer();
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
         if (p.getNoPets() < 1) return;
 
         final int petIndex = p.getPetIndex(slea.readInt());
         if (petIndex < 0) return;
-        MaplePet pet = p.getPet(petIndex);
+        final MaplePet pet = p.getPet(petIndex);
         slea.skip(13);
-        int oid = slea.readInt();
+        final int oid = slea.readInt();
         final MapleMapObject ob = p.getMap().getMapObject(oid);
         if (ob == null || pet == null) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
@@ -38,7 +38,7 @@ public class PetLootHandler extends AbstractMaplePacketHandler {
                     c.getSession().write(MaplePacketCreator.getInventoryFull());
                     return;
                 }
-                double distance = pet.getPos().distanceSq(mapItem.getPosition());
+                final double distance = pet.getPos().distanceSq(mapItem.getPosition());
                 p.getCheatTracker().checkPickupAgain();
                 if (distance > 90000.0d) { // 300^2, 550 is approximately the range of ultimates
                     p.getCheatTracker().registerOffense(CheatingOffense.ITEMVAC);

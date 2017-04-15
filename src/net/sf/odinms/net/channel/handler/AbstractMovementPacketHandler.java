@@ -12,23 +12,23 @@ import java.util.List;
 public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketHandler {
     //private static Logger log = LoggerFactory.getLogger(AbstractMovementPacketHandler.class);
 
-    protected List<LifeMovementFragment> parseMovement(LittleEndianAccessor lea) {
-        List<LifeMovementFragment> res = new ArrayList<>();
-        int numCommands = lea.readByte();
+    protected List<LifeMovementFragment> parseMovement(final LittleEndianAccessor lea) {
+        final List<LifeMovementFragment> res = new ArrayList<>();
+        final int numCommands = lea.readByte();
         for (int i = 0; i < numCommands; ++i) {
-            int command = lea.readByte();
+            final int command = lea.readByte();
             switch (command) {
                 case 0: // Normal move
                 case 5:
                 case 17: { // Float
-                    int xpos = lea.readShort();
-                    int ypos = lea.readShort();
-                    int xwobble = lea.readShort();
-                    int ywobble = lea.readShort();
-                    int unk = lea.readShort();
-                    int newstate = lea.readByte();
-                    int duration = lea.readShort();
-                    AbsoluteLifeMovement alm =
+                    final int xpos = lea.readShort();
+                    final int ypos = lea.readShort();
+                    final int xwobble = lea.readShort();
+                    final int ywobble = lea.readShort();
+                    final int unk = lea.readShort();
+                    final int newstate = lea.readByte();
+                    final int duration = lea.readShort();
+                    final AbsoluteLifeMovement alm =
                         new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
                     alm.setUnk(unk);
                     alm.setPixelsPerSecond(new Point(xwobble, ywobble));
@@ -43,11 +43,11 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                 case 12:
                 case 13: // Shot-jump-back
                 case 16: { // Float
-                    int xmod = lea.readShort();
-                    int ymod = lea.readShort();
-                    int newstate = lea.readByte();
-                    int duration = lea.readShort();
-                    RelativeLifeMovement rlm =
+                    final int xmod = lea.readShort();
+                    final int ymod = lea.readShort();
+                    final int newstate = lea.readByte();
+                    final int duration = lea.readShort();
+                    final RelativeLifeMovement rlm =
                         new RelativeLifeMovement(command, new Point(xmod, ymod), duration, newstate);
                     res.add(rlm);
                     // log.trace("Relative move {},{} state {}, duration {}", new Object[] { xmod, ymod, newstate,
@@ -60,12 +60,12 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                 case 8: // Assassinate
                 case 9: // Rush
                 case 14: {
-                    int xpos = lea.readShort();
-                    int ypos = lea.readShort();
-                    int xwobble = lea.readShort();
-                    int ywobble = lea.readShort();
-                    int newstate = lea.readByte();
-                    TeleportMovement tm = new TeleportMovement(command, new Point(xpos, ypos), newstate);
+                    final int xpos = lea.readShort();
+                    final int ypos = lea.readShort();
+                    final int xwobble = lea.readShort();
+                    final int ywobble = lea.readShort();
+                    final int newstate = lea.readByte();
+                    final TeleportMovement tm = new TeleportMovement(command, new Point(xpos, ypos), newstate);
                     tm.setPixelsPerSecond(new Point(xwobble, ywobble));
                     res.add(tm);
                     break;
@@ -75,26 +75,26 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
                     break;
                 }
                 case 11: { // Chair
-                    int xpos = lea.readShort();
-                    int ypos = lea.readShort();
-                    int unk = lea.readShort();
-                    int newstate = lea.readByte();
-                    int duration = lea.readShort();
-                    ChairMovement cm = new ChairMovement(command, new Point(xpos, ypos), duration, newstate);
+                    final int xpos = lea.readShort();
+                    final int ypos = lea.readShort();
+                    final int unk = lea.readShort();
+                    final int newstate = lea.readByte();
+                    final int duration = lea.readShort();
+                    final ChairMovement cm = new ChairMovement(command, new Point(xpos, ypos), duration, newstate);
                     cm.setUnk(unk);
                     res.add(cm);
                     break;
                 }
                 case 15: {
-                    int xpos = lea.readShort();
-                    int ypos = lea.readShort();
-                    int xwobble = lea.readShort();
-                    int ywobble = lea.readShort();
-                    int unk = lea.readShort();
-                    int fh = lea.readShort();
-                    int newstate = lea.readByte();
-                    int duration = lea.readShort();
-                    JumpDownMovement jdm =
+                    final int xpos = lea.readShort();
+                    final int ypos = lea.readShort();
+                    final int xwobble = lea.readShort();
+                    final int ywobble = lea.readShort();
+                    final int unk = lea.readShort();
+                    final int fh = lea.readShort();
+                    final int newstate = lea.readByte();
+                    final int duration = lea.readShort();
+                    final JumpDownMovement jdm =
                         new JumpDownMovement(command, new Point(xpos, ypos), duration, newstate);
                     jdm.setUnk(unk);
                     jdm.setPixelsPerSecond(new Point(xwobble, ywobble));
@@ -119,11 +119,11 @@ public abstract class AbstractMovementPacketHandler extends AbstractMaplePacketH
         return res;
     }
 
-    protected void updatePosition(List<LifeMovementFragment> movement, AnimatedMapleMapObject target, int yoffset) {
-        for (LifeMovementFragment move : movement) {
+    protected void updatePosition(final List<LifeMovementFragment> movement, final AnimatedMapleMapObject target, final int yoffset) {
+        for (final LifeMovementFragment move : movement) {
             if (move instanceof LifeMovement) {
                 if (move instanceof AbsoluteLifeMovement) {
-                    Point position = move.getPosition();
+                    final Point position = move.getPosition();
                     position.y += yoffset;
                     target.setPosition(position);
                 }

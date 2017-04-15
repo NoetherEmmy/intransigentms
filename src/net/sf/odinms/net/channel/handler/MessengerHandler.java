@@ -13,32 +13,32 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.rmi.RemoteException;
 
 public class MessengerHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        String input;
-        byte mode = slea.readByte();
-        MapleCharacter player = c.getPlayer();
-        WorldChannelInterface wci = ChannelServer.getInstance(c.getChannel()).getWorldInterface();
+        final String input;
+        final byte mode = slea.readByte();
+        final MapleCharacter player = c.getPlayer();
+        final WorldChannelInterface wci = ChannelServer.getInstance(c.getChannel()).getWorldInterface();
         MapleMessenger messenger = player.getMessenger();
         switch (mode) {
             case 0x00: // Open
                 if (messenger == null) {
-                    int messengerid = slea.readInt();
+                    final int messengerid = slea.readInt();
                     if (messengerid == 0) { // Create
                         try {
-                            MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
+                            final MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
                             messenger = wci.createMessenger(messengerplayer);
                             player.setMessenger(messenger);
                             player.setMessengerPosition(0);
-                        } catch (RemoteException e) {
+                        } catch (final RemoteException e) {
                             c.getChannelServer().reconnectWorld();
                         }
                     } else { // Join
                         try {
                             messenger = wci.getMessenger(messengerid);
                             if (messenger != null) {
-                                int position = messenger.getLowestPosition();
-                                MapleMessengerCharacter messengerplayer =
+                                final int position = messenger.getLowestPosition();
+                                final MapleMessengerCharacter messengerplayer =
                                     new MapleMessengerCharacter(player, position);
                                 if (messenger.getMembers().size() < 3) {
                                     player.setMessenger(messenger);
@@ -51,7 +51,7 @@ public class MessengerHandler extends AbstractMaplePacketHandler {
                                     );
                                 }
                             }
-                        } catch (RemoteException re) {
+                        } catch (final RemoteException re) {
                             c.getChannelServer().reconnectWorld();
                         }
                     }
@@ -59,10 +59,10 @@ public class MessengerHandler extends AbstractMaplePacketHandler {
                 break;
             case 0x02: // Exit
                 if (messenger != null) {
-                    MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
+                    final MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
                     try {
                         wci.leaveMessenger(messenger.getId(), messengerplayer);
-                    } catch (RemoteException e) {
+                    } catch (final RemoteException e) {
                         c.getChannelServer().reconnectWorld();
                     }
                     player.setMessenger(null);
@@ -72,7 +72,7 @@ public class MessengerHandler extends AbstractMaplePacketHandler {
             case 0x03: // Invite
                 if (messenger.getMembers().size() < 3) {
                     input = slea.readMapleAsciiString();
-                    MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(input);
+                    final MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(input);
                     if (target != null) {
                         if (target.getMessenger() == null) {
                             target
@@ -111,7 +111,7 @@ public class MessengerHandler extends AbstractMaplePacketHandler {
                             } else {
                                 c.getSession().write(MaplePacketCreator.messengerNote(input, 4, 0));
                             }
-                        } catch (RemoteException e) {
+                        } catch (final RemoteException e) {
                             c.getChannelServer().reconnectWorld();
                         }
                     }
@@ -126,8 +126,8 @@ public class MessengerHandler extends AbstractMaplePacketHandler {
                 }
                 break;
             case 0x05: // Decline
-                String targeted = slea.readMapleAsciiString();
-                MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(targeted);
+                final String targeted = slea.readMapleAsciiString();
+                final MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(targeted);
                 if (target != null) {
                     if (target.getMessenger() != null) {
                         target
@@ -144,18 +144,18 @@ public class MessengerHandler extends AbstractMaplePacketHandler {
                 } else {
                     try {
                         wci.declineChat(targeted, player.getName());
-                    } catch (RemoteException e) {
+                    } catch (final RemoteException e) {
                         c.getChannelServer().reconnectWorld();
                     }
                 }
                 break;
             case 0x06: // Message
                 if (messenger != null) {
-                    MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
+                    final MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
                     input = slea.readMapleAsciiString();
                     try {
                         wci.messengerChat(messenger.getId(), input, messengerplayer.getName());
-                    } catch (RemoteException e) {
+                    } catch (final RemoteException e) {
                         c.getChannelServer().reconnectWorld();
                     }
                 }

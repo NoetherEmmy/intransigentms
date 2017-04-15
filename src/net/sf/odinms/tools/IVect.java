@@ -70,10 +70,10 @@ public interface IVect {
 
     /** Returns a(n ordered) list (<code>ArrayList</code>) of <code>Vect</code>s representing
      ** the basis vectors for the given <code>dimension</code> */
-    static List<Vect> basis(int dimension) {
-        List<Vect> basis = new ArrayList<>(dimension);
+    static List<Vect> basis(final int dimension) {
+        final List<Vect> basis = new ArrayList<>(dimension);
         for (int i = 0; i < dimension; ++i) {
-            Vect v = new Vect(dimension);
+            final Vect v = new Vect(dimension);
             v.let(i, 1);
             basis.add(v);
         }
@@ -82,10 +82,10 @@ public interface IVect {
 
     /** Returns a(n ordered) list (<code>ArrayList</code>) of <code>VectR</code>s representing
      ** the basis vectors for the given <code>dimension</code> */
-    static List<VectR> basisR(int dimension) {
-        List<VectR> basis = new ArrayList<>(dimension);
+    static List<VectR> basisR(final int dimension) {
+        final List<VectR> basis = new ArrayList<>(dimension);
         for (int i = 0; i < dimension; ++i) {
-            VectR v = new VectR(dimension);
+            final VectR v = new VectR(dimension);
             v.let(i, 1);
             basis.add(v);
         }

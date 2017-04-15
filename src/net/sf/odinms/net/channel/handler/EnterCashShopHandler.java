@@ -14,8 +14,8 @@ import java.rmi.RemoteException;
 
 public class EnterCashShopHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter player = c.getPlayer();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final MapleCharacter player = c.getPlayer();
         if (player.getClient().getChannelServer().CStoFM()) {
             if (!(c.getPlayer().isAlive()) || c.getPlayer().getMapId() == 100) {
                 c.getPlayer().dropMessage("You can't enter the FM when you are dead.");
@@ -35,7 +35,7 @@ public class EnterCashShopHandler extends AbstractMaplePacketHandler {
             if (player.getNoPets() > 0) {
                 player.unequipAllPets();
             }
-            for (FakeCharacter fc : player.getFakeChars()) {
+            for (final FakeCharacter fc : player.getFakeChars()) {
                 player.getMap().removePlayer(fc.getFakeChar());
             }
             if (player.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
@@ -48,10 +48,10 @@ public class EnterCashShopHandler extends AbstractMaplePacketHandler {
                 player.cancelEffect(player.getStatForBuff(MapleBuffStat.PUPPET), false, -1);
             }
             try {
-                WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
+                final WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
                 wci.addBuffsToStorage(player.getId(), player.getAllBuffs());
                 wci.addCooldownsToStorage(player.getId(), player.getAllCooldowns());
-            } catch (RemoteException e) {
+            } catch (final RemoteException e) {
                 c.getChannelServer().reconnectWorld();
             }
             player.getMap().removePlayer(player);

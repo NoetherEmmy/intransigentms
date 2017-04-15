@@ -16,25 +16,25 @@ public class MapleMessenger implements Serializable {
     private boolean pos2 = false;
 
 
-    public MapleMessenger(int id, MapleMessengerCharacter chrfor) {
+    public MapleMessenger(final int id, final MapleMessengerCharacter chrfor) {
         this.members.add(chrfor);
-        int position = getLowestPosition();
+        final int position = getLowestPosition();
         chrfor.setPosition(position);
         this.id = id;
     }
 
-    public boolean containsMembers (MapleMessengerCharacter member) {
+    public boolean containsMembers (final MapleMessengerCharacter member) {
         return members.contains(member);
     }
 
-    public void addMember (MapleMessengerCharacter member) {
+    public void addMember (final MapleMessengerCharacter member) {
         members.add(member);
-        int position = getLowestPosition();
+        final int position = getLowestPosition();
         member.setPosition(position);
     }
 
-    public void removeMember (MapleMessengerCharacter member) {
-        int position = member.getPosition();
+    public void removeMember (final MapleMessengerCharacter member) {
+        final int position = member.getPosition();
         if (position == 0) {
             pos0 = false;
         }
@@ -47,18 +47,18 @@ public class MapleMessenger implements Serializable {
         members.remove(member);
     }
 
-    public void silentRemoveMember (MapleMessengerCharacter member) {
+    public void silentRemoveMember (final MapleMessengerCharacter member) {
         members.remove(member);
     }
 
-    public void silentAddMember (MapleMessengerCharacter member, int position) {
+    public void silentAddMember (final MapleMessengerCharacter member, final int position) {
         members.add(member);
         member.setPosition(position);
     }
 
-    public void updateMember(MapleMessengerCharacter member) {
+    public void updateMember(final MapleMessengerCharacter member) {
         for (int i = 0; i < members.size(); ++i) {
-            MapleMessengerCharacter chr = members.get(i);
+            final MapleMessengerCharacter chr = members.get(i);
             if (chr.equals(member)) {
                 members.set(i, member);
             }
@@ -85,8 +85,8 @@ public class MapleMessenger implements Serializable {
         }
     }
 
-    public int getPositionByName(String name) {
-        for (MapleMessengerCharacter messengerchar : members) {
+    public int getPositionByName(final String name) {
+        for (final MapleMessengerCharacter messengerchar : members) {
             if (messengerchar.getName().equals(name)) {
                 return messengerchar.getPosition();
             }
@@ -98,7 +98,7 @@ public class MapleMessenger implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -111,7 +111,7 @@ public class MapleMessenger implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj)
             return true;
         if (obj == null)

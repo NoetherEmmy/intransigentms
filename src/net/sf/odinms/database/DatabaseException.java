@@ -7,11 +7,11 @@ public class DatabaseException extends RuntimeException {
     public DatabaseException() {
     }
 
-    public DatabaseException(String msg) {
+    public DatabaseException(final String msg) {
         super(msg);
     }
 
-    public DatabaseException(String message, Throwable cause) {
+    public DatabaseException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

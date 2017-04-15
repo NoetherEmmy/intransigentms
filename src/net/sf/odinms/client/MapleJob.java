@@ -47,7 +47,7 @@ public enum MapleJob {
     SUPERGM(910);
     final int jobid;
 
-    MapleJob(int id) {
+    MapleJob(final int id) {
         jobid = id;
     }
 
@@ -55,14 +55,14 @@ public enum MapleJob {
         return jobid;
     }
 
-    public static MapleJob getById(int id) {
-        for (MapleJob l : MapleJob.values()) {
+    public static MapleJob getById(final int id) {
+        for (final MapleJob l : MapleJob.values()) {
             if (l.getId() == id) return l;
         }
         return null;
     }
 
-    public static MapleJob getBy5ByteEncoding(int encoded) {
+    public static MapleJob getBy5ByteEncoding(final int encoded) {
         switch (encoded) {
             case 2:  return WARRIOR;
             case 4:  return MAGICIAN;
@@ -73,7 +73,7 @@ public enum MapleJob {
         }
     }
 
-    public boolean isA(MapleJob basejob) {
+    public boolean isA(final MapleJob basejob) {
         return
             jobid >= basejob.getId() &&
             jobid / 100 == basejob.getId() / 100 &&
@@ -96,7 +96,7 @@ public enum MapleJob {
      * <li>nullable?: false</li>
      * </ul>
      */
-    public static String getJobName(int id) {
+    public static String getJobName(final int id) {
         switch (id) {
             case 0:   return "Beginner";
             case 100: return "Warrior";

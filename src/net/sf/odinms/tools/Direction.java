@@ -17,11 +17,11 @@ public enum Direction {
     private static final Map<Vect, Direction> map =
         stream(Direction.values()).collect(toMap(od -> od.unitVect, od -> od));
 
-    Direction(Vect unitVect) {
+    Direction(final Vect unitVect) {
         this.unitVect = unitVect;
     }
 
-    public static Direction valueOf(IVect direction) {
+    public static Direction valueOf(final IVect direction) {
         return map.get(direction.unit().asVect());
     }
 

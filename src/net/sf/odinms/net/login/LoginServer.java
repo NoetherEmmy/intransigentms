@@ -58,13 +58,13 @@ public class LoginServer implements Runnable, LoginServerMBean {
     private static final LoginServer instance = new LoginServer();
 
     static {
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         try {
             mBeanServer.registerMBean(
                 instance,
                 new ObjectName("net.sf.odinms.net.login:type=LoginServer,name=LoginServer")
             );
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.println("MBEAN ERROR: " + e);
         }
     }
@@ -80,17 +80,17 @@ public class LoginServer implements Runnable, LoginServerMBean {
         return channelServer.keySet();
     }
 
-    public void addChannel(int channel, String ip) {
+    public void addChannel(final int channel, final String ip) {
         channelServer.put(channel, ip);
         load.put(channel, 0);
     }
 
-    public void removeChannel(int channel) {
+    public void removeChannel(final int channel) {
         channelServer.remove(channel);
         load.remove(channel);
     }
 
-    public String getIP(int channel) {
+    public String getIP(final int channel) {
         return channelServer.get(channel);
     }
 
@@ -98,18 +98,18 @@ public class LoginServer implements Runnable, LoginServerMBean {
     public int getPossibleLogins() {
         int ret = 0;
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement limitCheck = con.prepareStatement("SELECT COUNT(*) FROM accounts WHERE loggedin > 1 AND gm = 0");
-            ResultSet rs = limitCheck.executeQuery();
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement limitCheck = con.prepareStatement("SELECT COUNT(*) FROM accounts WHERE loggedin > 1 AND gm = 0");
+            final ResultSet rs = limitCheck.executeQuery();
             if (rs.next()) {
-                int usersOn = rs.getInt(1);
+                final int usersOn = rs.getInt(1);
                 if (usersOn < userLimit) {
                     ret = userLimit - usersOn;
                 }
             }
             rs.close();
             limitCheck.close();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             System.err.println("loginlimit error: " + ex);
         }
         return ret;
@@ -118,7 +118,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
     public void reconnectWorld() {
         try {
             wli.isAvailable();
-        } catch (RemoteException ex) {
+        } catch (final RemoteException ex) {
             synchronized (worldReady) {
                 worldReady = Boolean.FALSE;
             }
@@ -132,7 +132,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
                         FileReader fileReader = new FileReader(System.getProperty("net.sf.odinms.login.config"));
                         initialProp.load(fileReader);
                         fileReader.close();
-                        Registry registry =
+                        final Registry registry =
                             LocateRegistry.getRegistry(
                                 initialProp.getProperty("net.sf.odinms.world.host"),
                                 Registry.REGISTRY_PORT,
@@ -146,7 +146,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
                                     initialProp.getProperty("net.sf.odinms.login.key"),
                                     lwi
                                 );
-                        Properties dbProp = new Properties();
+                        final Properties dbProp = new Properties();
                         fileReader = new FileReader("db.properties");
                         dbProp.load(fileReader);
                         fileReader.close();
@@ -168,10 +168,10 @@ public class LoginServer implements Runnable, LoginServerMBean {
                             fileReader = new FileReader("subnet.properties");
                             subnetInfo.load(fileReader);
                             fileReader.close();
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             System.err.println("Could not load subnet configuration. (RW) " + e);
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         System.err.println("Reconnecting failed: " + e);
                     }
                     worldReady = Boolean.TRUE;
@@ -190,12 +190,12 @@ public class LoginServer implements Runnable, LoginServerMBean {
             FileReader fileReader = new FileReader(System.getProperty("net.sf.odinms.login.config"));
             initialProp.load(fileReader);
             fileReader.close();
-            Registry registry = LocateRegistry.getRegistry(initialProp.getProperty("net.sf.odinms.world.host"),
+            final Registry registry = LocateRegistry.getRegistry(initialProp.getProperty("net.sf.odinms.world.host"),
             Registry.REGISTRY_PORT, new SslRMIClientSocketFactory());
             worldRegistry = (WorldRegistry) registry.lookup("WorldRegistry");
             lwi = new LoginWorldInterfaceImpl();
             wli = worldRegistry.registerLoginServer(initialProp.getProperty("net.sf.odinms.login.key"), lwi);
-            Properties dbProp = new Properties();
+            final Properties dbProp = new Properties();
             fileReader = new FileReader("db.properties");
             dbProp.load(fileReader);
             fileReader.close();
@@ -215,22 +215,22 @@ public class LoginServer implements Runnable, LoginServerMBean {
                 fileReader = new FileReader("subnet.properties");
                 subnetInfo.load(fileReader);
                 fileReader.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 System.out.println("Could not load subnet configuration. (LoginServer#run) " + e);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Could not connect to world server.", e);
         }
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
         acceptor = new SocketAcceptor();
-        SocketAcceptorConfig cfg = new SocketAcceptorConfig();
+        final SocketAcceptorConfig cfg = new SocketAcceptorConfig();
         cfg.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
-        TimerManager tMan = TimerManager.getInstance();
+        final TimerManager tMan = TimerManager.getInstance();
         tMan.start();
         loginInterval = Integer.parseInt(prop.getProperty("net.sf.odinms.login.interval"));
         tMan.register(LoginWorker.getInstance(), loginInterval);
-        long rankingInterval = Long.parseLong(prop.getProperty("net.sf.odinms.login.ranking.interval"));
+        final long rankingInterval = Long.parseLong(prop.getProperty("net.sf.odinms.login.ranking.interval"));
         tMan.register(new RankingWorker(), rankingInterval);
         try {
             acceptor
@@ -240,7 +240,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
                     cfg
                 );
             System.out.println("Listening on port: " + PORT);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("Binding to port " + PORT + " failed: " + e);
         }
     }
@@ -249,7 +249,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
         System.out.println("The server is shutting down.");
         try {
             worldRegistry.deregisterLoginServer(lwi);
-        } catch (RemoteException ignored) {
+        } catch (final RemoteException ignored) {
         }
         TimerManager.getInstance().stop();
         System.exit(0);
@@ -260,17 +260,17 @@ public class LoginServer implements Runnable, LoginServerMBean {
             while (!worldReady) {
                 try {
                     worldReady.wait();
-                } catch (InterruptedException ignored) {
+                } catch (final InterruptedException ignored) {
                 }
             }
         }
         return wli;
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
             LoginServer.getInstance().run();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             System.err.println("Error initializing loginserver: " + ex);
             ex.printStackTrace();
         }
@@ -312,17 +312,17 @@ public class LoginServer implements Runnable, LoginServerMBean {
         return load;
     }
 
-    public void setLoad(Map<Integer, Integer> load) {
+    public void setLoad(final Map<Integer, Integer> load) {
         this.load = load;
     }
 
     @Override
-    public void setEventMessage(String newMessage) {
+    public void setEventMessage(final String newMessage) {
         this.eventMessage = newMessage;
     }
 
     @Override
-    public void setFlag(int newflag) {
+    public void setFlag(final int newflag) {
         flag = newflag;
     }
 
@@ -332,11 +332,11 @@ public class LoginServer implements Runnable, LoginServerMBean {
     }
 
     @Override
-    public void setUserLimit(int newLimit) {
+    public void setUserLimit(final int newLimit) {
         userLimit = newLimit;
     }
 
-    public void setServerCheck(boolean set) {
+    public void setServerCheck(final boolean set) {
         serverCheck = set;
     }
 

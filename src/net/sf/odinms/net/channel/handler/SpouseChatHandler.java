@@ -8,9 +8,9 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public final class SpouseChatHandler extends AbstractMaplePacketHandler {
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        String recipient = slea.readMapleAsciiString();
-        String msg = slea.readMapleAsciiString();
+    public final void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final String recipient = slea.readMapleAsciiString();
+        final String msg = slea.readMapleAsciiString();
         c.getPlayer().dropMessage("Test: " + recipient);
         if (c.getPlayer().isMarried()) {
             final MapleCharacter spouse = c.getPlayer().getPartner();

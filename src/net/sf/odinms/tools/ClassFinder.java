@@ -15,24 +15,24 @@ public class ClassFinder {
     final List<File> dirs = new ArrayList<>();
 
     public ClassFinder() {
-        String classpath = System.getProperty("java.class.path");
-        String[] splittedPath = classpath.split(File.pathSeparator);
-        for (String cpe : splittedPath) {
-            File cpeFile = new File(cpe);
+        final String classpath = System.getProperty("java.class.path");
+        final String[] splittedPath = classpath.split(File.pathSeparator);
+        for (final String cpe : splittedPath) {
+            final File cpeFile = new File(cpe);
             if (cpeFile.isDirectory()) {
                 dirs.add(cpeFile);
             } else {
                 try {
                     jars.add(new JarFile(cpeFile));
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     log.error("ERROR", e);
                 }
             }
         }
     }
 
-    private void addClassesInFolder(List<String> classes, File folder, String packageName, boolean recurse) {
-        for (File f : folder.listFiles()) {
+    private void addClassesInFolder(final List<String> classes, final File folder, final String packageName, final boolean recurse) {
+        for (final File f : folder.listFiles()) {
             if (!f.isDirectory()) {
                 if (f.getName().endsWith(".class")) {
                     classes.add(packageName + "." + f.getName().substring(0, f.getName().length() - 6));
@@ -43,28 +43,28 @@ public class ClassFinder {
         }
     }
 
-    public String[] listClasses(String packageName, boolean recurse) {
-        List<String> ret = new ArrayList<>();
+    public String[] listClasses(final String packageName, final boolean recurse) {
+        final List<String> ret = new ArrayList<>();
 
         // scan dirs
         final String fileSystemPackagePath = packageName.replace('.', File.separatorChar);
-        for (File dir : dirs) {
-            File subfolder = new File(dir, fileSystemPackagePath);
+        for (final File dir : dirs) {
+            final File subfolder = new File(dir, fileSystemPackagePath);
             if (subfolder.exists() && subfolder.isDirectory()) {
                 addClassesInFolder(ret, subfolder, packageName, recurse);
             }
         }
         // scan jars
         final String jarPackagePath = packageName.replace('.', '/');
-        for (JarFile jar : jars) {
-        for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements();) {
+        for (final JarFile jar : jars) {
+        for (final Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements();) {
             // Get the entry name
-            String entryName = (entries.nextElement()).getName();
+            final String entryName = (entries.nextElement()).getName();
             if (entryName.endsWith(".class") && entryName.startsWith(jarPackagePath)) {
-                int lastSlash = entryName.lastIndexOf('/');
+                final int lastSlash = entryName.lastIndexOf('/');
                 if (lastSlash <= jarPackagePath.length() || recurse) {
-                    String path = entryName.substring(0, lastSlash);
-                    String className = entryName.substring(lastSlash + 1, entryName.length() - 6);
+                    final String path = entryName.substring(0, lastSlash);
+                    final String className = entryName.substring(lastSlash + 1, entryName.length() - 6);
                     ret.add(path.replace('/', '.') + "." + className);
                 }
             }
@@ -74,10 +74,10 @@ public class ClassFinder {
     }
 
     public void dispose() {
-        for (JarFile jar : jars) {
+        for (final JarFile jar : jars) {
             try {
                 jar.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.error("THROW", e);
             }
         }

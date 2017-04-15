@@ -11,19 +11,19 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class UseMountFoodHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter p = c.getPlayer();
         p.resetAfkTime();
         slea.readInt();
         slea.readShort();
-        int itemId = slea.readInt();
+        final int itemId = slea.readInt();
 
         if (p.getInventory(MapleInventoryType.USE).findById(itemId) != null) {
             if (p.getMount() != null) {
                 p.getMount().setTiredness(p.getMount().getTiredness() - 30);
                 p.getMount().setExp((int) ((Math.random() * 26) + 12) + p.getMount().getExp());
-                int level = p.getMount().getLevel();
-                boolean levelup =
+                final int level = p.getMount().getLevel();
+                final boolean levelup =
                     p.getMount().getExp() >= ExpTable.getMountExpNeededForLevel(level) &&
                     level < 31 && p.getMount().getTiredness() != 0;
                 if (levelup) {

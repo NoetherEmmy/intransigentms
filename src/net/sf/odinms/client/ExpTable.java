@@ -35,21 +35,21 @@ public final class ExpTable {
         2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550
     };
 
-    public static int getMountExpNeededForLevel(int level) {
+    public static int getMountExpNeededForLevel(final int level) {
         if (level > mountexp.length || level < 0) {
             return 4550;
         }
         return mountexp[level - 1];
     }
 
-    public static int getExpNeededForLevel(int level) {
+    public static int getExpNeededForLevel(final int level) {
         if (level > 200) {
             return Integer.MAX_VALUE - 100000;
         }
         return exp[level];
     }
 
-    public static int getClosenessNeededForLevel(int level) {
+    public static int getClosenessNeededForLevel(final int level) {
         if (level > closeness.length || level < 0) {
             return 40000;
         }

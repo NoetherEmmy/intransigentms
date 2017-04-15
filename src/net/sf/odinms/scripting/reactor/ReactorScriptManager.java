@@ -23,37 +23,37 @@ public class ReactorScriptManager extends AbstractScriptManager {
         return instance;
     }
 
-    public void act(MapleClient c, MapleReactor reactor) {
+    public void act(final MapleClient c, final MapleReactor reactor) {
         try {
-            ReactorActionManager rm = new ReactorActionManager(c, reactor);
-            Invocable iv = getInvocable("reactor/" + reactor.getId() + ".js", c);
+            final ReactorActionManager rm = new ReactorActionManager(c, reactor);
+            final Invocable iv = getInvocable("reactor/" + reactor.getId() + ".js", c);
             if (iv == null) return;
             engine.put("rm", rm);
-            ReactorScript rs = iv.getInterface(ReactorScript.class);
+            final ReactorScript rs = iv.getInterface(ReactorScript.class);
             rs.act();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error executing reactor script: " + reactor.getId(), e);
         }
     }
 
-    public List<DropEntry> getDrops(int rid) {
+    public List<DropEntry> getDrops(final int rid) {
         List<DropEntry> ret = drops.get(rid);
         if (ret == null) {
             ret = new ArrayList<>(5);
             try {
-                Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps =
+                final Connection con = DatabaseConnection.getConnection();
+                final PreparedStatement ps =
                     con.prepareStatement(
                         "SELECT itemid, chance FROM reactordrops WHERE reactorid = ? AND chance >= 0"
                     );
                 ps.setInt(1, rid);
-                ResultSet rs = ps.executeQuery();
+                final ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     ret.add(new DropEntry(rs.getInt("itemid"), rs.getInt("chance")));
                 }
                 rs.close();
                 ps.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("Could not retrieve drops for reactor " + rid, e);
             }
             drops.put(rid, ret);

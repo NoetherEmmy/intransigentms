@@ -7,13 +7,13 @@ public class WhisperMapleClientMessageCallback implements MessageCallback {
     private final MapleClient client;
     private final String whisperfrom;
 
-    public WhisperMapleClientMessageCallback(String whisperfrom, MapleClient client) {
+    public WhisperMapleClientMessageCallback(final String whisperfrom, final MapleClient client) {
         this.whisperfrom = whisperfrom;
         this.client = client;
     }
 
     @Override
-    public void dropMessage(String message) {
+    public void dropMessage(final String message) {
         client.getSession().write(MaplePacketCreator.getWhisper(whisperfrom, client.getChannel(), message));
     }
 }

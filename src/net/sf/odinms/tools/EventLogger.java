@@ -31,7 +31,7 @@ public class EventLogger {
      * @throws InvalidPathException when <code>pathString</code> does
      * not represent a valid path.
      */
-    public EventLogger(String pathString) {
+    public EventLogger(final String pathString) {
         path = Paths.get(pathString);
     }
 
@@ -47,7 +47,7 @@ public class EventLogger {
      *
      * @throws NullPointerException when <code>path == null</code>.
      */
-    public EventLogger(Path path) {
+    public EventLogger(final Path path) {
         if (path == null) {
             throw new NullPointerException("The Path given to the EventLogger constructor may not be null.");
         }
@@ -66,7 +66,7 @@ public class EventLogger {
      *              to the event log.
      * @return <code>true</code> on success, <code>false</code> on failure.
      */
-    public synchronized boolean write(List<String> lines) {
+    public synchronized boolean write(final List<String> lines) {
         try {
             Files.write(
                 path,
@@ -76,7 +76,7 @@ public class EventLogger {
                 StandardOpenOption.APPEND,
                 StandardOpenOption.WRITE
             );
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.err.println("Exception occured during an EventLogger.write(): " + ioe);
             return false;
         }
@@ -96,7 +96,7 @@ public class EventLogger {
      *             the event log.
      * @return <code>true</code> on success, <code>false</code> on failure.
      */
-    public synchronized boolean write(byte[] data) {
+    public synchronized boolean write(final byte[] data) {
         try {
             Files.write(
                 path,
@@ -105,7 +105,7 @@ public class EventLogger {
                 StandardOpenOption.APPEND,
                 StandardOpenOption.WRITE
             );
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.err.println("Exception occured during an EventLogger writing operation: " + ioe);
             return false;
         }
@@ -125,7 +125,7 @@ public class EventLogger {
      * @param line A line (as a <code>String</code>) to write to the event log.
      * @return <code>true</code> on success, <code>false</code> on failure.
      */
-    public synchronized boolean writeln(String line) {
+    public synchronized boolean writeln(final String line) {
         return write(Collections.singletonList(line));
     }
 
@@ -143,7 +143,7 @@ public class EventLogger {
     public synchronized boolean delete() {
         try {
             return Files.deleteIfExists(path);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.err.println("Exception occured during an EventLogger delete operation: " + ioe);
             return false;
         }
@@ -162,7 +162,7 @@ public class EventLogger {
     public long lastModifiedTime() {
         try {
             return Files.getLastModifiedTime(path).toMillis();
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.err.println(
                 "Exception occured during an EventLogger get last modified time operation: " + ioe
             );
@@ -182,7 +182,7 @@ public class EventLogger {
     public long fileSize() {
         try {
             return Files.size(path);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.err.println("Exception occured during an EventLogger get filesize operation: " + ioe);
             return -1L;
         }
@@ -203,7 +203,7 @@ public class EventLogger {
     public boolean fileExists() {
         try {
             return Files.exists(path);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.println("Exception occured during an EventLogger check for existence operation: " + e);
             return false;
         }
@@ -227,7 +227,7 @@ public class EventLogger {
     public synchronized Optional<Stream<String>> getLines() {
         try {
             return Optional.of(Files.lines(path, StandardCharsets.UTF_8));
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.err.println("Exception occured during an EventLogger read operation: " + ioe);
             return Optional.empty();
         }

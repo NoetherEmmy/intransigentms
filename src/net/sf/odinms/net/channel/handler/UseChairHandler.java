@@ -11,11 +11,11 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class UseChairHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter p = c.getPlayer();
         p.resetAfkTime();
         final int itemId = slea.readInt();
-        IItem toUse = p.getInventory(MapleInventoryType.SETUP).findById(itemId);
+        final IItem toUse = p.getInventory(MapleInventoryType.SETUP).findById(itemId);
 
         if (toUse == null) {
             p.getCheatTracker().registerOffense(

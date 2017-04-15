@@ -11,12 +11,12 @@ import java.sql.SQLException;
 
 public class NoteActionHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int action = slea.readByte();
+        final int action = slea.readByte();
 
         if (action == 1) { // Delete
-            int num = slea.readByte();
+            final int num = slea.readByte();
             slea.readShort();
             for (int i = 0; i < num; ++i) {
                 deleteNote(slea.readInt());
@@ -25,14 +25,14 @@ public class NoteActionHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private void deleteNote(int id) {
-        Connection con = DatabaseConnection.getConnection();
+    private void deleteNote(final int id) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM notes WHERE `id` = ?");
+            final PreparedStatement ps = con.prepareStatement("DELETE FROM notes WHERE `id` = ?");
             ps.setInt(1, id);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
     }
 }

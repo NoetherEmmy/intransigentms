@@ -4,7 +4,7 @@ public class CommandDefinition {
     private final String command;
     private final int requiredLevel; // GM level
 
-    public CommandDefinition(String command, int requiredLevel) {
+    public CommandDefinition(final String command, final int requiredLevel) {
         this.command = command;
         this.requiredLevel = requiredLevel;
     }

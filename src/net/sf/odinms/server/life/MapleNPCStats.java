@@ -3,7 +3,7 @@ package net.sf.odinms.server.life;
 public class MapleNPCStats {
     private String name;
 
-    public MapleNPCStats(String name) {
+    public MapleNPCStats(final String name) {
         this.name = name;
     }
 
@@ -11,7 +11,7 @@ public class MapleNPCStats {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 }

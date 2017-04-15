@@ -121,7 +121,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
 
     private int code = -2;
 
-    public void setValue(int code) {
+    public void setValue(final int code) {
         this.code = code;
     }
 
@@ -131,8 +131,8 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     }
 
     public static Properties getDefaultProperties() throws IOException {
-        Properties props = new Properties();
-        FileInputStream fis = new FileInputStream(System.getProperty("net.sf.odinms.recvops"));
+        final Properties props = new Properties();
+        final FileInputStream fis = new FileInputStream(System.getProperty("net.sf.odinms.recvops"));
         props.load(fis);
         fis.close();
         return props;
@@ -142,7 +142,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     static {
         try {
             ExternalCodeTableGetter.populateValues(getDefaultProperties(), values());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to load recvops", e);
         }
     }

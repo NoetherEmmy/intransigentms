@@ -15,14 +15,14 @@ public class FaceExpressionHandler extends AbstractMaplePacketHandler {
     //private static Logger log = LoggerFactory.getLogger(FaceExpressionHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter p = c.getPlayer();
         p.resetAfkTime();
-        int emote = slea.readInt();
+        final int emote = slea.readInt();
         if (emote > 7) {
-            int emoteid = 5159992 + emote;
-            MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(emoteid);
-            MapleInventory iv = p.getInventory(type);
+            final int emoteid = 5159992 + emote;
+            final MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(emoteid);
+            final MapleInventory iv = p.getInventory(type);
             if (iv.findById(emoteid) == null) {
                 //log.info("[h4x] Player {} is using a face expression he does not have: {}", p.getName(), Integer.valueOf(emoteid));
                 p.getCheatTracker()
@@ -33,7 +33,7 @@ public class FaceExpressionHandler extends AbstractMaplePacketHandler {
                 return;
             }
         }
-        for (FakeCharacter ch : p.getFakeChars()) {
+        for (final FakeCharacter ch : p.getFakeChars()) {
             p.getMap()
              .broadcastMessage(
                  ch.getFakeChar(),

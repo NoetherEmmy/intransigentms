@@ -21,19 +21,19 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SpecialMoveHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter p = c.getPlayer();
         slea.readShort();
         slea.readShort();
-        int skillId = slea.readInt();
+        final int skillId = slea.readInt();
         Point pos = null;
-        int __skillLevel = slea.readByte();
-        ISkill skill = SkillFactory.getSkill(skillId);
-        int skillLevel = p.getSkillLevel(skill);
-        MapleStatEffect effect;
+        final int __skillLevel = slea.readByte();
+        final ISkill skill = SkillFactory.getSkill(skillId);
+        final int skillLevel = p.getSkillLevel(skill);
+        final MapleStatEffect effect;
         try {
             effect = skill.getEffect(skillLevel);
-        } catch (IndexOutOfBoundsException ioobe) {
+        } catch (final IndexOutOfBoundsException ioobe) {
             System.err.println(
                 "Player " +
                     p.getName() +
@@ -71,7 +71,7 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                 return;
             }
             c.getSession().write(MaplePacketCreator.skillCooldown(skillId, effect.getCooldown()));
-            ScheduledFuture<?> timer =
+            final ScheduledFuture<?> timer =
                 TimerManager
                     .getInstance()
                     .schedule(
@@ -94,7 +94,7 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                 case 1121001:
                 case 1221001:
                 case 1321001:
-                    int num = slea.readInt();
+                    final int num = slea.readInt();
                     int mobId;
                     byte success;
                     for (int i = 0; i < num; ++i) {
@@ -106,18 +106,18 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                              MaplePacketCreator.showMagnet(mobId, success),
                              false
                          );
-                        MapleMonster monster = p.getMap().getMonsterByOid(mobId);
+                        final MapleMonster monster = p.getMap().getMonsterByOid(mobId);
                         if (monster == null) continue;
                         monster.switchController(p, monster.isControllerHasAggro());
                     }
-                    byte direction = slea.readByte();
+                    final byte direction = slea.readByte();
                     p.getMap()
                      .broadcastMessage(
                          p,
                          MaplePacketCreator.showBuffeffect(p.getId(), skillId, 1, direction),
                          false
                      );
-                    for (FakeCharacter ch : p.getFakeChars()) {
+                    for (final FakeCharacter ch : p.getFakeChars()) {
                         ch.getFakeChar()
                           .getMap()
                           .broadcastMessage(
@@ -134,7 +134,7 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                     c.getSession().write(MaplePacketCreator.enableActions());
                     break;
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn("Failed to handle Monster Magnet.", e);
         }
         if (slea.available() == 5) {
@@ -160,7 +160,7 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
             } else {
                 c.getSession().write(MaplePacketCreator.enableActions());
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             c.getSession().write(MaplePacketCreator.enableActions());
         }

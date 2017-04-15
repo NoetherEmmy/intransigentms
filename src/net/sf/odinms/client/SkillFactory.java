@@ -25,15 +25,15 @@ public class SkillFactory {
             )
         ).getData("Skill.img");
 
-    public static ISkill getSkill(int id) {
+    public static ISkill getSkill(final int id) {
         ISkill ret = skills.get(id);
         if (ret != null) return ret;
         synchronized (skills) {
             // Check if someone else that's also synchronized has loaded the skill by now.
             ret = skills.get(id);
             if (ret == null) {
-                int job = id / 10000;
-                MapleData skillRoot =
+                final int job = id / 10000;
+                final MapleData skillRoot =
                     datasource.getData(
                         StringUtil.getLeftPaddedStr(
                             String.valueOf(job),
@@ -41,7 +41,7 @@ public class SkillFactory {
                             3
                         ) + ".img"
                     );
-                MapleData skillData =
+                final MapleData skillData =
                     skillRoot.getChildByPath(
                         "skill/" +
                             StringUtil.getLeftPaddedStr(
@@ -57,10 +57,10 @@ public class SkillFactory {
         }
     }
 
-    public static String getSkillName(int id) {
+    public static String getSkillName(final int id) {
         String strId = Integer.toString(id);
         strId = StringUtil.getLeftPaddedStr(strId, '0', 7);
-        MapleData skillRoot = stringData.getChildByPath(strId);
+        final MapleData skillRoot = stringData.getChildByPath(strId);
         if (skillRoot != null) return MapleDataTool.getString(skillRoot.getChildByPath("name"), "");
         return null;
     }

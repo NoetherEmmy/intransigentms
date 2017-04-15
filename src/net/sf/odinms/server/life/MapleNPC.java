@@ -10,7 +10,7 @@ public class MapleNPC extends AbstractLoadedMapleLife {
     private final MapleNPCStats stats;
     private boolean custom = false;
 
-    public MapleNPC(int id, MapleNPCStats stats) {
+    public MapleNPC(final int id, final MapleNPCStats stats) {
         super(id);
         this.stats = stats;
     }
@@ -19,13 +19,13 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         return MapleShopFactory.getInstance().getShopForNPC(getId()) != null;
     }
 
-    public void sendShop(MapleClient c) {
-        MapleShop shop = MapleShopFactory.getInstance().getShopForNPC(getId());
+    public void sendShop(final MapleClient c) {
+        final MapleShop shop = MapleShopFactory.getInstance().getShopForNPC(getId());
         shop.sendShop(c);
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
          if (this.getId() >= 9010011 && this.getId() <= 9010013) {
             client.getSession().write(MaplePacketCreator.spawnNPCRequestController(this, false));
          } else {
@@ -35,7 +35,7 @@ public class MapleNPC extends AbstractLoadedMapleLife {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         throw new UnsupportedOperationException();
     }
 
@@ -52,7 +52,7 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         return custom;
     }
 
-    public void setCustom(boolean custom) {
+    public void setCustom(final boolean custom) {
         this.custom = custom;
     }
 }

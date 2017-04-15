@@ -12,15 +12,15 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RingActionHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        byte mode = slea.readByte();
-        MapleCharacter player = c.getPlayer();
+        final byte mode = slea.readByte();
+        final MapleCharacter player = c.getPlayer();
 
         switch (mode) {
             case 0x00: // Send
-                String partnerName = slea.readMapleAsciiString();
-                MapleCharacter partner = c.getChannelServer().getPlayerStorage().getCharacterByName(partnerName);
+                final String partnerName = slea.readMapleAsciiString();
+                final MapleCharacter partner = c.getChannelServer().getPlayerStorage().getCharacterByName(partnerName);
                 if (partnerName.equalsIgnoreCase(player.getName())) {
                     player.dropMessage(1, "You cannot put your own name in it.");
                 } else if (partner == null) {

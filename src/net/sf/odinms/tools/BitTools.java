@@ -14,7 +14,7 @@ public class BitTools {
      * @param index Where reading begins.
      * @return The short integer value.
      */
-    public static int getShort(byte[] array, int index) {
+    public static int getShort(final byte[] array, final int index) {
         int ret = array[index];
         ret &= 0xFF;
         ret |= ((int) (array[index + 1]) << 8) & 0xFF00;
@@ -30,8 +30,8 @@ public class BitTools {
      * @param length The number of bytes to read.
      * @return The string read.
      */
-    public static String getString(byte[] array, int index, int length) {
-        char[] cret = new char[length];
+    public static String getString(final byte[] array, final int index, final int length) {
+        final char[] cret = new char[length];
         for (int x = 0; x < length; ++x) {
             cret[x] = (char) array[x + index];
         }
@@ -46,8 +46,8 @@ public class BitTools {
      * @param index Where reading begins.
      * @return The string read.
      */
-    public static String getMapleString(byte[] array, int index) {
-        int length = ((int) (array[index]) & 0xFF) | (array[index + 1] << 8 & 0xFF00);
+    public static String getMapleString(final byte[] array, final int index) {
+        final int length = ((int) (array[index]) & 0xFF) | (array[index + 1] << 8 & 0xFF00);
         return BitTools.getString(array, index + 2, length);
     }
 
@@ -59,7 +59,7 @@ public class BitTools {
      * @param count Number of times to rotate.
      * @return The rotated byte.
      */
-    public static byte rollLeft(byte in, int count) {
+    public static byte rollLeft(final byte in, final int count) {
         /*
          * in: 11001101 count: 3 out: 0110 1110
          */
@@ -76,7 +76,7 @@ public class BitTools {
      * @param count Number of times to rotate.
      * @return The rotated byte.
      */
-    public static byte rollRight(byte in, int count) {
+    public static byte rollRight(final byte in, final int count) {
         /*
          * in: 11001101 count: 3 out: 1011 10011
          *
@@ -97,8 +97,8 @@ public class BitTools {
      * @param mul The number of times to repeat.
      * @return The repeated bytes.
      */
-    public static byte[] multiplyBytes(byte[] in, int count, int mul) {
-        byte[] ret = new byte[count * mul];
+    public static byte[] multiplyBytes(final byte[] in, final int count, final int mul) {
+        final byte[] ret = new byte[count * mul];
         for (int x = 0; x < count * mul; ++x) {
             ret[x] = in[x % count];
         }
@@ -111,8 +111,8 @@ public class BitTools {
      * @param d The double to transform.
      * @return The converted integer.
      */
-    public static int doubleToShortBits(double d) {
-        long l = Double.doubleToLongBits(d);
+    public static int doubleToShortBits(final double d) {
+        final long l = Double.doubleToLongBits(d);
         return (int) (l >> 48);
     }
 }

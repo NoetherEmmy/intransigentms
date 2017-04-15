@@ -8,12 +8,12 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class SkillEffectHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int skillId = slea.readInt();
-        int level = slea.readByte();
-        byte flags = slea.readByte();
-        int speed = slea.readByte();
+        final int skillId = slea.readInt();
+        final int level = slea.readByte();
+        final byte flags = slea.readByte();
+        final int speed = slea.readByte();
         if (
             (
             skillId == 3121004 ||
@@ -45,7 +45,7 @@ public class SkillEffectHandler extends AbstractMaplePacketHandler {
                  ),
                  false
              );
-            for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
+            for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
                 ch.getFakeChar()
                   .getMap()
                   .broadcastMessage(

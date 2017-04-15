@@ -10,7 +10,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class QuestActionHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         final byte action = slea.readByte();
         final short quest = slea.readShort();
@@ -22,14 +22,14 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
             return;
         }
         if (action == 1) { // Start quest
-            int npc = slea.readInt();
+            final int npc = slea.readInt();
             slea.readInt();
             q.start(player, npc);
         } else if (action == 2) { // Complete quest
-            int npc = slea.readInt();
+            final int npc = slea.readInt();
             slea.readInt();
             if (slea.available() >= 4) {
-                int selection = slea.readInt();
+                final int selection = slea.readInt();
                 q.complete(player, npc, selection);
             } else {
                 q.complete(player, npc);
@@ -58,9 +58,9 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
         } else if (action == 3) { // Forfeit quest
             q.forfeit(player);
         } else if (action == 4) { // Scripted start quest
-            int npc = slea.readInt();
+            final int npc = slea.readInt();
             slea.readInt();
-            MapleNPC theNpc = player.getMap().getNPCById(npc);
+            final MapleNPC theNpc = player.getMap().getNPCById(npc);
             if (
                 theNpc != null &&
                 theNpc
@@ -72,9 +72,9 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
                 c.getSession().write(MaplePacketCreator.enableActions());
             }
         } else if (action == 5) { // Scripted end quests
-            int npc = slea.readInt();
+            final int npc = slea.readInt();
             slea.readInt();
-            MapleNPC theNpc = player.getMap().getNPCById(npc);
+            final MapleNPC theNpc = player.getMap().getNPCById(npc);
             if (theNpc != null &&
                 theNpc
                     .getPosition()

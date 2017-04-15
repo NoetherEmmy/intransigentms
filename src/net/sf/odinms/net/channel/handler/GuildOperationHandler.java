@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class GuildOperationHandler extends AbstractMaplePacketHandler {
-    private boolean isGuildNameAcceptable(String name) {
+    private boolean isGuildNameAcceptable(final String name) {
         if (name.length() < 3 || name.length() > 12) return false;
         for (int i = 0; i < name.length(); ++i) {
             if (!Character.isLowerCase(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
@@ -26,11 +26,11 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
         return true;
     }
 
-    private void respawnPlayer(MapleCharacter mc) {
+    private void respawnPlayer(final MapleCharacter mc) {
         mc.getMap().broadcastMessage(mc, MaplePacketCreator.removePlayerFromMap(mc.getId()), false);
         mc.getMap().broadcastMessage(mc, MaplePacketCreator.spawnPlayerMapobject(mc), false);
         if (mc.getNoPets() > 0) {
-            for (MaplePet pet : mc.getPets()) {
+            for (final MaplePet pet : mc.getPets()) {
                 if (pet == null) continue;
                 mc.getMap().broadcastMessage(mc, MaplePacketCreator.showPet(mc, pet, false, false), false);
             }
@@ -42,16 +42,16 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
         public final int gid;
         public final long expiration;
 
-        public Invited(String n, int id) {
+        public Invited(final String n, final int id) {
             name = n.toLowerCase();
             gid = id;
             expiration = System.currentTimeMillis() + 60L * 60L * 1000L; // 1 hr. expiration
         }
 
         @Override
-        public boolean equals(Object other) {
+        public boolean equals(final Object other) {
             if (!(other instanceof Invited)) return false;
-            Invited oth = (Invited) other;
+            final Invited oth = (Invited) other;
             return gid == oth.gid && name.equals(oth.name);
         }
     }
@@ -60,11 +60,11 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
     private long nextPruneTime = System.currentTimeMillis() + 20L * 60L * 1000L;
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         // Prune away any expired guild requests.
         if (System.currentTimeMillis() >= nextPruneTime) {
-            Iterator<Invited> itr = invited.iterator();
+            final Iterator<Invited> itr = invited.iterator();
             Invited inv;
             while (itr.hasNext()) {
                 inv = itr.next();
@@ -73,8 +73,8 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
 
             nextPruneTime = System.currentTimeMillis() + 20L * 60L * 1000L;
         }
-        MapleCharacter mc = c.getPlayer();
-        byte type = slea.readByte();
+        final MapleCharacter mc = c.getPlayer();
+        final byte type = slea.readByte();
         switch (type) {
             case 0x02:
                 // Guild creation.
@@ -86,15 +86,15 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     c.getSession().write(MaplePacketCreator.serverNotice(1, "You do not have enough mesos to create a Guild."));
                     return;
                 }
-                String guildName = slea.readMapleAsciiString();
+                final String guildName = slea.readMapleAsciiString();
                 if (!isGuildNameAcceptable(guildName)) {
                     c.getSession().write(MaplePacketCreator.serverNotice(1, "The Guild name you have chosen is not accepted."));
                     return;
                 }
-                int gid;
+                final int gid;
                 try {
                     gid = c.getChannelServer().getWorldInterface().createGuild(mc.getId(), guildName);
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred during guild creation: " + re);
                     c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                     return;
@@ -117,12 +117,12 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     System.err.println("[hax] " + mc.getName() + " used guild invitation when s/he isn't allowed.");
                     return;
                 }
-                String name = slea.readMapleAsciiString();
-                MapleGuildResponse mgr = MapleGuild.sendInvite(c, name);
+                final String name = slea.readMapleAsciiString();
+                final MapleGuildResponse mgr = MapleGuild.sendInvite(c, name);
                 if (mgr != null) {
                     c.getSession().write(mgr.getPacket());
                 } else {
-                    Invited inv = new Invited(name, mc.getGuildId());
+                    final Invited inv = new Invited(name, mc.getGuildId());
                     if (!invited.contains(inv)) invited.add(inv);
                 }
                 break;
@@ -134,17 +134,17 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 gid = slea.readInt();
-                int cid = slea.readInt();
+                final int cid = slea.readInt();
 
                 if (cid != mc.getId()) {
                     System.err.println("[hax] " + mc.getName() + " attempted to join a guild with a different character id.");
                     return;
                 }
                 name = mc.getName().toLowerCase();
-                Iterator<Invited> itr = invited.iterator();
+                final Iterator<Invited> itr = invited.iterator();
                 boolean bOnList = false;
                 while (itr.hasNext()) {
-                    Invited inv = itr.next();
+                    final Invited inv = itr.next();
                     if (gid == inv.gid && name.equals(inv.name)) {
                         bOnList = true;
                         itr.remove();
@@ -157,10 +157,10 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                 }
                 mc.setGuildId(gid);
                 mc.setGuildRank(5);
-                int s;
+                final int s;
                 try {
                     s = c.getChannelServer().getWorldInterface().addGuildMember(mc.getMGC());
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred while attempting to add character to guild: " + re);
                     c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                     mc.setGuildId(0);
@@ -185,7 +185,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                 }
                 try {
                     c.getChannelServer().getWorldInterface().leaveGuild(mc.getMGC());
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred while attempting to leave guild: " + re);
                     c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                     return;
@@ -205,7 +205,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                 }
                 try {
                     c.getChannelServer().getWorldInterface().expelMember(mc.getMGC(), name, cid);
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred while attempting to change rank: " + re);
                     c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                     return;
@@ -217,12 +217,12 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     System.err.println("[hax] " + mc.getName() + " tried to change guild rank titles when s/he does not have permission.");
                     return;
                 }
-                String[] ranks = new String[5];
+                final String[] ranks = new String[5];
                 for (int i = 0; i < 5; ++i)
                     ranks[i] = slea.readMapleAsciiString();
                 try {
                     c.getChannelServer().getWorldInterface().changeRankTitle(mc.getGuildId(), ranks);
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred changing rank title: " + re);
                     c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                     return;
@@ -231,7 +231,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
             case 0x0E:
                 // Rank change.
                 cid = slea.readInt();
-                byte newRank = slea.readByte();
+                final byte newRank = slea.readByte();
                 if (mc.getGuildRank() > 2 || (newRank <= 2 && mc.getGuildRank() != 1) || mc.getGuildId() <= 0) {
                     System.err.println("[hax] " + mc.getName() + " is trying to change rank outside of his/her permissions.");
                     return;
@@ -239,7 +239,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                 if (newRank <= 1 || newRank > 5) return;
                 try {
                     c.getChannelServer().getWorldInterface().changeRank(mc.getGuildId(), cid, newRank);
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred while attempting to change rank: " + re);
                     c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                     return;
@@ -255,13 +255,13 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     c.getSession().write(MaplePacketCreator.serverNotice(1, "You do not have enough mesos to create a Guild."));
                     return;
                 }
-                short bg = slea.readShort();
-                byte bgcolor = slea.readByte();
-                short logo = slea.readShort();
-                byte logocolor = slea.readByte();
+                final short bg = slea.readShort();
+                final byte bgcolor = slea.readByte();
+                final short logo = slea.readShort();
+                final byte logocolor = slea.readByte();
                 try {
                     c.getChannelServer().getWorldInterface().setGuildEmblem(mc.getGuildId(), bg, bgcolor, logo, logocolor);
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred attempting to set guild emblem: " + re);
                     c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                     return;
@@ -276,11 +276,11 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     System.err.println("[hax] " + mc.getName() + " tried to change guild notice while not in a guild.");
                     return;
                 }
-                String notice = slea.readMapleAsciiString();
+                final String notice = slea.readMapleAsciiString();
                 if (notice.length() > 100) return;
                 try {
                     c.getChannelServer().getWorldInterface().setGuildNotice(mc.getGuildId(), notice);
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     System.err.println("Exception occurred attempting to set guild notice: " + re);
                     c.getSession().write(
                         MaplePacketCreator.serverNotice(

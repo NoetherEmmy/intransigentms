@@ -16,13 +16,13 @@ import java.util.Calendar;
 public class LoginPasswordHandler implements MaplePacketHandler {
     // private static Logger log = LoggerFactory.getLogger(LoginPasswordHandler.class);
     @Override
-    public boolean validateState(MapleClient c) {
+    public boolean validateState(final MapleClient c) {
         return !c.isLoggedIn();
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        String login = slea.readMapleAsciiString();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final String login = slea.readMapleAsciiString();
         String pwd = slea.readMapleAsciiString();
         //
         pwd = LoginCrypto.hexSha1(pwd);
@@ -31,8 +31,8 @@ public class LoginPasswordHandler implements MaplePacketHandler {
         c.setAccountName(login);
 
         int loginok = 0;
-        boolean ipBan = c.hasBannedIP();
-        boolean macBan = c.hasBannedMac();
+        final boolean ipBan = c.hasBannedIP();
+        final boolean macBan = c.hasBannedMac();
         if (AutoRegister.getAccountExists(login)) {
             loginok = c.login(login, pwd, ipBan || macBan);
         } else if (LoginServer.getInstance().AutoRegister() && (!ipBan && !macBan)) {
@@ -41,11 +41,11 @@ public class LoginPasswordHandler implements MaplePacketHandler {
                 loginok = c.login(login, pwd, ipBan || macBan);
             }
         } else loginok = c.login(login, pwd, ipBan || macBan);
-        Calendar tempBannedTill = c.getTempBanCalendar();
+        final Calendar tempBannedTill = c.getTempBanCalendar();
         if (loginok == 0 && (ipBan || macBan)) {
             loginok = 3;
             if (macBan) {
-                String[] ipSplit = c.getSession().getRemoteAddress().toString().split(":");
+                final String[] ipSplit = c.getSession().getRemoteAddress().toString().split(":");
                 MapleCharacter.ban(ipSplit[0], "Enforcing account ban, account " + login, false);
             }
         }
@@ -56,8 +56,8 @@ public class LoginPasswordHandler implements MaplePacketHandler {
             c.getSession().write(MaplePacketCreator.getLoginFailed(loginok));
             return;
         } else if ((tempBannedTill != null) && (tempBannedTill.getTimeInMillis() != 0)) {
-            long tempban = KoreanDateUtil.getTempBanTimestamp(tempBannedTill.getTimeInMillis());
-            byte reason = c.getBanReason();
+            final long tempban = KoreanDateUtil.getTempBanTimestamp(tempBannedTill.getTimeInMillis());
+            final byte reason = c.getBanReason();
             c.getSession().write(MaplePacketCreator.getTempBan(tempban, reason));
             return;
         }

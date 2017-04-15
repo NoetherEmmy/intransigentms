@@ -13,10 +13,10 @@ import java.util.Map;
 public class PublicChatHandler {
     private static final Map<Integer, Integer> playerHolder = new LinkedHashMap<>();
 
-    private static void addPlayer(MapleCharacter chr) {
+    private static void addPlayer(final MapleCharacter chr) {
         playerHolder.put(chr.getId(), chr.getClient().getChannel());
-        for (int chrIds : playerHolder.keySet()) {
-            MapleCharacter chrs =
+        for (final int chrIds : playerHolder.keySet()) {
+            final MapleCharacter chrs =
                 ChannelServer.getInstance(
                     playerHolder.get(chrIds)
                 )
@@ -40,11 +40,11 @@ public class PublicChatHandler {
         }
     }
 
-    private static void removePlayer(MapleCharacter chr) {
+    private static void removePlayer(final MapleCharacter chr) {
         if (playerHolder.containsKey(chr.getId())) {
             playerHolder.remove(chr.getId());
-            for (int chrIds : playerHolder.keySet()) {
-                MapleCharacter chrs =
+            for (final int chrIds : playerHolder.keySet()) {
+                final MapleCharacter chrs =
                     ChannelServer.getInstance(
                         playerHolder.get(chrIds)
                     )
@@ -69,10 +69,10 @@ public class PublicChatHandler {
         }
     }
 
-    private static void sendMessage(MapleCharacter chr, String message) {
+    private static void sendMessage(final MapleCharacter chr, final String message) {
         if (playerHolder.containsKey(chr.getId())) {
-            for (int chrIds : playerHolder.keySet()) {
-                MapleCharacter chrs =
+            for (final int chrIds : playerHolder.keySet()) {
+                final MapleCharacter chrs =
                     ChannelServer.getInstance(
                         playerHolder.get(chrIds)
                     )
@@ -100,11 +100,11 @@ public class PublicChatHandler {
         return playerHolder;
     }
 
-    public static boolean doChat(MapleClient c, String text) {
-        MapleCharacter player = c.getPlayer();
-        WhisperMapleClientMessageCallback mc = new WhisperMapleClientMessageCallback("ChatBot", c);
+    public static boolean doChat(final MapleClient c, final String text) {
+        final MapleCharacter player = c.getPlayer();
+        final WhisperMapleClientMessageCallback mc = new WhisperMapleClientMessageCallback("ChatBot", c);
         if (text.charAt(0) == '`') { // ` is much easier than typing ~
-            String[] splitted = text.substring(1).split(" ");
+            final String[] splitted = text.substring(1).split(" ");
             if (splitted[0].equalsIgnoreCase("connect")) {
                 if (playerHolder.containsKey(player.getId())) {
                     mc.dropMessage("You are already in the chat channel.");
@@ -142,8 +142,8 @@ public class PublicChatHandler {
                          )
                      );
                 } else {
-                    for (int chrIds : playerHolder.keySet()) {
-                        MapleCharacter chrs =
+                    for (final int chrIds : playerHolder.keySet()) {
+                        final MapleCharacter chrs =
                             ChannelServer.getInstance(
                                 playerHolder.get(chrIds)
                             )
@@ -164,7 +164,7 @@ public class PublicChatHandler {
                     c.getSession().write(MaplePacketCreator.multiChat("", i + " total connected.", 3));
                 }
             } else if (playerHolder.containsKey(player.getId())) {
-                String message = StringUtil.joinStringFrom(splitted, 0).trim();
+                final String message = StringUtil.joinStringFrom(splitted, 0).trim();
                 sendMessage(player, message);
             } else {
                 mc.dropMessage("I don't understand what you just said.");

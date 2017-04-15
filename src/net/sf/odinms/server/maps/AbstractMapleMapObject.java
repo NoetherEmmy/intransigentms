@@ -14,7 +14,7 @@ public abstract class AbstractMapleMapObject implements MapleMapObject {
     }
 
     @Override
-    public void setPosition(Point position) {
+    public void setPosition(final Point position) {
         this.position.x = position.x;
         this.position.y = position.y;
     }
@@ -25,7 +25,7 @@ public abstract class AbstractMapleMapObject implements MapleMapObject {
     }
 
     @Override
-    public void setObjectId(int id) {
+    public void setObjectId(final int id) {
         this.objectId = id;
     }
 }

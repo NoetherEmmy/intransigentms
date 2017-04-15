@@ -22,7 +22,7 @@ public enum MapleQuestRequirementType {
 
     final byte type;
 
-    MapleQuestRequirementType(int type) {
+    MapleQuestRequirementType(final int type) {
         this.type = (byte)type;
     }
 
@@ -30,14 +30,14 @@ public enum MapleQuestRequirementType {
         return type;
     }
 
-    public static MapleQuestRequirementType getByType(byte type) {
-        for (MapleQuestRequirementType l : MapleQuestRequirementType.values()) {
+    public static MapleQuestRequirementType getByType(final byte type) {
+        for (final MapleQuestRequirementType l : MapleQuestRequirementType.values()) {
             if (l.getType() == type) return l;
         }
         return null;
     }
 
-    public static MapleQuestRequirementType getByWZName(String name) {
+    public static MapleQuestRequirementType getByWZName(final String name) {
         switch (name) {
             case "job":
                 return JOB;

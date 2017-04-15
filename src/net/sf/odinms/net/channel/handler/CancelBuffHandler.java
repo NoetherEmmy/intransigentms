@@ -9,9 +9,9 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CancelBuffHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int sourceid = slea.readInt();
-        ISkill skill = SkillFactory.getSkill(sourceid);
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int sourceid = slea.readInt();
+        final ISkill skill = SkillFactory.getSkill(sourceid);
         switch (sourceid) {
             case 3121004:
             case 3221001:

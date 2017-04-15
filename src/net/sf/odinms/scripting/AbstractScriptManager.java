@@ -23,7 +23,7 @@ public abstract class AbstractScriptManager {
         sem = new ScriptEngineManager();
     }
 
-    protected Invocable getInvocable(String path, MapleClient c) {
+    protected Invocable getInvocable(String path, final MapleClient c) {
         try {
             path = "scripts/" + path;
             engine = null;
@@ -45,14 +45,14 @@ public abstract class AbstractScriptManager {
                 fr.close();
             }
             return (Invocable) engine;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error executing script. ", e);
             System.err.println("path1: " + path);
             return null;
         }
     }
 
-    protected void resetContext(String path, MapleClient c) {
+    protected void resetContext(String path, final MapleClient c) {
         path = "scripts/" + path;
         c.removeScriptEngine(path);
     }

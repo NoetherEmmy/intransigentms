@@ -7,7 +7,7 @@ public class MaplePlayerShopItem {
     private short bundles;
     private final int price;
 
-    public MaplePlayerShopItem(IItem item, short bundles, int price) {
+    public MaplePlayerShopItem(final IItem item, final short bundles, final int price) {
         this.item = item;
         this.bundles = bundles;
         this.price = price;
@@ -25,7 +25,7 @@ public class MaplePlayerShopItem {
         return price;
     }
 
-    public void setBundles(short bundles) {
+    public void setBundles(final short bundles) {
         this.bundles = bundles;
     }
 }

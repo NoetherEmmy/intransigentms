@@ -14,8 +14,8 @@ public class PortalFactory {
         nextDoorPortal = 0x80;
     }
 
-    public MaplePortal makePortal(int type, MapleData portal) {
-        MapleGenericPortal ret;
+    public MaplePortal makePortal(final int type, final MapleData portal) {
+        final MapleGenericPortal ret;
         if (type == MaplePortal.MAP_PORTAL) {
             ret = new MapleMapPortal();
         } else {
@@ -25,12 +25,12 @@ public class PortalFactory {
         return ret;
     }
 
-    private void loadPortal(MapleGenericPortal portal, MapleData portalData) {
+    private void loadPortal(final MapleGenericPortal portal, final MapleData portalData) {
         portal.setName(MapleDataTool.getString(portalData.getChildByPath("pn")));
         portal.setTarget(MapleDataTool.getString(portalData.getChildByPath("tn")));
         portal.setTargetMapId(MapleDataTool.getInt(portalData.getChildByPath("tm")));
-        int x = MapleDataTool.getInt(portalData.getChildByPath("x"));
-        int y = MapleDataTool.getInt(portalData.getChildByPath("y"));
+        final int x = MapleDataTool.getInt(portalData.getChildByPath("x"));
+        final int y = MapleDataTool.getInt(portalData.getChildByPath("y"));
         portal.setPosition(new Point(x, y));
         String script = MapleDataTool.getString("script", portalData, null);
         if (script != null && script.equals("")) {

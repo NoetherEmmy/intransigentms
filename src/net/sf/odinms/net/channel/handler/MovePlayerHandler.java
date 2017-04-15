@@ -17,20 +17,20 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
     //private static Logger log = LoggerFactory.getLogger(MovePlayerHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         player.resetAfkTime();
         try {
             slea.readByte();
             slea.readInt();
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
+        } catch (final ArrayIndexOutOfBoundsException aioobe) {
             return;
         }
         //log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
         final List<LifeMovementFragment> res = parseMovement(slea);
         if (res == null) return;
         if (slea.available() != 18) return;
-        MaplePacket packet = MaplePacketCreator.movePlayer(player.getId(), res);
+        final MaplePacket packet = MaplePacketCreator.movePlayer(player.getId(), res);
         if (!player.isHidden()) {
             player.getMap().broadcastMessage(player, packet, false);
         } else {
@@ -74,16 +74,16 @@ public class MovePlayerHandler extends AbstractMovementPacketHandler {
         }
     }
 
-    private static void checkMovementSpeed(MapleCharacter chr, List<LifeMovementFragment> moves) {
+    private static void checkMovementSpeed(final MapleCharacter chr, final List<LifeMovementFragment> moves) {
         //boolean wasALM = true;
         //Point oldPosition = new Point (player.getPosition());
-        double playerSpeedMod = chr.getSpeedMod() + 0.005d;
+        final double playerSpeedMod = chr.getSpeedMod() + 0.005d;
         //double playerJumpMod = player.getJumpMod() + 0.005;
         boolean encounteredUnk0 = false;
-        for (LifeMovementFragment lmf : moves) {
+        for (final LifeMovementFragment lmf : moves) {
             if (lmf.getClass() == AbsoluteLifeMovement.class) {
                 final AbsoluteLifeMovement alm = (AbsoluteLifeMovement) lmf;
-                double speedMod = Math.abs(alm.getPixelsPerSecond().x) / 125.0d;
+                final double speedMod = Math.abs(alm.getPixelsPerSecond().x) / 125.0d;
                 //int distancePerSec = Math.abs(alm.getPixelsPerSecond().x);
                 //double jumpMod = Math.abs(alm.getPixelsPerSecond().y) / 525.0d;
                 //double normalSpeed = distancePerSec / playerSpeedMod;

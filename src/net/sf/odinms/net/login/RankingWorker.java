@@ -29,18 +29,18 @@ public class RankingWorker implements Runnable {
             con.commit();
             con.setAutoCommit(true);
             lastUpdate = System.currentTimeMillis();
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             try {
                 con.rollback();
                 con.setAutoCommit(true);
                 log.warn("Could not update rankings", sqle);
-            } catch (SQLException sqle2) {
+            } catch (final SQLException sqle2) {
                 log.error("Could not rollback unfinished ranking transaction", sqle2);
             }
         }
     }
 
-    private void updateRanking(MapleJob job) throws SQLException {
+    private void updateRanking(final MapleJob job) throws SQLException {
         String sqlCharSelect =
             "SELECT c.id, " +
                 (job != null ? "c.jobRank, c.jobRankMove" : "c.rank, c.rankMove") +
@@ -50,12 +50,12 @@ public class RankingWorker implements Runnable {
             sqlCharSelect += "AND c.job DIV 100 = ? ";
         }
         sqlCharSelect += "ORDER BY c.reborns DESC , c.level DESC , c.exp DESC , c.fame DESC , c.meso DESC";
-        PreparedStatement charSelect = con.prepareStatement(sqlCharSelect);
+        final PreparedStatement charSelect = con.prepareStatement(sqlCharSelect);
         if (job != null) {
             charSelect.setInt(1, job.getId() / 100);
         }
-        ResultSet rs = charSelect.executeQuery();
-        PreparedStatement ps =
+        final ResultSet rs = charSelect.executeQuery();
+        final PreparedStatement ps =
             con.prepareStatement(
                 "UPDATE characters SET " +
                     (job != null ? "jobRank = ?, jobRankMove = ? " : "rank = ?, rankMove = ? ") +

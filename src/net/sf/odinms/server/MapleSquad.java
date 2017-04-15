@@ -14,7 +14,7 @@ public class MapleSquad {
     private final int ch;
     private int status;
 
-    public MapleSquad(int ch, MapleCharacter leader) {
+    public MapleSquad(final int ch, final MapleCharacter leader) {
         this.leader = leader;
         this.members.add(leader);
         this.ch = ch;
@@ -25,15 +25,15 @@ public class MapleSquad {
         return leader;
     }
 
-    public boolean containsMember(MapleCharacter member) {
-        for (MapleCharacter mmbr : members) {
+    public boolean containsMember(final MapleCharacter member) {
+        for (final MapleCharacter mmbr : members) {
             if (mmbr.getId() == member.getId()) return true;
         }
         return false;
     }
 
-    public boolean isBanned(MapleCharacter member) {
-        for (MapleCharacter banned : bannedMembers) {
+    public boolean isBanned(final MapleCharacter member) {
+        for (final MapleCharacter banned : bannedMembers) {
             if (banned.getId() == member.getId()) return true;
         }
         return false;
@@ -47,17 +47,17 @@ public class MapleSquad {
         return members.size();
     }
 
-    public boolean addMember(MapleCharacter member) {
+    public boolean addMember(final MapleCharacter member) {
         if (isBanned(member)) return false;
         members.add(member);
-        MaplePacket packet = MaplePacketCreator.serverNotice(5, member.getName() + " has joined the fight!");
+        final MaplePacket packet = MaplePacketCreator.serverNotice(5, member.getName() + " has joined the fight!");
         leader.getClient().getSession().write(packet);
         return true;
     }
 
-    public void banMember(MapleCharacter member, boolean ban) {
+    public void banMember(final MapleCharacter member, final boolean ban) {
         int index = -1;
-        for (MapleCharacter mmbr : members) {
+        for (final MapleCharacter mmbr : members) {
             if (mmbr.getId() == member.getId()) {
                 index = members.indexOf(mmbr);
             }
@@ -66,7 +66,7 @@ public class MapleSquad {
         if (ban) bannedMembers.add(member);
     }
 
-    public void setStatus(int status) {
+    public void setStatus(final int status) {
         this.status = status;
     }
 
@@ -79,7 +79,7 @@ public class MapleSquad {
         bannedMembers.clear();
     }
 
-    public boolean equals(MapleSquad other) {
+    public boolean equals(final MapleSquad other) {
         if (other.ch == ch) {
             if (other.leader.getId() == leader.getId()) return true;
         }

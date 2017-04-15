@@ -25,7 +25,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
     private static final Logger log = LoggerFactory.getLogger(MoveLifeHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final int oid = slea.readInt();
         final short moveId = slea.readShort();
         final MapleMap map = c.getPlayer().getMap();
@@ -46,19 +46,18 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         }
         final MapleMonster monster = (MapleMonster) mmo;
         final List<LifeMovementFragment> res;
-        int skillByte = slea.readByte();
-        int skill = slea.readByte();
-        int skill_1 = slea.readByte() & 0xFF;
-        int skill_2 = slea.readByte();
-        int skill_3 = slea.readByte();
-        @SuppressWarnings("unused")
-        int skill_4 = slea.readByte();
+        final int skillByte = slea.readByte();
+        final int skill = slea.readByte();
+        final int skill_1 = slea.readByte() & 0xFF;
+        final int skill_2 = slea.readByte();
+        final int skill_3 = slea.readByte();
+        @SuppressWarnings("unused") final int skill_4 = slea.readByte();
         MobSkill toUse = null;
         final Random rand = new Random();
         if (skillByte == 1 && monster.getNoSkills() > 0) {
             final int random = rand.nextInt(monster.getNoSkills());
             toUse = monster.getSkills().get(random);
-            int percHpLeft = monster.getHp() / monster.getMaxHp() * 100;
+            final int percHpLeft = monster.getHp() / monster.getMaxHp() * 100;
             if (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) toUse = null;
         }
         if (skill_1 >= 100 && skill_1 <= 200 && monster.hasSkill(skill_1, skill_2)) {
@@ -69,9 +68,9 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         }
         slea.readByte();
         slea.readInt();
-        int start_x = slea.readShort();
-        int start_y = slea.readShort();
-        Point startPos = new Point(start_x, start_y);
+        final int start_x = slea.readShort();
+        final int start_y = slea.readShort();
+        final Point startPos = new Point(start_x, start_y);
         res = parseMovement(slea);
         if (!c.getPlayer().equals(monster.getController())) {
             if (monster.isAttackedBy(c.getPlayer())) { // Aggro and controller change.
@@ -137,7 +136,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
                          " is vac hacking."
                      ).getBytes()
                  );
-            } catch (RemoteException re) {
+            } catch (final RemoteException re) {
                 re.printStackTrace();
                 c.getChannelServer().reconnectWorld();
             }

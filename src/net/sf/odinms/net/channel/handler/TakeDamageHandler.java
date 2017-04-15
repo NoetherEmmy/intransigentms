@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class TakeDamageHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         @SuppressWarnings("unused")
         final int timeStamp = slea.readInt();
@@ -28,18 +28,18 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         int damage = slea.readInt();
         int oid = 0;
         int monsterIdFrom = 0;
-        int pgmr = 0;
+        final int pgmr = 0;
         int direction = 0;
-        int pos_x = 0;
-        int pos_y = 0;
+        final int pos_x = 0;
+        final int pos_y = 0;
         int fake = 0;
-        boolean is_pgmr = false;
-        boolean is_pg = true;
+        final boolean is_pgmr = false;
+        final boolean is_pg = true;
         boolean deadlyAttack = false;
         int mpAttack = 0;
         MapleMonster attacker = null;
         int removedDamage = 0;
-        boolean belowLevelLimit = player.getMap().getPartyQuestInstance() != null &&
+        final boolean belowLevelLimit = player.getMap().getPartyQuestInstance() != null &&
                                   player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
         boolean dodge = false, advaita = false;
 
@@ -77,8 +77,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
         if (attacker != null && c.getChannelServer().getTrackMissGodmode()) {
             if (damage < 1) {
-                double difference = (double) Math.max(player.getLevel() - attacker.getLevel(), 0);
-                double chanceToBeHit = (double) attacker.getAccuracy() / ((1.84d + 0.07d * difference) * (double) player.getAvoidability()) - 1.0d;
+                final double difference = (double) Math.max(player.getLevel() - attacker.getLevel(), 0);
+                final double chanceToBeHit = (double) attacker.getAccuracy() / ((1.84d + 0.07d * difference) * (double) player.getAvoidability()) - 1.0d;
                 if (chanceToBeHit > 0.85d) {
                     player.getCheatTracker().incrementNumGotMissed();
                 }
@@ -101,7 +101,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                                  " MAY be using miss godmode."
                          ).getBytes()
                      );
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     re.printStackTrace();
                     c.getChannelServer().reconnectWorld();
                 }
@@ -112,7 +112,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         }
 
         if (damageFrom != -1 && damageFrom != -2 && attacker != null) {
-            MobAttackInfo attackInfo = MobAttackInfoFactory.getMobAttackInfo(attacker, damageFrom);
+            final MobAttackInfo attackInfo = MobAttackInfoFactory.getMobAttackInfo(attacker, damageFrom);
             if (damage != -1) {
                 if (attackInfo != null && attackInfo.isDeadlyAttack()) {
                     deadlyAttack = true;
@@ -166,7 +166,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.println("Unable to handle smokescreen:");
             e.printStackTrace();
         }
@@ -176,9 +176,9 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             final int job = player.getJob().getId() / 10 - 40;
             fake = 4020002 + (job * 100000);
             if (damageFrom == -1 && player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10) != null) {
-                int[] guardianSkillId = {1120005, 1220006};
+                final int[] guardianSkillId = {1120005, 1220006};
                 for (final int guardian : guardianSkillId) {
-                    ISkill guardianSkill = SkillFactory.getSkill(guardian);
+                    final ISkill guardianSkill = SkillFactory.getSkill(guardian);
                     if (player.getSkillLevel(guardianSkill) > 0 && attacker != null) {
                         final MonsterStatusEffect monsterStatusEffect =
                             new MonsterStatusEffect(
@@ -234,10 +234,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
             }
             if (!player.isHidden() && player.isAlive()) {
                 if (player.getTotalWdef() > 1999 && damageFrom == -1) {
-                    int oldDamage = damage;
+                    final int oldDamage = damage;
                     damage = Math.max(damage - (player.getTotalWdef() - 1999), 1);
 
-                    double dodgeChance = (Math.log1p(player.getTotalWdef() - 1999) / Math.log(2.0d)) / 25.0d;
+                    final double dodgeChance = (Math.log1p(player.getTotalWdef() - 1999) / Math.log(2.0d)) / 25.0d;
                     if (Math.random() < dodgeChance) {
                         damage = 0;
                         dodge = true;
@@ -245,14 +245,14 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     removedDamage += oldDamage - damage;
                 }
                 if (player.getTotalMdef() > 1999 && (damageFrom == 0 || damageFrom == 1) && damage > 0) {
-                    int oldDamage = damage;
+                    final int oldDamage = damage;
                     damage = (int) Math.max(damage - Math.pow(player.getTotalMdef() - 1999.0d, 1.2d), 1);
                     removedDamage += oldDamage - damage;
                 }
-                int advaitaLevel = player.getSkillLevel(5121004);
+                final int advaitaLevel = player.getSkillLevel(5121004);
                 if (advaitaLevel > 10 && (damageFrom == 0 || damageFrom == 1)) {
-                    double advaitaChance = (double) (advaitaLevel - 10) / 100.0d;
-                    int oldDamage = damage;
+                    final double advaitaChance = (double) (advaitaLevel - 10) / 100.0d;
+                    final int oldDamage = damage;
                     if (Math.random() < advaitaChance) {
                         damage = 0;
                         advaita = true;
@@ -282,8 +282,8 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     }
                     if (damageFrom == -1 && player.getSkillLevel(2310000) != 0) {
                         boolean isWearingShield = false;
-                        for (IItem item : player.getInventory(MapleInventoryType.EQUIPPED)) {
-                            IEquip equip = (IEquip) item;
+                        for (final IItem item : player.getInventory(MapleInventoryType.EQUIPPED)) {
+                            final IEquip equip = (IEquip) item;
                             if (equip.getItemId() / 10000 == 109) {
                                 isWearingShield = true;
                                 break;
@@ -303,9 +303,9 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                         }
                     }
                     if ((damageFrom == 0 || damageFrom == 1) && player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null) {
-                        int[] manaReflectSkillId = {2121002, 2221002, 2321002};
-                        for (int manaReflect : manaReflectSkillId) {
-                            ISkill manaReflectSkill = SkillFactory.getSkill(manaReflect);
+                        final int[] manaReflectSkillId = {2121002, 2221002, 2321002};
+                        for (final int manaReflect : manaReflectSkillId) {
+                            final ISkill manaReflectSkill = SkillFactory.getSkill(manaReflect);
                             if (
                                 player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, manaReflectSkill) &&
                                 player.getSkillLevel(manaReflectSkill) > 0 &&
@@ -342,19 +342,19 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                 }
                 if (!belowLevelLimit) {
                     try {
-                        int[] achillesSkillId = {1120004, 1220005, 1320005};
-                        for (int achilles : achillesSkillId) {
-                            ISkill achillesSkill = SkillFactory.getSkill(achilles);
+                        final int[] achillesSkillId = {1120004, 1220005, 1320005};
+                        for (final int achilles : achillesSkillId) {
+                            final ISkill achillesSkill = SkillFactory.getSkill(achilles);
                             if (player.getSkillLevel(achillesSkill) > 0) {
-                                double multiplier = (double) achillesSkill.getEffect(player.getSkillLevel(achillesSkill)).getX() / 1000.0d;
-                                int oldDamage = damage;
-                                int newDamage = (int) (multiplier * (double) damage);
+                                final double multiplier = (double) achillesSkill.getEffect(player.getSkillLevel(achillesSkill)).getX() / 1000.0d;
+                                final int oldDamage = damage;
+                                final int newDamage = (int) (multiplier * (double) damage);
                                 removedDamage += Math.max(oldDamage - newDamage, 0);
                                 damage = newDamage;
                                 break;
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         System.err.println("Failed to handle Achilles:");
                         e.printStackTrace();
                     }
@@ -387,10 +387,10 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                     if (hypotheticalMpLoss > 0) mpLoss = hypotheticalMpLoss;
                     removedDamage += mpLoss;
                 } else if (!belowLevelLimit && player.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
-                    int oldDamage = damage;
+                    final int oldDamage = damage;
                     damage = (damage % 2 == 0) ? damage / 2 : damage / 2 + 1; // Damage rounds up!
                     removedDamage += oldDamage - damage;
-                    int mesoLoss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0d));
+                    final int mesoLoss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0d));
                     if (player.getMeso() < mesoLoss) {
                         player.gainMeso(-player.getMeso(), false);
                         player.cancelBuffStats(MapleBuffStat.MESOGUARD);
@@ -409,7 +409,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
 
                 if (player.getParty() != null) {
                     final MaplePartyCharacter thisPartyChr = player.getParty().getMemberById(player.getId());
-                    List<MapleCharacter> transformed =
+                    final List<MapleCharacter> transformed =
                         player.getMap()
                               .getCharacters()
                               .stream()
@@ -426,18 +426,18 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
                               .sorted(Comparator.comparingDouble(p -> p.getPosition().distanceSq(player.getPosition())))
                               .collect(Collectors.toCollection(ArrayList::new));
 
-                    for (MapleCharacter p : transformed) {
-                        double absorptionProportion;
+                    for (final MapleCharacter p : transformed) {
+                        final double absorptionProportion;
                         if (p.isAffectedBySourceId(5111005)) { // Transformation
                             absorptionProportion = (double) (p.getSkillLevel(5111005) / 2) / 100.0d;
                         } else { // Super Transformation
                             absorptionProportion = (double) p.getSkillLevel(5121003) / 100.0d;
                         }
-                        int absorbed = (int) (damage * absorptionProportion);
+                        final int absorbed = (int) (damage * absorptionProportion);
                         removedDamage += absorbed;
                         damage -= absorbed;
 
-                        float absorbedDamageScaling = 1.0f + 200.0f / (float) p.getTotalInt();
+                        final float absorbedDamageScaling = 1.0f + 200.0f / (float) p.getTotalInt();
                         p.absorbDamage(absorbed * absorbedDamageScaling, damageFrom);
                     }
                 }

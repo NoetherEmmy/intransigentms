@@ -11,7 +11,7 @@ public class CharacterIdChannelPair implements Externalizable {
     public CharacterIdChannelPair() {
     }
 
-    public CharacterIdChannelPair(int charid, int channel) {
+    public CharacterIdChannelPair(final int charid, final int channel) {
         super();
         this.charid = charid;
         this.channel = channel;
@@ -26,13 +26,13 @@ public class CharacterIdChannelPair implements Externalizable {
     }
 
     @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException {
         charid = in.readInt();
         channel = in.readByte();
     }
 
     @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
+    public void writeExternal(final ObjectOutput out) throws IOException {
         out.writeInt(charid);
         out.writeByte(channel);
     }

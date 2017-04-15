@@ -17,7 +17,7 @@ public class SpawnPoint {
      */
     private final boolean immobile;
 
-    public SpawnPoint(MapleMonster monster, Point pos, int mobTime) {
+    public SpawnPoint(final MapleMonster monster, final Point pos, final int mobTime) {
         super();
         this.monster = monster;
         this.pos = new Point(pos);
@@ -31,7 +31,7 @@ public class SpawnPoint {
     }
 
     // Intentionally package private
-    boolean shouldSpawn(long now) {
+    boolean shouldSpawn(final long now) {
         if (mobTime < 0) return false;
         // Regular spawnpoints should spawn a maximum of 3 monsters: these are immobile spawnpoints
         // or spawnpoints with a maximum mobtime of 1
@@ -42,8 +42,8 @@ public class SpawnPoint {
     /**
      * Spawns the monster for this spawn point. Creates a new MapleMonster instance for that and returns it.
      */
-    public MapleMonster spawnMonster(MapleMap mapleMap) {
-        MapleMonster mob = new MapleMonster(monster);
+    public MapleMonster spawnMonster(final MapleMap mapleMap) {
+        final MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(new Point(pos));
         spawnedMonsters.incrementAndGet();
         mob.addListener(monster1 -> {

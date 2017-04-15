@@ -20,7 +20,7 @@ public enum MapleWeaponType {
     GUN(5.0d);
     private final double damageMultiplier;
 
-    MapleWeaponType(double maxDamageMultiplier) {
+    MapleWeaponType(final double maxDamageMultiplier) {
         this.damageMultiplier = maxDamageMultiplier;
     }
 

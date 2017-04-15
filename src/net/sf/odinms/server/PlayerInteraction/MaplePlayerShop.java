@@ -16,17 +16,17 @@ public class MaplePlayerShop extends PlayerInteractionManager {
     private int boughtnumber;
     private final List<String> bannedList = new ArrayList<>();
 
-    public MaplePlayerShop(MapleCharacter owner, int itemId, String desc) {
+    public MaplePlayerShop(final MapleCharacter owner, final int itemId, final String desc) {
         super(owner, itemId % 10, desc, 3);
         this.owner = owner;
     }
 
     @Override
-    public void buy(MapleClient c, int item, short quantity) {
-        MaplePlayerShopItem pItem = items.get(item);
+    public void buy(final MapleClient c, final int item, final short quantity) {
+        final MaplePlayerShopItem pItem = items.get(item);
         if (pItem.getBundles() > 0) {
             synchronized (items) {
-                IItem newItem = pItem.getItem().copy();
+                final IItem newItem = pItem.getItem().copy();
                 newItem.setQuantity(quantity);
                 if (c.getPlayer().getMeso() >= pItem.getPrice() * quantity) {
                     if (MapleInventoryManipulator.addFromDrop(c, newItem)) {
@@ -58,18 +58,18 @@ public class MaplePlayerShop extends PlayerInteractionManager {
     }
 
     @Override
-    public void closeShop(boolean saveItems) {
+    public void closeShop(final boolean saveItems) {
         owner.getMap().broadcastMessage(MaplePacketCreator.removeCharBox(owner));
         owner.getMap().removeMapObject(this);
         try {
             tempItems(false, false);
             if (saveItems) saveItems();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
         owner.setInteraction(null);
     }
 
-    public void banPlayer(String name) {
+    public void banPlayer(final String name) {
         if (!bannedList.contains(name)) {
             bannedList.add(name);
         }
@@ -82,7 +82,7 @@ public class MaplePlayerShop extends PlayerInteractionManager {
         }
     }
 
-    public boolean isBanned(String name) {
+    public boolean isBanned(final String name) {
         return bannedList.contains(name);
     }
 
@@ -91,12 +91,12 @@ public class MaplePlayerShop extends PlayerInteractionManager {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         throw new UnsupportedOperationException();
     }
 

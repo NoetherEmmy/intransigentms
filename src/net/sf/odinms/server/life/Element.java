@@ -3,7 +3,7 @@ package net.sf.odinms.server.life;
 public enum Element {
     NEUTRAL, FIRE, ICE, LIGHTING, POISON, HOLY;
 
-    public static Element getFromChar(char c) {
+    public static Element getFromChar(final char c) {
         switch (Character.toUpperCase(c)) {
             case 'F':
                 return FIRE;

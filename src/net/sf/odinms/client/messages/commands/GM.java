@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
 import static net.sf.odinms.client.messages.CommandProcessor.*;
 
 public class GM implements Command {
-    private static String getBannedReason(String name) {
-        Connection con = DatabaseConnection.getConnection();
+    private static String getBannedReason(final String name) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps;
             ResultSet rs;
@@ -53,7 +53,9 @@ public class GM implements Command {
             rs = ps.executeQuery();
             if (rs.next()) {
                 if (rs.getInt("banned") > 0) {
-                    String user, reason, mac;
+                    final String user;
+                    final String reason;
+                    final String mac;
                     user = rs.getString("name");
                     reason = rs.getString("banreason");
                     mac = rs.getString("macs");
@@ -68,7 +70,7 @@ public class GM implements Command {
             }
             rs.close();
             ps.close();
-            int accid;
+            final int accid;
             ps = con.prepareStatement("SELECT accountid FROM characters WHERE name = ?");
             ps.setString(1, name);
             rs = ps.executeQuery();
@@ -83,7 +85,9 @@ public class GM implements Command {
             ps.setInt(1, accid);
             rs = ps.executeQuery();
             if (rs.getInt("banned") > 0) {
-                String user, reason, mac;
+                final String user;
+                final String reason;
+                final String mac;
                 user = rs.getString("name");
                 reason = rs.getString("banreason");
                 mac = rs.getString("macs");
@@ -95,13 +99,13 @@ public class GM implements Command {
                 ps.close();
                 return "Player is not banned.";
             }
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
         return "Player is not banned.";
     }
 
-    public void clearSlot(MapleClient c, int type) {
-        MapleInventoryType invent;
+    public void clearSlot(final MapleClient c, final int type) {
+        final MapleInventoryType invent;
         switch (type) {
             case 1:
                 invent = MapleInventoryType.EQUIP;
@@ -119,17 +123,17 @@ public class GM implements Command {
                 invent = MapleInventoryType.CASH;
                 break;
         }
-        List<Integer> itemMap = new ArrayList<>();
-        for (IItem item : c.getPlayer().getInventory(invent).list()) {
+        final List<Integer> itemMap = new ArrayList<>();
+        for (final IItem item : c.getPlayer().getInventory(invent).list()) {
             itemMap.add(item.getItemId());
         }
-        for (int itemid : itemMap) {
+        for (final int itemid : itemMap) {
             MapleInventoryManipulator.removeAllById(c, itemid, false);
         }
     }
 
     @Override
-    public void execute(MapleClient c, final MessageCallback mc, String[] splitted) throws Exception {
+    public void execute(final MapleClient c, final MessageCallback mc, final String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
         final ChannelServer cserv = c.getChannelServer();
         final Collection<ChannelServer> cservs = ChannelServer.getAllInstances();
@@ -143,10 +147,10 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int sp;
+                final int sp;
                 try {
                     sp = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 player.setRemainingSp(sp + player.getRemainingSp());
@@ -156,10 +160,10 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int ap;
+                final int ap;
                 try {
                     ap = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 player.setRemainingAp(ap + player.getRemainingAp());
@@ -169,10 +173,10 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int job;
+                final int job;
                 try {
                     job = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 player.setJob(job);
@@ -185,10 +189,10 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int shopid;
+                final int shopid;
                 try {
                     shopid = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 MapleShopFactory.getInstance().getShop(shopid).sendShop(c);
@@ -197,13 +201,13 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int npcid;
+                final int npcid;
                 try {
                     npcid = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException ignored) {
+                } catch (final NumberFormatException ignored) {
                     return;
                 }
-                MapleNPC npc = MapleLifeFactory.getNPC(npcid);
+                final MapleNPC npc = MapleLifeFactory.getNPC(npcid);
                 if (!npc.getName().equalsIgnoreCase("MISSINGNO")) {
                     NPCScriptManager.getInstance().start(c, npcid);
                 } else {
@@ -220,10 +224,10 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int amt;
+                final int amt;
                 try {
                     amt = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 player.setMaxMp(amt);
@@ -234,10 +238,10 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int amt;
+                final int amt;
                 try {
                     amt = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 player.setMaxHp(amt);
@@ -245,7 +249,7 @@ public class GM implements Command {
                 break;
             }
             case "!healmap":
-                for (MapleCharacter map : player.getMap().getCharacters()) {
+                for (final MapleCharacter map : player.getMap().getCharacters()) {
                     if (map != null) {
                         map.setHp(map.getCurrentMaxHp());
                         map.updateSingleStat(MapleStat.HP, map.getHp());
@@ -255,15 +259,15 @@ public class GM implements Command {
                 }
                 break;
             case "!item": {
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 if (splitted.length < 2) {
                     return;
                 }
-                int item;
+                final int item;
                 short quantity = (short) getOptionalIntArg(splitted, 2, 1);
                 try {
                     item = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     mc.dropMessage("Error while making item.");
                     return;
                 }
@@ -271,7 +275,7 @@ public class GM implements Command {
                     if (quantity > 1) {
                         quantity = 1;
                     }
-                    int petId = MaplePet.createPet(item);
+                    final int petId = MaplePet.createPet(item);
                     MapleInventoryManipulator.addById(c, item, quantity, player.getName(), petId);
                 } else if (ii.getInventoryType(item).equals(MapleInventoryType.EQUIP) && !ii.isThrowingStar(ii.getEquipById(item).getItemId()) && !ii.isBullet(ii.getEquipById(item).getItemId())) {
                     MapleInventoryManipulator.addFromDrop(c, ii.randomizeStats(c, (Equip) ii.getEquipById(item)), true, player.getName());
@@ -284,11 +288,11 @@ public class GM implements Command {
                 if (splitted.length < 2) {
                     return;
                 }
-                int quantity = getOptionalIntArg(splitted, 2, 1);
-                int item;
+                final int quantity = getOptionalIntArg(splitted, 2, 1);
+                final int item;
                 try {
                     item = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 MapleInventoryManipulator.addById(c, item, (short) quantity);
@@ -298,10 +302,10 @@ public class GM implements Command {
                 if (splitted.length < 2) {
                     return;
                 }
-                int amt;
+                final int amt;
                 try {
                     amt = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 player.getMap().spawnMesoDrop(amt, amt, player.getPosition(), player, player, false);
@@ -311,10 +315,10 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int level;
+                final int level;
                 try {
                     level = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException asd) {
+                } catch (final NumberFormatException asd) {
                     return;
                 }
                 player.setLevel(level);
@@ -325,11 +329,11 @@ public class GM implements Command {
             }
             case "!allonline": {
                 int i = 0;
-                for (ChannelServer cs : ChannelServer.getAllInstances()) {
+                for (final ChannelServer cs : ChannelServer.getAllInstances()) {
                     if (!cs.getPlayerStorage().getAllCharacters().isEmpty()) {
                         StringBuilder sb = new StringBuilder();
                         mc.dropMessage("Channel " + cs.getChannel());
-                        for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
+                        for (final MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
                             i++;
                             if (sb.length() > 150) { // Chars per line. Could be more or less
                                 mc.dropMessage(sb.toString());
@@ -352,16 +356,16 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                Connection con = DatabaseConnection.getConnection();
+                final Connection con = DatabaseConnection.getConnection();
                 try {
-                    PreparedStatement ps = con.prepareStatement("SELECT guildid FROM guilds WHERE name = ?");
+                    final PreparedStatement ps = con.prepareStatement("SELECT guildid FROM guilds WHERE name = ?");
                     ps.setString(1, splitted[1]);
-                    ResultSet rs = ps.executeQuery();
+                    final ResultSet rs = ps.executeQuery();
                     if (rs.next()) {
                         if (player.getGuildId() > 0) {
                             try {
                                 cserv.getWorldInterface().leaveGuild(player.getMGC());
-                            } catch (RemoteException re) {
+                            } catch (final RemoteException re) {
                                 c.getSession().write(MaplePacketCreator.serverNotice(5, "Unable to connect to the World Server. Please try again later."));
                                 return;
                             }
@@ -374,14 +378,14 @@ public class GM implements Command {
                         player.setGuildRank(2); // Jr. Master
                         try {
                             cserv.getWorldInterface().addGuildMember(player.getMGC());
-                        } catch (RemoteException e) {
+                        } catch (final RemoteException e) {
                             cserv.reconnectWorld();
                         }
                         c.getSession().write(MaplePacketCreator.showGuildInfo(player));
                         player.getMap().broadcastMessage(player, MaplePacketCreator.removePlayerFromMap(player.getId()), false);
                         player.getMap().broadcastMessage(player, MaplePacketCreator.spawnPlayerMapobject(player), false);
                         if (player.getNoPets() > 0) {
-                            for (MaplePet pet : player.getPets()) {
+                            for (final MaplePet pet : player.getPets()) {
                                 player.getMap().broadcastMessage(player, MaplePacketCreator.showPet(player, pet, false, false), false);
                             }
                         }
@@ -391,12 +395,12 @@ public class GM implements Command {
                     }
                     rs.close();
                     ps.close();
-                } catch (SQLException ignored) {
+                } catch (final SQLException ignored) {
                 }
                 break;
             }
             case "!unbuffmap":
-                for (MapleCharacter map : player.getMap().getCharacters()) {
+                for (final MapleCharacter map : player.getMap().getCharacters()) {
                     if (map != null && map != player) {
                         map.cancelAllBuffs();
                     }
@@ -406,18 +410,18 @@ public class GM implements Command {
                 if (splitted.length != 2) {
                     return;
                 }
-                int meso;
+                final int meso;
                 try {
                     meso = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException ex) {
+                } catch (final NumberFormatException ex) {
                     return;
                 }
                 player.setMeso(meso);
                 break;
             case "!setname": {
                 if (splitted.length == 3) {
-                    MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                    String newname = splitted[2];
+                    final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                    final String newname = splitted[2];
 
                     if (MapleCharacter.getIdByName(newname, 0) == -1) {
                         if (victim != null) {
@@ -483,11 +487,11 @@ public class GM implements Command {
                 }
                 break;
             case "!slap": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                int damage;
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final int damage;
                 try {
                     damage = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException ex) {
+                } catch (final NumberFormatException ex) {
                     return;
                 }
                 if (victim.getHp() > damage) {
@@ -506,7 +510,7 @@ public class GM implements Command {
                 player.getMap().resetReactors();
                 break;
             case "!coke":
-                int[] coke = {9500144, 9500151, 9500152, 9500153, 9500154, 9500143, 9500145, 9500149, 9500147};
+                final int[] coke = {9500144, 9500151, 9500152, 9500153, 9500154, 9500143, 9500145, 9500149, 9500147};
                 for (int i = 0; i < coke.length; ++i) {
                     player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(coke[i]), player.getPosition());
                 }
@@ -541,7 +545,7 @@ public class GM implements Command {
                 }
                 break;
             case "!balrog":
-                int[] balrog = {8130100, 8150000, 9400536};
+                final int[] balrog = {8130100, 8150000, 9400536};
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     for (int i = 0; i < balrog.length; ++i) {
                         player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(balrog[i]), player.getPosition());
@@ -550,7 +554,7 @@ public class GM implements Command {
                 break;
             case "!mushmom":
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
-                    int[] mushmom = {6130101, 6300005, 9400205};
+                    final int[] mushmom = {6130101, 6300005, 9400205};
                     for (int i = 0; i < mushmom.length; ++i) {
                         player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mushmom[i]), player.getPosition());
                     }
@@ -564,7 +568,7 @@ public class GM implements Command {
                 }
                 break;
             case "!pirate":
-                int[] pirate = {9300119, 9300107, 9300105, 9300106};
+                final int[] pirate = {9300119, 9300107, 9300105, 9300106};
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     for (int i = 0; i < pirate.length; ++i) {
                         player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(pirate[i]), player.getPosition());
@@ -572,7 +576,7 @@ public class GM implements Command {
                 }
                 break;
             case "!clone":
-                int[] clone = {9001002, 9001003, 9001000, 9001001};
+                final int[] clone = {9001002, 9001003, 9001000, 9001001};
                 for (int amnt = getOptionalIntArg(splitted, 1, 1); amnt > 0; amnt--) {
                     for (int i = 0; i < clone.length; ++i) {
                         player.getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(clone[i]), player.getPosition());
@@ -649,7 +653,7 @@ public class GM implements Command {
                 }
                 break;
             case "!horntail":
-                MapleMonster ht = MapleLifeFactory.getMonster(8810026);
+                final MapleMonster ht = MapleLifeFactory.getMonster(8810026);
                 player.getMap().spawnMonsterOnGroundBelow(ht, player.getPosition());
                 player.getMap().killMonster(ht, player, false);
                 player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(0, "As the cave shakes and rattles, here comes Horntail."));
@@ -659,7 +663,7 @@ public class GM implements Command {
                 MapleMap map = player.getMap();
                 double range = Double.POSITIVE_INFINITY;
                 if (splitted.length > 1) {
-                    int irange = Integer.parseInt(splitted[1]);
+                    final int irange = Integer.parseInt(splitted[1]);
                     if (splitted.length == 2) {
                         range = irange * irange;
                     } else {
@@ -667,28 +671,28 @@ public class GM implements Command {
                         mapMessage = " in " + map.getStreetName() + " : " + map.getMapName();
                     }
                 }
-                List<MapleMapObject> monsters =
+                final List<MapleMapObject> monsters =
                     map.getMapObjectsInRange(
                         player.getPosition(),
                         range,
                         MapleMapObjectType.MONSTER
                     );
                 for (final MapleMapObject monstermo : monsters) {
-                    MapleMonster monster = (MapleMonster) monstermo;
+                    final MapleMonster monster = (MapleMonster) monstermo;
                     map.killMonster(monster, player, false);
                 }
                 mc.dropMessage("Killed " + monsters.size() + " monsters" + mapMessage + ".");
                 break;
             }
             case "!help":
-                int page = CommandProcessor.getOptionalIntArg(splitted, 1, 1);
+                final int page = CommandProcessor.getOptionalIntArg(splitted, 1, 1);
                 CommandProcessor.getInstance().dropHelp(c.getPlayer(), mc, page);
                 break;
             case "!say":
                 if (splitted.length > 1) {
                     try {
                         cserv.getWorldInterface().broadcastMessage(player.getName(), MaplePacketCreator.serverNotice(6, "[" + player.getName() + "] " + StringUtil.joinStringFrom(splitted, 1)).getBytes());
-                    } catch (RemoteException re) {
+                    } catch (final RemoteException re) {
                         cserv.reconnectWorld();
                     }
                 } else {
@@ -696,7 +700,7 @@ public class GM implements Command {
                 }
                 break;
             case "!gender": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.setGender(victim.getGender() == 1 ? 0 : 1);
                     victim.getClient().getSession().write(MaplePacketCreator.getCharInfo(victim));
@@ -708,7 +712,7 @@ public class GM implements Command {
                 break;
             }
             case "!spy": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     mc.dropMessage("Players stats are:");
                     mc.dropMessage("Level: " + victim.getLevel() + "  ||  Rebirthed: " + victim.getReborns());
@@ -723,7 +727,7 @@ public class GM implements Command {
                 break;
             }
             case "!levelperson": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 victim.setLevel(getOptionalIntArg(splitted, 2, victim.getLevel() + 1));
                 victim.levelUp();
                 victim.setExp(0);
@@ -731,19 +735,19 @@ public class GM implements Command {
                 break;
             }
             case "!skill": {
-                int skill;
+                final int skill;
                 try {
                     skill = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
-                int maxlevel = SkillFactory.getSkill(skill).getMaxLevel();
-                int level = getOptionalIntArg(splitted, 2, maxlevel);
-                int masterlevel = getOptionalIntArg(splitted, 3, maxlevel);
+                final int maxlevel = SkillFactory.getSkill(skill).getMaxLevel();
+                final int level = getOptionalIntArg(splitted, 2, maxlevel);
+                final int masterlevel = getOptionalIntArg(splitted, 3, maxlevel);
                 if (splitted.length == 4) {
                     player.changeSkillLevel(SkillFactory.getSkill(skill), level, masterlevel);
                 } else if (splitted.length == 5) {
-                    MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[4]);
+                    final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[4]);
                     if (victim != null) {
                         victim.changeSkillLevel(SkillFactory.getSkill(skill), level, masterlevel);
                     } else {
@@ -753,10 +757,10 @@ public class GM implements Command {
                 break;
             }
             case "!setall":
-                int max;
+                final int max;
                 try {
                     max = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 player.setStr(max);
@@ -769,15 +773,15 @@ public class GM implements Command {
                 player.updateSingleStat(MapleStat.LUK, max);
                 break;
             case "!giftnx": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
-                    int amount;
+                    final int amount;
                     try {
                         amount = Integer.parseInt(splitted[2]);
-                    } catch (NumberFormatException ex) {
+                    } catch (final NumberFormatException ex) {
                         return;
                     }
-                    int type = getOptionalIntArg(splitted, 3, 1);
+                    final int type = getOptionalIntArg(splitted, 3, 1);
                     victim.modifyCSPoints(type, amount);
                     victim.dropMessage(5, player.getName() + " has gifted you " + amount + " NX points.");
                     mc.dropMessage("NX recieved.");
@@ -790,7 +794,7 @@ public class GM implements Command {
                 player.maxAllSkills();
                 break;
             case "!fame": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.setFame(getOptionalIntArg(splitted, 2, 1));
                     victim.updateSingleStat(MapleStat.FAME, victim.getFame());
@@ -800,7 +804,7 @@ public class GM implements Command {
                 break;
             }
             case "!unhide": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.dispelSkill(9101004);
                 } else {
@@ -809,7 +813,7 @@ public class GM implements Command {
                 break;
             }
             case "!heal":
-                MapleCharacter heal;
+                final MapleCharacter heal;
                 if (splitted.length == 2) {
                     heal = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                     if (heal == null) {
@@ -825,7 +829,7 @@ public class GM implements Command {
                 heal.updateSingleStat(MapleStat.MP, heal.getCurrentMaxMp());
                 break;
             case "!unbuff": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.cancelAllBuffs();
                 } else {
@@ -834,9 +838,9 @@ public class GM implements Command {
                 break;
             }
             case "!sendhint": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
-                    String message = StringUtil.joinStringFrom(splitted, 2);
+                    final String message = StringUtil.joinStringFrom(splitted, 2);
                     victim.getMap().broadcastMessage(victim, MaplePacketCreator.sendHint(message, 0, 0), false);
                 } else {
                     mc.dropMessage("Player not found");
@@ -845,10 +849,10 @@ public class GM implements Command {
             }
             case "!smega":
                 if (splitted.length > 3) {
-                    MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                    final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                     if (victim != null) {
-                        String type = splitted[2];
-                        String text = StringUtil.joinStringFrom(splitted, 3);
+                        final String type = splitted[2];
+                        final String text = StringUtil.joinStringFrom(splitted, 3);
                         int itemID = 5390001; // Default is cloud
                         if (type.equalsIgnoreCase("love")) {
                             itemID = 5390002;
@@ -857,7 +861,7 @@ public class GM implements Command {
                         } else if (type.equalsIgnoreCase("diablo")) {
                             itemID = 5390000;
                         }
-                        String[] lines = {"", "", "", ""};
+                        final String[] lines = {"", "", "", ""};
 
                         if (text.length() > 30) {
                             lines[0] = text.substring(0, 10);
@@ -874,7 +878,7 @@ public class GM implements Command {
                         } else if (text.length() <= 10) {
                             lines[0] = text;
                         }
-                        List<String> list = new ArrayList<>();
+                        final List<String> list = new ArrayList<>();
                         list.add(lines[0]);
                         list.add(lines[1]);
                         list.add(lines[2]);
@@ -882,7 +886,7 @@ public class GM implements Command {
 
                         try {
                             victim.getClient().getChannelServer().getWorldInterface().broadcastSMega(null, MaplePacketCreator.getAvatarMega(victim, c.getChannel(), itemID, list, false).getBytes());
-                        } catch (RemoteException e) {
+                        } catch (final RemoteException e) {
                             cserv.reconnectWorld();
                         }
                     } else {
@@ -893,7 +897,7 @@ public class GM implements Command {
                 }
                 break;
             case "!mutesmega": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.setCanSmega(!victim.getCanSmega());
                     victim.dropMessage(5, "Your smega ability is now " + (victim.getCanSmega() ? "on" : "off"));
@@ -904,7 +908,7 @@ public class GM implements Command {
                 break;
             }
             case "!mute": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.canTalk(!victim.getCanTalk());
                     victim.dropMessage(5, "Your chatting ability is now " + (victim.getCanTalk() ? "on" : "off"));
@@ -915,8 +919,8 @@ public class GM implements Command {
                 break;
             }
             case "!givedisease": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                int type;
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final int type;
                 if (splitted[2].equalsIgnoreCase("SEAL")) {
                     type = 120;
                 } else if (splitted[2].equalsIgnoreCase("DARKNESS")) {
@@ -937,14 +941,14 @@ public class GM implements Command {
                 break;
             }
             case "!dc": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 victim.getClient().disconnect();
                 victim.getClient().getSession().close();
                 break;
             }
             case "!charinfo": {
                 StringBuilder builder = new StringBuilder();
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim == null) {
                     return;
                 }
@@ -991,11 +995,11 @@ public class GM implements Command {
             }
             case "!connected":
                 try {
-                    Map<Integer, Integer> connected = cserv.getWorldInterface().getConnected();
-                    StringBuilder conStr = new StringBuilder();
+                    final Map<Integer, Integer> connected = cserv.getWorldInterface().getConnected();
+                    final StringBuilder conStr = new StringBuilder();
                     mc.dropMessage("Connected Clients: ");
 
-                    for (int i : connected.keySet()) {
+                    for (final int i : connected.keySet()) {
                         if (i == 0) {
                             conStr.append("Total: "); // I HAVE NO CLUE WHY.
                             conStr.append(connected.get(i));
@@ -1007,7 +1011,7 @@ public class GM implements Command {
                         }
                     }
                     mc.dropMessage(conStr.toString());
-                } catch (RemoteException e) {
+                } catch (final RemoteException e) {
                     cserv.reconnectWorld();
                 }
                 break;
@@ -1018,24 +1022,24 @@ public class GM implements Command {
                 MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     if (splitted.length == 2) {
-                        MapleMap target = victim.getMap();
+                        final MapleMap target = victim.getMap();
                         player.changeMap(target, target.findClosestSpawnpoint(victim.getPosition()));
                     } else {
-                        MapleMap target = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(Integer.parseInt(splitted[2]));
+                        final MapleMap target = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(Integer.parseInt(splitted[2]));
                         victim.changeMap(target, target.getPortal(0));
                     }
                 } else {
                     try {
                         victim = player;
-                        WorldLocation loc = cserv.getWorldInterface().getLocation(splitted[1]);
+                        final WorldLocation loc = cserv.getWorldInterface().getLocation(splitted[1]);
                         if (loc != null) {
                             mc.dropMessage("You will be cross-channel warped. This may take a few seconds.");
-                            MapleMap target = cserv.getMapFactory().getMap(loc.map);
+                            final MapleMap target = cserv.getMapFactory().getMap(loc.map);
                             victim.cancelAllBuffs();
-                            String ip = cserv.getIP(loc.channel);
+                            final String ip = cserv.getIP(loc.channel);
                             victim.getMap().removePlayer(victim);
                             victim.setMap(target);
-                            String[] socket = ip.split(":");
+                            final String[] socket = ip.split(":");
                             if (victim.getTrade() != null) {
                                 MapleTrade.cancelTrade(player);
                             }
@@ -1047,19 +1051,19 @@ public class GM implements Command {
                             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
                             try {
                                 c.getSession().write(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                                 throw new RuntimeException(e);
                             }
                         } else {
-                            MapleMap target = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
+                            final MapleMap target = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
                             if (splitted.length == 3) {
                                 Integer portalId;
                                 try {
                                     portalId = Integer.parseInt(splitted[2]);
-                                } catch (NumberFormatException nfe) {
+                                } catch (final NumberFormatException nfe) {
                                     portalId = null;
                                 }
-                                MaplePortal to;
+                                final MaplePortal to;
                                 if (portalId != null) {
                                     to = target.getPortal(portalId);
                                 } else {
@@ -1074,24 +1078,24 @@ public class GM implements Command {
                                 player.changeMap(target, target.getPortal(0));
                             }
                         }
-                    } catch (Exception ignored) {
+                    } catch (final Exception ignored) {
                     }
                 }
                 break;
             }
             case "!warphere": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                MapleMap pmap = player.getMap();
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleMap pmap = player.getMap();
                 if (victim != null) {
                     victim.changeMap(pmap, player.getPosition());
                 } else {
                     try {
-                        String name = splitted[1];
-                        WorldChannelInterface wci = cserv.getWorldInterface();
-                        int channel = wci.find(name);
+                        final String name = splitted[1];
+                        final WorldChannelInterface wci = cserv.getWorldInterface();
+                        final int channel = wci.find(name);
                         if (channel > -1) {
-                            ChannelServer pserv = ChannelServer.getInstance(channel);
-                            MapleCharacter world_victim = pserv.getPlayerStorage().getCharacterByName(name);
+                            final ChannelServer pserv = ChannelServer.getInstance(channel);
+                            final MapleCharacter world_victim = pserv.getPlayerStorage().getCharacterByName(name);
                             if (world_victim != null) {
                                 ChangeChannelHandler.changeChannel(c.getChannel(), world_victim.getClient());
                                 world_victim.changeMap(pmap, player.getPosition());
@@ -1099,14 +1103,14 @@ public class GM implements Command {
                         } else {
                             mc.dropMessage("Player not online.");
                         }
-                    } catch (RemoteException e) {
+                    } catch (final RemoteException e) {
                         cserv.reconnectWorld();
                     }
                 }
                 break;
             }
             case "!jail": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.changeMap(980000404, 0);
                     mc.dropMessage(victim.getName() + " was jailed!");
@@ -1117,24 +1121,24 @@ public class GM implements Command {
                 break;
             }
             case "!map":
-                int mapid;
+                final int mapid;
                 try {
                     mapid = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 player.changeMap(mapid, getOptionalIntArg(splitted, 2, 0));
                 break;
             case "!warpallhere":
-                for (MapleCharacter mch : cserv.getPlayerStorage().getAllCharacters()) {
+                for (final MapleCharacter mch : cserv.getPlayerStorage().getAllCharacters()) {
                     if (mch.getMapId() != player.getMapId()) {
                         mch.changeMap(player.getMap(), player.getPosition());
                     }
                 }
                 break;
             case "!warpwholeworld":
-                for (ChannelServer channels : cservs) {
-                    for (MapleCharacter mch : channels.getPlayerStorage().getAllCharacters()) {
+                for (final ChannelServer channels : cservs) {
+                    for (final MapleCharacter mch : channels.getPlayerStorage().getAllCharacters()) {
                         if (mch.getClient().getChannel() != c.getChannel()) {
                             ChangeChannelHandler.changeChannel(c.getChannel(), mch.getClient());
                         }
@@ -1145,14 +1149,14 @@ public class GM implements Command {
                 }
                 break;
             case "!mesosrate": { // All these could be so much shorter but cbf.
-                int set;
+                final int set;
                 try {
                     set = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (splitted.length > 2) {
-                    for (ChannelServer channel : cservs) {
+                    for (final ChannelServer channel : cservs) {
                         channel.setMesoRate(set);
                         channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "Meso Rate has been changed to " + set + "x"));
                     }
@@ -1165,14 +1169,14 @@ public class GM implements Command {
                 break;
             }
             case "!droprate": {
-                int set;
+                final int set;
                 try {
                     set = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (splitted.length > 2) {
-                    for (ChannelServer channel : cservs) {
+                    for (final ChannelServer channel : cservs) {
                         channel.setDropRate(set);
                         channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "Drop Rate has been changed to " + set + "x"));
                     }
@@ -1185,14 +1189,14 @@ public class GM implements Command {
                 break;
             }
             case "!bossdroprate": {
-                int set;
+                final int set;
                 try {
                     set = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (splitted.length > 2) {
-                    for (ChannelServer channel : cservs) {
+                    for (final ChannelServer channel : cservs) {
                         channel.setBossDropRate(set);
                         channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "Boss Drop Rate has been changed to " + set + "x"));
                     }
@@ -1205,14 +1209,14 @@ public class GM implements Command {
                 break;
             }
             case "!exprate": {
-                int set;
+                final int set;
                 try {
                     set = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (splitted.length > 2) {
-                    for (ChannelServer channel : cservs) {
+                    for (final ChannelServer channel : cservs) {
                         channel.setExpRate(set);
                         channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "Exp Rate has been changed to " + set + "x"));
                     }
@@ -1225,14 +1229,14 @@ public class GM implements Command {
                 break;
             }
             case "!godlyitemrate": {
-                int set;
+                final int set;
                 try {
                     set = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (splitted.length > 2) {
-                    for (ChannelServer channel : cservs) {
+                    for (final ChannelServer channel : cservs) {
                         channel.setGodlyItemRate((short) set);
                         channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "Godly items will now drop at a " + set + "% rate."));
                     }
@@ -1245,14 +1249,14 @@ public class GM implements Command {
                 break;
             }
             case "!itemstat": {
-                int set;
+                final int set;
                 try {
                     set = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (splitted.length > 2) {
-                    for (ChannelServer channel : cservs) {
+                    for (final ChannelServer channel : cservs) {
                         channel.setItemMultiplier((short) set);
                         channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "Item stat multiplier has been changed to " + set + "x"));
                     }
@@ -1266,7 +1270,7 @@ public class GM implements Command {
             }
             case "!togglegodlyitems":
                 if (splitted.length > 1) {
-                    for (ChannelServer channel : cservs) {
+                    for (final ChannelServer channel : cservs) {
                         channel.setGodlyItems(!cserv.isGodlyItems());
                         if (channel.isGodlyItems()) {
                             channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "Godly items will now drop at a " + channel.getGodlyItemRate() + "% rate. Items like these will be multiplied by " + channel.getItemMultiplier() + "x each rate."));
@@ -1293,7 +1297,7 @@ public class GM implements Command {
             case "!whosthere": {
                 StringBuilder builder = new StringBuilder();
                 mc.dropMessage("Players on Map: ");
-                for (MapleCharacter chr : player.getMap().getCharacters()) {
+                for (final MapleCharacter chr : player.getMap().getCharacters()) {
                     if (builder.length() > 150) { // wild guess :o
                         mc.dropMessage(builder.toString());
                         builder = new StringBuilder();
@@ -1306,11 +1310,11 @@ public class GM implements Command {
             }
             case "!cheaters":
                 try {
-                    List<CheaterData> cheaters = cserv.getWorldInterface().getCheaters();
-                    for (CheaterData cheater : cheaters) {
+                    final List<CheaterData> cheaters = cserv.getWorldInterface().getCheaters();
+                    for (final CheaterData cheater : cheaters) {
                         mc.dropMessage(cheater.getInfo());
                     }
-                } catch (RemoteException e) {
+                } catch (final RemoteException e) {
                     cserv.reconnectWorld();
                 }
                 break;
@@ -1334,9 +1338,9 @@ public class GM implements Command {
                 rings.put("silverswan", 1112809);
                 rings.put("golden", 1112807);
                 if (rings.containsKey(splitted[3])) {
-                    MapleCharacter partner1 = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                    MapleCharacter partner2 = cserv.getPlayerStorage().getCharacterByName(splitted[2]);
-                    int ret = MapleRing.createRing(rings.get(splitted[3]), partner1, partner2);
+                    final MapleCharacter partner1 = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                    final MapleCharacter partner2 = cserv.getPlayerStorage().getCharacterByName(splitted[2]);
+                    final int ret = MapleRing.createRing(rings.get(splitted[3]), partner1, partner2);
                     switch (ret) {
                         case -2:
                             mc.dropMessage("Partner number 1 was not found.");
@@ -1405,25 +1409,25 @@ public class GM implements Command {
                 break;
             case "!spawn":
                 try {
-                    int mid;
+                    final int mid;
                     int num = getOptionalIntArg(splitted, 2, 1);
                     try {
                         mid = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         return;
                     }
 
-                    Integer hp = getNamedIntArg(splitted, 1, "hp");
-                    Integer exp = getNamedIntArg(splitted, 1, "exp");
-                    Double php = getNamedDoubleArg(splitted, 1, "php");
-                    Double pexp = getNamedDoubleArg(splitted, 1, "pexp");
-                    MapleMonster onemob = MapleLifeFactory.getMonster(mid);
+                    final Integer hp = getNamedIntArg(splitted, 1, "hp");
+                    final Integer exp = getNamedIntArg(splitted, 1, "exp");
+                    final Double php = getNamedDoubleArg(splitted, 1, "php");
+                    final Double pexp = getNamedDoubleArg(splitted, 1, "pexp");
+                    final MapleMonster onemob = MapleLifeFactory.getMonster(mid);
                     if (onemob == null) {
                         player.dropMessage("Could not find mob ID specified.");
                         break;
                     }
                     int newhp;
-                    int newexp;
+                    final int newexp;
                     if (hp != null) {
                         newhp = hp;
                     } else if (php != null) {
@@ -1441,35 +1445,35 @@ public class GM implements Command {
                     if (newhp < 1) {
                         newhp = 1;
                     }
-                    MapleMonsterStats overrideStats = new MapleMonsterStats();
+                    final MapleMonsterStats overrideStats = new MapleMonsterStats();
                     overrideStats.setHp(newhp);
                     overrideStats.setExp(newexp);
                     overrideStats.setMp(onemob.getMaxMp());
                     if (num > 20) num = 20;
                     for (int i = 0; i < num; ++i) {
-                        MapleMonster mob = MapleLifeFactory.getMonster(mid);
+                        final MapleMonster mob = MapleLifeFactory.getMonster(mid);
                         if (mob == null) continue;
                         mob.setHp(newhp);
                         mob.setOverrideStats(overrideStats);
                         player.getMap().spawnMonsterOnGroundBelow(mob, player.getPosition());
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case "!ban": {
-                String originalReason = StringUtil.joinStringFrom(splitted, 2);
+                final String originalReason = StringUtil.joinStringFrom(splitted, 2);
                 String reason = player.getName() + " banned " + splitted[1] + ": " + originalReason;
-                MapleCharacter target = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter target = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (target != null) {
                     if (!target.isGM() || player.getGMLevel() > 3) {
-                        String readableTargetName = MapleCharacterUtil.makeMapleReadable(target.getName());
-                        String ip = target.getClient().getSession().getRemoteAddress().toString().split(":")[0];
+                        final String readableTargetName = MapleCharacterUtil.makeMapleReadable(target.getName());
+                        final String ip = target.getClient().getSession().getRemoteAddress().toString().split(":")[0];
                         reason += "  IP: " + ip;
                         target.ban(reason, false);
                         try {
                             cserv.getWorldInterface().broadcastMessage(null, MaplePacketCreator.serverNotice(6, readableTargetName + " has been banned for " + originalReason).getBytes());
-                        } catch (RemoteException re) {
+                        } catch (final RemoteException re) {
                             cserv.reconnectWorld();
                         }
                     } else {
@@ -1477,12 +1481,12 @@ public class GM implements Command {
                     }
                 } else {
                     if (MapleCharacter.ban(splitted[1], reason, false)) {
-                        String readableTargetName = MapleCharacterUtil.makeMapleReadable(splitted[1]);
+                        final String readableTargetName = MapleCharacterUtil.makeMapleReadable(splitted[1]);
                         //String ip = target.getClient().getSession().getRemoteAddress().toString().split(":")[0];
                         //reason += " (IP: " + ip + ")";
                         try {
                             cserv.getWorldInterface().broadcastMessage(null, MaplePacketCreator.serverNotice(6, readableTargetName + " has been banned for " + originalReason).getBytes());
-                        } catch (RemoteException re) {
+                        } catch (final RemoteException re) {
                             cserv.reconnectWorld();
                         }
                     } else {
@@ -1492,40 +1496,40 @@ public class GM implements Command {
                 break;
             }
             case "!tempban": {
-                Calendar tempB = Calendar.getInstance();
-                String originalReason = joinAfterString(splitted, ":");
+                final Calendar tempB = Calendar.getInstance();
+                final String originalReason = joinAfterString(splitted, ":");
 
                 if (splitted.length < 4 || originalReason == null) {
                     mc.dropMessage("Syntax helper: !tempban <name> [i / m / w / d / h] <amount> [r [reason id] : Text Reason");
                     return;
                 }
 
-                int yChange = getNamedIntArg(splitted, 1, "y", 0);
-                int mChange = getNamedIntArg(splitted, 1, "m", 0);
-                int wChange = getNamedIntArg(splitted, 1, "w", 0);
-                int dChange = getNamedIntArg(splitted, 1, "d", 0);
-                int hChange = getNamedIntArg(splitted, 1, "h", 0);
-                int iChange = getNamedIntArg(splitted, 1, "i", 0);
-                int gReason = getNamedIntArg(splitted, 1, "r", 7);
+                final int yChange = getNamedIntArg(splitted, 1, "y", 0);
+                final int mChange = getNamedIntArg(splitted, 1, "m", 0);
+                final int wChange = getNamedIntArg(splitted, 1, "w", 0);
+                final int dChange = getNamedIntArg(splitted, 1, "d", 0);
+                final int hChange = getNamedIntArg(splitted, 1, "h", 0);
+                final int iChange = getNamedIntArg(splitted, 1, "i", 0);
+                final int gReason = getNamedIntArg(splitted, 1, "r", 7);
 
-                String reason = player.getName() + " tempbanned " + splitted[1] + ": " + originalReason;
+                final String reason = player.getName() + " tempbanned " + splitted[1] + ": " + originalReason;
 
                 if (gReason > 14) {
                     mc.dropMessage("You have entered an incorrect ban reason ID, please try again.");
                     return;
                 }
 
-                DateFormat df = DateFormat.getInstance();
+                final DateFormat df = DateFormat.getInstance();
                 tempB.set(tempB.get(Calendar.YEAR) + yChange, tempB.get(Calendar.MONTH) + mChange, tempB.get(Calendar.DATE) +
                         (wChange * 7) + dChange, tempB.get(Calendar.HOUR_OF_DAY) + hChange, tempB.get(Calendar.MINUTE) +
                         iChange);
 
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
 
                 if (victim == null) {
-                    int accId = MapleClient.findAccIdForCharacterName(splitted[1]);
+                    final int accId = MapleClient.findAccIdForCharacterName(splitted[1]);
                     if (accId >= 0 && MapleCharacter.tempban(reason, tempB, gReason, accId)) {
-                        String readableTargetName = MapleCharacterUtil.makeMapleReadable(splitted[1]);
+                        final String readableTargetName = MapleCharacterUtil.makeMapleReadable(splitted[1]);
                         cserv.broadcastPacket(MaplePacketCreator.serverNotice(6, readableTargetName + " has been banned for " + originalReason));
                     } else {
                         mc.dropMessage("There was a problem offline banning character " + splitted[1] + ".");
@@ -1538,7 +1542,7 @@ public class GM implements Command {
             }
             case "!search":
                 if (splitted.length > 2) {
-                    String type = splitted[1].toUpperCase();
+                    final String type = splitted[1].toUpperCase();
                     String search = null;
                     Pattern pattern = null;
                     if (splitted[2].equals("-re")) {
@@ -1546,33 +1550,33 @@ public class GM implements Command {
                     } else {
                         search = StringUtil.joinStringFrom(splitted, 2).toLowerCase();
                     }
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    MapleData data;
-                    MapleDataProvider dataProvider =
+                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    final MapleData data;
+                    final MapleDataProvider dataProvider =
                         MapleDataProviderFactory.getDataProvider(
                             new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
                         );
                     mc.dropMessage("<< Type: " + type + " | Search: " + (search != null ? search : pattern) + " >>");
-                    List<String> retNpcs = new ArrayList<>();
+                    final List<String> retNpcs = new ArrayList<>();
                     switch (type) {
                         case "NPC":
                         case "NPCS":
                             data = dataProvider.getData("Npc.img");
                             if (search != null) {
-                                for (MapleData npcIdData : data.getChildren()) {
-                                    String npcNameFromData =
+                                for (final MapleData npcIdData : data.getChildren()) {
+                                    final String npcNameFromData =
                                         MapleDataTool.getString(npcIdData.getChildByPath("name"), "NO-NAME");
                                     if (npcNameFromData.toLowerCase().contains(search)) {
-                                        int npcIdFromData = Integer.parseInt(npcIdData.getName());
+                                        final int npcIdFromData = Integer.parseInt(npcIdData.getName());
                                         retNpcs.add(npcIdFromData + " - " + npcNameFromData);
                                     }
                                 }
                             } else {
-                                for (MapleData npcIdData : data.getChildren()) {
-                                    String npcNameFromData =
+                                for (final MapleData npcIdData : data.getChildren()) {
+                                    final String npcNameFromData =
                                         MapleDataTool.getString(npcIdData.getChildByPath("name"), "NO-NAME");
                                     if (pattern.matcher(npcNameFromData).matches()) {
-                                        int npcIdFromData = Integer.parseInt(npcIdData.getName());
+                                        final int npcIdFromData = Integer.parseInt(npcIdData.getName());
                                         retNpcs.add(npcIdFromData + " - " + npcNameFromData);
                                     }
                                 }
@@ -1586,11 +1590,11 @@ public class GM implements Command {
                         case "MAP":
                         case "MAPS":
                             data = dataProvider.getData("Map.img");
-                            List<String> retMaps = new ArrayList<>();
+                            final List<String> retMaps = new ArrayList<>();
                             if (search != null) {
-                                for (MapleData mapAreaData : data.getChildren()) {
-                                    for (MapleData mapIdData : mapAreaData.getChildren()) {
-                                        String mapNameFromData =
+                                for (final MapleData mapAreaData : data.getChildren()) {
+                                    for (final MapleData mapIdData : mapAreaData.getChildren()) {
+                                        final String mapNameFromData =
                                             MapleDataTool.getString(
                                                 mapIdData.getChildByPath("streetName"),
                                                 "NO-NAME"
@@ -1601,15 +1605,15 @@ public class GM implements Command {
                                                 "NO-NAME"
                                             );
                                         if (mapNameFromData.toLowerCase().contains(search)) {
-                                            int mapIdFromData = Integer.parseInt(mapIdData.getName());
+                                            final int mapIdFromData = Integer.parseInt(mapIdData.getName());
                                             retMaps.add(mapIdFromData + " - " + mapNameFromData);
                                         }
                                     }
                                 }
                             } else {
-                                for (MapleData mapAreaData : data.getChildren()) {
-                                    for (MapleData mapIdData : mapAreaData.getChildren()) {
-                                        String mapNameFromData =
+                                for (final MapleData mapAreaData : data.getChildren()) {
+                                    for (final MapleData mapIdData : mapAreaData.getChildren()) {
+                                        final String mapNameFromData =
                                             MapleDataTool.getString(
                                                 mapIdData.getChildByPath("streetName"),
                                                 "NO-NAME"
@@ -1620,7 +1624,7 @@ public class GM implements Command {
                                                 "NO-NAME"
                                             );
                                         if (pattern.matcher(mapNameFromData).matches()) {
-                                            int mapIdFromData = Integer.parseInt(mapIdData.getName());
+                                            final int mapIdFromData = Integer.parseInt(mapIdData.getName());
                                             retMaps.add(mapIdFromData + " - " + mapNameFromData);
                                         }
                                     }
@@ -1636,23 +1640,23 @@ public class GM implements Command {
                         case "MOBS":
                         case "MONSTER":
                         case "MONSTERS":
-                            List<String> retMobs = new ArrayList<>();
+                            final List<String> retMobs = new ArrayList<>();
                             data = dataProvider.getData("Mob.img");
                             if (search != null) {
-                                for (MapleData mobIdData : data.getChildren()) {
-                                    String mobNameFromData =
+                                for (final MapleData mobIdData : data.getChildren()) {
+                                    final String mobNameFromData =
                                         MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
                                     if (mobNameFromData.toLowerCase().contains(search)) {
-                                        int mobIdFromData = Integer.parseInt(mobIdData.getName());
+                                        final int mobIdFromData = Integer.parseInt(mobIdData.getName());
                                         retMobs.add(mobIdFromData + " - " + mobNameFromData);
                                     }
                                 }
                             } else {
-                                for (MapleData mobIdData : data.getChildren()) {
-                                    String mobNameFromData =
+                                for (final MapleData mobIdData : data.getChildren()) {
+                                    final String mobNameFromData =
                                         MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
                                     if (pattern.matcher(mobNameFromData).matches()) {
-                                        int mobIdFromData = Integer.parseInt(mobIdData.getName());
+                                        final int mobIdFromData = Integer.parseInt(mobIdData.getName());
                                         retMobs.add(mobIdFromData + " - " + mobNameFromData);
                                     }
                                 }
@@ -1669,15 +1673,15 @@ public class GM implements Command {
                             break;
                         case "ITEM":
                         case "ITEMS":
-                            List<String> retItems = new ArrayList<>();
+                            final List<String> retItems = new ArrayList<>();
                             if (search != null) {
-                                for (Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
+                                for (final Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
                                     if (itemEntry.getValue().toLowerCase().contains(search)) {
                                         retItems.add(itemEntry.getKey() + " - " + itemEntry.getValue());
                                     }
                                 }
                             } else {
-                                for (Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
+                                for (final Map.Entry<Integer, String> itemEntry : ii.getAllItems().entrySet()) {
                                     if (pattern.matcher(itemEntry.getValue()).matches()) {
                                         retItems.add(itemEntry.getKey() + " - " + itemEntry.getValue());
                                     }
@@ -1691,21 +1695,21 @@ public class GM implements Command {
                             break;
                         case "SKILL":
                         case "SKILLS":
-                            List<String> retSkills = new ArrayList<>();
+                            final List<String> retSkills = new ArrayList<>();
                             data = dataProvider.getData("Skill.img");
                             if (search != null) {
-                                for (MapleData skillIdData : data.getChildren()) {
-                                    String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");
+                                for (final MapleData skillIdData : data.getChildren()) {
+                                    final String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");
                                     if (skillNameFromData.toLowerCase().contains(search)) {
-                                        int skillIdFromData = Integer.parseInt(skillIdData.getName());
+                                        final int skillIdFromData = Integer.parseInt(skillIdData.getName());
                                         retSkills.add(skillIdFromData + " - " + skillNameFromData);
                                     }
                                 }
                             } else {
-                                for (MapleData skillIdData : data.getChildren()) {
-                                    String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");
+                                for (final MapleData skillIdData : data.getChildren()) {
+                                    final String skillNameFromData = MapleDataTool.getString(skillIdData.getChildByPath("name"), "NO-NAME");
                                     if (pattern.matcher(skillNameFromData).matches()) {
-                                        int skillIdFromData = Integer.parseInt(skillIdData.getName());
+                                        final int skillIdFromData = Integer.parseInt(skillIdData.getName());
                                         retSkills.add(skillIdFromData + " - " + skillNameFromData);
                                     }
                                 }
@@ -1725,13 +1729,13 @@ public class GM implements Command {
                 }
                 break;
             case "!npc": {
-                int npcId;
+                final int npcId;
                 try {
                     npcId = Integer.parseInt(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
-                MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+                final MapleNPC npc = MapleLifeFactory.getNPC(npcId);
                 if (!npc.getName().equalsIgnoreCase("MISSINGNO")) {
                     npc.setPosition(player.getPosition());
                     npc.setCy(player.getPosition().y);
@@ -1748,7 +1752,7 @@ public class GM implements Command {
                 break;
             }
             case "!removenpcs":
-                List<MapleMapObject> npcs =
+                final List<MapleMapObject> npcs =
                     player
                         .getMap()
                         .getMapObjectsInRange(
@@ -1756,24 +1760,24 @@ public class GM implements Command {
                             Double.POSITIVE_INFINITY,
                             MapleMapObjectType.NPC
                         );
-                for (MapleMapObject npcmo : npcs) {
-                    MapleNPC npc = (MapleNPC) npcmo;
+                for (final MapleMapObject npcmo : npcs) {
+                    final MapleNPC npc = (MapleNPC) npcmo;
                     if (npc.isCustom()) {
                         player.getMap().removeMapObject(npc.getObjectId());
                     }
                 }
                 break;
             case "!mynpcpos": {
-                Point pos = player.getPosition();
+                final Point pos = player.getPosition();
                 mc.dropMessage("X: " + pos.x + " | Y: " + pos.y + " | RX0: " + (pos.x + 50) + " | RX1: " + (pos.x - 50) + " | FH: " + player.getMap().getFootholds().findBelow(pos).getId());
                 break;
             }
             case "!cleardrops": {
-                MapleMap map = player.getMap();
-                double range = Double.POSITIVE_INFINITY;
-                List<MapleMapObject> items =
+                final MapleMap map = player.getMap();
+                final double range = Double.POSITIVE_INFINITY;
+                final List<MapleMapObject> items =
                     map.getMapObjectsInRange(player.getPosition(), range, MapleMapObjectType.ITEM);
-                for (MapleMapObject itemmo : items) {
+                for (final MapleMapObject itemmo : items) {
                     map.removeMapObject(itemmo);
                     map.broadcastMessage(MaplePacketCreator.removeItemFromMap(itemmo.getObjectId(), 0, player.getId()));
                 }
@@ -1787,14 +1791,14 @@ public class GM implements Command {
                 MapleShopFactory.getInstance().clear();
                 break;
             case "!clearevents":
-                for (ChannelServer instance : ChannelServer.getAllInstances()) {
+                for (final ChannelServer instance : ChannelServer.getAllInstances()) {
                     instance.reloadEvents();
                 }
                 break;
             case "!permban": {
-                String name = splitted[1];
-                String reason = StringUtil.joinStringFrom(splitted, 2);
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(name);
+                final String name = splitted[1];
+                final String reason = StringUtil.joinStringFrom(splitted, 2);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(name);
                 if (victim != null) {
                     if (!victim.isGM()) {
                         victim.ban(reason, true);
@@ -1812,14 +1816,14 @@ public class GM implements Command {
                 break;
             }
             case "!emote": {
-                String name = splitted[1];
-                int emote;
+                final String name = splitted[1];
+                final int emote;
                 try {
                     emote = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(name);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(name);
                 if (victim != null) {
                     victim.getMap().broadcastMessage(victim, MaplePacketCreator.facialExpression(victim, emote), victim.getPosition());
                 } else {
@@ -1829,17 +1833,17 @@ public class GM implements Command {
             }
             case "!proitem":
                 if (splitted.length == 3) {
-                    int itemid;
-                    short multiply;
+                    final int itemid;
+                    final short multiply;
                     try {
                         itemid = Integer.parseInt(splitted[1]);
                         multiply = Short.parseShort(splitted[2]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         return;
                     }
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    IItem item = ii.getEquipById(itemid);
-                    MapleInventoryType type = ii.getInventoryType(itemid);
+                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    final IItem item = ii.getEquipById(itemid);
+                    final MapleInventoryType type = ii.getInventoryType(itemid);
                     if (type.equals(MapleInventoryType.EQUIP)) {
                         MapleInventoryManipulator.addFromDrop(c, ii.hardcoreItem((Equip) item, multiply));
                     } else {
@@ -1851,17 +1855,17 @@ public class GM implements Command {
                 break;
             case "!addclones":
                 if (splitted.length < 2) return;
-                int clones;
+                final int clones;
                 try {
                     clones = getOptionalIntArg(splitted, 1, 1);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (player.getFakeChars().size() >= 5) {
                     mc.dropMessage("You are not allowed to clone yourself over 5 times.");
                 } else {
                     for (int i = 0; i < clones && i + player.getFakeChars().size() <= 6; ++i) {
-                        FakeCharacter fc = new FakeCharacter(player, player.getId() + player.getFakeChars().size() + clones + i);
+                        final FakeCharacter fc = new FakeCharacter(player, player.getId() + player.getFakeChars().size() + clones + i);
                         player.getFakeChars().add(fc);
                         c.getChannelServer().addClone(fc);
                     }
@@ -1869,7 +1873,7 @@ public class GM implements Command {
                 }
                 break;
             case "!removeclones":
-                for (FakeCharacter fc : player.getFakeChars()) {
+                for (final FakeCharacter fc : player.getFakeChars()) {
                     if (fc.getFakeChar().getMap() == player.getMap()) {
                         c.getChannelServer().getAllClones().remove(fc);
                         player.getMap().removePlayer(fc.getFakeChar());
@@ -1879,7 +1883,7 @@ public class GM implements Command {
                 mc.dropMessage("All your clones in the map removed.");
                 break;
             case "!removeallclones":
-                for (FakeCharacter fc : c.getChannelServer().getAllClones()) {
+                for (final FakeCharacter fc : c.getChannelServer().getAllClones()) {
                     if (fc.getOwner() != null) {
                         fc.getOwner().getFakeChars().remove(fc);
                     }
@@ -1889,8 +1893,8 @@ public class GM implements Command {
                 mc.dropMessage("ALL clones have been removed.");
                 break;
             case "!follow": {
-                int slot = Integer.parseInt(splitted[1]);
-                FakeCharacter fc = player.getFakeChars().get(slot);
+                final int slot = Integer.parseInt(splitted[1]);
+                final FakeCharacter fc = player.getFakeChars().get(slot);
                 if (fc == null) {
                     mc.dropMessage("Clone does not exist.");
                 } else {
@@ -1899,8 +1903,8 @@ public class GM implements Command {
                 break;
             }
             case "!pause": {
-                int slot = Integer.parseInt(splitted[1]);
-                FakeCharacter fc = player.getFakeChars().get(slot);
+                final int slot = Integer.parseInt(splitted[1]);
+                final FakeCharacter fc = player.getFakeChars().get(slot);
                 if (fc == null) {
                     mc.dropMessage("Clone does not exist.");
                 } else {
@@ -1910,23 +1914,23 @@ public class GM implements Command {
             }
             case "!stance":
                 if (splitted.length == 3) {
-                    int slot = Integer.parseInt(splitted[1]);
-                    int stance = Integer.parseInt(splitted[2]);
+                    final int slot = Integer.parseInt(splitted[1]);
+                    final int stance = Integer.parseInt(splitted[2]);
                     player.getFakeChars().get(slot).getFakeChar().setStance(stance);
                 }
                 break;
             case "!killmonster":
                 if (splitted.length == 2) {
-                    MapleMap map = c.getPlayer().getMap();
-                    int targetId = Integer.parseInt(splitted[1]);
-                    List<MapleMapObject> monsters =
+                    final MapleMap map = c.getPlayer().getMap();
+                    final int targetId = Integer.parseInt(splitted[1]);
+                    final List<MapleMapObject> monsters =
                         map.getMapObjectsInRange(
                             c.getPlayer().getPosition(),
                             Double.POSITIVE_INFINITY,
                             MapleMapObjectType.MONSTER
                         );
-                    for (MapleMapObject monsterm : monsters) {
-                        MapleMonster monster = (MapleMonster) monsterm;
+                    for (final MapleMapObject monsterm : monsters) {
+                        final MapleMonster monster = (MapleMonster) monsterm;
                         if (monster.getId() == targetId) {
                             map.killMonster(monster, player, false);
                             break;
@@ -1936,9 +1940,9 @@ public class GM implements Command {
                 break;
             case "!removeoid":
                 if (splitted.length == 2) {
-                    MapleMap map = c.getPlayer().getMap();
-                    int oid = Integer.parseInt(splitted[1]);
-                    MapleMapObject obj = map.getMapObject(oid);
+                    final MapleMap map = c.getPlayer().getMap();
+                    final int oid = Integer.parseInt(splitted[1]);
+                    final MapleMapObject obj = map.getMapObject(oid);
                     if (obj == null) {
                         mc.dropMessage("This oid does not exist.");
                     } else {
@@ -1947,7 +1951,7 @@ public class GM implements Command {
                 }
                 break;
             case "!gmtext": {
-                int text;
+                final int text;
                 // RegularChat
                 if (splitted[1].equalsIgnoreCase("normal")) {
                     text = 0;
@@ -1979,8 +1983,8 @@ public class GM implements Command {
                     return;
                 }
 
-                Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE characters SET gmtext = ? WHERE name = ?");
+                final Connection con = DatabaseConnection.getConnection();
+                final PreparedStatement ps = con.prepareStatement("UPDATE characters SET gmtext = ? WHERE name = ?");
                 ps.setString(2, player.getName());
                 ps.setInt(1, text);
                 ps.executeUpdate();
@@ -1989,11 +1993,11 @@ public class GM implements Command {
                 break;
             }
             case "!currentdate":
-                Calendar cal = Calendar.getInstance();
-                int day = cal.get(Calendar.DATE);
-                int month = cal.get(Calendar.MONTH) + 1; // It's an array of months.
+                final Calendar cal = Calendar.getInstance();
+                final int day = cal.get(Calendar.DATE);
+                final int month = cal.get(Calendar.MONTH) + 1; // It's an array of months.
 
-                int year = cal.get(Calendar.YEAR);
+                final int year = cal.get(Calendar.YEAR);
                 mc.dropMessage(day + "/" + month + "/" + year);
                 break;
             case "!maxmesos":
@@ -2004,7 +2008,7 @@ public class GM implements Command {
                 c.getSession().write(MaplePacketCreator.giveEnergyCharge(10000));
                 break;
             case "!youlose":
-                for (MapleCharacter victim : player.getMap().getCharacters()) {
+                for (final MapleCharacter victim : player.getMap().getCharacters()) {
                     if (victim != null) {
                         if (victim.getHp() <= 0) {
                             victim.dropMessage("You have lost the event.");
@@ -2036,7 +2040,7 @@ public class GM implements Command {
                 player.resetAllSkills();
                 break;
             case "!resetdailyprize":
-                Date ldp = new Date();
+                final Date ldp = new Date();
                 ldp.setTime(0);
                 player.setLastDailyPrize(ldp);
                 break;
@@ -2046,13 +2050,13 @@ public class GM implements Command {
                 }
                 break;
             case "!sendmedamagepacket":
-                int damagefrom = Integer.parseInt(splitted[1]);
+                final int damagefrom = Integer.parseInt(splitted[1]);
                 player.getClient().getSession().write(MaplePacketCreator.damagePlayer(damagefrom, 0, player.getId(), 69));
                 break;
             case "!levelpersongrad": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                int target = getOptionalIntArg(splitted, 2, victim.getLevel() + 1);
-                int startlevel = victim.getLevel();
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final int target = getOptionalIntArg(splitted, 2, victim.getLevel() + 1);
+                final int startlevel = victim.getLevel();
                 for (int i = 0; i < target - startlevel; ++i) {
                     victim.levelUp();
                     victim.setExp(0);
@@ -2066,13 +2070,13 @@ public class GM implements Command {
             case "!invokemethod":
                 if (player.getMap().getPartyQuestInstance() != null) {
                     if (splitted.length > 2) {
-                        String[] stringArgs = Arrays.copyOfRange(splitted, 2, splitted.length);
-                        List<Object> args = new ArrayList<>(2);
-                        for (String stringArg : stringArgs) {
+                        final String[] stringArgs = Arrays.copyOfRange(splitted, 2, splitted.length);
+                        final List<Object> args = new ArrayList<>(2);
+                        for (final String stringArg : stringArgs) {
                             try {
-                                int intArg = Integer.parseInt(stringArg);
+                                final int intArg = Integer.parseInt(stringArg);
                                 args.add(intArg);
-                            } catch (NumberFormatException nfe) {
+                            } catch (final NumberFormatException nfe) {
                                 args.add(stringArg);
                             }
                         }
@@ -2081,15 +2085,15 @@ public class GM implements Command {
                         player.getMap().getPartyQuestInstance().invokeMethod(splitted[1]);
                     }
                 } else {
-                    MapleMap map = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
+                    final MapleMap map = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
                     if (splitted.length > 3) {
-                        String[] stringArgs = Arrays.copyOfRange(splitted, 3, splitted.length);
-                        List<Object> args = new ArrayList<>(2);
-                        for (String stringArg : stringArgs) {
+                        final String[] stringArgs = Arrays.copyOfRange(splitted, 3, splitted.length);
+                        final List<Object> args = new ArrayList<>(2);
+                        for (final String stringArg : stringArgs) {
                             try {
-                                int intArg = Integer.parseInt(stringArg);
+                                final int intArg = Integer.parseInt(stringArg);
                                 args.add(intArg);
-                            } catch (NumberFormatException nfe) {
+                            } catch (final NumberFormatException nfe) {
                                 args.add(stringArg);
                             }
                         }
@@ -2104,7 +2108,7 @@ public class GM implements Command {
                 break;
             case "!reloadpqmiscript":
                 if (splitted.length > 1) {
-                    MapleMap map = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
+                    final MapleMap map = cserv.getMapFactory().getMap(Integer.parseInt(splitted[1]));
                     if (map.getPartyQuestInstance() != null) {
                         map.getPartyQuestInstance().reloadScript();
                     }
@@ -2123,7 +2127,7 @@ public class GM implements Command {
                     player.getPartyQuest().registerMap(player.getMapId());
                     map.addPlayer(player);
                 } else if (player.getParty() != null && !player.getParty().getMembers().isEmpty()) {
-                    PartyQuest pq = new PartyQuest(c.getChannel(), splitted[1], 1, 100000000);
+                    final PartyQuest pq = new PartyQuest(c.getChannel(), splitted[1], 1, 100000000);
                     pq.registerParty(player.getParty());
                     map.removePlayer(player);
                     pq.registerMap(player.getMapId());
@@ -2139,7 +2143,7 @@ public class GM implements Command {
                 break;
             case "!showdpm":
                 final DecimalFormat df = new DecimalFormat("#.000");
-                TimerManager tMan = TimerManager.getInstance();
+                final TimerManager tMan = TimerManager.getInstance();
                 final long duration, repeatTime;
                 try {
                     switch (splitted.length) {
@@ -2175,7 +2179,7 @@ public class GM implements Command {
                             player.dropMessage("Invalid syntax. Use: !showdpm [duration] [repeat_time]");
                             return;
                     }
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     player.dropMessage("Invalid syntax. Use: !showdpm [duration] [repeat_time]");
                     return;
                 }
@@ -2214,10 +2218,10 @@ public class GM implements Command {
                 );
                 break;
             case "!registerevent":
-                String syntax = "Syntax: !registerevent <map_id> | !registerevent <event_name>";
+                final String syntax = "Syntax: !registerevent <map_id> | !registerevent <event_name>";
                 if (splitted.length == 2) {
                     try {
-                        int mapId = Integer.parseInt(splitted[1]);
+                        final int mapId = Integer.parseInt(splitted[1]);
                         try {
                             if (c.getChannelServer().getMapFactory().getMap(mapId) != null) {
                                 c.getChannelServer().setEventMap(mapId);
@@ -2225,11 +2229,11 @@ public class GM implements Command {
                             } else {
                                 mc.dropMessage("That map doesn't seem to exist!");
                             }
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             mc.dropMessage("That map doesn't seem to exist!");
                         }
-                    } catch (NumberFormatException nfe) {
-                        int mapId;
+                    } catch (final NumberFormatException nfe) {
+                        final int mapId;
                         switch (splitted[1].toLowerCase()) {
                             case "":
                                 mapId = 0;
@@ -2268,12 +2272,12 @@ public class GM implements Command {
                     mc.dropMessage("Syntax: !giftvp <player_name> <vote_point_count>");
                     return;
                 }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
-                    int amount;
+                    final int amount;
                     try {
                         amount = Integer.parseInt(splitted[2]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage("Couldn't parse integer for <votePointCount>");
                         return;
                     }
@@ -2286,7 +2290,7 @@ public class GM implements Command {
                 break;
             }
             case "!unregisterallpqmis": {
-                MapleMapFactory mapFact = c.getChannelServer().getMapFactory();
+                final MapleMapFactory mapFact = c.getChannelServer().getMapFactory();
                 for (int i = 5000; i <= 5012; ++i) {
                     if (mapFact.isMapLoaded(i)) {
                         mapFact.getMap(i).unregisterPartyQuestInstance();
@@ -2302,7 +2306,7 @@ public class GM implements Command {
                     return;
                 }
 
-                String deceasedName = splitted[1];
+                final String deceasedName = splitted[1];
 
                 final MapleCharacter target = cserv.getPlayerStorage().getCharacterByName(splitted[2]);
                 if (target == null) {
@@ -2319,7 +2323,7 @@ public class GM implements Command {
                 if (splitted.length > 3) {
                     try {
                         offset = Integer.parseInt(splitted[3]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage("Could not parse integer for optional argument [offset]");
                         return;
                     }
@@ -2333,10 +2337,10 @@ public class GM implements Command {
                     }
                 }
 
-                List<IItem> items;
+                final List<IItem> items;
                 try {
                     items = DeathLogReader.getInstance().readDeathItems(deceasedName, offset, useCache);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     mc.dropMessage("Retrieving death items failed:");
                     mc.dropMessage(e.toString());
                     return;
@@ -2350,7 +2354,7 @@ public class GM implements Command {
                 if (splitted.length > 1) {
                     try {
                         stunTime = Integer.parseInt(splitted[1]) * 1000L;
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage("Could not parse given value for stun time.");
                         return;
                     }
@@ -2358,7 +2362,7 @@ public class GM implements Command {
                     stunTime = 5L * 1000L;
                 }
                 int i = 0;
-                for (MapleCharacter p : player.getMap().getCharacters()) {
+                for (final MapleCharacter p : player.getMap().getCharacters()) {
                     if (!p.isGM()) {
                         p.forciblyGiveDebuff(123, 13, stunTime);
                         i++;
@@ -2369,7 +2373,7 @@ public class GM implements Command {
             }
             case "!muteall": {
                 int i = 0;
-                for (MapleCharacter p : player.getMap().getCharacters()) {
+                for (final MapleCharacter p : player.getMap().getCharacters()) {
                     if (!p.isGM()) {
                         if (p.getCanTalk()) i++;
                         p.canTalk(false);
@@ -2380,7 +2384,7 @@ public class GM implements Command {
             }
             case "!unmuteall": {
                 int i = 0;
-                for (MapleCharacter p : player.getMap().getCharacters()) {
+                for (final MapleCharacter p : player.getMap().getCharacters()) {
                     if (!p.isGM()) {
                         if (!p.getCanTalk()) i++;
                         p.canTalk(true);
@@ -2391,7 +2395,7 @@ public class GM implements Command {
             }
             case "!togglemuteall": {
                 int i = 0, j = 0;
-                for (MapleCharacter p : player.getMap().getCharacters()) {
+                for (final MapleCharacter p : player.getMap().getCharacters()) {
                     if (!p.isGM()) {
                         if (p.getCanTalk()) {
                             i++;
@@ -2411,7 +2415,7 @@ public class GM implements Command {
                 }
                 final int itemId;
                 final short quantity;
-                boolean separate = splitted.length > 3 && Boolean.parseBoolean(splitted[3]);
+                final boolean separate = splitted.length > 3 && Boolean.parseBoolean(splitted[3]);
                 try {
                     itemId = Integer.parseInt(splitted[1]);
                     if (splitted.length > 2) {
@@ -2419,11 +2423,11 @@ public class GM implements Command {
                     } else {
                         quantity = 1;
                     }
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     mc.dropMessage("Could not parse numeric arguments. Use: !drop <item_id> [quantity]");
                     return;
                 }
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final IItem item;
                 if (ii.getInventoryType(itemId).equals(MapleInventoryType.EQUIP)) {
                     item = ii.getEquipById(itemId);
@@ -2493,8 +2497,8 @@ public class GM implements Command {
                     return;
                 }
                 try {
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    int itemId = Integer.parseInt(splitted[1]);
+                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    final int itemId = Integer.parseInt(splitted[1]);
                     if (
                         ii.getInventoryType(itemId) != MapleInventoryType.EQUIP ||
                         ii.isThrowingStar(itemId) ||
@@ -2503,10 +2507,10 @@ public class GM implements Command {
                         mc.dropMessage("That is not the ID of an equipment item.");
                         return;
                     }
-                    Equip item = ii.getEquipByIdAsEquip(itemId);
+                    final Equip item = ii.getEquipByIdAsEquip(itemId);
                     for (int i = 2; i < splitted.length; i += 2) {
-                        short val = Short.parseShort(splitted[i]);
-                        String stat = splitted[i + 1].toLowerCase();
+                        final short val = Short.parseShort(splitted[i]);
+                        final String stat = splitted[i + 1].toLowerCase();
                         switch (stat) {
                             case "accuracy":
                             case "acc":
@@ -2579,7 +2583,7 @@ public class GM implements Command {
                         }
                     }
                     MapleInventoryManipulator.addFromDrop(c, item, true);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     mc.dropMessage(
                         "Error parsing numeric argument. " +
                             "Use: !makeeqp <item_id> [val1 stat1] [val2 stat2]..."
@@ -2596,7 +2600,7 @@ public class GM implements Command {
                     );
                     return;
                 }
-                MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim == null) {
                     mc.dropMessage("Cound not find the specified player on your channel.");
                     return;
@@ -2606,8 +2610,8 @@ public class GM implements Command {
                     return;
                 }
                 try {
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    int itemId = Integer.parseInt(splitted[2]);
+                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    final int itemId = Integer.parseInt(splitted[2]);
                     if (
                         ii.getInventoryType(itemId) != MapleInventoryType.EQUIP ||
                         ii.isThrowingStar(itemId) ||
@@ -2616,10 +2620,10 @@ public class GM implements Command {
                         mc.dropMessage("That is not the ID of an equipment item.");
                         return;
                     }
-                    Equip item = ii.getEquipByIdAsEquip(itemId);
+                    final Equip item = ii.getEquipByIdAsEquip(itemId);
                     for (int i = 3; i < splitted.length; i += 2) {
-                        short val = Short.parseShort(splitted[i]);
-                        String stat = splitted[i + 1].toLowerCase();
+                        final short val = Short.parseShort(splitted[i]);
+                        final String stat = splitted[i + 1].toLowerCase();
                         switch (stat) {
                             case "accuracy":
                             case "acc":
@@ -2692,7 +2696,7 @@ public class GM implements Command {
                         }
                     }
                     MapleInventoryManipulator.addFromDrop(victim.getClient(), item, true);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     mc.dropMessage(
                         "Error parsing numeric argument. " +
                             "Use: !makeeqpperson <player_name> <item_id> [val1 stat1] [val2 stat2]..."
@@ -2714,15 +2718,15 @@ public class GM implements Command {
                 break;
             }
             case "!killallanddrop": {
-                MapleMap map = player.getMap();
-                List<MapleMapObject> monsters =
+                final MapleMap map = player.getMap();
+                final List<MapleMapObject> monsters =
                     map.getMapObjectsInRange(
                         player.getPosition(),
                         Double.POSITIVE_INFINITY,
                         MapleMapObjectType.MONSTER
                     );
                 for (final MapleMapObject monstermo : monsters) {
-                    MapleMonster monster = (MapleMonster) monstermo;
+                    final MapleMonster monster = (MapleMonster) monstermo;
                     map.killMonster(monster, player, true);
                 }
                 mc.dropMessage("Killed " + monsters.size() + " monsters.");
@@ -2733,15 +2737,15 @@ public class GM implements Command {
                     mc.dropMessage("Invalid syntax. Use: !itemquantity <player_name> <item_id> [check_equipped]");
                     return;
                 }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim == null) {
                     mc.dropMessage("Could not find that player on your channel.");
                     return;
                 }
-                int itemId;
+                final int itemId;
                 try {
                     itemId = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     mc.dropMessage("Could not parse integer argument for item ID.");
                     return;
                 }
@@ -2751,7 +2755,7 @@ public class GM implements Command {
                 } else {
                     checkEquipped = false;
                 }
-                int q = victim.getItemQuantity(itemId, checkEquipped);
+                final int q = victim.getItemQuantity(itemId, checkEquipped);
                 mc.dropMessage(victim.getName() + " has " + q + " of item " + itemId + ".");
                 break;
             }
@@ -2760,12 +2764,12 @@ public class GM implements Command {
                     mc.dropMessage("Invalid syntax. Use: !listinv <player_name> <inv_type>");
                     return;
                 }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim == null) {
                     mc.dropMessage("Could not find that player on your channel.");
                     return;
                 }
-                MapleInventoryType type;
+                final MapleInventoryType type;
                 switch (splitted[2].toLowerCase()) {
                     case "use":
                     case "consume":
@@ -2794,10 +2798,10 @@ public class GM implements Command {
                         mc.dropMessage("Unrecognized inventory type.");
                         return;
                 }
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                MapleInventory inv = victim.getInventory(type);
-                StringBuilder sb = new StringBuilder();
-                for (IItem item : inv) {
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final MapleInventory inv = victim.getInventory(type);
+                final StringBuilder sb = new StringBuilder();
+                for (final IItem item : inv) {
                     sb.append(ii.getName(item.getItemId()));
                     if (item.getQuantity() > 1) {
                         sb.append(" x")
@@ -2814,15 +2818,15 @@ public class GM implements Command {
                     mc.dropMessage("Invalid syntax. Use: !forcenpc <player_name> <npc_id>");
                     return;
                 }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim == null) {
                     mc.dropMessage("Could not find that player on your channel.");
                     return;
                 }
-                int npcId;
+                final int npcId;
                 try {
                     npcId = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     mc.dropMessage("Could not parse integer argument for NPC ID.");
                     return;
                 }
@@ -2833,7 +2837,7 @@ public class GM implements Command {
                     NPCScriptManager
                         .getInstance()
                         .start(victim.getClient(), npcId);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     mc.dropMessage("There was an error forcing the NPC conversation: " + e);
                     return;
                 }
@@ -2849,7 +2853,7 @@ public class GM implements Command {
                                 Integer.parseInt(splitted[1])
                             )
                     );
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     mc.dropMessage("An error occured: " + e.getLocalizedMessage());
                 }
                 break;
@@ -2861,7 +2865,7 @@ public class GM implements Command {
                     );
                     return;
                 }
-                Predicate<MapleCharacter> toBeWarped;
+                final Predicate<MapleCharacter> toBeWarped;
                 if (splitted[1].equalsIgnoreCase("left")) {
                     toBeWarped = p -> !p.isGM() && p.getPosition().x < player.getPosition().x;
                 } else if (splitted[1].equalsIgnoreCase("right")) {
@@ -2879,7 +2883,7 @@ public class GM implements Command {
                 } else {
                     try {
                         mapId_ = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage("Could not parse integer for map ID.");
                         return;
                     }
@@ -2930,7 +2934,7 @@ public class GM implements Command {
 
                 final Set<Integer> accounts = new LinkedHashSet<>();
                 mc.dropMessage("Accounts with same password:");
-                Connection con = DatabaseConnection.getConnection();
+                final Connection con = DatabaseConnection.getConnection();
                 try {
                     PreparedStatement ps;
                     ResultSet rs;
@@ -3005,7 +3009,7 @@ public class GM implements Command {
                                     ) +
                                     ":"
                             );
-                            boolean banned = rs.getInt("banned") > 0;
+                            final boolean banned = rs.getInt("banned") > 0;
                             mc.dropMessage("        Banned: " + banned);
                             if (banned) {
                                 mc.dropMessage(
@@ -3038,9 +3042,9 @@ public class GM implements Command {
                         rs.close();
                         ps.close();
                     }
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     mc.dropMessage(sqle.getLocalizedMessage());
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -3233,10 +3237,10 @@ public class GM implements Command {
         };
     }
 
-    private boolean gainItem(MapleClient c, IItem item) {
+    private boolean gainItem(final MapleClient c, final IItem item) {
         if (item.getQuantity() >= 0) {
-            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            MapleInventoryType type = ii.getInventoryType(item.getItemId());
+            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            final MapleInventoryType type = ii.getInventoryType(item.getItemId());
             if (
                 type.equals(MapleInventoryType.EQUIP) &&
                 !ii.isThrowingStar(item.getItemId()) &&
@@ -3262,7 +3266,7 @@ public class GM implements Command {
                     if (item.getQuantity() > 1) {
                         item.setQuantity((short) 1);
                     }
-                    int petId = MaplePet.createPet(item.getItemId());
+                    final int petId = MaplePet.createPet(item.getItemId());
                     MapleInventoryManipulator.addById(c, item.getItemId(), (short) 1, null, petId);
                 } else {
                     MapleInventoryManipulator.addById(c, item.getItemId(), item.getQuantity());
@@ -3332,7 +3336,7 @@ public class GM implements Command {
     }
 
     /** Pure */
-    private static float floatMin(float... floats) {
+    private static float floatMin(final float... floats) {
         float min = floats[0];
         for (int i = 1; i < floats.length; ++i) {
             if (floats[i] < min) min = floats[i];

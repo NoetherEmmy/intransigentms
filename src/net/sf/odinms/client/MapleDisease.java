@@ -14,7 +14,7 @@ public enum MapleDisease implements LongValueHolder {
     CURSE(0x8000000000000000L);
     private final long i;
 
-    MapleDisease(long i) {
+    MapleDisease(final long i) {
         this.i = i;
     }
 
@@ -23,7 +23,7 @@ public enum MapleDisease implements LongValueHolder {
         return i;
     }
 
-    public static MapleDisease getType(int skill) {
+    public static MapleDisease getType(final int skill) {
         switch (skill) {
             case 120:
                 return MapleDisease.SEAL;

@@ -9,13 +9,13 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CancelItemEffectHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int sourceid = slea.readInt();
-        MapleStatEffect effect = MapleItemInformationProvider.getInstance().getItemEffect(-sourceid);
+        final int sourceid = slea.readInt();
+        final MapleStatEffect effect = MapleItemInformationProvider.getInstance().getItemEffect(-sourceid);
         c.getPlayer().cancelEffect(effect, false, -1);
         if (c.getPlayer().hasFakeChar()) {
-            for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
+            for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
                 ch.getFakeChar().cancelEffect(effect, false, -1);
             }
         }

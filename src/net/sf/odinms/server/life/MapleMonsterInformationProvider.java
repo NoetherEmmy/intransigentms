@@ -14,11 +14,11 @@ import java.util.Map;
 
 public class MapleMonsterInformationProvider {
     public static class DropEntry {
-        public DropEntry(int itemId, int chance) {
+        public DropEntry(final int itemId, final int chance) {
             this(itemId, chance, 0);
         }
 
-        public DropEntry(int itemId, int chance, int questId) {
+        public DropEntry(final int itemId, final int chance, final int questId) {
             this.itemId = itemId;
             this.chance = chance;
             this.questId = questId;
@@ -46,21 +46,21 @@ public class MapleMonsterInformationProvider {
         return instance;
     }
 
-    public List<DropEntry> retrieveDropChances(int monsterId) {
+    public List<DropEntry> retrieveDropChances(final int monsterId) {
         if (drops.containsKey(monsterId)) return drops.get(monsterId);
-        List<DropEntry> ret = new ArrayList<>();
+        final List<DropEntry> ret = new ArrayList<>();
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps1 =
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement ps1 =
                 con.prepareStatement(
                     "SELECT itemid, chance, monsterid FROM monsterdrops " +
                         "WHERE (monsterid = ? AND chance >= 0) OR (monsterid <= 0)"
                 );
             ps1.setInt(1, monsterId);
-            ResultSet rs1 = ps1.executeQuery();
+            final ResultSet rs1 = ps1.executeQuery();
             MapleMonster theMonster = null;
             while (rs1.next()) {
-                int rowMonsterId = rs1.getInt("monsterid");
+                final int rowMonsterId = rs1.getInt("monsterid");
                 int chance = rs1.getInt("chance");
                 if (rowMonsterId != monsterId && rowMonsterId != 0) {
                     if (theMonster == null) {
@@ -73,16 +73,16 @@ public class MapleMonsterInformationProvider {
             rs1.close();
             ps1.close();
 
-            PreparedStatement ps2 =
+            final PreparedStatement ps2 =
                 con.prepareStatement(
                     "SELECT itemid, monsterid, chance, questid FROM monsterquestdrops " +
                         "WHERE (monsterid = ? AND chance >= 0) OR (monsterid <= 0)"
                 );
             ps2.setInt(1, monsterId);
-            ResultSet rs2 = ps2.executeQuery();
+            final ResultSet rs2 = ps2.executeQuery();
             theMonster = null;
             while (rs2.next()) {
-                int rowMonsterId = rs2.getInt("monsterid");
+                final int rowMonsterId = rs2.getInt("monsterid");
                 int chance = rs2.getInt("chance");
                 if (rowMonsterId != monsterId && rowMonsterId != 0) {
                     if (theMonster == null) {
@@ -94,7 +94,7 @@ public class MapleMonsterInformationProvider {
             }
             rs2.close();
             ps2.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error retrieving drops for monster " + monsterId, e);
         }
         drops.put(monsterId, ret);

@@ -83,9 +83,9 @@ public class MapleAESOFB {
      * @param key The 256 bit AES key to use.
      * @param iv The 4-byte IV to use.
      */
-    public MapleAESOFB(byte[] key, byte[] iv, short mapleVersion) {
-        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-        Logger log = LoggerFactory.getLogger(MapleAESOFB.class);
+    public MapleAESOFB(final byte[] key, final byte[] iv, final short mapleVersion) {
+        final SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+        final Logger log = LoggerFactory.getLogger(MapleAESOFB.class);
         try {
             cipher = Cipher.getInstance("AES");
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -93,7 +93,7 @@ public class MapleAESOFB {
         }
         try {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        } catch (InvalidKeyException ike) {
+        } catch (final InvalidKeyException ike) {
             log.error(
                 "Error initalizing the encryption cipher. " +
                     "Make sure you're using the Unlimited Strength cryptography jar files."
@@ -108,7 +108,7 @@ public class MapleAESOFB {
      *
      * @param iv The new IV.
      */
-    private void setIv(byte[] iv) {
+    private void setIv(final byte[] iv) {
         this.iv = iv;
     }
 
@@ -127,19 +127,19 @@ public class MapleAESOFB {
      * @param data The bytes to encrypt.
      * @return The encrypted bytes.
      */
-    public byte[] crypt(byte[] data) {
+    public byte[] crypt(final byte[] data) {
         int remaining = data.length;
         int llength = 0x5B0;
         int start = 0;
         while (remaining > 0) {
-            byte[] myIv = BitTools.multiplyBytes(iv, 4, 4);
+            final byte[] myIv = BitTools.multiplyBytes(iv, 4, 4);
             if (remaining < llength) {
                 llength = remaining;
             }
             for (int x = start; x < start + llength; ++x) {
                 if ((x - start) % myIv.length == 0) {
                     try {
-                        byte[] newIv = cipher.doFinal(myIv);
+                        final byte[] newIv = cipher.doFinal(myIv);
                         System.arraycopy(newIv, 0, myIv, 0, myIv.length);
                         //System.out.println("Iv is now " + HexTool.toString(this.iv));
                     } catch (IllegalBlockSizeException | BadPaddingException e) {
@@ -170,15 +170,15 @@ public class MapleAESOFB {
      * @param length How long the packet that this header is for is.
      * @return The header.
      */
-    public byte[] getPacketHeader(int length) {
+    public byte[] getPacketHeader(final int length) {
         int iiv = (iv[3]) & 0xFF;
         iiv |= (iv[2] << 8) & 0xFF00;
 
         iiv ^= mapleVersion;
-        int mlength = ((length << 8) & 0xFF00) | (length >>> 8);
-        int xoredIv = iiv ^ mlength;
+        final int mlength = ((length << 8) & 0xFF00) | (length >>> 8);
+        final int xoredIv = iiv ^ mlength;
 
-        byte[] ret = new byte[4];
+        final byte[] ret = new byte[4];
         ret[0] = (byte) ((iiv >>> 8) & 0xFF);
         ret[1] = (byte) (iiv & 0xFF);
         ret[2] = (byte) ((xoredIv >>> 8) & 0xFF);
@@ -192,7 +192,7 @@ public class MapleAESOFB {
      * @param packetHeader The header as an integer.
      * @return The length of the packet.
      */
-    public static int getPacketLength(int packetHeader) {
+    public static int getPacketLength(final int packetHeader) {
         int packetLength = ((packetHeader >>> 16) ^ (packetHeader & 0xFFFF));
         packetLength = ((packetLength << 8) & 0xFF00) | ((packetLength >>> 8) & 0xFF); // Fix
         // Endianness
@@ -206,7 +206,7 @@ public class MapleAESOFB {
      * @return <code>True</code> if the packet has a correct header,
      *         <code>false</code> otherwise.
      */
-    public boolean checkPacket(byte[] packet) {
+    public boolean checkPacket(final byte[] packet) {
         return ((((packet[0] ^ iv[2]) & 0xFF) == ((mapleVersion >> 8) & 0xFF)) && (((packet[1] ^ iv[3]) & 0xFF) == (mapleVersion & 0xFF)));
     }
 
@@ -217,8 +217,8 @@ public class MapleAESOFB {
      * @return <code>True</code> if the header is correct, <code>false</code>
      *         otherwise.
      */
-    public boolean checkPacket(int packetHeader) {
-        byte[] packetHeaderBuf = new byte[2];
+    public boolean checkPacket(final int packetHeader) {
+        final byte[] packetHeaderBuf = new byte[2];
         packetHeaderBuf[0] = (byte) ((packetHeader >> 24) & 0xFF);
         packetHeaderBuf[1] = (byte) ((packetHeader >> 16) & 0xFF);
         return checkPacket(packetHeaderBuf);
@@ -230,8 +230,8 @@ public class MapleAESOFB {
      * @param oldIv The old IV to get a new IV from.
      * @return The new IV.
      */
-    public static byte[] getNewIv(byte[] oldIv) {
-        byte[] in = {
+    public static byte[] getNewIv(final byte[] oldIv) {
+        final byte[] in = {
             (byte)0xf2, (byte)0x53, (byte)0x50, (byte)0xc6
         };
         for (int x = 0; x < 4; ++x) {
@@ -259,7 +259,7 @@ public class MapleAESOFB {
      * @param in Something needed for all this to occur.
      * @return The modified version of <code>in</code>.
      */
-    public static byte[] funnyShit(byte inputByte, byte[] in) {
+    public static byte[] funnyShit(final byte inputByte, final byte[] in) {
         byte elina = in[1];
         byte moritz = funnyBytes[(int) elina & 0xFF];
         moritz -= inputByte;
@@ -295,8 +295,8 @@ public class MapleAESOFB {
         return in;
     }
 
-    public static byte[] funnyRamon(byte inputByte, byte[] in) {
-        byte[] rammyByte = new byte[] {
+    public static byte[] funnyRamon(final byte inputByte, final byte[] in) {
+        final byte[] rammyByte = new byte[] {
             (byte)0xEC, (byte)0x3F, (byte)0x77, (byte)0xA4, (byte)0x45, (byte)0xD0, (byte)0x71, (byte)0xBF,
             (byte)0xB7, (byte)0x98, (byte)0x20, (byte)0xFC, (byte)0x4B, (byte)0xE9, (byte)0xB3, (byte)0xE1,
             (byte)0x5C, (byte)0x22, (byte)0xF7, (byte)0x0C, (byte)0x44, (byte)0x1B, (byte)0x81, (byte)0xBD,

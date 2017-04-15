@@ -31,7 +31,7 @@ public class MapleMonsterStats {
         return exp;
     }
 
-    public void setExp(int exp) {
+    public void setExp(final int exp) {
         this.exp = exp;
     }
 
@@ -39,7 +39,7 @@ public class MapleMonsterStats {
         return hp;
     }
 
-    public void setHp(int hp) {
+    public void setHp(final int hp) {
         this.hp = hp;
     }
 
@@ -47,7 +47,7 @@ public class MapleMonsterStats {
         return mp;
     }
 
-    public void setMp(int mp) {
+    public void setMp(final int mp) {
         this.mp = mp;
     }
 
@@ -55,7 +55,7 @@ public class MapleMonsterStats {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(final int level) {
         this.level = level;
     }
 
@@ -63,7 +63,7 @@ public class MapleMonsterStats {
         return this.accuracy;
     }
 
-    public void setAccuracy(int acc) {
+    public void setAccuracy(final int acc) {
         this.accuracy = acc;
     }
 
@@ -71,7 +71,7 @@ public class MapleMonsterStats {
         return this.avoid;
     }
 
-    public void setAvoid(int avoid) {
+    public void setAvoid(final int avoid) {
         this.avoid = avoid;
     }
 
@@ -79,11 +79,11 @@ public class MapleMonsterStats {
         return removeAfter;
     }
 
-    public void setRemoveAfter(int removeAfter) {
+    public void setRemoveAfter(final int removeAfter) {
         this.removeAfter = removeAfter;
     }
 
-    public void setBoss(boolean boss) {
+    public void setBoss(final boolean boss) {
         this.boss = boss;
     }
 
@@ -91,7 +91,7 @@ public class MapleMonsterStats {
         return boss;
     }
 
-    public void setFfaLoot(boolean ffaLoot) {
+    public void setFfaLoot(final boolean ffaLoot) {
         this.ffaLoot = ffaLoot;
     }
 
@@ -99,12 +99,12 @@ public class MapleMonsterStats {
         return ffaLoot;
     }
 
-    public void setAnimationTime(String name, int delay) {
+    public void setAnimationTime(final String name, final int delay) {
         animationTimes.put(name, delay);
     }
 
-    public int getAnimationTime(String name) {
-        Integer ret = animationTimes.get(name);
+    public int getAnimationTime(final String name) {
+        final Integer ret = animationTimes.get(name);
         return ret != null ? ret : 500;
     }
 
@@ -116,13 +116,13 @@ public class MapleMonsterStats {
         return revives;
     }
 
-    public void setRevives(List<Integer> revives) {
+    public void setRevives(final List<Integer> revives) {
         this.revives.clear();
         this.revives.addAll(revives);
         ((ArrayList) this.revives).trimToSize();
     }
 
-    public void setUndead(boolean undead) {
+    public void setUndead(final boolean undead) {
         this.undead = undead;
     }
 
@@ -130,12 +130,12 @@ public class MapleMonsterStats {
         return undead;
     }
 
-    public void setEffectiveness(Element e, ElementalEffectiveness ee) {
+    public void setEffectiveness(final Element e, final ElementalEffectiveness ee) {
         resistance.put(e, ee);
     }
 
-    public ElementalEffectiveness getEffectiveness(Element e) {
-        ElementalEffectiveness elementalEffectiveness = resistance.get(e);
+    public ElementalEffectiveness getEffectiveness(final Element e) {
+        final ElementalEffectiveness elementalEffectiveness = resistance.get(e);
         return elementalEffectiveness == null ? ElementalEffectiveness.NORMAL : elementalEffectiveness;
     }
 
@@ -143,7 +143,7 @@ public class MapleMonsterStats {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -151,7 +151,7 @@ public class MapleMonsterStats {
         return tagColor;
     }
 
-    public void setTagColor(int tagColor) {
+    public void setTagColor(final int tagColor) {
         this.tagColor = (byte) tagColor;
     }
 
@@ -159,14 +159,14 @@ public class MapleMonsterStats {
         return tagBgColor;
     }
 
-    public void setTagBgColor(int tagBgColor) {
+    public void setTagBgColor(final int tagBgColor) {
         this.tagBgColor = (byte) tagBgColor;
     }
 
-    public void setSkills(List<Pair<Integer, Integer>> skills, final int mobId) {
+    public void setSkills(final List<Pair<Integer, Integer>> skills, final int mobId) {
         this.skills.clear();
         skills.forEach(skill -> {
-            MobSkill s = MobSkillFactory.getMobSkill(skill.getLeft(), skill.getRight());
+            final MobSkill s = MobSkillFactory.getMobSkill(skill.getLeft(), skill.getRight());
             if (s == null) {
                 System.err.println(
                     "Failed to get mob skill with ID " +
@@ -191,11 +191,11 @@ public class MapleMonsterStats {
         return skills.size();
     }
 
-    public boolean hasSkill(int skillId, int level) {
+    public boolean hasSkill(final int skillId, final int level) {
         return skills.contains(MobSkillFactory.getMobSkill(skillId, level));
     }
 
-    public void setFirstAttack(boolean firstAttack) {
+    public void setFirstAttack(final boolean firstAttack) {
         this.firstAttack = firstAttack;
     }
 
@@ -203,7 +203,7 @@ public class MapleMonsterStats {
         return firstAttack;
     }
 
-    public void setBuffToGive(int buff) {
+    public void setBuffToGive(final int buff) {
         buffToGive = buff;
     }
 
@@ -211,7 +211,7 @@ public class MapleMonsterStats {
         return buffToGive;
     }
 
-    public void setPADamage(int dmg) {
+    public void setPADamage(final int dmg) {
         PADamage = dmg;
     }
 
@@ -219,7 +219,7 @@ public class MapleMonsterStats {
         return PADamage;
     }
 
-    public void setWdef(int wdef) {
+    public void setWdef(final int wdef) {
         this.wdef = wdef;
     }
 
@@ -227,7 +227,7 @@ public class MapleMonsterStats {
         return wdef;
     }
 
-    public void setMdef(int mdef) {
+    public void setMdef(final int mdef) {
         this.mdef = mdef;
     }
 
@@ -235,7 +235,7 @@ public class MapleMonsterStats {
         return mdef;
     }
 
-    public void setExplosive(boolean explosive) {
+    public void setExplosive(final boolean explosive) {
         this.explosive = explosive;
     }
 

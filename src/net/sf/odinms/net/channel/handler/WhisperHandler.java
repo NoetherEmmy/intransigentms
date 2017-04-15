@@ -11,14 +11,14 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.rmi.RemoteException;
 
 public class WhisperHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        byte mode = slea.readByte();
-        String recipient = slea.readMapleAsciiString();
-        int channel;
+        final byte mode = slea.readByte();
+        final String recipient = slea.readMapleAsciiString();
+        final int channel;
         try {
             channel = c.getChannelServer().getWorldInterface().find(recipient);
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
             c.getChannelServer().reconnectWorld();
             return;
@@ -27,16 +27,16 @@ public class WhisperHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
         } else {
             if (mode == 6) { // Whisper
-                String text = slea.readMapleAsciiString();
+                final String text = slea.readMapleAsciiString();
                 if (!CommandProcessor.getInstance().processCommand(c, text)) {
-                    ChannelServer pserv = ChannelServer.getInstance(channel);
-                    MapleCharacter victim = pserv.getPlayerStorage().getCharacterByName(recipient);
+                    final ChannelServer pserv = ChannelServer.getInstance(channel);
+                    final MapleCharacter victim = pserv.getPlayerStorage().getCharacterByName(recipient);
                     victim.getClient().getSession().write(MaplePacketCreator.getWhisper(c.getPlayer().getName(), c.getChannel(), text));
                     c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 1));
                 }
             } else if (mode == 5) { // Find
-                ChannelServer pserv = ChannelServer.getInstance(channel);
-                MapleCharacter victim = pserv.getPlayerStorage().getCharacterByName(recipient);
+                final ChannelServer pserv = ChannelServer.getInstance(channel);
+                final MapleCharacter victim = pserv.getPlayerStorage().getCharacterByName(recipient);
                 if (!victim.isGM() || (c.getPlayer().isGM() && victim.isGM())) {
                     if (victim.inCS()) {
                         c.getSession().write(MaplePacketCreator.getFindReplyWithCSorMTS(victim.getName(), false));

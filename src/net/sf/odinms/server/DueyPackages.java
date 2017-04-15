@@ -12,13 +12,13 @@ public class DueyPackages {
     private int day, month, year;
     private final int packageId;
 
-    public DueyPackages(int pId, IItem item) {
+    public DueyPackages(final int pId, final IItem item) {
         this.item = item;
         quantity = item.getQuantity();
         packageId = pId;
     }
 
-    public DueyPackages(int packageId) { // Meso only package.
+    public DueyPackages(final int packageId) { // Meso only package.
         this.packageId = packageId;
     }
 
@@ -26,7 +26,7 @@ public class DueyPackages {
         return sender;
     }
 
-    public void setSender(String name) {
+    public void setSender(final String name) {
         sender = name;
     }
 
@@ -38,7 +38,7 @@ public class DueyPackages {
         return mesos;
     }
 
-    public void setMesos(int set) {
+    public void setMesos(final int set) {
         mesos = set;
     }
 
@@ -51,20 +51,20 @@ public class DueyPackages {
     }
 
     public boolean isExpired() {
-        Calendar cal1 = Calendar.getInstance();
+        final Calendar cal1 = Calendar.getInstance();
         cal1.set(year, month - 1, day);
-        long diff = System.currentTimeMillis() - cal1.getTimeInMillis();
-        int diffDays = (int) Math.abs(diff / (24L * 60L * 60L * 1000L));
+        final long diff = System.currentTimeMillis() - cal1.getTimeInMillis();
+        final int diffDays = (int) Math.abs(diff / (24L * 60L * 60L * 1000L));
         return diffDays > 30;
     }
 
     public long sentTimeInMilliseconds() {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(year, month, day);
         return cal.getTimeInMillis();
     }
 
-    public void setSentTime(String sentTime) {
+    public void setSentTime(final String sentTime) {
         day = Integer.parseInt(sentTime.substring(0, 2));
         month = Integer.parseInt(sentTime.substring(3, 5));
         year = Integer.parseInt(sentTime.substring(6, 10));

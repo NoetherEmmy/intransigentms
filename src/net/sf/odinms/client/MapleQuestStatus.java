@@ -15,7 +15,7 @@ public class MapleQuestStatus {
         COMPLETED(2);
         final int status;
 
-        Status(int id) {
+        Status(final int id) {
             status = id;
         }
 
@@ -23,7 +23,7 @@ public class MapleQuestStatus {
             return status;
         }
 
-        public static Status getById(int id) {
+        public static Status getById(final int id) {
             for (final Status l : Status.values()) {
                 if (l.getId() == id) return l;
             }
@@ -37,7 +37,7 @@ public class MapleQuestStatus {
     private long completionTime;
     private int forfeited;
 
-    public MapleQuestStatus(MapleQuest quest, Status status) {
+    public MapleQuestStatus(final MapleQuest quest, final Status status) {
         this.quest = quest;
         setStatus(status);
         this.completionTime = System.currentTimeMillis();
@@ -46,7 +46,7 @@ public class MapleQuestStatus {
         }
     }
 
-    public MapleQuestStatus(MapleQuest quest, Status status, int npc) {
+    public MapleQuestStatus(final MapleQuest quest, final Status status, final int npc) {
         this.quest = quest;
         this.setStatus(status);
         this.setNpc(npc);
@@ -64,7 +64,7 @@ public class MapleQuestStatus {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(final Status status) {
         this.status = status;
     }
 
@@ -72,18 +72,18 @@ public class MapleQuestStatus {
         return npc;
     }
 
-    public void setNpc(int npc) {
+    public void setNpc(final int npc) {
         this.npc = npc;
     }
 
     private void registerMobs() {
-        List<Integer> relevants = quest.getRelevantMobs();
-        for (int i : relevants) {
+        final List<Integer> relevants = quest.getRelevantMobs();
+        for (final int i : relevants) {
             killedMobs.put(i, 0);
         }
     }
 
-    public boolean mobKilled(int id) {
+    public boolean mobKilled(final int id) {
         if (killedMobs.get(id) != null) {
             killedMobs.put(id, killedMobs.get(id) + 1);
             return true;
@@ -91,7 +91,7 @@ public class MapleQuestStatus {
         return false;
     }
 
-    public void setMobKills(int id, int count) {
+    public void setMobKills(final int id, final int count) {
         killedMobs.put(id, count);
     }
 
@@ -99,7 +99,7 @@ public class MapleQuestStatus {
         return !killedMobs.isEmpty();
     }
 
-    public int getMobKills(int id) {
+    public int getMobKills(final int id) {
         if (killedMobs.get(id) == null) return 0;
         return killedMobs.get(id);
     }
@@ -108,9 +108,9 @@ public class MapleQuestStatus {
         return Collections.unmodifiableMap(killedMobs);
     }
 
-    public int getMobNum(int id) {
+    public int getMobNum(final int id) {
         int i = 0;
-        for (int kMob : killedMobs.values()) {
+        for (final int kMob : killedMobs.values()) {
             i++;
             if (kMob == id) return i;
         }
@@ -121,7 +121,7 @@ public class MapleQuestStatus {
         return completionTime;
     }
 
-    public void setCompletionTime(long completionTime) {
+    public void setCompletionTime(final long completionTime) {
         this.completionTime = completionTime;
     }
 
@@ -129,7 +129,7 @@ public class MapleQuestStatus {
         return forfeited;
     }
 
-    public void setForfeited(int forfeited) {
+    public void setForfeited(final int forfeited) {
         if (forfeited >= this.forfeited) {
             this.forfeited = forfeited;
         } else {

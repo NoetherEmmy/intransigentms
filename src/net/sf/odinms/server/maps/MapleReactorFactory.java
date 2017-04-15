@@ -43,7 +43,7 @@ public final class MapleReactorFactory {
                     int i = 0;
                     while (reactorInfoData != null) {
                         Pair<Integer, Integer> reactItem = null;
-                        int type = MapleDataTool.getIntConvert("type", reactorInfoData);
+                        final int type = MapleDataTool.getIntConvert("type", reactorInfoData);
                         if (type == 100 || type == 99) { // Reactor waits for item or is an obstacle
                             reactItem =
                                 new Pair<>(
@@ -56,7 +56,7 @@ public final class MapleReactorFactory {
                                 areaSet = true;
                             }
                         }
-                        byte nextState = (byte) MapleDataTool.getIntConvert("state", reactorInfoData);
+                        final byte nextState = (byte) MapleDataTool.getIntConvert("state", reactorInfoData);
                         stats.addState((byte) i, type, reactItem, nextState);
                         i++;
                         reactorInfoData = reactorData.getChildByPath(i + "/event/0");

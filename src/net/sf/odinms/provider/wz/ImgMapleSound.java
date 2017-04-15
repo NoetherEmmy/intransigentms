@@ -8,7 +8,7 @@ public class ImgMapleSound {
      * @param dataLength length of the sound data
      * @param offset offset in the img file
      */
-    public ImgMapleSound(int dataLength, int offset) {
+    public ImgMapleSound(final int dataLength, final int offset) {
         this.dataLenght = dataLength;
         this.offset = offset;
     }

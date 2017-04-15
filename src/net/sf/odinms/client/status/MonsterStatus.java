@@ -28,7 +28,7 @@ public enum MonsterStatus implements IntValueHolder, Serializable {
     static final long serialVersionUID = 0L;
     private final int i;
 
-    MonsterStatus(int i) {
+    MonsterStatus(final int i) {
         this.i = i;
     }
 

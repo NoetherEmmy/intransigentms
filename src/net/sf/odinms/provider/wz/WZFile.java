@@ -25,11 +25,11 @@ public class WZFile implements MapleDataProvider {
     private final boolean provideImages;
     private int cOffset;
 
-    public WZFile(File wzfile, boolean provideImages) throws IOException {
+    public WZFile(final File wzfile, final boolean provideImages) throws IOException {
         this.wzfile = wzfile;
 
         lea = new GenericLittleEndianAccessor(new InputStreamByteStream(new BufferedInputStream(new FileInputStream(wzfile))));
-        RandomAccessFile raf = new RandomAccessFile(wzfile, "r");
+        final RandomAccessFile raf = new RandomAccessFile(wzfile, "r");
         slea = new GenericSeekableLittleEndianAccessor(new RandomAccessByteStream(raf));
         root = new WZDirectoryEntry(wzfile.getName(), 0, 0, null);
         this.provideImages = provideImages;
@@ -38,12 +38,12 @@ public class WZFile implements MapleDataProvider {
 
     @SuppressWarnings("unused")
     private void load() {
-        String sPKG = lea.readAsciiString(4);
-        int size1 = lea.readInt();
-        int size2 = lea.readInt();
+        final String sPKG = lea.readAsciiString(4);
+        final int size1 = lea.readInt();
+        final int size2 = lea.readInt();
         headerSize = lea.readInt();
-        String copyright = lea.readNullTerminatedAsciiString();
-        short version = lea.readShort();
+        final String copyright = lea.readNullTerminatedAsciiString();
+        final short version = lea.readShort();
         parseDirectory(root);
         cOffset = (int) lea.getBytesRead();
         getOffsets(root);
@@ -61,24 +61,24 @@ public class WZFile implements MapleDataProvider {
     // writeOffsets(root);
     // }
 
-    private void getOffsets(MapleDataDirectoryEntry dir) {
-        for (MapleDataFileEntry file : dir.getFiles()) {
+    private void getOffsets(final MapleDataDirectoryEntry dir) {
+        for (final MapleDataFileEntry file : dir.getFiles()) {
             file.setOffset(cOffset);
             cOffset += file.getSize();
         }
-        for (MapleDataDirectoryEntry sdir : dir.getSubdirectories()) {
+        for (final MapleDataDirectoryEntry sdir : dir.getSubdirectories()) {
             getOffsets(sdir);
         }
     }
 
-    private void parseDirectory(WZDirectoryEntry dir) {
-        int entries = WZTool.readValue(lea);
+    private void parseDirectory(final WZDirectoryEntry dir) {
+        final int entries = WZTool.readValue(lea);
         for (int i = 0; i < entries; ++i) {
-            byte marker = lea.readByte();
-            String name;
-            @SuppressWarnings("unused")
-            int dummyInt;
-            int size, checksum;
+            final byte marker = lea.readByte();
+            final String name;
+            @SuppressWarnings("unused") final int dummyInt;
+            final int size;
+            final int checksum;
             switch (marker) {
                 case 0x02:
                     name = WZTool.readDecodedStringAtOffset(slea, lea.readInt() + this.headerSize + 1);
@@ -104,7 +104,7 @@ public class WZFile implements MapleDataProvider {
             }
         }
 
-        for (MapleDataDirectoryEntry idir : dir.getSubdirectories()) {
+        for (final MapleDataDirectoryEntry idir : dir.getSubdirectories()) {
             parseDirectory((WZDirectoryEntry) idir);
         }
     }
@@ -153,8 +153,8 @@ public class WZFile implements MapleDataProvider {
     // }
     // }
 
-    public WZIMGFile getImgFile(String path) throws IOException {
-        String[] segments = path.split("/");
+    public WZIMGFile getImgFile(final String path) throws IOException {
+        final String[] segments = path.split("/");
         WZDirectoryEntry dir = root;
         for (int x = 0; x < segments.length - 1; ++x) {
             dir = (WZDirectoryEntry) dir.getEntry(segments[x]);
@@ -163,23 +163,23 @@ public class WZFile implements MapleDataProvider {
                 return null;
             }
         }
-        WZFileEntry entry = (WZFileEntry) dir.getEntry(segments[segments.length - 1]);
+        final WZFileEntry entry = (WZFileEntry) dir.getEntry(segments[segments.length - 1]);
         if (entry == null) {
             return null;
         }
-        String fullPath = wzfile.getName().substring(0, wzfile.getName().length() - 3).toLowerCase() + "/" + path;
+        final String fullPath = wzfile.getName().substring(0, wzfile.getName().length() - 3).toLowerCase() + "/" + path;
         return new WZIMGFile(this.wzfile, entry, provideImages, ListWZFile.isModernImgFile(fullPath));
     }
 
-    public synchronized MapleData getData(String path) {
+    public synchronized MapleData getData(final String path) {
         try {
-            WZIMGFile imgFile = getImgFile(path);
+            final WZIMGFile imgFile = getImgFile(path);
             if (imgFile == null) {
                 //throw new IllegalArgumentException("File " + path + " not found in " + root.getName());
                 return null;
             }
             return imgFile.getRoot();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("THROW", e);
         }
         return null;

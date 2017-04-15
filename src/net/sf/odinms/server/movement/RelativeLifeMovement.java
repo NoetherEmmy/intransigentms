@@ -5,12 +5,12 @@ import net.sf.odinms.tools.data.output.LittleEndianWriter;
 import java.awt.*;
 
 public class RelativeLifeMovement extends AbstractLifeMovement {
-    public RelativeLifeMovement(int type, Point position, int duration, int newstate) {
+    public RelativeLifeMovement(final int type, final Point position, final int duration, final int newstate) {
         super(type, position, duration, newstate);
     }
 
     @Override
-    public void serialize(LittleEndianWriter lew) {
+    public void serialize(final LittleEndianWriter lew) {
         lew.write(getType());
         lew.writeShort(getPosition().x);
         lew.writeShort(getPosition().y);

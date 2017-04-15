@@ -24,7 +24,7 @@ public class HiredMerchant extends PlayerInteractionManager {
     private final MapleMap map;
     private final int itemId;
 
-    public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
+    public HiredMerchant(final MapleCharacter owner, final int itemId, final String desc) {
         super(owner, itemId % 10, desc, 3);
         this.itemId = itemId;
         this.map = owner.getMap();
@@ -41,18 +41,18 @@ public class HiredMerchant extends PlayerInteractionManager {
     }
 
     @Override
-    public void buy(MapleClient c, int item, short quantity) {
-        MaplePlayerShopItem pItem = items.get(item);
+    public void buy(final MapleClient c, final int item, final short quantity) {
+        final MaplePlayerShopItem pItem = items.get(item);
         if (pItem.getBundles() > 0) {
             synchronized (items) {
-                IItem newItem = pItem.getItem().copy();
+                final IItem newItem = pItem.getItem().copy();
                 newItem.setQuantity((short) (quantity * newItem.getQuantity()));
                 if (c.getPlayer().getMeso() >= pItem.getPrice() * quantity) {
                     if (quantity > 0 && pItem.getBundles() >= quantity && pItem.getBundles() > 0) {
                         if (MapleInventoryManipulator.addFromDrop(c, newItem)) {
-                            Connection con = DatabaseConnection.getConnection();
+                            final Connection con = DatabaseConnection.getConnection();
                             try {
-                                PreparedStatement ps =
+                                final PreparedStatement ps =
                                     con.prepareStatement(
                                         "UPDATE characters SET MerchantMesos = MerchantMesos + ? WHERE id = ?"
                                     );
@@ -60,7 +60,7 @@ public class HiredMerchant extends PlayerInteractionManager {
                                 ps.setInt(2, getOwnerId());
                                 ps.executeUpdate();
                                 ps.close();
-                            } catch (SQLException se) {
+                            } catch (final SQLException se) {
                                 se.printStackTrace();
                             }
                             c.getPlayer().gainMeso(-pItem.getPrice() * quantity, false);
@@ -80,11 +80,11 @@ public class HiredMerchant extends PlayerInteractionManager {
     }
 
     @Override
-    public void closeShop(boolean saveItems) {
+    public void closeShop(final boolean saveItems) {
         map.removeMapObject(this);
         map.broadcastMessage(MaplePacketCreator.destroyHiredMerchant(getOwnerId()));
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 DatabaseConnection
                     .getConnection()
                     .prepareStatement(
@@ -97,7 +97,7 @@ public class HiredMerchant extends PlayerInteractionManager {
             if (saveItems) {
                 saveItems();
             }
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
         }
 
@@ -116,7 +116,7 @@ public class HiredMerchant extends PlayerInteractionManager {
         return open;
     }
 
-    public void setOpen(boolean set) {
+    public void setOpen(final boolean set) {
         open = set;
     }
 
@@ -129,7 +129,7 @@ public class HiredMerchant extends PlayerInteractionManager {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         throw new UnsupportedOperationException();
     }
 
@@ -139,7 +139,7 @@ public class HiredMerchant extends PlayerInteractionManager {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         client.getSession().write(MaplePacketCreator.spawnHiredMerchant(this));
     }
 }

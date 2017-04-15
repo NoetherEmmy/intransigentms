@@ -156,7 +156,7 @@ public enum SendPacketOpcode implements WritableIntValueHolder {
     SET_NPC_SCRIPTABLE;
     private int code = -2;
 
-    public void setValue(int code) {
+    public void setValue(final int code) {
         this.code = code;
     }
 
@@ -166,8 +166,8 @@ public enum SendPacketOpcode implements WritableIntValueHolder {
     }
 
     public static Properties getDefaultProperties() throws IOException {
-        Properties props = new Properties();
-        FileInputStream fileInputStream = new FileInputStream(System.getProperty("net.sf.odinms.sendops"));
+        final Properties props = new Properties();
+        final FileInputStream fileInputStream = new FileInputStream(System.getProperty("net.sf.odinms.sendops"));
         props.load(fileInputStream);
         fileInputStream.close();
         return props;
@@ -177,7 +177,7 @@ public enum SendPacketOpcode implements WritableIntValueHolder {
     static {
         try {
             ExternalCodeTableGetter.populateValues(getDefaultProperties(), values());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to load sendops", e);
         }
     }

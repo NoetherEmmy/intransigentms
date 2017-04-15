@@ -15,14 +15,14 @@ import java.util.List;
 
 public class MoveSummonHandler extends AbstractMovementPacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int oid = slea.readInt();
-        Point startPos = StreamUtil.readShortPoint(slea);
-        List<LifeMovementFragment> res = parseMovement(slea);
-        MapleCharacter player = c.getPlayer();
-        Collection<MapleSummon> summons = player.getSummons().values();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int oid = slea.readInt();
+        final Point startPos = StreamUtil.readShortPoint(slea);
+        final List<LifeMovementFragment> res = parseMovement(slea);
+        final MapleCharacter player = c.getPlayer();
+        final Collection<MapleSummon> summons = player.getSummons().values();
         MapleSummon summon = null;
-        for (MapleSummon sum : summons) {
+        for (final MapleSummon sum : summons) {
             if (sum.getObjectId() == oid) summon = sum;
         }
         if (summon != null) {
@@ -41,11 +41,11 @@ public class MoveSummonHandler extends AbstractMovementPacketHandler {
                     summon.getPosition()
                 );
         } else {
-            List<Integer> summonKeys = new ArrayList<>();
-            for (Integer key : player.getSummons().keySet()) {
+            final List<Integer> summonKeys = new ArrayList<>();
+            for (final Integer key : player.getSummons().keySet()) {
                 if (player.getSummons().get(key) == null) summonKeys.add(key);
             }
-            for (Integer key : summonKeys) {
+            for (final Integer key : summonKeys) {
                 player.getSummons().remove(key);
             }
         }

@@ -7,12 +7,12 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class RelogRequestHandler extends AbstractMaplePacketHandler {
     @Override
-    public boolean validateState(MapleClient c) {
+    public boolean validateState(final MapleClient c) {
         return !c.isLoggedIn();
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getSession().write(MaplePacketCreator.getRelogResponse());
     }
 }

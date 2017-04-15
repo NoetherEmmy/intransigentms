@@ -14,7 +14,7 @@ public class MonsterStatusEffect {
     private ScheduledFuture<?> cancelTask;
     private ScheduledFuture<?> poisonSchedule;
 
-    public MonsterStatusEffect(Map<MonsterStatus, Integer> stati, ISkill skill, boolean monsterSkill) {
+    public MonsterStatusEffect(final Map<MonsterStatus, Integer> stati, final ISkill skill, final boolean monsterSkill) {
         this.stati = new ConcurrentHashMap<>(stati); // ArrayMap
         this.skill = skill;
         this.monsterSkill = monsterSkill;
@@ -24,7 +24,7 @@ public class MonsterStatusEffect {
         return stati;
     }
 
-    public Integer setValue(MonsterStatus status, Integer newVal) {
+    public Integer setValue(final MonsterStatus status, final Integer newVal) {
         return stati.put(status, newVal);
     }
 
@@ -40,15 +40,15 @@ public class MonsterStatusEffect {
         return cancelTask;
     }
 
-    public void setCancelTask(ScheduledFuture<?> cancelTask) {
+    public void setCancelTask(final ScheduledFuture<?> cancelTask) {
         this.cancelTask = cancelTask;
     }
 
-    public void removeActiveStatus(MonsterStatus stat) {
+    public void removeActiveStatus(final MonsterStatus stat) {
         stati.remove(stat);
     }
 
-    public void setPoisonSchedule(ScheduledFuture<?> poisonSchedule) {
+    public void setPoisonSchedule(final ScheduledFuture<?> poisonSchedule) {
         this.poisonSchedule = poisonSchedule;
     }
 

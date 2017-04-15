@@ -16,7 +16,7 @@ public class FourthJobQuestsPortalHandler {
         BERSERK("s4berserk");
         private final String name;
 
-        FourthJobQuests(String Newname) {
+        FourthJobQuests(final String Newname) {
             this.name = Newname;
         }
 
@@ -30,8 +30,8 @@ public class FourthJobQuestsPortalHandler {
     }
 
     //c.getClient().getSession().write(MaplePacketCreator.enableActions());
-    public static boolean handlePortal(String name, MapleCharacter c) {
-        ServernoticeMapleClientMessageCallback snmcmc =
+    public static boolean handlePortal(final String name, final MapleCharacter c) {
+        final ServernoticeMapleClientMessageCallback snmcmc =
             new ServernoticeMapleClientMessageCallback(5, c.getClient());
         if (name.equals(FourthJobQuests.RUSH.getValue())) {
             if (!checkPartyLeader(c) && !checkRush(c)) {
@@ -70,11 +70,11 @@ public class FourthJobQuestsPortalHandler {
         return false;
     }
 
-    private static boolean checkRush(MapleCharacter c) {
-        MapleParty csParty = c.getParty();
+    private static boolean checkRush(final MapleCharacter c) {
+        final MapleParty csParty = c.getParty();
         if (csParty == null) return false;
-        Collection<MaplePartyCharacter> CsPartyMembers = csParty.getMembers();
-        for (MaplePartyCharacter mpc : CsPartyMembers) {
+        final Collection<MaplePartyCharacter> CsPartyMembers = csParty.getMembers();
+        for (final MaplePartyCharacter mpc : CsPartyMembers) {
             if (!MapleJob.getById(mpc.getJobId()).isA(MapleJob.WARRIOR)) return false;
             if (
                 !MapleJob.getById(mpc.getJobId()).isA(MapleJob.HERO) &&
@@ -87,11 +87,11 @@ public class FourthJobQuestsPortalHandler {
         return true;
     }
 
-    private static boolean checkPartyLeader(MapleCharacter c) {
+    private static boolean checkPartyLeader(final MapleCharacter c) {
         return c.getParty() != null && c.getParty().getLeader().getId() == c.getId();
     }
 
-    private static boolean checkBerserk(MapleCharacter c) {
+    private static boolean checkBerserk(final MapleCharacter c) {
         return c.haveItem(4031475, 1, false, true);
     }
 }

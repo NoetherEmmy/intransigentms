@@ -6,7 +6,7 @@ public abstract class AbstractLifeMovement implements LifeMovement {
     private final Point position;
     private final int duration, newstate, type;
 
-    public AbstractLifeMovement(int type, Point position, int duration, int newstate) {
+    public AbstractLifeMovement(final int type, final Point position, final int duration, final int newstate) {
         super();
         this.type = type;
         this.position = position;

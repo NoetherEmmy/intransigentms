@@ -13,7 +13,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
     private boolean online;
     private final String name;
 
-    public MapleGuildCharacter(MapleCharacter c) {
+    public MapleGuildCharacter(final MapleCharacter c) {
         name = c.getName();
         level = c.getLevel();
         id = c.getId();
@@ -25,7 +25,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
         allianceRank = c.getAllianceRank();
     }
 
-    public MapleGuildCharacter(int id, int lv, String name, int channel, int job, int rank, int gid, boolean on, int allianceRank) {
+    public MapleGuildCharacter(final int id, final int lv, final String name, final int channel, final int job, final int rank, final int gid, final boolean on, final int allianceRank) {
         this.level = lv;
         this.id = id;
         this.name = name;
@@ -41,7 +41,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
         return level;
     }
 
-    public void setLevel(int l) {
+    public void setLevel(final int l) {
         level = l;
     }
 
@@ -49,7 +49,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
         return id;
     }
 
-    public void setChannel(int ch) {
+    public void setChannel(final int ch) {
         channel = ch;
     }
 
@@ -61,7 +61,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
         return jobid;
     }
 
-    public void setJobId(int job) {
+    public void setJobId(final int job) {
         jobid = job;
     }
 
@@ -69,11 +69,11 @@ public class MapleGuildCharacter implements java.io.Serializable {
         return guildid;
     }
 
-    public void setGuildId(int gid) {
+    public void setGuildId(final int gid) {
         guildid = gid;
     }
 
-    public void setGuildRank(int rank) {
+    public void setGuildRank(final int rank) {
         guildrank = rank;
     }
 
@@ -89,7 +89,7 @@ public class MapleGuildCharacter implements java.io.Serializable {
         return name;
     }
 
-    public void setAllianceRank(int rank) {
+    public void setAllianceRank(final int rank) {
         allianceRank = rank;
     }
 
@@ -98,13 +98,13 @@ public class MapleGuildCharacter implements java.io.Serializable {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         if (!(other instanceof MapleGuildCharacter)) return false;
-        MapleGuildCharacter o = (MapleGuildCharacter) other;
+        final MapleGuildCharacter o = (MapleGuildCharacter) other;
         return (o.getId() == id && o.getName().equals(name));
     }
 
-    public void setOnline(boolean f) {
+    public void setOnline(final boolean f) {
         online = f;
     }
 }

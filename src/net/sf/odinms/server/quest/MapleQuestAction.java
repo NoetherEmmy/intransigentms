@@ -20,16 +20,16 @@ public class MapleQuestAction {
     private final MapleQuest quest;
 
     /** Creates a new instance of MapleQuestAction */
-    public MapleQuestAction(MapleQuestActionType type, MapleData data, MapleQuest quest) {
+    public MapleQuestAction(final MapleQuestActionType type, final MapleData data, final MapleQuest quest) {
         this.type = type;
         this.data = data;
         this.quest = quest;
     }
 
-    public boolean check(MapleCharacter c) {
+    public boolean check(final MapleCharacter c) {
         switch (type) {
             case MESO:
-                int mesos =
+                final int mesos =
                     MapleDataTool.getInt(data) *
                         ChannelServer
                             .getInstance(c.getClient().getChannel())
@@ -40,13 +40,13 @@ public class MapleQuestAction {
         return true;
     }
 
-    private boolean canGetItem(MapleData item, MapleCharacter c) {
+    private boolean canGetItem(final MapleData item, final MapleCharacter c) {
         if (item.getChildByPath("gender") != null) {
-            int gender = MapleDataTool.getInt(item.getChildByPath("gender"));
+            final int gender = MapleDataTool.getInt(item.getChildByPath("gender"));
             if (gender >= 0 && gender <= 1 && gender != c.getGender()) return false;
         }
         if (item.getChildByPath("job") != null) {
-            int job = MapleDataTool.getInt(item.getChildByPath("job"));
+            final int job = MapleDataTool.getInt(item.getChildByPath("job"));
             if (job < 100) {
                 if (MapleJob.getBy5ByteEncoding(job).getId() / 100 != c.getJob().getId() / 100) {
                     return false;
@@ -58,9 +58,9 @@ public class MapleQuestAction {
         return true;
     }
 
-    public void run(MapleCharacter c, Integer extSelection) {
-        MapleQuestStatus status;
-        ServernoticeMapleClientMessageCallback snmcmc = new ServernoticeMapleClientMessageCallback(5, c.getClient());
+    public void run(final MapleCharacter c, final Integer extSelection) {
+        final MapleQuestStatus status;
+        final ServernoticeMapleClientMessageCallback snmcmc = new ServernoticeMapleClientMessageCallback(5, c.getClient());
         switch (type) {
             case EXP:
                 status = c.getQuest(quest);
@@ -76,9 +76,9 @@ public class MapleQuestAction {
                 );
                 break;
             case ITEM:
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                Map<Integer, Integer> props = new LinkedHashMap<>();
-                for (MapleData iEntry : data.getChildren()) {
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final Map<Integer, Integer> props = new LinkedHashMap<>();
+                for (final MapleData iEntry : data.getChildren()) {
                     if (
                         iEntry.getChildByPath("prop") != null &&
                         MapleDataTool.getInt(iEntry.getChildByPath("prop")) != -1 &&
@@ -91,10 +91,10 @@ public class MapleQuestAction {
                 }
                 int selection = 0, extNum = 0;
                 if (!props.isEmpty()) {
-                    Random r = new Random();
+                    final Random r = new Random();
                     selection = props.get(r.nextInt(props.size()));
                 }
-                for (MapleData iEntry : data.getChildren()) {
+                for (final MapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, c)) continue;
                     if (iEntry.getChildByPath("prop") != null) {
                         if (MapleDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
@@ -104,12 +104,12 @@ public class MapleQuestAction {
                         }
                     }
                     if (MapleDataTool.getInt(iEntry.getChildByPath("count")) < 0) { // Remove items
-                        int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
-                        MapleInventoryType iType = ii.getInventoryType(itemId);
-                        short quantity = (short) (MapleDataTool.getInt(iEntry.getChildByPath("count")) * -1);
+                        final int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
+                        final MapleInventoryType iType = ii.getInventoryType(itemId);
+                        final short quantity = (short) (MapleDataTool.getInt(iEntry.getChildByPath("count")) * -1);
                         try {
                             MapleInventoryManipulator.removeById(c.getClient(), iType, itemId, quantity, true, false);
-                        } catch (InventoryException ie) {
+                        } catch (final InventoryException ie) {
                             // It's better to catch this here so we'll at least try to remove the other items
                             log.warn("[h4x] Completing " + quest + " without meeting the requirements", ie);
                         }
@@ -123,8 +123,8 @@ public class MapleQuestAction {
                              )
                          );
                     } else { // Add items
-                        int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
-                        short quantity = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"));
+                        final int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
+                        final short quantity = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"));
                         MapleInventoryManipulator.addById(c.getClient(), itemId, quantity, null, -1);
                         c.getClient().getSession().write(MaplePacketCreator.getShowItemGain(itemId, quantity, true));
                     }
@@ -150,9 +150,9 @@ public class MapleQuestAction {
                 );
                 break;
             case QUEST:
-                for (MapleData qEntry : data) {
-                    int questid = MapleDataTool.getInt(qEntry.getChildByPath("id"));
-                    int stat = MapleDataTool.getInt(qEntry.getChildByPath("state"));
+                for (final MapleData qEntry : data) {
+                    final int questid = MapleDataTool.getInt(qEntry.getChildByPath("id"));
+                    final int stat = MapleDataTool.getInt(qEntry.getChildByPath("state"));
                     c.updateQuest(
                         new MapleQuestStatus(
                             MapleQuest.getInstance(questid),
@@ -162,15 +162,15 @@ public class MapleQuestAction {
                 }
                 break;
             case SKILL:
-                for (MapleData sEntry : data) {
-                    int skillid = MapleDataTool.getInt(sEntry.getChildByPath("id"));
+                for (final MapleData sEntry : data) {
+                    final int skillid = MapleDataTool.getInt(sEntry.getChildByPath("id"));
                     int skillLevel = MapleDataTool.getInt(sEntry.getChildByPath("skillLevel"));
                     int masterLevel = MapleDataTool.getInt(sEntry.getChildByPath("masterLevel"));
-                    ISkill skillObject = SkillFactory.getSkill(skillid);
+                    final ISkill skillObject = SkillFactory.getSkill(skillid);
                     boolean shouldLearn = false;
-                    MapleData applicableJobs = sEntry.getChildByPath("job");
-                    for (MapleData applicableJob : applicableJobs) {
-                        MapleJob job = MapleJob.getById(MapleDataTool.getInt(applicableJob));
+                    final MapleData applicableJobs = sEntry.getChildByPath("job");
+                    for (final MapleData applicableJob : applicableJobs) {
+                        final MapleJob job = MapleJob.getById(MapleDataTool.getInt(applicableJob));
                         if (c.getJob() == job) {
                             shouldLearn = true;
                             break;
@@ -200,7 +200,7 @@ public class MapleQuestAction {
                 }
                 c.addFame(MapleDataTool.getInt(data));
                 c.updateSingleStat(MapleStat.FAME, c.getFame());
-                int fameGain = MapleDataTool.getInt(data);
+                final int fameGain = MapleDataTool.getInt(data);
                 c.getClient().getSession().write(MaplePacketCreator.getShowFameGain(fameGain));
                 break;
             case BUFF:
@@ -208,7 +208,7 @@ public class MapleQuestAction {
                 if (status.getStatus() == MapleQuestStatus.Status.NOT_STARTED && status.getForfeited() > 0) {
                     break;
                 }
-                MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
+                final MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
                 mii.getItemEffect(MapleDataTool.getInt(data)).applyTo(c);
                 break;
         }

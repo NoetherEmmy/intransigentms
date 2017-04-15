@@ -34,7 +34,7 @@ public class CQuest {
     private final Map<String, Integer> otherObjectiveProgress = new LinkedHashMap<>(4, 0.8f);
     private int effectivePlayerLevel;
 
-    public CQuest(MapleCharacter player) {
+    public CQuest(final MapleCharacter player) {
         this.player = player;
     }
 
@@ -42,18 +42,18 @@ public class CQuest {
         loadQuest(0);
     }
 
-    public void loadQuest(int questId) {
+    public void loadQuest(final int questId) {
         loadQuest(questId, 0);
     }
 
-    public void loadQuest(int questId, int effectivePlayerLevel) {
+    public void loadQuest(final int questId, final int effectivePlayerLevel) {
         quest = MapleCQuests.loadQuest(questId);
         resetProgress();
         this.effectivePlayerLevel = effectivePlayerLevel;
-        for (Integer mobId : quest.readMonsterTargets().keySet()) {
+        for (final Integer mobId : quest.readMonsterTargets().keySet()) {
             questKills.put(mobId, 0);
         }
-        for (String objective : quest.readOtherObjectives().keySet()) {
+        for (final String objective : quest.readOtherObjectives().keySet()) {
             otherObjectiveProgress.put(objective, 0);
         }
         player.updateQuestEffectiveLevel();
@@ -64,8 +64,8 @@ public class CQuest {
     }
 
     /** Returns 0 when there is an actual 0 or if there is no value. */
-    public int getQuestKills(int mobId) {
-        Integer kills = questKills.get(mobId);
+    public int getQuestKills(final int mobId) {
+        final Integer kills = questKills.get(mobId);
         return kills != null ? kills : 0;
     }
 
@@ -74,8 +74,8 @@ public class CQuest {
     }
 
     /** Returns 0 when there is an actual 0 or if there is no value. */
-    public int getObjectiveProgress(String obj) {
-        Integer count = otherObjectiveProgress.get(obj);
+    public int getObjectiveProgress(final String obj) {
+        final Integer count = otherObjectiveProgress.get(obj);
         return count != null ? count : 0;
     }
 
@@ -87,7 +87,7 @@ public class CQuest {
      * Returns old quest kill value for the given monster
      * if present, otherwise {@code null}.
      */
-    public Integer setQuestKill(int mobId, int killCount) {
+    public Integer setQuestKill(final int mobId, final int killCount) {
         return questKills.put(mobId, killCount);
     }
 
@@ -98,7 +98,7 @@ public class CQuest {
      *
      * @see CQuest#incrementQuestKill
      */
-    public Integer doQuestKill(int mobId) {
+    public Integer doQuestKill(final int mobId) {
         return incrementQuestKill(mobId, 1);
     }
 
@@ -107,8 +107,8 @@ public class CQuest {
      * an entry for that monster already exists, otherwise
      * this is a no-op and returns {@code null}.
      */
-    public Integer incrementQuestKill(int mobId, final int amount) {
-        Integer ret = questKills.computeIfPresent(mobId, (mid, oldVal) -> oldVal + amount);
+    public Integer incrementQuestKill(final int mobId, final int amount) {
+        final Integer ret = questKills.computeIfPresent(mobId, (mid, oldVal) -> oldVal + amount);
         if (ret != null && getQuestKills(mobId) <= quest.getNumberToKill(mobId)) {
             player.sendHint(
                 "#e" +
@@ -133,7 +133,7 @@ public class CQuest {
      * Returns old objective progress value for the given objective
      * if present, otherwise {@code null}.
      */
-    public Integer setObjectiveProgress(String objective, int count) {
+    public Integer setObjectiveProgress(final String objective, final int count) {
         return otherObjectiveProgress.put(objective, count);
     }
 
@@ -144,7 +144,7 @@ public class CQuest {
      *
      * @see CQuest#incrementObjectiveProgress
      */
-    public Integer doObjectiveProgress(String objective) {
+    public Integer doObjectiveProgress(final String objective) {
         return incrementObjectiveProgress(objective, 1);
     }
 
@@ -153,7 +153,7 @@ public class CQuest {
      * if an entry for that objective already exists, otherwise
      * this is a no-op and returns {@code null}.
      */
-    public Integer incrementObjectiveProgress(String objective, final int amount) {
+    public Integer incrementObjectiveProgress(final String objective, final int amount) {
         final Integer ret = otherObjectiveProgress.computeIfPresent(objective, (obj, oldVal) -> oldVal + amount);
         if (ret != null && getObjectiveProgress(objective) <= quest.getNumberOfOtherObjective(objective)) {
             player.sendHint(
@@ -234,29 +234,29 @@ public class CQuest {
         closeQuest();
     }
 
-    public boolean hasCompletedGoal(int mobId, int itemId, String objective) {
+    public boolean hasCompletedGoal(final int mobId, final int itemId, final String objective) {
         if (mobId > 0) {
-            Integer req = quest.getNumberToKill(mobId);
+            final Integer req = quest.getNumberToKill(mobId);
             return req != null && getQuestKills(mobId) >= req;
         }
         if (itemId > 0) {
-            Integer req = quest.getNumberToCollect(itemId);
+            final Integer req = quest.getNumberToCollect(itemId);
             return req != null && player.getQuestCollected(itemId) >= req;
         }
         if (objective != null && !objective.equals("")) {
-            Integer req = quest.getNumberOfOtherObjective(objective);
+            final Integer req = quest.getNumberOfOtherObjective(objective);
             return req != null && getObjectiveProgress(objective) >= req;
         }
         return false;
     }
 
     public void reload() {
-        int id = quest.getId();
+        final int id = quest.getId();
         loadQuest(id, effectivePlayerLevel);
     }
 
-    public void setEffectivePlayerLevel(int level) {
-        int id = quest.getId();
+    public void setEffectivePlayerLevel(final int level) {
+        final int id = quest.getId();
         loadQuest(id, level);
     }
 

@@ -14,14 +14,14 @@ public class VectR implements IVect {
      ** equal to zero).
      **
      ** @throws IllegalArgumentException when {@code n < 2} */
-    public VectR(int n) {
+    public VectR(final int n) {
         this(new ArrayList<>(Collections.nCopies(n, 0.0d)));
     }
 
     /** Copy constructor.
      **
      ** @throws NullPointerException when {@code elems == null} */
-    public VectR(VectR v) {
+    public VectR(final VectR v) {
         this(v.xs());
     }
 
@@ -31,7 +31,7 @@ public class VectR implements IVect {
      ** @throws IllegalArgumentException when {@code xs.size() < 2}
      **
      ** @throws NullPointerException when {@code xs == null} */
-    public VectR(Collection<Double> xs) {
+    public VectR(final Collection<Double> xs) {
         elems = new ArrayList<>(xs);
         if (elems.size() < 2) {
             throw new IllegalArgumentException("Vect must be of at least dimension 2.");
@@ -42,12 +42,12 @@ public class VectR implements IVect {
      ** in order, as the elements of the vector.
      **
      ** @throws IllegalArgumentException when {@code xs.length < 2} */
-    public VectR(double... xs) {
+    public VectR(final double... xs) {
         elems = new ArrayList<>(xs.length);
         if (xs.length < 2) {
             throw new IllegalArgumentException("Vect must be of at least dimension 2.");
         }
-        for (double x : xs) {
+        for (final double x : xs) {
             elems.add(x);
         }
     }
@@ -56,7 +56,7 @@ public class VectR implements IVect {
      ** the given <code>Point</code>'s coordinates in 2-space.
      **
      ** @throws NullPointerException when {@code p == null} */
-    public VectR(Point p) {
+    public VectR(final Point p) {
         this(p.getX(), p.getY());
     }
 
@@ -64,7 +64,7 @@ public class VectR implements IVect {
      ** the given <code>Point</code>'s coordinates in 2-space.
      **
      ** @throws NullPointerException when {@code p == null} */
-    public static VectR point(Point p) {
+    public static VectR point(final Point p) {
         return new VectR(p.getX(), p.getY());
     }
 
@@ -86,7 +86,7 @@ public class VectR implements IVect {
      ** @throws IndexOutOfBoundsException if the vector has no such index
      **        ({@code index < 0 || index >= dim()}) */
     @Override
-    public Double x(int index) {
+    public Double x(final int index) {
         return elems.get(index);
     }
 
@@ -96,7 +96,7 @@ public class VectR implements IVect {
      ** @throws IndexOutOfBoundsException if the vector has no such index
      **        ({@code index < 0 || index >= dim()}) */
     @Override
-    public double realX(int index) {
+    public double realX(final int index) {
         return elems.get(index);
     }
 
@@ -120,7 +120,7 @@ public class VectR implements IVect {
      ** @throws IndexOutOfBoundsException if the vector has no such index
      **        ({@code index < 0 || index >= dim()}) */
     @Override
-    public void let(int index, int x) {
+    public void let(final int index, final int x) {
         elems.set(index, (double) x);
     }
 
@@ -130,7 +130,7 @@ public class VectR implements IVect {
      ** @throws IndexOutOfBoundsException if the vector has no such index
      **        ({@code index < 0 || index >= dim()}) */
     @Override
-    public void let(int index, double x) {
+    public void let(final int index, final double x) {
         elems.set(index, x);
     }
 
@@ -147,11 +147,11 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public VectR add(IVect v) {
+    public VectR add(final IVect v) {
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot add vectors of non-matching dimensions.");
         }
-        List<Double> sum = new ArrayList<>(dim());
+        final List<Double> sum = new ArrayList<>(dim());
         for (int i = 0; i < dim(); ++i) {
             sum.add(x(i) + v.x(i).doubleValue());
         }
@@ -165,11 +165,11 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public VectR subtract(IVect v) {
+    public VectR subtract(final IVect v) {
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot subtract vectors of mismatched dimensions.");
         }
-        List<Double> difference = new ArrayList<>(dim());
+        final List<Double> difference = new ArrayList<>(dim());
         for (int i = 0; i < dim(); ++i) {
             difference.add(x(i) - v.x(i).doubleValue());
         }
@@ -210,8 +210,8 @@ public class VectR implements IVect {
      **
      ** @throws IndexOutOfBoundsException when {@code index >= dim()} */
     @Override
-    public VectR scalarAdd(int index, int scalar) {
-        VectR v = new VectR(this);
+    public VectR scalarAdd(final int index, final int scalar) {
+        final VectR v = new VectR(this);
         v.let(index, v.x(index) + scalar);
         return v;
     }
@@ -222,8 +222,8 @@ public class VectR implements IVect {
      **
      ** @throws IndexOutOfBoundsException when {@code index >= dim()} */
     @Override
-    public VectR scalarAdd(int index, double scalar) {
-        VectR v = new VectR(this);
+    public VectR scalarAdd(final int index, final double scalar) {
+        final VectR v = new VectR(this);
         v.let(index, v.x(index) + scalar);
         return v;
     }
@@ -241,7 +241,7 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public double dot(IVect v) {
+    public double dot(final IVect v) {
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot dot product vectors of mismatched dimensions.");
         }
@@ -266,16 +266,16 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public VectR cross(IVect v) {
+    public VectR cross(final IVect v) {
         if (dim() != 3 && dim() != 7) {
             throw new UnsupportedOperationException("Can only perform cross product in 3- or 7-space.");
         }
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot cross vectors of mismatched dimensions.");
         }
-        VectR cross = new VectR(dim());
+        final VectR cross = new VectR(dim());
         if (dim() == 3) {
-            int[][] multiTable = {{0, 3, -2},
+            final int[][] multiTable = {{0, 3, -2},
                 {-3, 0, 1},
                 {2, -1, 0}};
             for (int i = 0; i < multiTable.length; ++i) {
@@ -287,7 +287,7 @@ public class VectR implements IVect {
                 }
             }
         } else {
-            int[][] multiTable = {{0, 3, -2, 5, -4, -7, 6},
+            final int[][] multiTable = {{0, 3, -2, 5, -4, -7, 6},
                 {-3, 0, 1, 6, 7, -4, -5},
                 {2, -1, 0, 7, -6, 5, -4},
                 {-5, -6, -7, 0, 1, 2, 3},
@@ -319,7 +319,7 @@ public class VectR implements IVect {
      ** unit basis vector. */
     @Override
     public VectR basisVect() {
-        VectR basisV = new VectR(dim());
+        final VectR basisV = new VectR(dim());
         if (isZero()) return basisV;
         int maxIndex = 0;
         for (int i = 1; i < dim(); ++i) {
@@ -336,9 +336,9 @@ public class VectR implements IVect {
      ** the list (<code>ArrayList</code>). */
     @Override
     public List<VectR> decomp() {
-        List<VectR> decomp = new ArrayList<>(dim());
+        final List<VectR> decomp = new ArrayList<>(dim());
         for (int i = 0; i < dim(); ++i) {
-            VectR v = new VectR(dim());
+            final VectR v = new VectR(dim());
             v.let(i, elems.get(i));
             decomp.add(v);
         }
@@ -363,7 +363,7 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null || u == null} */
     @Override
-    public double scalar3Prod(IVect v, IVect u) {
+    public double scalar3Prod(final IVect v, final IVect u) {
         return dot(v.cross(u));
     }
 
@@ -385,7 +385,7 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null || u == null} */
     @Override
-    public VectR vect3Prod(IVect v, IVect u) {
+    public VectR vect3Prod(final IVect v, final IVect u) {
         return cross(v.cross(u));
     }
 
@@ -404,7 +404,7 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public double wedge(IVect v) {
+    public double wedge(final IVect v) {
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot wedge vectors of mismatched dimensions.");
         }
@@ -418,7 +418,7 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public double angle(IVect v) {
+    public double angle(final IVect v) {
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot wedge vectors of mismatched dimensions.");
         }
@@ -437,14 +437,14 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public VectR proj(IVect v) {
+    public VectR proj(final IVect v) {
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot project vectors of mismatched dimensions.");
         }
         if (v.isZero()) {
             return new VectR(dim());
         }
-        VectR _v = v.asVectR();
+        final VectR _v = v.asVectR();
         return _v.scalarMult(dot(_v) / _v.dot(_v));
     }
 
@@ -457,7 +457,7 @@ public class VectR implements IVect {
      **
      ** @throws NullPointerException when {@code v == null} */
     @Override
-    public VectR directionalProj(IVect v) {
+    public VectR directionalProj(final IVect v) {
         if (dim() != v.dim()) {
             throw new IllegalArgumentException("Cannot project vectors of mismatched dimensions.");
         }
@@ -473,9 +473,9 @@ public class VectR implements IVect {
      ** <code>.equals()</code> the values of the {@code VectR}'s elements for this to
      ** return <code>true</code></p> */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o instanceof IVect) {
-            VectR v = ((IVect) o).asVectR();
+            final VectR v = ((IVect) o).asVectR();
             if (dim() != v.dim()) return false;
             for (int i = 0; i < dim(); ++i) {
                 if (!x(i).equals(v.x(i))) return false;
@@ -488,7 +488,7 @@ public class VectR implements IVect {
     /** Returns a {@code String} that represents the vector. */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(getClass().getName()).append(" <");
         for (int i = 0; i < elems.size() - 1; ++i) {
             sb.append(elems.get(i)).append(", ");

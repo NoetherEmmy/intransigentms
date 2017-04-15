@@ -16,11 +16,11 @@ public final class LoginRequiringNoOpHandler implements MaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
     }
 
     @Override
-    public boolean validateState(MapleClient c) {
+    public boolean validateState(final MapleClient c) {
         return c.isLoggedIn();
     }
 }

@@ -12,7 +12,7 @@ public enum MapleQuestActionType {
     BUFF(7);
     final byte type;
 
-    MapleQuestActionType(int type) {
+    MapleQuestActionType(final int type) {
         this.type = (byte)type;
     }
 
@@ -20,14 +20,14 @@ public enum MapleQuestActionType {
         return type;
     }
 
-    public static MapleQuestActionType getByType(byte type) {
-        for (MapleQuestActionType l : MapleQuestActionType.values()) {
+    public static MapleQuestActionType getByType(final byte type) {
+        for (final MapleQuestActionType l : MapleQuestActionType.values()) {
             if (l.getType() == type) return l;
         }
         return null;
     }
 
-    public static MapleQuestActionType getByWZName(String name) {
+    public static MapleQuestActionType getByWZName(final String name) {
         switch (name) {
             case "exp":
                 return EXP;

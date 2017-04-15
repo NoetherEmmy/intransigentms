@@ -10,31 +10,31 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
     private final MapleInventoryType type;
 
     /** Creates a new instance of MapleInventory */
-    public MapleInventory(MapleInventoryType type, byte slotLimit) {
+    public MapleInventory(final MapleInventoryType type, final byte slotLimit) {
         this.inventory = new LinkedHashMap<>();
         this.slotLimit = slotLimit;
         this.type = type;
     }
 
     /** Returns the item with its slot ID if it exists within the inventory, otherwise {@code null} is returned. */
-    public IItem findById(int itemId) {
-        for (IItem item : inventory.values()) {
+    public IItem findById(final int itemId) {
+        for (final IItem item : inventory.values()) {
             if (item.getItemId() == itemId) return item;
         }
         return null;
     }
 
-    public int countById(int itemId) {
+    public int countById(final int itemId) {
         int possesed = 0;
-        for (IItem item : inventory.values()) {
+        for (final IItem item : inventory.values()) {
             if (item.getItemId() == itemId) possesed += item.getQuantity();
         }
         return possesed;
     }
 
-    public List<IItem> listById(int itemId) {
-        List<IItem> ret = new ArrayList<>();
-        for (IItem item : inventory.values()) {
+    public List<IItem> listById(final int itemId) {
+        final List<IItem> ret = new ArrayList<>();
+        for (final IItem item : inventory.values()) {
             if (item.getItemId() == itemId) ret.add(item);
         }
         if (ret.size() > 1) Collections.sort(ret);
@@ -46,25 +46,25 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
     }
 
     /** Adds the item to the inventory and returns the assigned slot ID. */
-    public byte addItem(IItem item) {
-        byte slotId = getNextFreeSlot();
+    public byte addItem(final IItem item) {
+        final byte slotId = getNextFreeSlot();
         if (slotId < 0) return -1;
         inventory.put(slotId, item);
         item.setPosition(slotId);
         return slotId;
     }
 
-    public void addFromDB(IItem item) {
+    public void addFromDB(final IItem item) {
         if (item.getPosition() < 0 && !type.equals(MapleInventoryType.EQUIPPED)) {
             throw new RuntimeException("Item with negative position in non-equipped inv?");
         }
         inventory.put(item.getPosition(), item);
     }
 
-    public void move(byte sSlot, byte dSlot, short slotMax) {
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Item source = (Item) inventory.get(sSlot);
-        Item target = (Item) inventory.get(dSlot);
+    public void move(final byte sSlot, final byte dSlot, final short slotMax) {
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final Item source = (Item) inventory.get(sSlot);
+        final Item target = (Item) inventory.get(dSlot);
         if (source == null) throw new InventoryException("Trying to move empty slot");
         if (target == null) {
             source.setPosition(dSlot);
@@ -79,7 +79,7 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
                 swap(target, source);
             }
             if (source.getQuantity() + target.getQuantity() > slotMax) {
-                short rest = (short) ((source.getQuantity() + target.getQuantity()) - slotMax);
+                final short rest = (short) ((source.getQuantity() + target.getQuantity()) - slotMax);
                 source.setQuantity(rest);
                 target.setQuantity(slotMax);
             } else {
@@ -91,33 +91,33 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
         }
     }
 
-    private void swap(IItem source, IItem target) {
+    private void swap(final IItem source, final IItem target) {
         inventory.remove(source.getPosition());
         inventory.remove(target.getPosition());
-        byte swapPos = source.getPosition();
+        final byte swapPos = source.getPosition();
         source.setPosition(target.getPosition());
         target.setPosition(swapPos);
         inventory.put(source.getPosition(), source);
         inventory.put(target.getPosition(), target);
     }
 
-    public IItem getItem(byte slot) {
+    public IItem getItem(final byte slot) {
         return inventory.get(slot);
     }
 
-    public void removeItem(byte slot) {
+    public void removeItem(final byte slot) {
         removeItem(slot, (short) 1, false);
     }
 
-    public void removeItem(byte slot, short quantity, boolean allowZero) {
-        IItem item = inventory.get(slot);
+    public void removeItem(final byte slot, final short quantity, final boolean allowZero) {
+        final IItem item = inventory.get(slot);
         if (item == null) return;
         item.setQuantity((short) (item.getQuantity() - quantity));
         if (item.getQuantity() < 0) item.setQuantity((short) 0);
         if (item.getQuantity() == 0 && !allowZero) removeSlot(slot);
     }
 
-    public void removeSlot(byte slot) {
+    public void removeSlot(final byte slot) {
         inventory.remove(slot);
     }
 
@@ -133,7 +133,7 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
         return inventory.size() >= slotLimit;
     }
 
-    public boolean isFull(int margin) {
+    public boolean isFull(final int margin) {
         return inventory.size() + margin >= slotLimit;
     }
 

@@ -11,27 +11,27 @@ public class MapleFootholdTree {
     private final Point p1, p2, center;
     private int depth, maxDropX, minDropX;
 
-    public MapleFootholdTree(Point p1, Point p2) {
+    public MapleFootholdTree(final Point p1, final Point p2) {
         this.p1 = p1;
         this.p2 = p2;
         center = new Point((p2.x - p1.x) / 2, (p2.y - p1.y) / 2);
     }
 
-    public MapleFootholdTree(Point p1, Point p2, int depth) {
+    public MapleFootholdTree(final Point p1, final Point p2, final int depth) {
         this.p1 = p1;
         this.p2 = p2;
         this.depth = depth;
         center = new Point((p2.x - p1.x) / 2, (p2.y - p1.y) / 2);
     }
 
-    public void insert(MapleFoothold f) {
+    public void insert(final MapleFoothold f) {
         if (depth == 0) {
             if (f.getX1() > maxDropX) maxDropX = f.getX1();
             if (f.getX1() < minDropX) minDropX = f.getX1();
             if (f.getX2() > maxDropX) maxDropX = f.getX2();
             if (f.getX2() < minDropX) minDropX = f.getX2();
         }
-        int maxDepth = 8;
+        final int maxDepth = 8;
         if (/*footholds.size() == 0 || */
             depth == maxDepth ||
             (f.getX1() >= p1.x && f.getX2() <= p2.x &&
@@ -57,11 +57,11 @@ public class MapleFootholdTree {
         }
     }
 
-    private List<MapleFoothold> getRelevants(Point p) {
+    private List<MapleFoothold> getRelevants(final Point p) {
         return getRelevants(p, new ArrayList<>());
     }
 
-    private List<MapleFoothold> getRelevants(Point p, List<MapleFoothold> list) {
+    private List<MapleFoothold> getRelevants(final Point p, final List<MapleFoothold> list) {
         list.addAll(footholds);
         if (nw != null) {
             if (p.x <= center.x && p.y <= center.y) nw.getRelevants(p, list);
@@ -72,9 +72,9 @@ public class MapleFootholdTree {
         return list;
     }
 
-    private MapleFoothold findWallR(Point p1, Point p2) {
+    private MapleFoothold findWallR(final Point p1, final Point p2) {
         MapleFoothold ret;
-        for (MapleFoothold f : footholds) {
+        for (final MapleFoothold f : footholds) {
             //if (f.isWall()) System.out.println(f.getX1() + " " + f.getX2());
             if (f.isWall() && f.getX1() >= p1.x && f.getX1() <= p2.x && f.getY1() >= p1.y && f.getY2() <= p1.y) {
                 return f;
@@ -101,12 +101,12 @@ public class MapleFootholdTree {
         return null;
     }
 
-    public MapleFoothold findWall(Point p1, Point p2) {
+    public MapleFoothold findWall(final Point p1, final Point p2) {
         if (p1.y != p2.y) throw new IllegalArgumentException();
         return findWallR(p1, p2);
     }
 
-    public MapleFoothold findBelow(Point p) {
+    public MapleFoothold findBelow(final Point p) {
         final List<MapleFoothold> relevants = getRelevants(p);
         // Find fhs with matching x-coordinates
         final List<MapleFoothold> xMatches = new ArrayList<>();
@@ -117,12 +117,12 @@ public class MapleFootholdTree {
         for (final MapleFoothold fh : xMatches) {
             if (!fh.isWall() && fh.getY1() != fh.getY2()) {
                 final int calcY;
-                double s1 = Math.abs(fh.getY2() - fh.getY1());
-                double s2 = Math.abs(fh.getX2() - fh.getX1());
-                double s4 = Math.abs(p.x - fh.getX1());
-                double alpha = Math.atan(s2 / s1);
-                double beta = Math.atan(s1 / s2);
-                double s5 = Math.cos(alpha) * (s4 / Math.cos(beta));
+                final double s1 = Math.abs(fh.getY2() - fh.getY1());
+                final double s2 = Math.abs(fh.getX2() - fh.getX1());
+                final double s4 = Math.abs(p.x - fh.getX1());
+                final double alpha = Math.atan(s2 / s1);
+                final double beta = Math.atan(s1 / s2);
+                final double s5 = Math.cos(alpha) * (s4 / Math.cos(beta));
                 if (fh.getY2() < fh.getY1()) {
                     calcY = fh.getY1() - (int) s5;
                 } else {

@@ -16,7 +16,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
     protected boolean pickedUp = false;
 
     /** Creates a new instance of MapleMapItem */
-    public MapleMapItem(IItem item, Point position, MapleMapObject dropper, MapleCharacter owner) {
+    public MapleMapItem(final IItem item, final Point position, final MapleMapObject dropper, final MapleCharacter owner) {
         setPosition(position);
         this.item = item;
         this.dropper = dropper;
@@ -24,7 +24,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
         this.meso = 0;
     }
 
-    public MapleMapItem(int meso, int displayMeso, Point position, MapleMapObject dropper, MapleCharacter owner) {
+    public MapleMapItem(final int meso, final int displayMeso, final Point position, final MapleMapObject dropper, final MapleCharacter owner) {
         setPosition(position);
         this.item = null;
         this.meso = meso;
@@ -53,12 +53,12 @@ public class MapleMapItem extends AbstractMapleMapObject {
         return pickedUp;
     }
 
-    public void setPickedUp(boolean pickedUp) {
+    public void setPickedUp(final boolean pickedUp) {
         this.pickedUp = pickedUp;
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         client.getSession().write(MaplePacketCreator.removeItemFromMap(getObjectId(), 1, 0));
     }
 
@@ -68,7 +68,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         if (meso > 0) {
             client.getSession().write(MaplePacketCreator.dropMesoFromMapObject(displayMeso, getObjectId(),
             dropper.getObjectId(), owner.getId(), null, getPosition(), (byte) 2));

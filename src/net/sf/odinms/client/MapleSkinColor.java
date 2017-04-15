@@ -9,7 +9,7 @@ public enum MapleSkinColor {
     WHITE(9);
     final int id;
 
-    MapleSkinColor(int id) {
+    MapleSkinColor(final int id) {
         this.id = id;
     }
 
@@ -17,8 +17,8 @@ public enum MapleSkinColor {
         return id;
     }
 
-    public static MapleSkinColor getById(int id) {
-        for (MapleSkinColor l : MapleSkinColor.values()) {
+    public static MapleSkinColor getById(final int id) {
+        for (final MapleSkinColor l : MapleSkinColor.values()) {
             if (l.getId() == id) return l;
         }
         return null;

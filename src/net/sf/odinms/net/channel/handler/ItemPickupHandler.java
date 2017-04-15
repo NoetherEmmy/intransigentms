@@ -17,14 +17,13 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
     public ItemPickupHandler() {
     }
 
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         player.resetAfkTime();
-        @SuppressWarnings("unused")
-        byte mode = slea.readByte();
+        @SuppressWarnings("unused") final byte mode = slea.readByte();
         slea.readInt();
         slea.readInt();
-        int oid = slea.readInt();
+        final int oid = slea.readInt();
         final MapleMapObject ob = player.getMap().getMapObject(oid);
         if (ob == null) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
@@ -39,22 +38,22 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                     c.getSession().write(MaplePacketCreator.getShowInventoryFull());
                     return;
                 }
-                double distance = player.getPosition().distanceSq(mapitem.getPosition());
+                final double distance = player.getPosition().distanceSq(mapitem.getPosition());
                 //player.getCheatTracker().checkPickupAgain();
                 if (mapitem.getMeso() > 0) {
                     if (player.getParty() != null) {
-                        ChannelServer cserv = c.getChannelServer();
-                        int mesosamm = mapitem.getMeso();
+                        final ChannelServer cserv = c.getChannelServer();
+                        final int mesosamm = mapitem.getMeso();
                         int partynum = 0;
-                        for (MaplePartyCharacter partymem : player.getParty().getMembers()) {
+                        for (final MaplePartyCharacter partymem : player.getParty().getMembers()) {
                             if (partymem.isOnline() && partymem.getMapid() == player.getMap().getId() && partymem.getChannel() == c.getChannel()) {
                                 partynum++;
                             }
                         }
-                        int mesosgain = mesosamm / partynum;
-                        for (MaplePartyCharacter partymem : player.getParty().getMembers()) {
+                        final int mesosgain = mesosamm / partynum;
+                        for (final MaplePartyCharacter partymem : player.getParty().getMembers()) {
                             if (partymem.isOnline() && partymem.getMapid() == player.getMap().getId()) {
-                                MapleCharacter somecharacter = cserv.getPlayerStorage().getCharacterById(partymem.getId());
+                                final MapleCharacter somecharacter = cserv.getPlayerStorage().getCharacterById(partymem.getId());
                                 if (somecharacter != null) {
                                     somecharacter.gainMeso(mesosgain, true, true);
                                 }
@@ -68,7 +67,7 @@ public class ItemPickupHandler extends AbstractMaplePacketHandler {
                     player.getMap().removeMapObject(ob);
                 } else {
                     if (mapitem.getItem().getItemId() >= 5000000 && mapitem.getItem().getItemId() <= 5000100) {
-                        int petId = MaplePet.createPet(mapitem.getItem().getItemId());
+                        final int petId = MaplePet.createPet(mapitem.getItem().getItemId());
                         if (petId == -1) return;
                         MapleInventoryManipulator.addById(c, mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), null, petId);
                         player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, player.getId()), mapitem.getPosition());

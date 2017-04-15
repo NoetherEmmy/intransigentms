@@ -8,7 +8,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CreateCharHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final String name = slea.readMapleAsciiString();
         final int face = slea.readInt();
         final int hair = slea.readInt();
@@ -37,26 +37,26 @@ public class CreateCharHandler extends AbstractMaplePacketHandler {
         newchar.setName(name, false);
         newchar.setSkinColor(MapleSkinColor.getById(skinColor));
 
-        MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
-        IItem eq_top = MapleItemInformationProvider.getInstance().getEquipById(top);
+        final MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
+        final IItem eq_top = MapleItemInformationProvider.getInstance().getEquipById(top);
         eq_top.setPosition((byte) -5);
         equip.addFromDB(eq_top);
-        IItem eq_bottom = MapleItemInformationProvider.getInstance().getEquipById(bottom);
+        final IItem eq_bottom = MapleItemInformationProvider.getInstance().getEquipById(bottom);
         eq_bottom.setPosition((byte) -6);
         equip.addFromDB(eq_bottom);
-        IItem eq_shoes = MapleItemInformationProvider.getInstance().getEquipById(shoes);
+        final IItem eq_shoes = MapleItemInformationProvider.getInstance().getEquipById(shoes);
         eq_shoes.setPosition((byte) -7);
         equip.addFromDB(eq_shoes);
-        IItem eq_weapon = MapleItemInformationProvider.getInstance().getEquipById(weapon);
+        final IItem eq_weapon = MapleItemInformationProvider.getInstance().getEquipById(weapon);
         eq_weapon.setPosition((byte) -11);
         equip.addFromDB(eq_weapon);
-        IItem pWeap = MapleItemInformationProvider.getInstance().getEquipById(1092161);
+        final IItem pWeap = MapleItemInformationProvider.getInstance().getEquipById(1092161);
         pWeap.setPosition((byte) -110);
         equip.addFromDB(pWeap);
 
         boolean charok = true;
 
-        int totstats = str + dex + _int + luk;
+        final int totstats = str + dex + _int + luk;
         if (totstats != 25 || str < 4 || dex < 4 || _int < 4 || luk < 4) {
             charok = false;
         }

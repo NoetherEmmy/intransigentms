@@ -28,7 +28,7 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(DistributeSPHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         if (c.getPlayer().getClient().getChannelServer().MTtoFM()) {
             if (!(c.getPlayer().isAlive()) || c.getPlayer().getMapId() == 100) {
                 c.getPlayer().dropMessage("You can't enter the FM when you are dead.");
@@ -51,17 +51,17 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
             if (c.getPlayer().getNoPets() > 0) {
                 c.getPlayer().unequipAllPets();
             }
-            for (FakeCharacter fc : c.getPlayer().getFakeChars()) {
+            for (final FakeCharacter fc : c.getPlayer().getFakeChars()) {
                 c.getPlayer().getMap().removePlayer(fc.getFakeChar());
             }
             if (c.getPlayer().getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
                 c.getPlayer().cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
             }
             try {
-                WorldChannelInterface wci = ChannelServer.getInstance(c.getChannel()).getWorldInterface();
+                final WorldChannelInterface wci = ChannelServer.getInstance(c.getChannel()).getWorldInterface();
                 wci.addBuffsToStorage(c.getPlayer().getId(), c.getPlayer().getAllBuffs());
                 wci.addCooldownsToStorage(c.getPlayer().getId(), c.getPlayer().getAllCooldowns());
-            } catch (RemoteException e) {
+            } catch (final RemoteException e) {
                 c.getChannelServer().reconnectWorld();
             }
 
@@ -72,20 +72,20 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.MTSWantedListingOver(0, 0));
             c.getSession().write(MaplePacketCreator.showMTSCash(c.getPlayer()));
 
-            List<MTSItemInfo> items = new ArrayList<>();
+            final List<MTSItemInfo> items = new ArrayList<>();
             int pages = 0;
             try {
-                Connection con = DatabaseConnection.getConnection();
+                final Connection con = DatabaseConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement("SELECT * FROM mts_items WHERE tab = 1 AND transfer = 0 ORDER BY id DESC LIMIT ?, 16");
                 ps.setInt(1, 0);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     if (rs.getInt("type") != 1) {
-                        Item i = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
+                        final Item i = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
                         i.setOwner(rs.getString("owner"));
                         items.add(new MTSItemInfo(i, rs.getInt("price") + 100 + (int) (rs.getInt("price") * 0.1d), rs.getInt("id"), rs.getInt("seller"), rs.getString("sellername"), rs.getString("sell_ends")));
                     } else {
-                        Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"), -1);
+                        final Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"), -1);
                         equip.setOwner(rs.getString("owner"));
                         equip.setQuantity((short) 1);
                         equip.setAcc((short) rs.getInt("acc"));
@@ -118,7 +118,7 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
                 }
                 rs.close();
                 ps.close();
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 log.error("Err1: " + e);
             }
 
@@ -129,11 +129,11 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    public List<MTSItemInfo> getNotYetSold(int cid) {
-        List<MTSItemInfo> items = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps;
-        ResultSet rs;
+    public List<MTSItemInfo> getNotYetSold(final int cid) {
+        final List<MTSItemInfo> items = new ArrayList<>();
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps;
+        final ResultSet rs;
         try {
             ps = con.prepareStatement("SELECT * FROM mts_items WHERE seller = ? AND transfer = 0 ORDER BY id DESC");
             ps.setInt(1, cid);
@@ -141,11 +141,11 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
             rs = ps.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("type") != 1) {
-                    Item i = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
+                    final Item i = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
                     i.setOwner(rs.getString("owner"));
                     items.add(new MTSItemInfo(i, rs.getInt("price"), rs.getInt("id"), rs.getInt("seller"), rs.getString("sellername"), rs.getString("sell_ends")));
                 } else {
-                    Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"), -1);
+                    final Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"), -1);
                     equip.setOwner(rs.getString("owner"));
                     equip.setQuantity((short) 1);
                     equip.setAcc((short) rs.getInt("acc"));
@@ -171,28 +171,28 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
             }
             rs.close();
             ps.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             log.error("Err8: " + e);
         }
         return items;
     }
 
-    public List<MTSItemInfo> getTransfer(int cid) {
-        List<MTSItemInfo> items = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps;
-        ResultSet rs;
+    public List<MTSItemInfo> getTransfer(final int cid) {
+        final List<MTSItemInfo> items = new ArrayList<>();
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps;
+        final ResultSet rs;
         try {
             ps = con.prepareStatement("SELECT * FROM mts_items WHERE transfer = 1 AND seller = ? ORDER BY id DESC");
             ps.setInt(1, cid);
             rs = ps.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("type") != 1) {
-                    Item i = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
+                    final Item i = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
                     i.setOwner(rs.getString("owner"));
                     items.add(new MTSItemInfo(i, rs.getInt("price"), rs.getInt("id"), rs.getInt("seller"), rs.getString("sellername"), rs.getString("sell_ends")));
                 } else {
-                    Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"), -1);
+                    final Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"), -1);
                     equip.setOwner(rs.getString("owner"));
                     equip.setQuantity((short) 1);
                     equip.setAcc((short) rs.getInt("acc"));
@@ -218,7 +218,7 @@ public class EnterMTSHandler extends AbstractMaplePacketHandler {
             }
             rs.close();
             ps.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             log.error("Err7: " + e);
         }
         return items;

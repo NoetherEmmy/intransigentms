@@ -20,12 +20,12 @@ public class CPUSampler {
         return instance;
     }
 
-    public void setInterval(long millis) {
+    public void setInterval(final long millis) {
         interval = millis;
     }
 
-    public void addIncluded(String include) {
-        for (String alreadyIncluded : included) {
+    public void addIncluded(final String include) {
+        for (final String alreadyIncluded : included) {
             if (include.startsWith(alreadyIncluded)) return;
         }
         included.add(include);
@@ -51,18 +51,18 @@ public class CPUSampler {
     }
 
     public SampledStacktraces getTopConsumers() {
-        List<StacktraceWithCount> ret = new ArrayList<>();
+        final List<StacktraceWithCount> ret = new ArrayList<>();
         final Set<Map.Entry<StackTrace, Integer>> entrySet = recorded.entrySet();
-        for (Map.Entry<StackTrace, Integer> entry : entrySet) {
+        for (final Map.Entry<StackTrace, Integer> entry : entrySet) {
             ret.add(new StacktraceWithCount(entry.getValue(), entry.getKey()));
         }
         Collections.sort(ret);
         return new SampledStacktraces(ret, totalSamples);
     }
 
-    public void save(Writer writer, int minInvocations, int topMethods) throws IOException {
-        SampledStacktraces topConsumers = getTopConsumers();
-        StringBuilder builder = new StringBuilder(); // build our summary :o
+    public void save(final Writer writer, final int minInvocations, final int topMethods) throws IOException {
+        final SampledStacktraces topConsumers = getTopConsumers();
+        final StringBuilder builder = new StringBuilder(); // build our summary :o
         builder.append("Top Methods:\n");
         for (int i = 0; i < topMethods && i < topConsumers.getTopConsumers().size(); ++i) {
             builder.append(topConsumers.getTopConsumers().get(i).toString(topConsumers.getTotalInvocations(), 1));
@@ -73,12 +73,12 @@ public class CPUSampler {
         writer.flush();
     }
 
-    private void consumeStackTraces(Map<Thread, StackTraceElement[]> traces) {
-        for (Map.Entry<Thread, StackTraceElement[]> trace : traces.entrySet()) {
-            int relevant = findRelevantElement(trace.getValue());
+    private void consumeStackTraces(final Map<Thread, StackTraceElement[]> traces) {
+        for (final Map.Entry<Thread, StackTraceElement[]> trace : traces.entrySet()) {
+            final int relevant = findRelevantElement(trace.getValue());
             if (relevant != -1) {
-                StackTrace st = new StackTrace(trace.getValue(), relevant, trace.getKey().getState());
-                Integer i = recorded.get(st);
+                final StackTrace st = new StackTrace(trace.getValue(), relevant, trace.getKey().getState());
+                final Integer i = recorded.get(st);
                 totalSamples++;
                 if (i == null) {
                     recorded.put(st, 1);
@@ -89,16 +89,16 @@ public class CPUSampler {
         }
     }
 
-    private int findRelevantElement(StackTraceElement[] trace) {
+    private int findRelevantElement(final StackTraceElement[] trace) {
         if (trace.length == 0) {
             return -1;
         } else if (included.isEmpty()) {
             return 0;
         }
         int firstIncluded = -1;
-        for (String myIncluded : included) {
+        for (final String myIncluded : included) {
             for (int i = 0; i < trace.length; ++i) {
-                StackTraceElement ste = trace[i];
+                final StackTraceElement ste = trace[i];
                 if (ste.getClassName().startsWith(myIncluded)) {
                     if (i < firstIncluded || firstIncluded == -1) {
                         firstIncluded = i;
@@ -117,7 +117,7 @@ public class CPUSampler {
         private final StackTraceElement[] trace;
         private final State state;
 
-        public StackTrace(StackTraceElement[] trace, int startAt, State state) {
+        public StackTrace(final StackTraceElement[] trace, final int startAt, final State state) {
             this.state = state;
             if (startAt == 0) {
                 this.trace = trace;
@@ -128,9 +128,9 @@ public class CPUSampler {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (!(obj instanceof StackTrace)) return false;
-            StackTrace other = (StackTrace) obj;
+            final StackTrace other = (StackTrace) obj;
             if (other.trace.length !=  trace.length) return false;
             if (!(other.state == this.state)) return false;
             for (int i = 0; i < trace.length; ++i) {
@@ -142,7 +142,7 @@ public class CPUSampler {
         @Override
         public int hashCode() {
             int ret = 13 * trace.length + state.hashCode();
-            for (StackTraceElement ste : trace) {
+            for (final StackTraceElement ste : trace) {
                 ret ^= ste.hashCode();
             }
             return ret;
@@ -157,8 +157,8 @@ public class CPUSampler {
             return toString(-1);
         }
 
-        public String toString(int traceLength) {
-            StringBuilder ret = new StringBuilder("State: ");
+        public String toString(final int traceLength) {
+            final StringBuilder ret = new StringBuilder("State: ");
             ret.append(state.name());
             if (traceLength > 1) {
                 ret.append('\n');
@@ -166,7 +166,7 @@ public class CPUSampler {
                 ret.append(' ');
             }
             int i = 0;
-            for (StackTraceElement ste : trace) {
+            for (final StackTraceElement ste : trace) {
                 i++;
                 if (i > traceLength) break;
                 ret.append(ste.getClassName());
@@ -198,7 +198,7 @@ public class CPUSampler {
             rthread.interrupt();
             try {
                 rthread.join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -209,7 +209,7 @@ public class CPUSampler {
                 consumeStackTraces(Thread.getAllStackTraces());
                 try {
                     Thread.sleep(interval);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     return;
                 }
             }
@@ -220,7 +220,7 @@ public class CPUSampler {
         private final int count;
         private final StackTrace trace;
 
-        public StacktraceWithCount(int count, StackTrace trace) {
+        public StacktraceWithCount(final int count, final StackTrace trace) {
             super();
             this.count = count;
             this.trace = trace;
@@ -235,7 +235,7 @@ public class CPUSampler {
         }
 
         @Override
-        public int compareTo(StacktraceWithCount o) {
+        public int compareTo(final StacktraceWithCount o) {
             return -Integer.valueOf(count).compareTo(o.count);
         }
 
@@ -244,11 +244,11 @@ public class CPUSampler {
             return count + " Sampled Invocations\n" + trace.toString();
         }
 
-        private double getPercentage(int total) {
+        private double getPercentage(final int total) {
             return Math.round((((double) count) / total) * 10000.0d) / 100.0d;
         }
 
-        public String toString(int totalInvoations, int traceLength) {
+        public String toString(final int totalInvoations, final int traceLength) {
             return count + "/" + totalInvoations + " Sampled Invocations (" + getPercentage(totalInvoations) + "%) " + trace.toString(traceLength);
         }
     }
@@ -257,7 +257,7 @@ public class CPUSampler {
         final List<StacktraceWithCount> topConsumers;
         final int totalInvocations;
 
-        public SampledStacktraces(List<StacktraceWithCount> topConsumers, int totalInvocations) {
+        public SampledStacktraces(final List<StacktraceWithCount> topConsumers, final int totalInvocations) {
             super();
             this.topConsumers = topConsumers;
             this.totalInvocations = totalInvocations;
@@ -276,9 +276,9 @@ public class CPUSampler {
             return toString(0);
         }
 
-        public String toString(int minInvocation) {
-            StringBuilder ret = new StringBuilder();
-            for (StacktraceWithCount swc : topConsumers) {
+        public String toString(final int minInvocation) {
+            final StringBuilder ret = new StringBuilder();
+            for (final StacktraceWithCount swc : topConsumers) {
                 if (swc.getCount() >= minInvocation) {
                     ret.append(swc.toString(totalInvocations, Integer.MAX_VALUE));
                     ret.append('\n');

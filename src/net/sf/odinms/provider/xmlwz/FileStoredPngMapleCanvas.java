@@ -13,7 +13,7 @@ public class FileStoredPngMapleCanvas implements MapleCanvas {
     private int height;
     private BufferedImage image;
 
-    public FileStoredPngMapleCanvas(int width, int height, File fileIn) {
+    public FileStoredPngMapleCanvas(final int width, final int height, final File fileIn) {
         this.width = width;
         this.height = height;
         this.file = fileIn;
@@ -41,7 +41,7 @@ public class FileStoredPngMapleCanvas implements MapleCanvas {
                 // replace the dimensions loaded from the wz by the REAL dimensions from the image - should be equal tho
                 width = image.getWidth();
                 height = image.getHeight();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         }

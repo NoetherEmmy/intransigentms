@@ -8,7 +8,7 @@ public class InventoryException extends RuntimeException {
         super();
     }
 
-    public InventoryException(String msg) {
+    public InventoryException(final String msg) {
         super(msg);
     }
 }

@@ -9,7 +9,7 @@ public class QuestActionManager extends NPCConversationManager {
     private final boolean start;
     private final int quest;
 
-    public QuestActionManager(MapleClient c, int npc, int quest, boolean start) {
+    public QuestActionManager(final MapleClient c, final int npc, final int quest, final boolean start) {
         super(c, npc, null, null);
         this.quest = quest;
         this.start = start;
@@ -36,7 +36,7 @@ public class QuestActionManager extends NPCConversationManager {
         }
     }
 
-    public void forceStartQuest(int id) {
+    public void forceStartQuest(final int id) {
         if (getQuestStatus(id) != Status.COMPLETED) {
             MapleQuest.getInstance(id).forceStart(getPlayer(), getNpc());
         } else {
@@ -48,7 +48,7 @@ public class QuestActionManager extends NPCConversationManager {
         forceCompleteQuest(quest);
     }
 
-    public void forceCompleteQuest(int id) {
+    public void forceCompleteQuest(final int id) {
         MapleQuest.getInstance(id).forceComplete(getPlayer(), getNpc());
     }
 }

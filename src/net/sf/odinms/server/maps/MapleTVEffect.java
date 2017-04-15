@@ -14,14 +14,14 @@ public class MapleTVEffect {
     public static boolean active;
     private final ChannelServer cserv;
 
-    public MapleTVEffect(MapleCharacter user, MapleCharacter partner, List<String> msg, int type) {
+    public MapleTVEffect(final MapleCharacter user, final MapleCharacter partner, final List<String> msg, final int type) {
         cserv = user.getClient().getChannelServer();
         packet = MaplePacketCreator.sendTV(user, msg, type <= 2 ? type : type - 3, partner);
         broadCastTV(true);
         scheduleCancel(type);
     }
 
-    private void broadCastTV(boolean active) {
+    private void broadCastTV(final boolean active) {
         MapleTVEffect.active = active;
         try {
             if (active) {
@@ -31,12 +31,12 @@ public class MapleTVEffect {
                 cserv.getWorldInterface().broadcastMessage(null, MaplePacketCreator.removeTV().getBytes());
                 packet = null;
             }
-        } catch (RemoteException noob) {
+        } catch (final RemoteException noob) {
             cserv.reconnectWorld();
         }
     }
 
-    public static int getMapleTVDuration(int type) {
+    public static int getMapleTVDuration(final int type) {
         switch (type) {
             case 1:
             case 4:
@@ -49,7 +49,7 @@ public class MapleTVEffect {
         }
     }
 
-    private void scheduleCancel(int type) {
+    private void scheduleCancel(final int type) {
         TimerManager.getInstance().schedule(() -> broadCastTV(false), getMapleTVDuration(type));
     }
 }

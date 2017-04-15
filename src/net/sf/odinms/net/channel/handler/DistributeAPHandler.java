@@ -15,12 +15,12 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
     //private static final Logger log = LoggerFactory.getLogger(DistributeAPHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        List<Pair<MapleStat, Integer>> statupdate = new ArrayList<>(2);
+        final List<Pair<MapleStat, Integer>> statupdate = new ArrayList<>(2);
         c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true));
         slea.readInt();
-        int update = slea.readInt();
+        final int update = slea.readInt();
         if (c.getPlayer().getRemainingAp() > 0) {
             switch (update) {
                 case 64: // Str
@@ -56,8 +56,8 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
                     if (c.getPlayer().getHpApUsed() >= 10000 || maxHP == 30000) {
                         return;
                     }
-                    ISkill improvingMaxHP;
-                    int improvingMaxHPLevel;
+                    final ISkill improvingMaxHP;
+                    final int improvingMaxHPLevel;
                     if (c.getPlayer().getJob().isA(MapleJob.BEGINNER)) {
                         maxHP += rand(48, 52);
                     } else if (c.getPlayer().getJob().isA(MapleJob.WARRIOR)) {
@@ -102,8 +102,8 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
                     } else if (c.getPlayer().getJob().isA(MapleJob.WARRIOR)) {
                         maxMP += rand(2, 4);
                     } else if (c.getPlayer().getJob().isA(MapleJob.MAGICIAN)) {
-                        ISkill improvingMaxMP = SkillFactory.getSkill(2000001);
-                        int improvingMaxMPLevel = c.getPlayer().getSkillLevel(improvingMaxMP);
+                        final ISkill improvingMaxMP = SkillFactory.getSkill(2000001);
+                        final int improvingMaxMPLevel = c.getPlayer().getSkillLevel(improvingMaxMP);
                         if (improvingMaxMPLevel >= 1) {
                             maxMP += rand(41, 47) + improvingMaxMP.getEffect(improvingMaxMPLevel).getY();
                         } else {
@@ -135,7 +135,7 @@ public class DistributeAPHandler extends AbstractMaplePacketHandler {
         }*/
     }
 
-    private static int rand(int lbound, int ubound) {
+    private static int rand(final int lbound, final int ubound) {
         return (int) ((Math.random() * (ubound - lbound + 1)) + lbound);
     }
 }

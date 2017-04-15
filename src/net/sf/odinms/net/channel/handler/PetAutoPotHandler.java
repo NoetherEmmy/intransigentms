@@ -11,18 +11,18 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class PetAutoPotHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         if (!c.getPlayer().isAlive()) {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        byte type = slea.readByte();
+        final byte type = slea.readByte();
         slea.skip(12);
-        byte slot = slea.readByte();
+        final byte slot = slea.readByte();
         slea.readByte();
-        int itemId = slea.readInt();
-        IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final int itemId = slea.readInt();
+        final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (toUse != null && toUse.getQuantity() > 0) {
             if (toUse.getItemId() != itemId) {
                 return;

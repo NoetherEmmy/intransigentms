@@ -6,16 +6,16 @@ public final class MapleCharacterUtil {
     private MapleCharacterUtil() {
     }
 
-    public static boolean canCreateChar(String name, int world) {
+    public static boolean canCreateChar(final String name, final int world) {
         return isNameLegal(name) && MapleCharacter.getIdByName(name, world) < 0;
     }
 
-    public static boolean isNameLegal(String name) {
+    public static boolean isNameLegal(final String name) {
         return !(name.length() < 3 || name.length() > 12) &&
                Pattern.compile("[a-zA-Z0-9_-]{3,12}").matcher(name).matches();
     }
 
-    public static boolean hasSymbols(String name) {
+    public static boolean hasSymbols(final String name) {
         final String[] symbols =
         {
             "`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",

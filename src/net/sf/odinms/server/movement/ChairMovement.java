@@ -8,7 +8,7 @@ import java.awt.*;
 public class ChairMovement extends AbstractLifeMovement {
     private int unk;
 
-    public ChairMovement(int type, Point position, int duration, int newstate) {
+    public ChairMovement(final int type, final Point position, final int duration, final int newstate) {
         super(type, position, duration, newstate);
     }
 
@@ -16,12 +16,12 @@ public class ChairMovement extends AbstractLifeMovement {
         return unk;
     }
 
-    public void setUnk(int unk) {
+    public void setUnk(final int unk) {
         this.unk = unk;
     }
 
     @Override
-    public void serialize(LittleEndianWriter lew) {
+    public void serialize(final LittleEndianWriter lew) {
         lew.write(getType());
         lew.writeShort(getPosition().x);
         lew.writeShort(getPosition().y);

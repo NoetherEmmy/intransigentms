@@ -10,7 +10,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.util.Map;
 
 public class SkillBookHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         player.resetAfkTime();
         if (!player.isAlive()) {
@@ -18,20 +18,20 @@ public class SkillBookHandler extends AbstractMaplePacketHandler {
             return;
         }
         slea.readInt();
-        byte slot = (byte) slea.readShort();
-        int itemId = slea.readInt();
-        IItem toUse = player.getInventory(MapleInventoryType.USE).getItem(slot);
+        final byte slot = (byte) slea.readShort();
+        final int itemId = slea.readInt();
+        final IItem toUse = player.getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse != null && toUse.getQuantity() >= 1) {
             if (toUse.getItemId() != itemId) {
                 c.getSession().write(MaplePacketCreator.enableActions());
                 return;
             }
-            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            Map<String, Integer> skillData = ii.getSkillStats(toUse.getItemId(), player.getJob().getId());
+            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            final Map<String, Integer> skillData = ii.getSkillStats(toUse.getItemId(), player.getJob().getId());
             boolean canUse;
             boolean success = false;
-            int skill = 0;
-            int maxlevel = 0;
+            final int skill = 0;
+            final int maxlevel = 0;
             if (skillData == null) { // Hacking or used an unknown item
                 c.getSession().write(MaplePacketCreator.enableActions());
                 return;
@@ -45,11 +45,11 @@ public class SkillBookHandler extends AbstractMaplePacketHandler {
                 skillData.get("reqSkillLevel") == 0
             ) {
                 canUse = true;
-                int random = (int) Math.floor(Math.random() * 100.0d) + 1;
+                final int random = (int) Math.floor(Math.random() * 100.0d) + 1;
                 if (random <= skillData.get("success") && skillData.get("success") != 0) {
                     success = true;
-                    ISkill skill2 = SkillFactory.getSkill(skillData.get("skillid"));
-                    int curlevel = player.getSkillLevel(skill2);
+                    final ISkill skill2 = SkillFactory.getSkill(skillData.get("skillid"));
+                    final int curlevel = player.getSkillLevel(skill2);
                     if (skillData.get("masterLevel") > player.getMasterLevel(skill2)) {
                         player.changeSkillLevel(skill2, curlevel, skillData.get("masterLevel"));
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);

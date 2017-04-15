@@ -11,7 +11,7 @@ public class ByteBufferOutputstream implements ByteOutputStream {
      * @param bb The <code>org.apache.mina.common.ByteBuffer</code> to wrap
      *            this stream around.
      */
-    public ByteBufferOutputstream(ByteBuffer bb) {
+    public ByteBufferOutputstream(final ByteBuffer bb) {
         super();
         this.bb = bb;
     }
@@ -23,7 +23,7 @@ public class ByteBufferOutputstream implements ByteOutputStream {
      * @see org.apache.mina.common.ByteBuffer#put(byte)
      */
     @Override
-    public void writeByte(byte b) {
+    public void writeByte(final byte b) {
         bb.put(b);
     }
 }

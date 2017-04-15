@@ -36,16 +36,16 @@ public class WorldLoginInterfaceImpl extends UnicastRemoteObject implements Worl
 
     @Override
     public Map<Integer, Integer> getChannelLoad() throws RemoteException {
-        Map<Integer, Integer> ret = new LinkedHashMap<>();
-        for (ChannelWorldInterface cwi : WorldRegistryImpl.getInstance().getAllChannelServers()) {
+        final Map<Integer, Integer> ret = new LinkedHashMap<>();
+        for (final ChannelWorldInterface cwi : WorldRegistryImpl.getInstance().getAllChannelServers()) {
             ret.put(cwi.getChannelId(), cwi.getConnected());
         }
         return ret;
     }
 
     @Override
-    public void deleteGuildCharacter(MapleGuildCharacter mgc) throws RemoteException {
-        WorldRegistryImpl wr = WorldRegistryImpl.getInstance();
+    public void deleteGuildCharacter(final MapleGuildCharacter mgc) throws RemoteException {
+        final WorldRegistryImpl wr = WorldRegistryImpl.getInstance();
         // Ensure it's loaded on world server.
         wr.setGuildMemberOnline(mgc, false, -1);
 

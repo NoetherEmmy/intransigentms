@@ -15,9 +15,9 @@ public class WZIMGFile {
     private final WZIMGEntry root;
     private final boolean provideImages;
 
-    public WZIMGFile(File wzfile, WZFileEntry file, boolean provideImages, boolean modernImg) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(wzfile, "r");
-        SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new RandomAccessByteStream(raf));
+    public WZIMGFile(final File wzfile, final WZFileEntry file, final boolean provideImages, final boolean modernImg) throws IOException {
+        final RandomAccessFile raf = new RandomAccessFile(wzfile, "r");
+        final SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new RandomAccessByteStream(raf));
         slea.seek(file.getOffset());
         this.file = file;
         this.provideImages = provideImages;
@@ -30,9 +30,9 @@ public class WZIMGFile {
         raf.close();
     }
 
-    protected void dumpImg(OutputStream out, SeekableLittleEndianAccessor slea) throws IOException {
-        DataOutputStream os = new DataOutputStream(out);
-        long oldPos = slea.getPosition();
+    protected void dumpImg(final OutputStream out, final SeekableLittleEndianAccessor slea) throws IOException {
+        final DataOutputStream os = new DataOutputStream(out);
+        final long oldPos = slea.getPosition();
         slea.seek(file.getOffset());
         for (int x = 0; x < file.getSize(); ++x) {
             os.write(slea.readByte());
@@ -44,15 +44,15 @@ public class WZIMGFile {
         return root;
     }
 
-    private void parse(WZIMGEntry entry, SeekableLittleEndianAccessor slea) {
+    private void parse(final WZIMGEntry entry, final SeekableLittleEndianAccessor slea) {
         byte marker = slea.readByte();
         switch (marker) {
             case 0: {
-                String name = WZTool.readDecodedString();
+                final String name = WZTool.readDecodedString();
                 entry.setName(name);
                 break;
             } case 1: {
-                String name = WZTool.readDecodedStringAtOffsetAndReset(slea, file.getOffset() + slea.readInt());
+                final String name = WZTool.readDecodedStringAtOffsetAndReset(slea, file.getOffset() + slea.readInt());
                 entry.setName(name);
                 break;
             } default:
@@ -82,7 +82,7 @@ public class WZIMGFile {
                 break;
             case 8:
                 entry.setType(MapleDataType.STRING);
-                byte iMarker = slea.readByte();
+                final byte iMarker = slea.readByte();
                 if (iMarker == 0) {
                     // String pathToData = MapleDataTool.getFullDataPath(entry);
                     entry.setData(WZTool.readDecodedString());
@@ -103,9 +103,9 @@ public class WZIMGFile {
         }
     }
 
-    private void parseExtended(WZIMGEntry entry, SeekableLittleEndianAccessor slea, long endOfExtendedBlock) {
+    private void parseExtended(final WZIMGEntry entry, final SeekableLittleEndianAccessor slea, final long endOfExtendedBlock) {
         byte marker = slea.readByte();
-        String type;
+        final String type;
         switch (marker) {
             case 0x73:
                 type = WZTool.readDecodedString();
@@ -131,9 +131,9 @@ public class WZIMGFile {
                 entry.setType(MapleDataType.PROPERTY);
                 slea.readByte();
                 slea.readByte();
-                int children = WZTool.readValue(slea);
+                final int children = WZTool.readValue(slea);
                 for (int i = 0; i < children; ++i) {
-                    WZIMGEntry cEntry = new WZIMGEntry(entry);
+                    final WZIMGEntry cEntry = new WZIMGEntry(entry);
                     parse(cEntry, slea);
                     cEntry.finish();
                     entry.addChild(cEntry);
@@ -149,9 +149,9 @@ public class WZIMGFile {
                 } else if (marker == 1) {
                     slea.readByte();
                     slea.readByte();
-                    int children = WZTool.readValue(slea);
+                    final int children = WZTool.readValue(slea);
                     for (int i = 0; i < children; ++i) {
-                        WZIMGEntry child = new WZIMGEntry(entry);
+                        final WZIMGEntry child = new WZIMGEntry(entry);
                         parse(child, slea);
                         child.finish();
                         entry.addChild(child);
@@ -159,16 +159,16 @@ public class WZIMGFile {
                 } else {
                     log.warn("Canvas marker != 1 ({})", marker);
                 }
-                int width = WZTool.readValue(slea);
-                int height = WZTool.readValue(slea);
-                int format = WZTool.readValue(slea);
-                int format2 = slea.readByte();
+                final int width = WZTool.readValue(slea);
+                final int height = WZTool.readValue(slea);
+                final int format = WZTool.readValue(slea);
+                final int format2 = slea.readByte();
                 slea.readInt();
-                int dataLength = slea.readInt() - 1;
+                final int dataLength = slea.readInt() - 1;
                 slea.readByte();
 
                 if (provideImages) {
-                    byte[] pngdata = slea.read(dataLength);
+                    final byte[] pngdata = slea.read(dataLength);
                     entry.setData(new PNGMapleCanvas(width, height, dataLength, format + format2, pngdata));
                 } else {
                     entry.setData(new PNGMapleCanvas(width, height, dataLength, format + format2, null));
@@ -178,14 +178,14 @@ public class WZIMGFile {
             }
             case "Shape2D#Vector2D":
                 entry.setType(MapleDataType.VECTOR);
-                int x = WZTool.readValue(slea);
-                int y = WZTool.readValue(slea);
+                final int x = WZTool.readValue(slea);
+                final int y = WZTool.readValue(slea);
                 entry.setData(new Point(x, y));
                 break;
             case "Shape2D#Convex2D": {
-                int children = WZTool.readValue(slea);
+                final int children = WZTool.readValue(slea);
                 for (int i = 0; i < children; ++i) {
-                    WZIMGEntry cEntry = new WZIMGEntry(entry);
+                    final WZIMGEntry cEntry = new WZIMGEntry(entry);
                     parseExtended(cEntry, slea, 0);
                     cEntry.finish();
                     entry.addChild(cEntry);
@@ -195,9 +195,9 @@ public class WZIMGFile {
             case "Sound_DX8": {
                 entry.setType(MapleDataType.SOUND);
                 slea.readByte();
-                int dataLength = WZTool.readValue(slea);
+                final int dataLength = WZTool.readValue(slea);
                 WZTool.readValue(slea);
-                int offset = (int) slea.getPosition();
+                final int offset = (int) slea.getPosition();
                 entry.setData(new ImgMapleSound(dataLength, offset - file.getOffset()));
                 slea.seek(endOfExtendedBlock);
                 break;
@@ -205,7 +205,7 @@ public class WZIMGFile {
             case "UOL":
                 entry.setType(MapleDataType.UOL);
                 slea.readByte();
-                byte uolmarker = slea.readByte();
+                final byte uolmarker = slea.readByte();
                 switch (uolmarker) {
                     case 0:
                         entry.setData(WZTool.readDecodedString());

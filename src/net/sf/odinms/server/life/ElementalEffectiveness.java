@@ -3,7 +3,7 @@ package net.sf.odinms.server.life;
 public enum ElementalEffectiveness {
     NORMAL, IMMUNE, STRONG, WEAK;
 
-    public static ElementalEffectiveness getByNumber(int num) {
+    public static ElementalEffectiveness getByNumber(final int num) {
         switch (num) {
             case 1:
                 return IMMUNE;

@@ -14,14 +14,14 @@ import java.util.List;
     //private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MovePetHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int petId = slea.readInt();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int petId = slea.readInt();
         slea.readInt();
-        Point startPos = StreamUtil.readShortPoint(slea);
-        List<LifeMovementFragment> res = parseMovement(slea);
+        final Point startPos = StreamUtil.readShortPoint(slea);
+        final List<LifeMovementFragment> res = parseMovement(slea);
         if (res.isEmpty()) return;
-        MapleCharacter player = c.getPlayer();
-        int slot = player.getPetIndex(petId);
+        final MapleCharacter player = c.getPlayer();
+        final int slot = player.getPetIndex(petId);
         if (player.inCS() || slot == -1) return;
         player.getPet(slot).updatePosition(res);
         player

@@ -9,12 +9,12 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class HealOvertimeHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter p = c.getPlayer();
         slea.readByte();
         slea.readShort();
         slea.readByte();
-        int healHP = slea.readShort();
+        final int healHP = slea.readShort();
         if (healHP != 0) {
             if (p.isDead()) return;
             if (healHP > 150 && p.getChair() < 1) {
@@ -37,7 +37,7 @@ public class HealOvertimeHandler extends AbstractMaplePacketHandler {
             }
             p.addHP(healHP);
         }
-        int healMP = slea.readShort();
+        final int healMP = slea.readShort();
         if (healMP != 0) {
             if (p.isDead()) return;
             if (healMP > 200 && p.getChair() < 1) {

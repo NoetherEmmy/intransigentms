@@ -9,10 +9,10 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class GeneralchatHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        String text = slea.readMapleAsciiString();
-        int show = slea.readByte();
+        final String text = slea.readMapleAsciiString();
+        final int show = slea.readByte();
         if (
             !CommandProcessor.getInstance().processCommand(c, text) &&
             c.getPlayer().getCanTalk() &&

@@ -11,22 +11,22 @@ import java.util.Random;
 
 public class SpawnPetHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         slea.readInt();
-        byte slot = slea.readByte();
+        final byte slot = slea.readByte();
         slea.readByte();
-        boolean lead = slea.readByte() == 1;
-        MapleCharacter player = c.getPlayer();
-        IItem item = player.getInventory(MapleInventoryType.CASH).getItem(slot);
+        final boolean lead = slea.readByte() == 1;
+        final MapleCharacter player = c.getPlayer();
+        final IItem item = player.getInventory(MapleInventoryType.CASH).getItem(slot);
         if (item.getItemId() == 5000028 || item.getItemId() == 5000047) {
             boolean done = false;
             int petno;
-            int[] pet;
-            int[] dragon = {5000029, 5000030, 5000031, 5000032, 5000033};
-            int[] robot = {5000048, 5000049, 5000050, 5000051, 5000052, 5000053};
+            final int[] pet;
+            final int[] dragon = {5000029, 5000030, 5000031, 5000032, 5000033};
+            final int[] robot = {5000048, 5000049, 5000050, 5000051, 5000052, 5000053};
             pet = item.getItemId() == 5000028 ? dragon : robot;
-            Random egg = new Random();
+            final Random egg = new Random();
             for (int i = 0; i < pet.length && !done; ++i) {
                 petno = egg.nextInt(pet.length);
                 if (!player.haveItem(pet[petno], 1, true, true)) {
@@ -47,7 +47,7 @@ public class SpawnPetHandler extends AbstractMaplePacketHandler {
                 return;
             }
         }
-        MaplePet pet =
+        final MaplePet pet =
             MaplePet.loadFromDb(
                 player.getInventory(MapleInventoryType.CASH).getItem(slot).getItemId(),
                 slot,
@@ -74,20 +74,20 @@ public class SpawnPetHandler extends AbstractMaplePacketHandler {
             if (lead) {
                 player.shiftPetsRight();
             }
-            Point pos = player.getPosition();
+            final Point pos = player.getPosition();
             pos.y -= 12;
             pet.setPos(pos);
             pet.setFh(player.getMap().getFootholds().findBelow(pet.getPos()).getId());
             pet.setStance(0);
             player.addPet(pet);
             player.getMap().broadcastMessage(player, MaplePacketCreator.showPet(player, pet, false), true);
-            int uniqueid = pet.getUniqueId();
+            final int uniqueid = pet.getUniqueId();
 
             //List<Pair<MapleStat, Integer>> stats = new ArrayList<>();
             //stats.add(new Pair<>(MapleStat.PET, uniqueid));
             c.getSession().write(MaplePacketCreator.petStatUpdate(player));
             c.getSession().write(MaplePacketCreator.enableActions());
-            int hunger = PetDataFactory.getHunger(pet.getItemId());
+            final int hunger = PetDataFactory.getHunger(pet.getItemId());
             player.startFullnessSchedule(hunger, pet, player.getPetIndex(pet));
         }
     }

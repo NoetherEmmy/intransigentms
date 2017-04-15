@@ -20,14 +20,14 @@ public class PetDataFactory {
     private static final Map<Pair<Integer, Integer>, PetCommand> petCommands = new HashMap<>();
     private static final Map<Integer, Integer> petHunger = new HashMap<>();
 
-    public static PetCommand getPetCommand(int petId, int skillId) {
+    public static PetCommand getPetCommand(final int petId, final int skillId) {
         PetCommand ret = petCommands.get(new Pair<>(petId, skillId));
         if (ret != null) return ret;
         synchronized (petCommands) {
             // Check if someone else that's also synchronized has loaded the skill by now.
             ret = petCommands.get(new Pair<>(petId, skillId));
             if (ret == null) {
-                MapleData skillData = dataRoot.getData("Pet/" + petId + ".img");
+                final MapleData skillData = dataRoot.getData("Pet/" + petId + ".img");
                 int prob = 0, inc = 0;
                 if (skillData != null) {
                     prob = MapleDataTool.getInt("interact/" + skillId + "/prob", skillData, 0);
@@ -40,13 +40,13 @@ public class PetDataFactory {
         }
     }
 
-    public static int getHunger(int petId) {
+    public static int getHunger(final int petId) {
         Integer ret = petHunger.get(petId);
         if (ret != null) return ret;
         synchronized (petHunger) {
             ret = petHunger.get(petId);
             if (ret == null) {
-                MapleData hungerData = dataRoot.getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
+                final MapleData hungerData = dataRoot.getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
                 ret = MapleDataTool.getInt(hungerData, 1);
                 petHunger.put(petId, ret);
             }

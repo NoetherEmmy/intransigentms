@@ -13,37 +13,37 @@ public class AutoRegister {
     public static final boolean autoRegister = true;
     public static boolean success;
 
-    public static boolean getAccountExists(String login) {
+    public static boolean getAccountExists(final String login) {
         boolean accountExists = false;
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT name FROM accounts WHERE name = ?");
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement ps = con.prepareStatement("SELECT name FROM accounts WHERE name = ?");
             ps.setString(1, login);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.first()) {
                 accountExists = true;
             }
             rs.close();
             ps.close();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             log.warn("Error acquiring the account of (" + login + "), check AutoRegister.");
         }
         return accountExists;
     }
 
-    public static void createAccount(String login, String pwd, String eip) {
+    public static void createAccount(final String login, final String pwd, final String eip) {
         try {
-            PreparedStatement ipq =
+            final PreparedStatement ipq =
                 DatabaseConnection
                     .getConnection()
                     .prepareStatement(
                         "SELECT lastknownip FROM accounts WHERE lastknownip = ?"
                     );
             ipq.setString(1, eip.substring(1, eip.lastIndexOf(':')));
-            ResultSet rs = ipq.executeQuery();
+            final ResultSet rs = ipq.executeQuery();
             if (!rs.first() || rs.last() && rs.getRow() < 5) {
                 try {
-                    PreparedStatement ps =
+                    final PreparedStatement ps =
                         DatabaseConnection
                             .getConnection()
                             .prepareStatement(
@@ -60,7 +60,7 @@ public class AutoRegister {
                     ps.executeUpdate();
                     ps.close();
                     success = true;
-                } catch (Exception ex) {
+                } catch (final Exception ex) {
                     log.warn("Error creating the account of (" + login + " | " + pwd + " | " + eip + ").");
                     ipq.close();
                     rs.close();
@@ -69,7 +69,7 @@ public class AutoRegister {
             }
             ipq.close();
             rs.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

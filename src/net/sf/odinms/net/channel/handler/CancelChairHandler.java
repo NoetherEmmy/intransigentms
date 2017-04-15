@@ -10,9 +10,9 @@ public class CancelChairHandler extends AbstractMaplePacketHandler {
     public CancelChairHandler() {
     }
 
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int id = slea.readShort();
+        final int id = slea.readShort();
         if (id == -1) { // Cancel Chair
             c.getPlayer().setChair(0);
             c.getSession().write(MaplePacketCreator.cancelChair());
@@ -27,7 +27,7 @@ public class CancelChairHandler extends AbstractMaplePacketHandler {
                  false
              );
             if (c.getPlayer().hasFakeChar()) {
-                for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
+                for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
                     ch.getFakeChar().setChair(0);
                     ch.getFakeChar()
                       .getMap()
@@ -45,7 +45,7 @@ public class CancelChairHandler extends AbstractMaplePacketHandler {
             c.getPlayer().setChair(id);
             c.getSession().write(MaplePacketCreator.cancelChair(id));
             if (c.getPlayer().hasFakeChar()) {
-                for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
+                for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
                     ch.getFakeChar().setChair(id);
                 }
             }

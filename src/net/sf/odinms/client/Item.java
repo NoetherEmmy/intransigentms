@@ -7,7 +7,7 @@ public class Item implements IItem {
     private final int petid;
     private String owner = "";
 
-    public Item(int id, byte position, short quantity) {
+    public Item(final int id, final byte position, final short quantity) {
         super();
         this.id = id;
         this.position = position;
@@ -15,7 +15,7 @@ public class Item implements IItem {
         this.petid = -1;
     }
 
-    public Item(int id, byte position, short quantity, int petid) {
+    public Item(final int id, final byte position, final short quantity, final int petid) {
         super();
         this.id = id;
         this.position = position;
@@ -24,16 +24,16 @@ public class Item implements IItem {
     }
 
     public IItem copy() {
-        Item ret = new Item(id, position, quantity, petid);
+        final Item ret = new Item(id, position, quantity, petid);
         ret.owner = owner;
         return ret;
     }
 
-    public void setPosition(byte position) {
+    public void setPosition(final byte position) {
         this.position = position;
     }
 
-    public void setQuantity(short quantity) {
+    public void setQuantity(final short quantity) {
         this.quantity = quantity;
     }
 
@@ -62,7 +62,7 @@ public class Item implements IItem {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(final String owner) {
         this.owner = owner;
     }
 
@@ -72,7 +72,7 @@ public class Item implements IItem {
     }
 
     @Override
-    public int compareTo(IItem other) {
+    public int compareTo(final IItem other) {
         if (Math.abs(position) < Math.abs(other.getPosition())) {
             return -1;
         } else if (Math.abs(position) == Math.abs(other.getPosition())) {

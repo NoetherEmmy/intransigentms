@@ -19,7 +19,7 @@ public class Pair<E, F> implements Serializable {
      * @param left The left object.
      * @param right The right object.
      */
-    public Pair(E left, F right) {
+    public Pair(final E left, final F right) {
         this.left = left;
         this.right = right;
     }
@@ -69,7 +69,7 @@ public class Pair<E, F> implements Serializable {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;

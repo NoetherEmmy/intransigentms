@@ -17,7 +17,7 @@ public class InputStreamByteStream implements ByteInputStream {
      *
      * @param is The input stream to wrap this object around.
      */
-    public InputStreamByteStream(InputStream is) {
+    public InputStreamByteStream(final InputStream is) {
         this.is = is;
     }
 
@@ -28,14 +28,14 @@ public class InputStreamByteStream implements ByteInputStream {
      */
     @Override
     public int readByte() {
-        int temp;
+        final int temp;
         try {
             temp = is.read();
             if (temp == -1)
                 throw new RuntimeException("EOF");
             read++;
             return temp;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -59,7 +59,7 @@ public class InputStreamByteStream implements ByteInputStream {
     public long available() {
         try {
             return is.available();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("ERROR", e);
             return 0;
         }

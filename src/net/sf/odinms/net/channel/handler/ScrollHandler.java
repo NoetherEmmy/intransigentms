@@ -14,12 +14,12 @@ import java.util.List;
 public class ScrollHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(ScrollHandler.class);
 
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         slea.readInt();
-        byte slot = (byte) slea.readShort();
-        byte dst = (byte) slea.readShort();
-        byte ws = (byte) slea.readShort();
+        final byte slot = (byte) slea.readShort();
+        final byte dst = (byte) slea.readShort();
+        final byte ws = (byte) slea.readShort();
         boolean whiteScroll = false;
         boolean legendarySpirit = false;
         if ((ws & 2) == 2) whiteScroll = true;
@@ -33,7 +33,7 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;
         }
-        byte oldLevel = toScroll.getLevel();
+        final byte oldLevel = toScroll.getLevel();
 
         final MapleInventory useInventory = c.getPlayer().getInventory(MapleInventoryType.USE);
         final IItem scroll = useInventory.getItem(slot);

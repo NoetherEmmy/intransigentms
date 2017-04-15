@@ -7,17 +7,17 @@ public class ServernoticeMapleClientMessageCallback implements MessageCallback {
     private final MapleClient client;
     private final int mode;
 
-    public ServernoticeMapleClientMessageCallback(MapleClient client) {
+    public ServernoticeMapleClientMessageCallback(final MapleClient client) {
         this(6, client);
     }
 
-    public ServernoticeMapleClientMessageCallback(int mode, MapleClient client) {
+    public ServernoticeMapleClientMessageCallback(final int mode, final MapleClient client) {
         this.client = client;
         this.mode = mode;
     }
 
     @Override
-    public void dropMessage(String message) {
+    public void dropMessage(final String message) {
         client.getSession().write(MaplePacketCreator.serverNotice(mode, message));
     }
 }

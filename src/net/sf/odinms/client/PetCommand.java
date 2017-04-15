@@ -3,7 +3,7 @@ package net.sf.odinms.client;
 public class PetCommand {
     private final int petId, skillId, prob, inc;
 
-    public PetCommand(int petId, int skillId, int prob, int inc) {
+    public PetCommand(final int petId, final int skillId, final int prob, final int inc) {
         this.petId = petId;
         this.skillId = skillId;
         this.prob = prob;

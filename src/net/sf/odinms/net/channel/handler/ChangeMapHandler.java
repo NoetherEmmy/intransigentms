@@ -15,7 +15,7 @@ import java.net.InetAddress;
 
 public class ChangeMapHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         player.setLastKillOnMap(0L);
         player.setLastDamageSource(null);
@@ -25,9 +25,9 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
             player.dropMessage("@bosshp display has been stopped.");
         }
         if (slea.available() == 0) {
-            int channel = c.getChannel();
-            String ip = ChannelServer.getInstance(c.getChannel()).getIP(channel);
-            String[] socket = ip.split(":");
+            final int channel = c.getChannel();
+            final String ip = ChannelServer.getInstance(c.getChannel()).getIP(channel);
+            final String[] socket = ip.split(":");
             if (player.inCS() || player.inMTS()) {
                 player.saveToDB(true, true);
                 player.setInCS(false);
@@ -38,17 +38,17 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
             ChannelServer.getInstance(c.getChannel()).removePlayer(player);
             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
             try {
-                MaplePacket packet = MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]));
+                final MaplePacket packet = MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]));
                 c.getSession().write(packet);
                 c.getSession().close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
             slea.readByte();
-            int targetid = slea.readInt();
-            String startwp = slea.readMapleAsciiString();
-            MaplePortal portal = player.getMap().getPortal(startwp);
+            final int targetid = slea.readInt();
+            final String startwp = slea.readMapleAsciiString();
+            final MaplePortal portal = player.getMap().getPortal(startwp);
             if (player.getBuffedValue(MapleBuffStat.MORPH) != null && player.getBuffedValue(MapleBuffStat.COMBO) != null) {
                 player.cancelEffectFromBuffStat(MapleBuffStat.MORPH);
                 player.cancelEffectFromBuffStat(MapleBuffStat.COMBO);
@@ -73,8 +73,8 @@ public class ChangeMapHandler extends AbstractMaplePacketHandler {
                 */
                 player.permadeath();
             } else if (targetid != -1 && player.isGM()) {
-                MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
-                MaplePortal pto = to.getPortal(0);
+                final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
+                final MaplePortal pto = to.getPortal(0);
                 player.changeMap(to, pto);
             } else if (targetid != -1 && !player.isGM()) {
                 System.err.println("Player " + player.getName() + " attempted map jumping without being a GM.");

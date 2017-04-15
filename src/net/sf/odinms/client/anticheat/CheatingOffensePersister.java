@@ -20,7 +20,7 @@ public class CheatingOffensePersister {
         return INSTANCE;
     }
 
-    public void persistEntry(CheatingOffenseEntry coe) {
+    public void persistEntry(final CheatingOffenseEntry coe) {
         synchronized (toPersist) {
             toPersist.remove(coe);
             toPersist.add(coe);
@@ -30,24 +30,24 @@ public class CheatingOffensePersister {
     public class PersistingTask implements Runnable {
         @Override
         public void run() {
-            CheatingOffenseEntry[] offenses;
+            final CheatingOffenseEntry[] offenses;
             synchronized (toPersist) {
                 offenses = toPersist.toArray(new CheatingOffenseEntry[toPersist.size()]);
                 toPersist.clear();
             }
 
-            Connection con = DatabaseConnection.getConnection();
+            final Connection con = DatabaseConnection.getConnection();
             try {
-                PreparedStatement insertps =
+                final PreparedStatement insertps =
                     con.prepareStatement(
                         "INSERT INTO cheatlog (cid, offense, count, lastoffensetime, param) VALUES (?, ?, ?, ?, ?)"
                     );
-                PreparedStatement updateps =
+                final PreparedStatement updateps =
                     con.prepareStatement(
                         "UPDATE cheatlog SET count = ?, lastoffensetime = ?, param = ? WHERE id = ?"
                     );
-                for (CheatingOffenseEntry offense : offenses) {
-                    String parm = offense.getParam() == null ? "" : offense.getParam();
+                for (final CheatingOffenseEntry offense : offenses) {
+                    final String parm = offense.getParam() == null ? "" : offense.getParam();
                     if (offense.getDbId() == -1) {
                         insertps.setInt(1, offense.getChrfor().getId());
                         insertps.setString(2, offense.getOffense().name());
@@ -55,7 +55,7 @@ public class CheatingOffensePersister {
                         insertps.setTimestamp(4, new Timestamp(offense.getLastOffenseTime()));
                         insertps.setString(5, parm);
                         insertps.executeUpdate();
-                        ResultSet rs = insertps.getGeneratedKeys();
+                        final ResultSet rs = insertps.getGeneratedKeys();
                         if (rs.next()) {
                             offense.setDbId(rs.getInt(1));
                         }
@@ -70,7 +70,7 @@ public class CheatingOffensePersister {
                 }
                 insertps.close();
                 updateps.close();
-            } catch (SQLException sqle) {
+            } catch (final SQLException sqle) {
                 sqle.printStackTrace();
             }
         }

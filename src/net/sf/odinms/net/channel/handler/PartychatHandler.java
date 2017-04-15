@@ -13,17 +13,17 @@ public class PartychatHandler extends AbstractMaplePacketHandler {
     // private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PartychatHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int type = slea.readByte(); // 0 for buddys, 1 for partys
-        int numRecipients = slea.readByte();
-        int[] recipients = new int[numRecipients];
+        final int type = slea.readByte(); // 0 for buddys, 1 for partys
+        final int numRecipients = slea.readByte();
+        final int[] recipients = new int[numRecipients];
         for (int i = 0; i < numRecipients; ++i) {
             recipients[i] = slea.readInt();
         }
-        String chattext = slea.readMapleAsciiString();
+        final String chattext = slea.readMapleAsciiString();
         if (!CommandProcessor.getInstance().processCommand(c, chattext)) {
-            MapleCharacter player = c.getPlayer();
+            final MapleCharacter player = c.getPlayer();
             try {
                 if (type == 0) {
                     c.getChannelServer().getWorldInterface().buddyChat(recipients, player.getId(), player.getName(), chattext);
@@ -32,12 +32,12 @@ public class PartychatHandler extends AbstractMaplePacketHandler {
                 } else if (type == 2 && player.getGuildId() > 0) {
                     c.getChannelServer().getWorldInterface().guildChat(c.getPlayer().getGuildId(), c.getPlayer().getName(), c.getPlayer().getId(), chattext);
                 } else if (type == 3 && player.getGuild() != null) {
-                    int allianceId = player.getGuild().getAllianceId();
+                    final int allianceId = player.getGuild().getAllianceId();
                     if (allianceId > 0) {
                         c.getChannelServer().getWorldInterface().allianceMessage(allianceId, MaplePacketCreator.multiChat(player.getName(), chattext, 3), player.getId(), -1);
                     }
                 }
-            } catch (RemoteException re) {
+            } catch (final RemoteException re) {
                 c.getChannelServer().reconnectWorld();
             }
         }

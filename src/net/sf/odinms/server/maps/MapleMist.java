@@ -15,7 +15,7 @@ public class MapleMist extends AbstractMapleMapObject {
     private final MapleCharacter owner;
     private final MapleStatEffect source;
 
-    public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source) {
+    public MapleMist(final Rectangle mistPosition, final MapleCharacter owner, final MapleStatEffect source) {
         this.mistPosition = mistPosition;
         this.owner = owner;
         this.source = source;
@@ -44,7 +44,7 @@ public class MapleMist extends AbstractMapleMapObject {
     }
 
     @Override
-    public void setPosition(Point position) {
+    public void setPosition(final Point position) {
         throw new UnsupportedOperationException("MapleMist cannot be moved. ");
     }
 
@@ -53,21 +53,21 @@ public class MapleMist extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         client.getSession().write(makeDestroyData());
     }
 
     public MaplePacket makeSpawnData() {
-        int level = owner.getSkillLevel(SkillFactory.getSkill(source.getSourceId()));
+        final int level = owner.getSkillLevel(SkillFactory.getSkill(source.getSourceId()));
         return MaplePacketCreator.spawnMist(getObjectId(), owner.getId(), source.getSourceId(), mistPosition, level);
     }
 
-    public MaplePacket makeFakeSpawnData(int level) {
+    public MaplePacket makeFakeSpawnData(final int level) {
         return MaplePacketCreator.spawnMist(getObjectId(), owner.getId(), source.getSourceId(), mistPosition, level);
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         client.getSession().write(makeSpawnData());
     }
 

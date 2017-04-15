@@ -42,11 +42,11 @@ public enum CheatingOffense {
         return validityDuration;
     }
 
-    public boolean shouldAutoban(int count) {
+    public boolean shouldAutoban(final int count) {
         return autobancount != -1 && count > autobancount;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -58,19 +58,19 @@ public enum CheatingOffense {
         this(1);
     }
 
-    CheatingOffense(int points) {
+    CheatingOffense(final int points) {
         this(points, 60000);
     }
 
-    CheatingOffense(int points, long validityDuration) {
+    CheatingOffense(final int points, final long validityDuration) {
         this(points, validityDuration, -1);
     }
 
-    CheatingOffense(int points, long validityDuration, int autobancount) {
+    CheatingOffense(final int points, final long validityDuration, final int autobancount) {
         this(points, validityDuration, autobancount, true);
     }
 
-    CheatingOffense(int points, long validityDuration, int autobancount, boolean enabled) {
+    CheatingOffense(final int points, final long validityDuration, final int autobancount, final boolean enabled) {
         this.points = points;
         this.validityDuration = validityDuration;
         this.autobancount = autobancount;

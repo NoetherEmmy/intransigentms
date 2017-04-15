@@ -24,21 +24,21 @@ public class CashItemFactory {
             StringUtil.getLeftPaddedStr("Commodity.img", '0', 11)
         );
 
-    public static CashItemInfo getItem(int sn) {
+    public static CashItemInfo getItem(final int sn) {
         if (itemStats.containsKey(sn)) return itemStats.get(sn);
         CashItemInfo stats = itemStats.get(sn);
         if (stats == null) {
-            int cid = getCommodityFromSN(sn);
-            int itemId = MapleDataTool.getIntConvert(cid + "/ItemId", commodities);
-            int count = MapleDataTool.getIntConvert(cid + "/Count", commodities, 1);
-            int price = MapleDataTool.getIntConvert(cid + "/Price", commodities, 0);
+            final int cid = getCommodityFromSN(sn);
+            final int itemId = MapleDataTool.getIntConvert(cid + "/ItemId", commodities);
+            final int count = MapleDataTool.getIntConvert(cid + "/Count", commodities, 1);
+            final int price = MapleDataTool.getIntConvert(cid + "/Price", commodities, 0);
             stats = new CashItemInfo(itemId, count, price);
             itemStats.put(sn, stats);
         }
         return stats;
     }
 
-    private static int getCommodityFromSN(int sn) {
+    private static int getCommodityFromSN(final int sn) {
         if (snLookup.containsKey(sn)) return snLookup.get(sn);
         int curr = snLookup.size() - 1;
         int currSN = 0;
@@ -55,17 +55,17 @@ public class CashItemFactory {
         return curr;
     }
 
-    public static List<Integer> getPackageItems(int itemId) {
-        List<Integer> packageItems = new ArrayList<>();
-        MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File("wz/Etc.wz"));
-        MapleData a = dataProvider.getData("CashPackage.img");
+    public static List<Integer> getPackageItems(final int itemId) {
+        final List<Integer> packageItems = new ArrayList<>();
+        final MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File("wz/Etc.wz"));
+        final MapleData a = dataProvider.getData("CashPackage.img");
         if (packageItems.contains(itemId)) return packageItems;
-        for (MapleData b : a.getChildren()) {
+        for (final MapleData b : a.getChildren()) {
             if (itemId == Integer.parseInt(b.getName())) {
-                for (MapleData c : b.getChildren()) {
-                    for (MapleData d : c.getChildren()) {
-                        int sn = MapleDataTool.getIntConvert("" + Integer.parseInt(d.getName()), c);
-                        CashItemInfo item = getItem(sn);
+                for (final MapleData c : b.getChildren()) {
+                    for (final MapleData d : c.getChildren()) {
+                        final int sn = MapleDataTool.getIntConvert("" + Integer.parseInt(d.getName()), c);
+                        final CashItemInfo item = getItem(sn);
                         packageItems.add(item.getId());
                     }
                 }

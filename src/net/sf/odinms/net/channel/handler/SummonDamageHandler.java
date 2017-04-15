@@ -27,7 +27,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
         private final int monsterOid;
         private final int damage;
 
-        public SummonAttackEntry(int monsterOid, int damage) {
+        public SummonAttackEntry(final int monsterOid, final int damage) {
             super();
             this.monsterOid = monsterOid;
             this.damage = damage;
@@ -43,13 +43,13 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final int oid = slea.readInt();
         final MapleCharacter player = c.getPlayer();
 
         MapleSummon summon = null;
         synchronized (player.getSummons()) {
-            for (MapleSummon sum : player.getSummons().values()) {
+            for (final MapleSummon sum : player.getSummons().values()) {
                 if (sum != null && sum.getObjectId() == oid) {
                     summon = sum;
                 }
@@ -62,17 +62,17 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             return;
         }
 
-        ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
-        MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
+        final ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
+        final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
         slea.skip(5);
-        int numAttacked = slea.readByte();
+        final int numAttacked = slea.readByte();
         player.getCheatTracker().checkSummonAttack();
 
         List<SummonAttackEntry> allDamage = new ArrayList<>(numAttacked);
         for (int x = 0; x < numAttacked; ++x) {
-            int monsterOid = slea.readInt(); // Attacked oid.
+            final int monsterOid = slea.readInt(); // Attacked oid.
             slea.skip(14);
-            int damage = slea.readInt();
+            final int damage = slea.readInt();
             allDamage.add(new SummonAttackEntry(monsterOid, damage));
         }
 
@@ -83,7 +83,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (player.getMap().isDamageMuted()) {
-            for (SummonAttackEntry attackEntry : allDamage) {
+            for (final SummonAttackEntry attackEntry : allDamage) {
                 c.getSession().write(
                     MaplePacketCreator.damageMonster(
                         attackEntry.getMonsterOid(),
@@ -100,12 +100,12 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
         }
 
         final List<SummonAttackEntry> additionalDmg = new ArrayList<>(numAttacked);
-        for (SummonAttackEntry attackEntry : allDamage) {
+        for (final SummonAttackEntry attackEntry : allDamage) {
             additionalDmg.add(new SummonAttackEntry(attackEntry.getMonsterOid(), 0));
         }
 
         if (summonSkill.getId() == 2311006 || summonSkill.getId() == 2321003) { // Summon Dragon | Bahamut
-            double percentPerLevel;
+            final double percentPerLevel;
             if (summonSkill.getId() == 2311006) {
                 percentPerLevel = 0.05d;
             } else {
@@ -113,14 +113,14 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             }
             final int min = player.calculateMinBaseDamage();
             final int max = player.calculateMaxBaseDamage();
-            double skillLevelMultiplier = 1.5d + player.getSkillLevel(summonSkill) * percentPerLevel;
+            final double skillLevelMultiplier = 1.5d + player.getSkillLevel(summonSkill) * percentPerLevel;
             for (int i = 0; i < allDamage.size(); ++i) {
                 if (allDamage.get(i).getDamage() < 1) continue;
                 final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
                 if (target == null || target.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) continue;
-                int baseDmg = min + (int) (Math.random() * (double) (max - min + 1));
+                final int baseDmg = min + (int) (Math.random() * (double) (max - min + 1));
                 int thisDmg = allDamage.get(i).getDamage();
-                int addedDmg = (int) (baseDmg * skillLevelMultiplier);
+                final int addedDmg = (int) (baseDmg * skillLevelMultiplier);
                 thisDmg += addedDmg;
                 additionalDmg.set(
                     i,
@@ -132,18 +132,18 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 allDamage.set(i, new SummonAttackEntry(allDamage.get(i).getMonsterOid(), thisDmg));
             }
         } else if (summonSkill.getId() == 3111005 || summonSkill.getId() == 3121006) { // Silver Hawk | Phoenix
-            int str = player.getTotalStr();
-            int dex = player.getTotalDex();
-            int pad = summonEffect.getWatk();
-            double mastery = summonSkill.getId() == 3111005 ? 0.6d : 0.8d;
-            double counterWeight = summonSkill.getId() == 3111005 ? 4.0d : 12.0d;
-            int min = (int) ((str * Math.log(str) * mastery + dex) * pad / counterWeight);
-            int max = (int) ((str * Math.log(str) + dex) * pad / counterWeight);
+            final int str = player.getTotalStr();
+            final int dex = player.getTotalDex();
+            final int pad = summonEffect.getWatk();
+            final double mastery = summonSkill.getId() == 3111005 ? 0.6d : 0.8d;
+            final double counterWeight = summonSkill.getId() == 3111005 ? 4.0d : 12.0d;
+            final int min = (int) ((str * Math.log(str) * mastery + dex) * pad / counterWeight);
+            final int max = (int) ((str * Math.log(str) + dex) * pad / counterWeight);
             for (int i = 0; i < allDamage.size(); ++i) {
                 if (allDamage.get(i).getDamage() < 1) continue;
                 final MapleMonster target = player.getMap().getMonsterByOid(allDamage.get(i).getMonsterOid());
                 if (target == null || target.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) continue;
-                int addedDmg = min + (int) (Math.random() * (double) (max - min + 1));
+                final int addedDmg = min + (int) (Math.random() * (double) (max - min + 1));
                 int thisDmg = allDamage.get(i).getDamage();
                 thisDmg += addedDmg;
                 additionalDmg.set(
@@ -156,8 +156,8 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 allDamage.set(i, new SummonAttackEntry(allDamage.get(i).getMonsterOid(), thisDmg));
                 if (allDamage.get(i).getDamage() > 0) {
                     if (summonSkill.getId() == 3111005) {
-                        int x = (int) Math.ceil(2.0d * Math.sqrt(Math.max(0, player.getTotalStr() - 400)) / 100.0d);
-                        MonsterStatusEffect monsterStatusEffect =
+                        final int x = (int) Math.ceil(2.0d * Math.sqrt(Math.max(0, player.getTotalStr() - 400)) / 100.0d);
+                        final MonsterStatusEffect monsterStatusEffect =
                             new MonsterStatusEffect(
                                 Collections.singletonMap(
                                     MonsterStatus.ACC,
@@ -173,7 +173,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                             2L * 1000L
                         );
                     } else if (player.getStr() >= 512) {
-                        long seconds = (long) Math.ceil((double) player.getSkillLevel(3121006) / 3.0d);
+                        final long seconds = (long) Math.ceil((double) player.getSkillLevel(3121006) / 3.0d);
                         target.applyFlame(player, SkillFactory.getSkill(3121006), seconds * 1000L, false);
                     }
                 }
@@ -212,8 +212,8 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             }
 
             if (multiplier != 1.0d) {
-                int newDmg = (int) (attackEntry.getDamage() * multiplier);
-                int addedDmg = newDmg - attackEntry.getDamage();
+                final int newDmg = (int) (attackEntry.getDamage() * multiplier);
+                final int addedDmg = newDmg - attackEntry.getDamage();
                 additionalDmg.set(
                     i,
                     new SummonAttackEntry(
@@ -225,7 +225,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 allDamage.set(i, attackEntry);
             }
 
-            int damage = attackEntry.getDamage();
+            final int damage = attackEntry.getDamage();
             if (damage >= 100000000) {
                 AutobanManager
                     .getInstance()
@@ -242,7 +242,7 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
 
             if (damage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
                 if (summonEffect.makeChanceResult()) {
-                    MonsterStatusEffect monsterStatusEffect =
+                    final MonsterStatusEffect monsterStatusEffect =
                         new MonsterStatusEffect(
                             summonEffect.getMonsterStati(),
                             summonSkill,

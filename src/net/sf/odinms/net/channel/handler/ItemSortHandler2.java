@@ -16,15 +16,15 @@ import java.util.stream.Collectors;
 
 public class ItemSortHandler2 extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         slea.readInt();
-        byte mode = slea.readByte();
+        final byte mode = slea.readByte();
 
         final MapleInventoryType invType = MapleInventoryType.getByType(mode);
-        MapleInventory inv = c.getPlayer().getInventory(invType);
+        final MapleInventory inv = c.getPlayer().getInventory(invType);
 
-        List<IItem> itemStatMap =
+        final List<IItem> itemStatMap =
             inv.list()
                .stream()
                .filter(i -> i.getPetId() == -1)

@@ -15,7 +15,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class UseSummonBag extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         c.getPlayer().dropMessage(1, "Summoning bags may not be used.");
         /*

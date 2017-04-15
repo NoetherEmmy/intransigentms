@@ -10,8 +10,8 @@ public class FakeCharacter {
     private final MapleCharacter ch, owner;
     private boolean follow = true;
 
-    public FakeCharacter(MapleCharacter player, int id) {
-        MapleCharacter clone = new MapleCharacter();
+    public FakeCharacter(final MapleCharacter player, final int id) {
+        final MapleCharacter clone = new MapleCharacter();
         clone.setFake();
         clone.setHair(player.getHair());
         clone.setFace(player.getFace());
@@ -23,10 +23,10 @@ public class FakeCharacter {
         clone.setMap(player.getMap());
         clone.setPosition(player.getPosition());
         clone.silentGiveBuffs(player.getAllBuffs());
-        for (IItem equip : player.getInventory(MapleInventoryType.EQUIPPED)) {
+        for (final IItem equip : player.getInventory(MapleInventoryType.EQUIPPED)) {
             clone.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
         }
-        for (IItem equip : player.getInventory(MapleInventoryType.EQUIP)) {
+        for (final IItem equip : player.getInventory(MapleInventoryType.EQUIP)) {
             clone.getInventory(MapleInventoryType.EQUIP).addFromDB(equip);
         }
         player.getMap().addBotPlayer(clone);
@@ -43,7 +43,7 @@ public class FakeCharacter {
         return follow;
     }
 
-    public void setFollow(boolean set) {
+    public void setFollow(final boolean set) {
         follow = set;
     }
 

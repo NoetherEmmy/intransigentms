@@ -18,7 +18,7 @@ public class MapleParty implements Serializable {
     private MapleParty challenger;
     private int points;
 
-    public MapleParty(int id, MaplePartyCharacter chrfor) {
+    public MapleParty(final int id, final MaplePartyCharacter chrfor) {
         leader = chrfor;
         members.add(leader);
         this.id = id;
@@ -48,55 +48,55 @@ public class MapleParty implements Serializable {
         return points;
     }
 
-    public void setCapture(boolean c) {
+    public void setCapture(final boolean c) {
         capture = c;
     }
 
-    public void setWaiting(boolean w) {
+    public void setWaiting(final boolean w) {
         waiting = w;
     }
 
-    public void setChallenging(boolean c) {
+    public void setChallenging(final boolean c) {
         challenging = c;
     }
 
-    public void setChallenged(boolean c) {
+    public void setChallenged(final boolean c) {
         challenged = c;
     }
 
-    public void setChallenger(MapleParty c) {
+    public void setChallenger(final MapleParty c) {
         challenger = c;
     }
 
-    public void setPoints(int p) {
+    public void setPoints(final int p) {
         points = p;
     }
 
-    public boolean containsMembers(MaplePartyCharacter member) {
+    public boolean containsMembers(final MaplePartyCharacter member) {
         return members.contains(member);
     }
 
-    public void setLeader(MaplePartyCharacter victim) {
+    public void setLeader(final MaplePartyCharacter victim) {
         leader = victim;
     }
 
-    public void addMember(MaplePartyCharacter member) {
+    public void addMember(final MaplePartyCharacter member) {
         members.add(member);
     }
 
-    public void removeMember(MaplePartyCharacter member) {
+    public void removeMember(final MaplePartyCharacter member) {
         members.remove(member);
     }
 
-    public void updateMember(MaplePartyCharacter member) {
+    public void updateMember(final MaplePartyCharacter member) {
         for (int i = 0; i < members.size(); ++i) {
-            MaplePartyCharacter chr = members.get(i);
+            final MaplePartyCharacter chr = members.get(i);
             if (chr.equals(member)) members.set(i, member);
         }
     }
 
-    public MaplePartyCharacter getMemberById(int id) {
-        for (MaplePartyCharacter chr : members) {
+    public MaplePartyCharacter getMemberById(final int id) {
+        for (final MaplePartyCharacter chr : members) {
             if (chr.getId() == id) return chr;
         }
         return null;
@@ -110,7 +110,7 @@ public class MapleParty implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -126,15 +126,15 @@ public class MapleParty implements Serializable {
         return totalCP;
     }
 
-    public void setCP(int cp) {
+    public void setCP(final int cp) {
         CP = cp;
     }
 
-    public void setTeam(int team) {
+    public void setTeam(final int team) {
         this.team = team;
     }
 
-    public void setTotalCP(int totalcp) {
+    public void setTotalCP(final int totalcp) {
         totalCP = totalcp;
     }
 
@@ -151,7 +151,7 @@ public class MapleParty implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;

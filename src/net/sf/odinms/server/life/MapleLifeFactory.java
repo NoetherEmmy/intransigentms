@@ -28,7 +28,7 @@ public final class MapleLifeFactory {
     private static final MapleData npcStringData = stringDataWZ.getData("Npc.img");
     private static final Map<Integer, MapleMonsterStats> monsterStats = new LinkedHashMap<>();
 
-    public static AbstractLoadedMapleLife getLife(int id, String type) {
+    public static AbstractLoadedMapleLife getLife(final int id, final String type) {
         if (type.equalsIgnoreCase("n")) {
             return getNPC(id);
         } else if (type.equalsIgnoreCase("m")) {
@@ -39,13 +39,13 @@ public final class MapleLifeFactory {
         }
     }
 
-    public static MapleMonster getMonster(int mid) {
-        MapleMonsterStats stats;
+    public static MapleMonster getMonster(final int mid) {
+        final MapleMonsterStats stats;
         if (monsterStats.containsKey(mid)) {
             stats = monsterStats.get(mid);
         } else {
             try {
-                MapleData monsterData =
+                final MapleData monsterData =
                     data.getData(
                         StringUtil.getLeftPaddedStr(
                             Integer.toString(mid) + ".img",
@@ -57,7 +57,7 @@ public final class MapleLifeFactory {
                     monsterStats.put(mid, null);
                     return null;
                 }
-                MapleData monsterInfoData = monsterData.getChildByPath("info");
+                final MapleData monsterInfoData = monsterData.getChildByPath("info");
                 stats = new MapleMonsterStats();
                 stats.setHp(MapleDataTool.getIntConvert("maxHP", monsterInfoData));
                 stats.setMp(MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0));
@@ -73,7 +73,7 @@ public final class MapleLifeFactory {
                 //
                 try {
                     stats.setName(MapleDataTool.getString(mid + "/name", mobStringData, "MISSINGNO"));
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     stats.setName("MISSINGNO");
                     System.err.println(e + "   !ID!:  " + mid);
                 }
@@ -82,7 +82,7 @@ public final class MapleLifeFactory {
                 stats.setExplosive(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
                 stats.setAccuracy(MapleDataTool.getIntConvert("acc", monsterInfoData, 0));
                 stats.setAvoid(MapleDataTool.getIntConvert("eva", monsterInfoData, 0));
-                MapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
+                final MapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
                 int firstAttack = 0;
                 if (firstAttackData != null) {
                     if (firstAttackData.getType() == MapleDataType.FLOAT) {
@@ -93,8 +93,8 @@ public final class MapleLifeFactory {
                 }
                 stats.setFirstAttack(firstAttack > 0);
                 if (stats.isBoss() || mid == 8810018) {
-                    MapleData hpTagColor = monsterInfoData.getChildByPath("hpTagColor");
-                    MapleData hpTagBgColor = monsterInfoData.getChildByPath("hpTagBgcolor");
+                    final MapleData hpTagColor = monsterInfoData.getChildByPath("hpTagColor");
+                    final MapleData hpTagBgColor = monsterInfoData.getChildByPath("hpTagBgcolor");
                     if (hpTagBgColor == null || hpTagColor == null) {
                         log.trace(
                             "Monster " +
@@ -110,20 +110,22 @@ public final class MapleLifeFactory {
                         stats.setTagBgColor(MapleDataTool.getIntConvert("hpTagBgcolor", monsterInfoData));
                     }
                 }
-                for (MapleData idata : monsterData) {
+                for (final MapleData idata : monsterData) {
                     if (!idata.getName().equals("info")) {
-                        int delay = 0;
-                        for (MapleData pic : idata.getChildren()) {
-                            delay += MapleDataTool.getIntConvert("delay", pic, 0);
-                        }
+                        final int delay =
+                            idata
+                                .getChildren()
+                                .stream()
+                                .mapToInt(pic -> MapleDataTool.getIntConvert("delay", pic, 0))
+                                .sum();
                         stats.setAnimationTime(idata.getName(), delay);
                     }
                 }
 
-                MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
+                final MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
                 if (reviveInfo != null) {
-                    List<Integer> revives = new ArrayList<>();
-                    for (MapleData data_ : reviveInfo) {
+                    final List<Integer> revives = new ArrayList<>();
+                    for (final MapleData data_ : reviveInfo) {
                         revives.add(MapleDataTool.getInt(data_));
                     }
                     stats.setRevives(revives);
@@ -131,7 +133,7 @@ public final class MapleLifeFactory {
 
                 decodeElementalString(stats, MapleDataTool.getString("elemAttr", monsterInfoData, ""));
 
-                MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
+                final MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
                 if (monsterSkillData != null) {
                     int i = 0;
                     final List<Pair<Integer, Integer>> skills = new ArrayList<>();
@@ -146,7 +148,7 @@ public final class MapleLifeFactory {
                     }
                     stats.setSkills(skills, mid);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
                 monsterStats.put(mid, null);
                 return null;
@@ -157,10 +159,10 @@ public final class MapleLifeFactory {
         return stats == null ? null : new MapleMonster(mid, stats);
     }
 
-    public static void decodeElementalString (MapleMonsterStats stats, String elemAttr) {
+    public static void decodeElementalString (final MapleMonsterStats stats, final String elemAttr) {
         for (int i = 0; i < elemAttr.length(); i += 2) {
-            Element e = Element.getFromChar(elemAttr.charAt(i));
-            ElementalEffectiveness ee =
+            final Element e = Element.getFromChar(elemAttr.charAt(i));
+            final ElementalEffectiveness ee =
                 ElementalEffectiveness.getByNumber(
                     Integer.valueOf(
                         String.valueOf(
@@ -172,7 +174,7 @@ public final class MapleLifeFactory {
         }
     }
 
-    public static MapleNPC getNPC(int nid) {
+    public static MapleNPC getNPC(final int nid) {
         return new MapleNPC(
             nid,
             new MapleNPCStats(

@@ -9,14 +9,14 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ItemMoveHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         slea.readInt();
-        MapleInventoryType type = MapleInventoryType.getByType(slea.readByte());
-        byte src = (byte) slea.readShort();
-        byte dst = (byte) slea.readShort();
-        long checkq = slea.readShort();
-        short quantity = (short) (int) checkq;
+        final MapleInventoryType type = MapleInventoryType.getByType(slea.readByte());
+        final byte src = (byte) slea.readShort();
+        final byte dst = (byte) slea.readShort();
+        final long checkq = slea.readShort();
+        final short quantity = (short) (int) checkq;
         if (src < 0 && dst > 0) {
             MapleInventoryManipulator.unequip(c, src, dst);
         } else if (dst < 0) {

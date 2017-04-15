@@ -12,7 +12,7 @@ public class UseCatchItemHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         // 4A 00
         // B9 F4 8B 00 // unknown
@@ -21,9 +21,9 @@ public class UseCatchItemHandler extends AbstractMaplePacketHandler {
         // 38 37 2B 00 // monsterid
         slea.readInt();
         slea.readShort();
-        int itemid = slea.readInt();
-        int monsterid = slea.readInt();
-        MapleMonster mob = c.getPlayer().getMap().getMonsterByOid(monsterid);
+        final int itemid = slea.readInt();
+        final int monsterid = slea.readInt();
+        final MapleMonster mob = c.getPlayer().getMap().getMonsterByOid(monsterid);
         if (mob != null) {
             if (mob.getHp() <= mob.getMaxHp() / 2) {
                 if (itemid == 2270002) {

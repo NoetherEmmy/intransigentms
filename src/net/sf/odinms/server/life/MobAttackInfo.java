@@ -3,12 +3,12 @@ package net.sf.odinms.server.life;
 public class MobAttackInfo {
     private int mpBurn, diseaseSkill, diseaseLevel, mpCon;
 
-    public MobAttackInfo(int mobId, int attackId) {
+    public MobAttackInfo(final int mobId, final int attackId) {
     }
 
     public void setDeadlyAttack() {
         //this.isDeadlyAttack = isDeadlyAttack;
-        boolean isDeadlyAttack1 = false;
+        final boolean isDeadlyAttack1 = false;
     }
 
     public boolean isDeadlyAttack() {
@@ -16,7 +16,7 @@ public class MobAttackInfo {
         return false;
     }
 
-    public void setMpBurn(int mpBurn) {
+    public void setMpBurn(final int mpBurn) {
         this.mpBurn = mpBurn;
     }
 
@@ -24,7 +24,7 @@ public class MobAttackInfo {
         return mpBurn;
     }
 
-    public void setDiseaseSkill(int diseaseSkill) {
+    public void setDiseaseSkill(final int diseaseSkill) {
         this.diseaseSkill = diseaseSkill;
     }
 
@@ -32,7 +32,7 @@ public class MobAttackInfo {
         return diseaseSkill;
     }
 
-    public void setDiseaseLevel(int diseaseLevel) {
+    public void setDiseaseLevel(final int diseaseLevel) {
         this.diseaseLevel = diseaseLevel;
     }
 
@@ -40,7 +40,7 @@ public class MobAttackInfo {
         return diseaseLevel;
     }
 
-    public void setMpCon(int mpCon) {
+    public void setMpCon(final int mpCon) {
         this.mpCon = mpCon;
     }
 

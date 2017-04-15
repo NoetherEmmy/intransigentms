@@ -17,7 +17,7 @@ public class EventScriptManager extends AbstractScriptManager {
         public final Invocable iv;
         public final EventManager em;
 
-        public EventEntry(String script, Invocable iv, EventManager em) {
+        public EventEntry(final String script, final Invocable iv, final EventManager em) {
             this.script = script;
             this.iv = iv;
             this.em = em;
@@ -26,17 +26,17 @@ public class EventScriptManager extends AbstractScriptManager {
 
     private final Map<String, EventEntry> events = new LinkedHashMap<>();
 
-    public EventScriptManager(ChannelServer cserv, String[] scripts) {
+    public EventScriptManager(final ChannelServer cserv, final String[] scripts) {
         super();
         for (final String script : scripts) {
             if (!script.equals("")) {
-                Invocable iv = getInvocable("event/" + script + ".js", null);
+                final Invocable iv = getInvocable("event/" + script + ".js", null);
                 events.put(script, new EventEntry(script, iv, new EventManager(cserv, iv, script)));
             }
         }
     }
 
-    public EventManager getEventManager(String event) {
+    public EventManager getEventManager(final String event) {
         final EventEntry entry = events.get(event);
         if (entry == null) return null;
         return entry.em;

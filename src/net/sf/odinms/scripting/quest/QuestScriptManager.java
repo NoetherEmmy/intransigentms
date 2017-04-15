@@ -16,82 +16,82 @@ public class QuestScriptManager extends AbstractScriptManager {
         return instance;
     }
 
-    public void start(MapleClient c, int npc, int quest) {
+    public void start(final MapleClient c, final int npc, final int quest) {
         try {
-            QuestActionManager qm = new QuestActionManager(c, npc, quest, true);
+            final QuestActionManager qm = new QuestActionManager(c, npc, quest, true);
             if (qms.containsKey(c)) return;
             qms.put(c, qm);
-            Invocable iv = getInvocable("quest/" + quest + ".js", c);
+            final Invocable iv = getInvocable("quest/" + quest + ".js", c);
             if (iv == null) {
                 qm.dispose();
                 return;
             }
             engine.put("qm", qm);
-            QuestScript qs = iv.getInterface(QuestScript.class);
+            final QuestScript qs = iv.getInterface(QuestScript.class);
             scripts.put(c, qs);
             qs.start((byte) 1, (byte) 0, 0);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error executing quest script. (" + quest + ")", e);
             dispose(c);
         }
     }
 
-    public void start(MapleClient c, byte mode, byte type, int selection) {
-        QuestScript qs = scripts.get(c);
+    public void start(final MapleClient c, final byte mode, final byte type, final int selection) {
+        final QuestScript qs = scripts.get(c);
         if (qs != null) {
             try {
                 qs.start(mode, type, selection);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("Error executing quest script. (" + c.getQM().getQuest() + ")", e);
                 dispose(c);
             }
         }
     }
 
-    public void end(MapleClient c, int npc, int quest) {
+    public void end(final MapleClient c, final int npc, final int quest) {
         try {
-            QuestActionManager qm = new QuestActionManager(c, npc, quest, false);
+            final QuestActionManager qm = new QuestActionManager(c, npc, quest, false);
             if (qms.containsKey(c)) return;
             qms.put(c, qm);
-            Invocable iv = getInvocable("quest/" + quest + ".js", c);
+            final Invocable iv = getInvocable("quest/" + quest + ".js", c);
             if (iv == null) {
                 qm.dispose();
                 return;
             }
             engine.put("qm", qm);
-            QuestScript qs = iv.getInterface(QuestScript.class);
+            final QuestScript qs = iv.getInterface(QuestScript.class);
             scripts.put(c, qs);
             qs.end((byte) 1, (byte) 0, 0);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error executing quest script. (" + quest + ")", e);
             dispose(c);
         }
     }
 
-    public void end(MapleClient c, byte mode, byte type, int selection) {
-        QuestScript qs = scripts.get(c);
+    public void end(final MapleClient c, final byte mode, final byte type, final int selection) {
+        final QuestScript qs = scripts.get(c);
         if (qs != null) {
             try {
                 qs.end(mode, type, selection);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("Error executing quest script. (" + c.getQM().getQuest() + ")", e);
                 dispose(c);
             }
         }
     }
 
-    public void dispose(QuestActionManager qm, MapleClient c) {
+    public void dispose(final QuestActionManager qm, final MapleClient c) {
         qms.remove(c);
         scripts.remove(c);
         resetContext("quest/" + qm.getQuest() + ".js", c);
     }
 
-    public void dispose(MapleClient c) {
-        QuestActionManager qm = qms.get(c);
+    public void dispose(final MapleClient c) {
+        final QuestActionManager qm = qms.get(c);
         if (qm != null) dispose(qm, c);
     }
 
-    public QuestActionManager getQM(MapleClient c) {
+    public QuestActionManager getQM(final MapleClient c) {
         return qms.get(c);
     }
 

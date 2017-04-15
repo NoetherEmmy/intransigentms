@@ -9,7 +9,7 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
         private final ISkill skill;
         private final MapleClient c;
 
-        SP(MapleClient c, ISkill skill) {
+        SP(final MapleClient c, final ISkill skill) {
             this.skill = skill;
             this.c = c;
         }
@@ -23,9 +23,9 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private synchronized void addSP(SP sp) {
-        ISkill skill = sp.getSkill();
-        MapleCharacter player = sp.getClient().getPlayer();
+    private synchronized void addSP(final SP sp) {
+        final ISkill skill = sp.getSkill();
+        final MapleCharacter player = sp.getClient().getPlayer();
         int remainingSp = player.getRemainingSp();
 
         switch (skill.getId()) {
@@ -38,17 +38,17 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
             case 1000:
             case 1001:
             case 1002:
-                int snailsLevel = player.getSkillLevel(1000);
-                int recoveryLevel = player.getSkillLevel(1001);
-                int nimbleFeetLevel = player.getSkillLevel(1002);
+                final int snailsLevel = player.getSkillLevel(1000);
+                final int recoveryLevel = player.getSkillLevel(1001);
+                final int nimbleFeetLevel = player.getSkillLevel(1002);
                 remainingSp = Math.min(player.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
         }
 
-        int maxlevel =
+        final int maxlevel =
             skill.isFourthJob() ?
                 Math.min(player.getMasterLevel(skill), skill.getMaxLevel()) :
                 skill.getMaxLevel();
-        int curLevel = player.getSkillLevel(skill);
+        final int curLevel = player.getSkillLevel(skill);
         if (remainingSp > 0 && curLevel + 1 <= maxlevel && player.canLearnSkill(skill)) {
             if (!skill.isBeginnerSkill()) {
                 player.setRemainingSp(player.getRemainingSp() - 1);
@@ -63,9 +63,9 @@ public class DistributeSPHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         slea.readInt();
-        SP sp = new SP(c, SkillFactory.getSkill(slea.readInt()));
+        final SP sp = new SP(c, SkillFactory.getSkill(slea.readInt()));
         addSP(sp);
     }
 }

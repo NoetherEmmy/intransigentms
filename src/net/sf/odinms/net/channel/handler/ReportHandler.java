@@ -24,12 +24,12 @@ public class ReportHandler extends AbstractMaplePacketHandler {
     };
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int reportedCharId = slea.readInt();
-        byte reason = slea.readByte();
+        final int reportedCharId = slea.readInt();
+        final byte reason = slea.readByte();
         String chatlog = "No chatlog";
-        short clogLen = slea.readShort();
+        final short clogLen = slea.readShort();
         if (clogLen > 0) {
             chatlog = slea.readAsciiString(clogLen);
         }
@@ -41,7 +41,7 @@ public class ReportHandler extends AbstractMaplePacketHandler {
             c.getSession().write(MaplePacketCreator.reportReply((byte) 4));
         }
         try {
-            WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
+            final WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
             wci.broadcastGMMessage(
                 null,
                 MaplePacketCreator.serverNotice(
@@ -54,15 +54,15 @@ public class ReportHandler extends AbstractMaplePacketHandler {
                         "."
                 ).getBytes()
             );
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             c.getChannelServer().reconnectWorld();
         }
     }
 
-    private boolean addReportEntry(int reporterId, int victimId, byte reason, String chatlog) {
+    private boolean addReportEntry(final int reporterId, final int victimId, final byte reason, final String chatlog) {
         try {
-            Connection dcon = DatabaseConnection.getConnection();
-            PreparedStatement ps;
+            final Connection dcon = DatabaseConnection.getConnection();
+            final PreparedStatement ps;
             ps = dcon.prepareStatement(
                 "INSERT INTO reports VALUES (NULL, CURRENT_TIMESTAMP, ?, ?, ?, ?, 'UNHANDLED')"
             );
@@ -72,7 +72,7 @@ public class ReportHandler extends AbstractMaplePacketHandler {
             ps.setString(4, chatlog);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             return false;
         }
         return true;

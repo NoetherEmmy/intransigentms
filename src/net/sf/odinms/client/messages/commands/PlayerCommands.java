@@ -37,10 +37,11 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 public class PlayerCommands implements Command {
     @Override
-    public void execute(MapleClient c, final MessageCallback mc, String[] splitted) throws Exception {
+    public void execute(final MapleClient c, final MessageCallback mc, final String... splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
         final MapleCharacter player = c.getPlayer();
         if (splitted[0].equals("@command") || splitted[0].equals("@commands") || splitted[0].equals("@help")) {
@@ -138,7 +139,7 @@ public class PlayerCommands implements Command {
                             ")"
                     );
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 mc.dropMessage("@mapfix failed: " + e);
                 e.printStackTrace();
             }
@@ -153,7 +154,7 @@ public class PlayerCommands implements Command {
                 );
                 boolean onAQuest = false;
                 byte currSlot = (byte) 1;
-                for (CQuest cQuest : player.getCQuests()) {
+                for (final CQuest cQuest : player.getCQuests()) {
                     if (cQuest != null && cQuest.getQuest().getId() != 0) {
                         mc.dropMessage("    " + currSlot + ". " + cQuest.getQuest().getTitle());
                         onAQuest = true;
@@ -221,10 +222,10 @@ public class PlayerCommands implements Command {
                     mc.dropMessage("You don't have any quests currently underway.");
                 }
             } else {
-                byte questSlot;
+                final byte questSlot;
                 try {
                     questSlot = Byte.parseByte(splitted[1]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     mc.dropMessage("Invalid syntax. Use: @questinfo | @questinfo all | @questinfo <quest_slot>");
                     return;
                 }
@@ -232,7 +233,7 @@ public class PlayerCommands implements Command {
                     mc.dropMessage("You don't have that slot.");
                     return;
                 }
-                CQuest cQuest = player.getCQuest(questSlot);
+                final CQuest cQuest = player.getCQuest(questSlot);
                 if (cQuest == null || cQuest.getQuest().getId() == 0) {
                     mc.dropMessage("You don't currently have an active quest in that slot.");
                     return;
@@ -284,7 +285,7 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@togglesmega")) {
             player.setSmegaEnabled(!player.getSmegaEnabled());
-            String text =
+            final String text =
                 !player.getSmegaEnabled() ?
                     "[Disable] Smegas are now disabled." :
                     "[Enable] Smegas are now enabled.";
@@ -300,15 +301,15 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("stat: <STR> <DEX> <INT> <LUK>");
                 return;
             }
-            int x;
+            final int x;
             try {
                 x = Integer.parseInt(splitted[1]);
-            } catch (NumberFormatException nfe) {
+            } catch (final NumberFormatException nfe) {
                 mc.dropMessage("Syntax: @<stat> <amount>");
                 mc.dropMessage("stat: <STR> <DEX> <INT> <LUK>");
                 return;
             }
-            int max = 30000;
+            final int max = 30000;
             if (x > 0 && x <= player.getRemainingAp() && x < max) {
                 if (splitted[0].equals("@str") && x + player.getStr() < max) {
                     player.addAP(c, 1, x);
@@ -345,19 +346,19 @@ public class PlayerCommands implements Command {
                              StringUtil.joinStringFrom(splitted, 1)
                      ).getBytes()
                  );
-            } catch (RemoteException ex) {
+            } catch (final RemoteException ex) {
                 c.getChannelServer().reconnectWorld();
             }
             mc.dropMessage("Message sent.");
             //player.dropMessage(1, "Please don't flood GMs with your messages.");
         } else if (splitted[0].equals("@afk")) {
             if (splitted.length >= 2) {
-                String name = splitted[1];
+                final String name = splitted[1];
                 MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
                 if (victim == null) {
                     try {
-                        WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
-                        int channel = wci.find(name);
+                        final WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
+                        final int channel = wci.find(name);
                         if (channel == -1) {
                             mc.dropMessage("This player is not currently online.");
                             return;
@@ -367,7 +368,7 @@ public class PlayerCommands implements Command {
                             mc.dropMessage("This player is not currently online.");
                             return;
                         }
-                    } catch (RemoteException re) {
+                    } catch (final RemoteException re) {
                         c.getChannelServer().reconnectWorld();
                         return;
                     }
@@ -376,11 +377,11 @@ public class PlayerCommands implements Command {
                     mc.dropMessage("This player is not currently online.");
                     return;
                 }
-                long blahblah = System.currentTimeMillis() - victim.getAfkTime();
+                final long blahblah = System.currentTimeMillis() - victim.getAfkTime();
                 if (Math.floor(blahblah / 60000) == 0) { // Less than a minute
                     mc.dropMessage("This player has not been AFK in the last minute.");
                 } else {
-                    StringBuilder sb = new StringBuilder();
+                    final StringBuilder sb = new StringBuilder();
                     sb.append(victim.getName());
                     sb.append(" has been AFK for");
                     compareTime(sb, blahblah);
@@ -391,12 +392,12 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@onlinetime")) {
             if (splitted.length >= 2) {
-                String name = splitted[1];
+                final String name = splitted[1];
                 MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
                 if (victim == null) {
                     try {
-                        WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
-                        int channel = wci.find(name);
+                        final WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
+                        final int channel = wci.find(name);
                         if (channel == -1) {
                             mc.dropMessage("This player is not online.");
                             return;
@@ -406,13 +407,13 @@ public class PlayerCommands implements Command {
                             mc.dropMessage("This player is not online.");
                             return;
                         }
-                    } catch (RemoteException re) {
+                    } catch (final RemoteException re) {
                         c.getChannelServer().reconnectWorld();
                         return;
                     }
                 }
-                long blahblah = System.currentTimeMillis() - victim.getLastLogin();
-                StringBuilder sb = new StringBuilder();
+                final long blahblah = System.currentTimeMillis() - victim.getLastLogin();
+                final StringBuilder sb = new StringBuilder();
                 sb.append(victim.getName());
                 sb.append(" has been online for");
                 compareTime(sb, blahblah);
@@ -422,10 +423,10 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@monstertrialtime")) {
             if (System.currentTimeMillis() - player.getLastTrialTime() < 2L * 60L * 60L * 1000L) {
-                long timesincelast = System.currentTimeMillis() - player.getLastTrialTime();
+                final long timesincelast = System.currentTimeMillis() - player.getLastTrialTime();
                 double inminutes = timesincelast / 60000.0d;
                 inminutes = Math.floor(inminutes);
-                int cooldown = 120 - (int) inminutes;
+                final int cooldown = 120 - (int) inminutes;
                 mc.dropMessage(
                     "You must wait " +
                         cooldown +
@@ -435,14 +436,14 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("You may enter the Monster Trials.");
             }
         } else if (splitted[0].equals("@mapleadmin")) {
-            NPCScriptManager npc = NPCScriptManager.getInstance();
+            final NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9010000);
         } else if (splitted[0].equals("@monsterlevels")) {
-            List<Integer> monsterids = new ArrayList<>(4);
+            final List<Integer> monsterids = new ArrayList<>(4);
             double rx;
             int absxp = player.getAbsoluteXp();
             absxp *= c.getChannelServer().getExpRate();
-            for (MapleMonster monster : player.getMap().getAllMonsters()) {
+            for (final MapleMonster monster : player.getMap().getAllMonsters()) {
                 if (!monsterids.contains(monster.getId())) {
                     monsterids.add(monster.getId());
                     rx = player.getRelativeXp(monster.getLevel());
@@ -467,24 +468,24 @@ public class PlayerCommands implements Command {
             );
         } else if (splitted[0].equalsIgnoreCase("@whodrops")) {
             if (splitted.length < 2) {
-                NPCScriptManager npc = NPCScriptManager.getInstance();
+                final NPCScriptManager npc = NPCScriptManager.getInstance();
                 npc.start(c, 9201094);
             } else {
                 try {
-                    int searchId = Integer.parseInt(splitted[1]);
-                    Set<String> retMobs = new LinkedHashSet<>();
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    final int searchId = Integer.parseInt(splitted[1]);
+                    final Set<String> retMobs = new LinkedHashSet<>();
+                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     mc.dropMessage(ii.getName(searchId) + " (" + searchId + ") is dropped by the following mobs:");
-                    Connection con = DatabaseConnection.getConnection();
-                    PreparedStatement ps =
+                    final Connection con = DatabaseConnection.getConnection();
+                    final PreparedStatement ps =
                         con.prepareStatement(
                             "SELECT monsterid FROM monsterdrops WHERE itemid = ?"
                         );
                     ps.setInt(1, searchId);
-                    ResultSet rs = ps.executeQuery();
+                    final ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
-                        int mobId = rs.getInt("monsterid");
-                        MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                        final int mobId = rs.getInt("monsterid");
+                        final MapleMonster mob = MapleLifeFactory.getMonster(mobId);
                         if (mob != null) {
                             retMobs.add(mob.getName());
                         }
@@ -492,17 +493,17 @@ public class PlayerCommands implements Command {
                     rs.close();
                     ps.close();
                     if (!retMobs.isEmpty()) {
-                        for (String singleRetMob : retMobs) {
+                        for (final String singleRetMob : retMobs) {
                             mc.dropMessage(singleRetMob);
                         }
                     } else {
                         mc.dropMessage("No mobs drop this item.");
                     }
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     System.err.print("@whodrops failed: " + sqle);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     try {
-                        StringBuilder searchstring = new StringBuilder();
+                        final StringBuilder searchstring = new StringBuilder();
                         for (int i = 1; i < splitted.length; ++i) {
                             if (i == 1) {
                                 searchstring.append(splitted[i]);
@@ -516,11 +517,11 @@ public class PlayerCommands implements Command {
                             );
                             return;
                         }
-                        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                        String searchstring_ = searchstring.toString();
-                        Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchstring_);
-                        Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchstring_);
-                        Pair<Integer, String> etccandidate = ii.getEtcByName(searchstring_);
+                        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                        final String searchstring_ = searchstring.toString();
+                        final Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchstring_);
+                        final Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchstring_);
+                        final Pair<Integer, String> etccandidate = ii.getEtcByName(searchstring_);
                         Pair<Integer, String> candidate = consumecandidate;
                         if (etccandidate != null && (candidate == null || etccandidate.getRight().length() < candidate.getRight().length())) {
                             candidate = etccandidate;
@@ -530,25 +531,25 @@ public class PlayerCommands implements Command {
                         }
 
                         try {
-                            int searchid;
+                            final int searchid;
                             if (candidate != null) {
                                 searchid = candidate.getLeft();
                             } else {
                                 mc.dropMessage("No item could be found with the search string provided.");
                                 return;
                             }
-                            Set<String> retMobs = new LinkedHashSet<>();
+                            final Set<String> retMobs = new LinkedHashSet<>();
                             mc.dropMessage(candidate.getRight() + " is dropped by the following mobs:");
-                            Connection con = DatabaseConnection.getConnection();
-                            PreparedStatement ps =
+                            final Connection con = DatabaseConnection.getConnection();
+                            final PreparedStatement ps =
                                 con.prepareStatement(
                                     "SELECT monsterid FROM monsterdrops WHERE itemid = ?"
                                 );
                             ps.setInt(1, searchid);
-                            ResultSet rs = ps.executeQuery();
+                            final ResultSet rs = ps.executeQuery();
                             while (rs.next()) {
-                                int mobId = rs.getInt("monsterid");
-                                MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                                final int mobId = rs.getInt("monsterid");
+                                final MapleMonster mob = MapleLifeFactory.getMonster(mobId);
                                 if (mob != null) {
                                     retMobs.add(mob.getName());
                                 }
@@ -556,16 +557,16 @@ public class PlayerCommands implements Command {
                             rs.close();
                             ps.close();
                             if (!retMobs.isEmpty()) {
-                                for (String singleRetMob : retMobs) {
+                                for (final String singleRetMob : retMobs) {
                                     mc.dropMessage(singleRetMob);
                                 }
                             } else {
                                 mc.dropMessage("No mobs drop this item.");
                             }
-                        } catch (SQLException sqle) {
+                        } catch (final SQLException sqle) {
                             System.err.print("@whodrops failed: " + sqle);
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -621,16 +622,16 @@ public class PlayerCommands implements Command {
                     } else {
                         mc.dropMessage(mob.getName() + " (" + searchId + ") drops the following items:");
                     }
-                    Connection con = DatabaseConnection.getConnection();
-                    PreparedStatement ps =
+                    final Connection con = DatabaseConnection.getConnection();
+                    final PreparedStatement ps =
                         con.prepareStatement(
                             "SELECT itemid FROM monsterdrops WHERE monsterid = ?"
                         );
                     ps.setInt(1, searchId);
-                    ResultSet rs = ps.executeQuery();
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    final ResultSet rs = ps.executeQuery();
+                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     while (rs.next()) {
-                        int itemId = rs.getInt("itemid");
+                        final int itemId = rs.getInt("itemid");
                         if (itemType == null || itemType == ii.getInventoryType(itemId)) {
                             retItems.add(ii.getName(itemId));
                         }
@@ -638,11 +639,11 @@ public class PlayerCommands implements Command {
                     rs.close();
                     ps.close();
                     if (!retItems.isEmpty()) {
-                        StringBuilder retItemString_ = new StringBuilder();
-                        for (String singleRetItem : retItems) {
+                        final StringBuilder retItemString_ = new StringBuilder();
+                        for (final String singleRetItem : retItems) {
                             retItemString_.append(singleRetItem).append(", ");
                         }
-                        String retItemString = retItemString_.toString();
+                        final String retItemString = retItemString_.toString();
                         mc.dropMessage(retItemString.substring(0, retItemString.length() - 2));
                     } else {
                         if (itemTypeString != null) {
@@ -651,9 +652,9 @@ public class PlayerCommands implements Command {
                             mc.dropMessage("This mob does not drop any items.");
                         }
                     }
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     System.err.print("@monsterdrops failed: " + sqle);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     try {
                         int searchId = 0;
                         StringBuilder searchString = null;
@@ -691,12 +692,12 @@ public class PlayerCommands implements Command {
                             return;
                         }
                         searchString = new StringBuilder(searchString.toString().toUpperCase());
-                        Set<String> retItems = new LinkedHashSet<>();
+                        final Set<String> retItems = new LinkedHashSet<>();
                         String bestMatch = null;
-                        Set<Map.Entry<Integer, MapleMonsterStats>> monsterStats =
+                        final Set<Map.Entry<Integer, MapleMonsterStats>> monsterStats =
                             MapleLifeFactory.readMonsterStats().entrySet();
-                        for (Map.Entry<Integer, MapleMonsterStats> ms : monsterStats) {
-                            String name = ms.getValue().getName();
+                        for (final Map.Entry<Integer, MapleMonsterStats> ms : monsterStats) {
+                            final String name = ms.getValue().getName();
                             if (name.toUpperCase().startsWith(searchString.toString())) {
                                 if (bestMatch == null || name.length() < bestMatch.length()) {
                                     bestMatch = name;
@@ -718,16 +719,16 @@ public class PlayerCommands implements Command {
                             );
                             return;
                         }
-                        Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps =
+                        final Connection con = DatabaseConnection.getConnection();
+                        final PreparedStatement ps =
                             con.prepareStatement(
                                 "SELECT itemid FROM monsterdrops WHERE monsterid = ?"
                             );
                         ps.setInt(1, searchId);
-                        ResultSet rs = ps.executeQuery();
-                        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                        final ResultSet rs = ps.executeQuery();
+                        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                         while (rs.next()) {
-                            int itemId = rs.getInt("itemid");
+                            final int itemId = rs.getInt("itemid");
                             if (itemType == null || itemType == ii.getInventoryType(itemId)) {
                                 retItems.add(ii.getName(itemId));
                             }
@@ -735,11 +736,11 @@ public class PlayerCommands implements Command {
                         rs.close();
                         ps.close();
                         if (!retItems.isEmpty()) {
-                            StringBuilder retItemString_ = new StringBuilder();
-                            for (String singleRetItem : retItems) {
+                            final StringBuilder retItemString_ = new StringBuilder();
+                            for (final String singleRetItem : retItems) {
                                 retItemString_.append(singleRetItem).append(", ");
                             }
-                            String retItemString = retItemString_.toString();
+                            final String retItemString = retItemString_.toString();
                             mc.dropMessage(retItemString.substring(0, retItemString.length() - 2));
                         } else {
                             if (itemTypeString != null) {
@@ -748,7 +749,7 @@ public class PlayerCommands implements Command {
                                 mc.dropMessage("This mob does not drop any items.");
                             }
                         }
-                    } catch (SQLException sqle) {
+                    } catch (final SQLException sqle) {
                         System.err.print("@monsterdrops failed: " + sqle);
                     }
                 }
@@ -756,13 +757,13 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@gmlevel")) {
             if (splitted.length == 2) {
                 try {
-                    int gmlevel = Integer.parseInt(splitted[1]);
+                    final int gmlevel = Integer.parseInt(splitted[1]);
                     if (gmlevel >= 0) {
                         int accountgmlevel = 0;
-                        Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement("SELECT gm FROM accounts WHERE id = ?");
+                        final Connection con = DatabaseConnection.getConnection();
+                        final PreparedStatement ps = con.prepareStatement("SELECT gm FROM accounts WHERE id = ?");
                         ps.setInt(1, player.getAccountID());
-                        ResultSet rs = ps.executeQuery();
+                        final ResultSet rs = ps.executeQuery();
                         while (rs.next()) {
                             accountgmlevel = rs.getInt("gm");
                         }
@@ -773,15 +774,15 @@ public class PlayerCommands implements Command {
                             mc.dropMessage("GM level successfully changed to " + gmlevel + ".");
                         }
                     }
-                } catch (NumberFormatException ignored) {
+                } catch (final NumberFormatException ignored) {
                 }
             }
         } else if (splitted[0].equals("@online")) {
-            for (ChannelServer cs : ChannelServer.getAllInstances()) {
+            for (final ChannelServer cs : ChannelServer.getAllInstances()) {
                 if (cs.getPlayerStorage().getAllCharacters().stream().anyMatch(p -> !p.isGM())) {
                     StringBuilder sb = new StringBuilder();
                     mc.dropMessage("Channel " + cs.getChannel());
-                    for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
+                    for (final MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
                         if (!chr.isGM()) {
                             if (sb.length() + chr.getName().length() > 75) { // Chars per line. Could be more or less
                                 mc.dropMessage(sb.toString());
@@ -794,9 +795,10 @@ public class PlayerCommands implements Command {
                 }
             }
         } else if (splitted[0].equals("@monstersinrange")) {
-            int upperrange, lowerrange;
+            int upperrange;
+            final int lowerrange;
             boolean sortbylevel = false;
-            String incorrectsyntax =
+            final String incorrectsyntax =
                 "Invalid syntax. Use: @monstersinrange [lower_range] [upper_range] " +
                     "['level'|'xphpratio']";
             switch (splitted.length) {
@@ -808,7 +810,7 @@ public class PlayerCommands implements Command {
                 case 2:
                     try {
                         upperrange = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         if (splitted[1].equalsIgnoreCase("level")) {
                             sortbylevel = true;
                         } else if (splitted[1].equalsIgnoreCase("xphpratio")) {
@@ -826,7 +828,7 @@ public class PlayerCommands implements Command {
                         sortbylevel = true;
                         try {
                             upperrange = Integer.parseInt(splitted[1]);
-                        } catch (NumberFormatException nfe) {
+                        } catch (final NumberFormatException nfe) {
                             mc.dropMessage(incorrectsyntax);
                             return;
                         }
@@ -835,7 +837,7 @@ public class PlayerCommands implements Command {
                         sortbylevel = false;
                         try {
                             upperrange = Integer.parseInt(splitted[1]);
-                        } catch (NumberFormatException nfe) {
+                        } catch (final NumberFormatException nfe) {
                             mc.dropMessage(incorrectsyntax);
                             return;
                         }
@@ -844,7 +846,7 @@ public class PlayerCommands implements Command {
                         try {
                             upperrange = Integer.parseInt(splitted[2]);
                             lowerrange = Integer.parseInt(splitted[1]);
-                        } catch (NumberFormatException nfe) {
+                        } catch (final NumberFormatException nfe) {
                             mc.dropMessage(incorrectsyntax);
                             return;
                         }
@@ -854,7 +856,7 @@ public class PlayerCommands implements Command {
                     try {
                         upperrange = Integer.parseInt(splitted[2]);
                         lowerrange = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage(incorrectsyntax);
                         return;
                     }
@@ -872,26 +874,26 @@ public class PlayerCommands implements Command {
                     return;
             }
             if (upperrange >= 0 && upperrange <= 30 && lowerrange >= 0 && lowerrange <= 30) {
-                int max = player.getLevel() + upperrange;
-                int min = player.getLevel() - lowerrange;
-                MapleData data;
-                MapleDataProvider dataProvider =
+                final int max = player.getLevel() + upperrange;
+                final int min = player.getLevel() - lowerrange;
+                final MapleData data;
+                final MapleDataProvider dataProvider =
                     MapleDataProviderFactory.getDataProvider(
                         new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
                     );
                 data = dataProvider.getData("Mob.img");
-                List<MapleMonster> mobList = new ArrayList<>();
+                final List<MapleMonster> mobList = new ArrayList<>();
                 try {
-                    for (MapleData mobIdData : data.getChildren()) {
-                        int mobIdFromData = Integer.parseInt(mobIdData.getName());
-                        MapleMonster mm = MapleLifeFactory.getMonster(mobIdFromData);
+                    for (final MapleData mobIdData : data.getChildren()) {
+                        final int mobIdFromData = Integer.parseInt(mobIdData.getName());
+                        final MapleMonster mm = MapleLifeFactory.getMonster(mobIdFromData);
                         if (mm != null) {
                             if (mm.getLevel() >= min && mm.getLevel() <= max) {
                                 mobList.add(mm);
                             }
                         }
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                 }
                 if (!mobList.isEmpty()) {
@@ -899,14 +901,14 @@ public class PlayerCommands implements Command {
                         mobList.sort(Comparator.comparingInt(MapleMonster::getLevel));
                     } else {
                         mobList.sort((o1, o2) -> {
-                            double xphpratio1 = ((double) o1.getExp() * player.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
-                            double xphpratio2 = ((double) o2.getExp() * player.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
+                            final double xphpratio1 = ((double) o1.getExp() * player.getTotalMonsterXp(o1.getLevel())) / (double) o1.getHp();
+                            final double xphpratio2 = ((double) o2.getExp() * player.getTotalMonsterXp(o2.getLevel())) / (double) o2.getHp();
                             return Double.valueOf(xphpratio1).compareTo(xphpratio2);
                         });
                     }
 
-                    for (MapleMonster mob : mobList) {
-                        double xphpratio = ((double) mob.getExp() * player.getTotalMonsterXp(mob.getLevel())) / (double) mob.getHp();
+                    for (final MapleMonster mob : mobList) {
+                        final double xphpratio = ((double) mob.getExp() * player.getTotalMonsterXp(mob.getLevel())) / (double) mob.getHp();
                         BigDecimal xhrbd = BigDecimal.valueOf(xphpratio);
                         xhrbd = xhrbd.setScale(2, RoundingMode.HALF_UP);
                         mc.dropMessage(
@@ -917,7 +919,7 @@ public class PlayerCommands implements Command {
                                 xhrbd
                         );
                     }
-                    String sort;
+                    final String sort;
                     if (sortbylevel) {
                         sort = "level";
                     } else {
@@ -948,7 +950,7 @@ public class PlayerCommands implements Command {
                     player.getTierPoints(player.getMonsterTrialTier() + 1)
             );
         } else if (splitted[0].equals("@damagescale")) {
-            float damagescale = player.getDamageScale();
+            final float damagescale = player.getDamageScale();
             BigDecimal ds = new BigDecimal(damagescale);
             ds = ds.setScale(1, RoundingMode.HALF_UP);
             mc.dropMessage("Your current damage scale: " + ds.toString() + "x");
@@ -959,20 +961,20 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("Invalid syntax. Use: @morgue <player_name>");
                 return;
             }
-            String name = splitted[1];
-            MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+            final String name = splitted[1];
+            final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             if (victim != null) {
-                List<List<Integer>> morgue = victim.getPastLives();
+                final List<List<Integer>> morgue = victim.getPastLives();
                 if (morgue.isEmpty()) {
                     mc.dropMessage("This player has no past lives; this is their first life lived.");
                 } else {
                     mc.dropMessage("Past 5 lives, from oldest to most recent:");
                     for (int i = morgue.size() - 1; i >= 0; --i) {
-                        String causeofdeath;
+                        final String causeofdeath;
                         if (morgue.get(i).get(2) == 0) {
                             causeofdeath = "Suicide";
                         } else {
-                            MapleMonster mobcause = MapleLifeFactory.getMonster(morgue.get(i).get(2));
+                            final MapleMonster mobcause = MapleLifeFactory.getMonster(morgue.get(i).get(2));
                             causeofdeath = mobcause != null ? mobcause.getName() : "Suicide";
                         }
                         mc.dropMessage(
@@ -993,8 +995,8 @@ public class PlayerCommands implements Command {
             if (splitted.length != 2) {
                 mc.dropMessage("Incorrect syntax. Use: @deathinfo <player_name>");
             }
-            String name = splitted[1];
-            MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+            final String name = splitted[1];
+            final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             if (victim != null) {
                 mc.dropMessage("Death info for " + victim.getName() + ":");
                 mc.dropMessage("Death count | " + victim.getDeathCount());
@@ -1007,11 +1009,11 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@expboostinfo")) {
             if (player.getExpBonus()) {
                 long timeleft = player.getExpBonusEnd() - System.currentTimeMillis();
-                long hours = timeleft / 3600000L;
+                final long hours = timeleft / 3600000L;
                 timeleft %= 3600000L;
-                long minutes = timeleft / 60000L;
+                final long minutes = timeleft / 60000L;
                 timeleft %= 60000L;
-                long seconds = timeleft / 1000L;
+                final long seconds = timeleft / 1000L;
                 mc.dropMessage(
                     "Your " +
                         player.getExpBonusMulti() +
@@ -1030,7 +1032,8 @@ public class PlayerCommands implements Command {
             if (player.getDeathPenalty() == 0) {
                 mc.dropMessage("You do not currently have any death penalties.");
             } else {
-                int hppenalty, mppenalty;
+                final int hppenalty;
+                final int mppenalty;
                 switch (player.getJob().getId() / 100) {
                     case 0: // Beginner
                         hppenalty = 190;
@@ -1088,15 +1091,15 @@ public class PlayerCommands implements Command {
             .stream()
             .map(mmo -> (MapleMonster) mmo)
             .forEach(mob -> {
-                double hpPercentage = (double) mob.getHp() / ((double) mob.getMaxHp()) * 100.0d;
+                final double hpPercentage = (double) mob.getHp() / ((double) mob.getMaxHp()) * 100.0d;
                 player.dropMessage("Monster: " + mob.getName() + ", HP: " + df.format(hpPercentage) + "%");
             });
         } else if (splitted[0].equals("@truedamage")) {
             player.toggleTrueDamage();
-            String s = player.getTrueDamage() ? "on" : "off";
+            final String s = player.getTrueDamage() ? "on" : "off";
             mc.dropMessage("True damage is now turned " + s + ".");
         } else if (splitted[0].equals("@bosshp")) {
-            int repeatTime;
+            final int repeatTime;
             switch (splitted.length) {
                 case 1:
                     repeatTime = 0;
@@ -1104,7 +1107,7 @@ public class PlayerCommands implements Command {
                 case 2:
                     try {
                         repeatTime = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage(
                             "Could not parse repeat time for @bosshp. Make sure you are entering a valid integer."
                         );
@@ -1144,17 +1147,17 @@ public class PlayerCommands implements Command {
                     });
             }
         } else if (splitted[0].equals("@donated")) {
-            NPCScriptManager npc = NPCScriptManager.getInstance();
+            final NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9010010);
         } else if (splitted[0].equals("@cancelquest")) {
             if (splitted.length != 2) {
                 mc.dropMessage("Invalid syntax. Use: @cancelquest <quest_slot>");
                 return;
             }
-            byte questSlot;
+            final byte questSlot;
             try {
                 questSlot = Byte.parseByte(splitted[1]);
-            } catch (NumberFormatException nfe) {
+            } catch (final NumberFormatException nfe) {
                 mc.dropMessage("Invalid input for quest slot.");
                 return;
             }
@@ -1162,7 +1165,7 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("You don't have that many quest slots!");
                 return;
             }
-            CQuest cQuest = player.getCQuest(questSlot);
+            final CQuest cQuest = player.getCQuest(questSlot);
             if (cQuest == null || cQuest.getQuest().getId() == 0) {
                 mc.dropMessage("You don't currently have a quest active in that slot.");
                 return;
@@ -1173,11 +1176,11 @@ public class PlayerCommands implements Command {
         } else if (splitted[0].equals("@vote")) {
             player.dropVoteTime();
         } else if (splitted[0].equals("@sell")) {
-            NPCScriptManager npc = NPCScriptManager.getInstance();
+            final NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(c, 9201081);
         } else if (splitted[0].equals("@showpqpoints")) {
             player.toggleShowPqPoints();
-            String s = player.showPqPoints() ? "on" : "off";
+            final String s = player.showPqPoints() ? "on" : "off";
             mc.dropMessage("PQ point display is now turned " + s + ".");
         } /*else if (splitted[0].equals("@readingtime")) {
             if (player.getReadingTime() > 0) {
@@ -1200,22 +1203,22 @@ public class PlayerCommands implements Command {
                 player.dropMessage("It doesn't look like you're reading at the moment.");
             }
         }*/ else if (splitted[0].equals("@defense") || splitted[0].equals("@defence")) {
-            int wdef = player.getTotalWdef();
-            int mdef = player.getTotalMdef();
-            double dodgeChance;
+            final int wdef = player.getTotalWdef();
+            final int mdef = player.getTotalMdef();
+            final double dodgeChance;
             if (wdef > 1999) {
                 dodgeChance = 100.0d * (Math.log1p(wdef - 1999.0d) / Math.log(2.0d)) / 25.0d;
             } else {
                 dodgeChance = 0.0d;
             }
-            int wAtkReduce = Math.max(wdef - 1999, 0);
-            int mAtkReduce;
+            final int wAtkReduce = Math.max(wdef - 1999, 0);
+            final int mAtkReduce;
             if (mdef > 1999) {
                 mAtkReduce = (int) Math.ceil(Math.pow(mdef - 1999.0d, 1.2d));
             } else {
                 mAtkReduce = 0;
             }
-            DecimalFormat df = new DecimalFormat("#.000");
+            final DecimalFormat df = new DecimalFormat("#.000");
             player.dropMessage("Weapon defense: " + wdef + ", magic defense: " + mdef);
             player.dropMessage("Chance to dodge weapon attacks based on defense: " + df.format(dodgeChance) + "%");
             player.dropMessage("Absolute damage reduction vs. weapon attacks: " + wAtkReduce);
@@ -1233,19 +1236,19 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("Incorrect syntax. Use: @overflowexp <player_name>");
                 return;
             }
-            String name = splitted[1];
-            String nameLower = name.toLowerCase();
+            final String name = splitted[1];
+            final String nameLower = name.toLowerCase();
             MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             if (victim == null) {
                 // Not on this channel
-                for (ChannelServer cs : ChannelServer.getAllInstances()) {
+                for (final ChannelServer cs : ChannelServer.getAllInstances()) {
                     if (!cs.getPlayerStorage().getAllCharacters().isEmpty()) {
-                        for (MapleCharacter chr : cs.getPlayerStorage().getAllCharacters()) {
-                            if (nameLower.equals(chr.getName().toLowerCase()) && !chr.isGM()) {
-                                victim = chr;
-                                break;
-                            }
-                        }
+                        victim = cs.getPlayerStorage()
+                                   .getAllCharacters()
+                                   .stream()
+                                   .filter(chr -> nameLower.equals(chr.getName().toLowerCase()) && !chr.isGM())
+                                   .findFirst()
+                                   .orElse(null);
                     }
                     if (victim != null) break;
                 }
@@ -1253,7 +1256,7 @@ public class PlayerCommands implements Command {
             Long overflowExp = null;
             if (victim == null) {
                 // Not online
-                Connection con = DatabaseConnection.getConnection();
+                final Connection con = DatabaseConnection.getConnection();
                 PreparedStatement ps = null;
                 ResultSet rs = null;
                 try {
@@ -1263,7 +1266,7 @@ public class PlayerCommands implements Command {
                     if (rs.next()) {
                         overflowExp = rs.getLong("overflowexp");
                     }
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     mc.dropMessage("There was an exception finding the player specified.");
                     sqle.printStackTrace();
                     return;
@@ -1273,8 +1276,8 @@ public class PlayerCommands implements Command {
                 }
             }
             if (victim != null) {
-                String rawOverflow = "" + victim.getOverflowExp();
-                List<String> digitGroupings = new ArrayList<>(5);
+                final String rawOverflow = "" + victim.getOverflowExp();
+                final List<String> digitGroupings = new ArrayList<>(5);
                 digitGroupings.add(rawOverflow.substring(0, rawOverflow.length() % 3));
                 for (int i = rawOverflow.length() % 3; i < rawOverflow.length(); i += 3) {
                     digitGroupings.add(rawOverflow.substring(i, i + 3));
@@ -1289,8 +1292,8 @@ public class PlayerCommands implements Command {
                             .orElse("0")
                 );
             } else if (overflowExp != null) {
-                String rawOverflow = "" + overflowExp;
-                List<String> digitGroupings = new ArrayList<>(5);
+                final String rawOverflow = "" + overflowExp;
+                final List<String> digitGroupings = new ArrayList<>(5);
                 digitGroupings.add(rawOverflow.substring(0, rawOverflow.length() % 3));
                 for (int i = rawOverflow.length() % 3; i < rawOverflow.length(); i += 3) {
                     digitGroupings.add(rawOverflow.substring(i, i + 3));
@@ -1336,8 +1339,8 @@ public class PlayerCommands implements Command {
             mc.dropMessage("Your current total magic attack: " + player.getTotalMagic());
         } else if (splitted[0].equals("@samsara")) {
             if (player.getSkillLevel(5121000) > 0) {
-                StringBuilder sb = new StringBuilder();
-                long timeDiff =
+                final StringBuilder sb = new StringBuilder();
+                final long timeDiff =
                     player.getLastSamsara() +
                         MapleCharacter.SAMSARA_COOLDOWN -
                         System.currentTimeMillis();
@@ -1371,7 +1374,7 @@ public class PlayerCommands implements Command {
             final Random rand = new Random();
 
             int total = 0;
-            StringBuilder msg = new StringBuilder();
+            final StringBuilder msg = new StringBuilder();
             msg.append(player.getName()).append(" rolled ");
 
             for (int i = 1; i < splitted.length; ++i) {
@@ -1379,14 +1382,12 @@ public class PlayerCommands implements Command {
                     mc.dropMessage(invalidSyntax);
                     return;
                 }
-                String[] nfSplit = splitted[i].split("(?i)d");
+                final String[] nfSplit = splitted[i].split("(?i)d");
                 final int n = Integer.parseInt(nfSplit[0]),
                           f = Integer.parseInt(nfSplit[1]);
                 if (i > 1) msg.append(" + ");
                 msg.append(n).append('d').append(f);
-                for (int j = 0; j < n; ++j) {
-                    total += 1 + rand.nextInt(f);
-                }
+                total += IntStream.range(0, n).map(j -> 1 + rand.nextInt(f)).sum();
             }
             msg.append(", for a total of ").append(total).append('.');
             player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, msg.toString()));
@@ -1395,19 +1396,16 @@ public class PlayerCommands implements Command {
                 mc.dropMessage("Invalid syntax. Use: @engage <partner_name>");
                 return;
             }
-            boolean hasUseItem = false;
-            for (int id = 2240000; id <= 2240003; ++id) {
-                if (player.getItemQuantity(id, false) > 0) {
-                    hasUseItem = true;
-                    break;
-                }
-            }
+            final boolean hasUseItem =
+                IntStream
+                    .rangeClosed(2240000, 2240003)
+                    .anyMatch(id -> player.getItemQuantity(id, false) > 0);
             if (!hasUseItem) {
                 mc.dropMessage("You need an engagement ring from Moody to get engaged.");
                 return;
             }
             final String partnerName = splitted[1];
-            MapleCharacter partner = c.getChannelServer().getPlayerStorage().getCharacterByName(partnerName);
+            final MapleCharacter partner = c.getChannelServer().getPlayerStorage().getCharacterByName(partnerName);
             if (partnerName.equalsIgnoreCase(player.getName())) {
                 mc.dropMessage("You can't get engaged with yourself.");
             } else if (partner == null) {
@@ -1424,7 +1422,7 @@ public class PlayerCommands implements Command {
             }
         } else if (splitted[0].equals("@whoquestdrops")) {
             try {
-                StringBuilder searchString = new StringBuilder();
+                final StringBuilder searchString = new StringBuilder();
                 for (int i = 1; i < splitted.length; ++i) {
                     if (i == 1) {
                         searchString.append(splitted[i]);
@@ -1436,11 +1434,11 @@ public class PlayerCommands implements Command {
                     mc.dropMessage("Invalid syntax. Use: @whoquestdrops <search_string>");
                     return;
                 }
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                String searchString_ = searchString.toString();
-                Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchString_);
-                Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchString_);
-                Pair<Integer, String> etccandidate = ii.getEtcByName(searchString_);
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final String searchString_ = searchString.toString();
+                final Pair<Integer, String> consumecandidate = ii.getConsumeByName(searchString_);
+                final Pair<Integer, String> eqpcandidate = ii.getEqpByName(searchString_);
+                final Pair<Integer, String> etccandidate = ii.getEtcByName(searchString_);
                 Pair<Integer, String> candidate = consumecandidate;
                 if (etccandidate != null && (candidate == null || etccandidate.getRight().length() < candidate.getRight().length())) {
                     candidate = etccandidate;
@@ -1450,26 +1448,26 @@ public class PlayerCommands implements Command {
                 }
 
                 try {
-                    int searchid;
+                    final int searchid;
                     if (candidate != null) {
                         searchid = candidate.getLeft();
                     } else {
                         mc.dropMessage("No item could be found with the search string provided.");
                         return;
                     }
-                    List<Pair<String, Integer>> retMobs = new ArrayList<>();
+                    final List<Pair<String, Integer>> retMobs = new ArrayList<>();
                     mc.dropMessage(candidate.getRight() + " is dropped as a quest drop by the following mobs:");
-                    Connection con = DatabaseConnection.getConnection();
-                    PreparedStatement ps =
+                    final Connection con = DatabaseConnection.getConnection();
+                    final PreparedStatement ps =
                         con.prepareStatement(
                             "SELECT monsterid, questid FROM monsterquestdrops WHERE itemid = ?"
                         );
                     ps.setInt(1, searchid);
-                    ResultSet rs = ps.executeQuery();
+                    final ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
-                        int mobId = rs.getInt("monsterid");
-                        int questId = rs.getInt("questid");
-                        MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                        final int mobId = rs.getInt("monsterid");
+                        final int questId = rs.getInt("questid");
+                        final MapleMonster mob = MapleLifeFactory.getMonster(mobId);
                         if (mob != null) {
                             retMobs.add(new Pair<>(mob.getName(), questId));
                         }
@@ -1477,22 +1475,22 @@ public class PlayerCommands implements Command {
                     rs.close();
                     ps.close();
                     if (!retMobs.isEmpty()) {
-                        for (Pair<String, Integer> singleRetMob : retMobs) {
+                        for (final Pair<String, Integer> singleRetMob : retMobs) {
+                            final MapleQuest theQuest = MapleQuest.getInstance(singleRetMob.getRight());
+                            if (theQuest == null) continue;
                             mc.dropMessage(
                                 singleRetMob.getLeft() +
                                     ", quest: " +
-                                    MapleQuest
-                                        .getInstance(singleRetMob.getRight())
-                                        .getName()
+                                    theQuest.getName()
                             );
                         }
                     } else {
                         mc.dropMessage("No mobs drop this item as a quest drop.");
                     }
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     System.err.print("@whoquestdrops failed: " + sqle);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         } else if (splitted[0].equals("@questeffectivelevel")) {
@@ -1513,7 +1511,7 @@ public class PlayerCommands implements Command {
                     )
             );
         } else if (splitted[0].equals("@music")) {
-            SoundInformationProvider sip = SoundInformationProvider.getInstance();
+            final SoundInformationProvider sip = SoundInformationProvider.getInstance();
             switch (splitted.length) {
                 case 1:
                     mc.dropMessage(
@@ -1525,10 +1523,10 @@ public class PlayerCommands implements Command {
                     mc.dropMessage("or @music <section_number> <title> to play a specific piece.");
                     return;
                 case 2: {
-                    int sectionNumber;
+                    final int sectionNumber;
                     try {
                         sectionNumber = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage(
                             "Invalid syntax. Use: @music | @music <section_number> | @music <section_number> <title>"
                         );
@@ -1540,7 +1538,7 @@ public class PlayerCommands implements Command {
                     }
                     String section = null;
                     int i = 1;
-                    for (String section_ : sip.getAllBgmNames().keySet()) {
+                    for (final String section_ : sip.getAllBgmNames().keySet()) {
                         if (i > sectionNumber) break;
                         section = section_;
                         i++;
@@ -1554,10 +1552,10 @@ public class PlayerCommands implements Command {
                     return;
                 }
                 case 3: {
-                    int sectionNumber;
+                    final int sectionNumber;
                     try {
                         sectionNumber = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage(
                             "Invalid syntax. Use: @music | @music <section_number> | @music <section_number> <title>"
                         );
@@ -1625,7 +1623,7 @@ public class PlayerCommands implements Command {
                 case 2:
                     try {
                         repeatTime = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         mc.dropMessage(
                             "Could not parse repeat time for @showvuln. Make sure you are entering a valid integer."
                         );
@@ -1665,7 +1663,7 @@ public class PlayerCommands implements Command {
         }
     }
 
-    private void compareTime(StringBuilder sb, long timeDiff) {
+    private void compareTime(final StringBuilder sb, final long timeDiff) {
         double secondsAway = (double) (timeDiff / 1000L);
         double minutesAway = 0.0d;
         double hoursAway = 0.0d;

@@ -24,7 +24,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     protected final MapleCharacter[] visitors = new MapleCharacter[3];
     protected final List<MaplePlayerShopItem> items = new ArrayList<>();
 
-    public PlayerInteractionManager(MapleCharacter owner, int type, String desc, int capacity) {
+    public PlayerInteractionManager(final MapleCharacter owner, final int type, final String desc, final int capacity) {
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
         this.ownerId = owner.getId();
@@ -34,8 +34,8 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public void broadcast(MaplePacket packet, boolean toOwner) {
-        for (MapleCharacter visitor : visitors) {
+    public void broadcast(final MaplePacket packet, final boolean toOwner) {
+        for (final MapleCharacter visitor : visitors) {
             if (visitor != null) {
                 visitor.getClient().getSession().write(packet);
             }
@@ -54,9 +54,9 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public void removeVisitor(MapleCharacter visitor) {
-        int slot = getVisitorSlot(visitor);
-        boolean shouldUpdate = getFreeSlot() == -1;
+    public void removeVisitor(final MapleCharacter visitor) {
+        final int slot = getVisitorSlot(visitor);
+        final boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > -1) {
             visitors[slot] = null;
             broadcast(MaplePacketCreator.shopVisitorLeave(slot + 1), true);
@@ -86,7 +86,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     public void saveItems() {
         try {
             tempItems(true, true);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             System.err.println("Error saving " + ownerName + " items: " + ex);
         }
     }
@@ -94,12 +94,12 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     public void tempItemsUpdate() {
         try {
             tempItems(true, false);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             System.err.println("Error saving " + ownerName + " temporary items: " + ex);
         }
     }
 
-    public void tempItems(boolean overwrite, boolean saveItems) throws SQLException {
+    public void tempItems(final boolean overwrite, final boolean saveItems) throws SQLException {
         PreparedStatement ps;
         String table = "temp";
         if (saveItems) {
@@ -113,7 +113,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
             ps.close();
         }
         if (overwrite) {
-            for (MaplePlayerShopItem pItems : items) {
+            for (final MaplePlayerShopItem pItems : items) {
                 if (pItems.getBundles() > 0) {
                     if (pItems.getItem().getType() == 1) {
                         ps = DatabaseConnection.getConnection().prepareStatement(
@@ -121,7 +121,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
                                 "luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, owner, type) " +
                                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)"
                         );
-                        Equip eq = (Equip) pItems.getItem();
+                        final Equip eq = (Equip) pItems.getItem();
                         ps.setInt(2, eq.getItemId());
                         ps.setInt(3, 1);
                         ps.setInt(4, eq.getUpgradeSlots());
@@ -161,8 +161,8 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public void addVisitor(MapleCharacter visitor) {
-        int i = getFreeSlot();
+    public void addVisitor(final MapleCharacter visitor) {
+        final int i = getFreeSlot();
         if (i <= -1) return;
         broadcast(MaplePacketCreator.shopVisitorAdd(visitor, i + 1), true);
         visitors[i] = visitor;
@@ -190,7 +190,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public int getVisitorSlot(MapleCharacter visitor) {
+    public int getVisitorSlot(final MapleCharacter visitor) {
         for (int i = 0; i < capacity; ++i) {
             if (visitors[i] == visitor) return i;
         }
@@ -198,7 +198,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public void removeAllVisitors(int error, int type) {
+    public void removeAllVisitors(final int error, final int type) {
         for (int i = 0; i < capacity; ++i) {
             if (visitors[i] != null) {
                 if (type != -1) {
@@ -244,16 +244,16 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public void addItem(MaplePlayerShopItem item) {
+    public void addItem(final MaplePlayerShopItem item) {
         items.add(item);
         tempItemsUpdate();
     }
 
     @Override
-    public boolean removeItem(int itemId) {
+    public boolean removeItem(final int itemId) {
         synchronized (items) {
             MaplePlayerShopItem toRemove = null;
-            for (MaplePlayerShopItem i : items) {
+            for (final MaplePlayerShopItem i : items) {
                 if (i.getItem().getItemId() == itemId) {
                     toRemove = i;
                     break;
@@ -269,7 +269,7 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public void removeFromSlot(int slot) {
+    public void removeFromSlot(final int slot) {
         items.remove(slot);
     }
 
@@ -287,14 +287,14 @@ public abstract class PlayerInteractionManager extends AbstractMapleMapObject im
     }
 
     @Override
-    public boolean isOwner(MapleCharacter chr) {
+    public boolean isOwner(final MapleCharacter chr) {
         return chr.getId() == ownerId && chr.getName().equals(ownerName);
     }
 
-    public boolean returnItems(MapleClient c) {
-        for (MaplePlayerShopItem item : items) {
+    public boolean returnItems(final MapleClient c) {
+        for (final MaplePlayerShopItem item : items) {
             if (item.getBundles() > 0) {
-                IItem nItem = item.getItem();
+                final IItem nItem = item.getItem();
                 nItem.setQuantity(item.getBundles());
                 if (MapleInventoryManipulator.addFromDrop(c, nItem)) {
                     item.setBundles((short) 0);

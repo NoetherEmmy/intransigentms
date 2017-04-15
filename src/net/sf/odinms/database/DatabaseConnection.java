@@ -26,12 +26,12 @@ public class DatabaseConnection {
         return props != null;
     }
 
-    public static void setProps(Properties aProps) {
+    public static void setProps(final Properties aProps) {
         props = aProps;
     }
 
     public static void closeAll() throws SQLException {
-        for (Connection con : ThreadLocalConnection.allConnections) {
+        for (final Connection con : ThreadLocalConnection.allConnections) {
             con.close();
         }
     }
@@ -41,20 +41,20 @@ public class DatabaseConnection {
 
         @Override
         protected Connection initialValue() {
-            String driver = props.getProperty("driver");
-            String url = props.getProperty("url");
-            String user = props.getProperty("user");
-            String password = props.getProperty("password");
+            final String driver = props.getProperty("driver");
+            final String url = props.getProperty("url");
+            final String user = props.getProperty("user");
+            final String password = props.getProperty("password");
             try {
                 Class.forName(driver); // Touch the MySQL driver.
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 log.error("ERROR", e);
             }
             try {
-                Connection con = DriverManager.getConnection(url, user, password);
+                final Connection con = DriverManager.getConnection(url, user, password);
                 allConnections.add(con);
                 return con;
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 log.error("ERROR", e);
                 return null;
             }

@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class Extras implements Command {
     @Override
-    public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
+    public void execute(final MapleClient c, final MessageCallback mc, final String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
         if (player.getClient().getChannelServer().extraCommands()) {
             switch (splitted[0]) {
                 case "@cody":
@@ -62,7 +62,7 @@ public class Extras implements Command {
                     }
                     break;
                 case "@go":
-                    Map<String, Integer> maps = new LinkedHashMap<>();
+                    final Map<String, Integer> maps = new LinkedHashMap<>();
                     maps.put("fm", 910000000);
                     maps.put("henesys", 100000000);
                     maps.put("ellinia", 101000000);
@@ -94,9 +94,9 @@ public class Extras implements Command {
                     maps.put("skelegon", 104040001);
                     maps.put("mall", 910000022);
                     if (splitted.length != 2) {
-                        StringBuilder builder = new StringBuilder("Syntax: @go <mapname>");
-                        int i = 0;
-                        for (String mapss : maps.keySet()) {
+                        final StringBuilder builder = new StringBuilder("Syntax: @go <mapname>");
+                        final int i = 0;
+                        for (final String mapss : maps.keySet()) {
                             if (i % 10 == 0) { // 10 maps per line
                                 mc.dropMessage(builder.toString());
                             } else {
@@ -105,7 +105,7 @@ public class Extras implements Command {
                         }
                         mc.dropMessage(builder.toString());
                     } else if (maps.containsKey(splitted[1])) {
-                        int map = maps.get(splitted[1]);
+                        final int map = maps.get(splitted[1]);
                         if (map == 910000000) {
                             player.saveLocation(SavedLocationType.FREE_MARKET);
                         }
@@ -121,14 +121,14 @@ public class Extras implements Command {
                         mc.dropMessage("Syntax: @buynx <number>");
                         return;
                     }
-                    int nxamount;
+                    final int nxamount;
                     try {
                         nxamount = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException asd) {
+                    } catch (final NumberFormatException asd) {
                         return;
                     }
-                    int nxcost = 5000;
-                    int cost = nxamount * nxcost;
+                    final int nxcost = 5000;
+                    final int cost = nxamount * nxcost;
                     if (nxamount > 0 && nxamount < 420000) {
                         if (player.getMeso() >= cost) {
                             player.gainMeso(-cost, true, true, true);

@@ -48,6 +48,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChannelServer implements Runnable, ChannelServerMBean {
     private static int uniqueID = 1;
@@ -98,7 +99,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     private boolean trackMissGodmode = true;
     private int eventMap;
 
-    private ChannelServer(String key) {
+    private ChannelServer(final String key) {
         mapFactory =
                 new MapleMapFactory(
                     MapleDataProviderFactory.getDataProvider(
@@ -128,7 +129,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         // Check if the connection is really gone.
         try {
             wci.isAvailable();
-        } catch (RemoteException ex) {
+        } catch (final RemoteException ex) {
             synchronized (worldReady) {
                 worldReady = false;
             }
@@ -144,7 +145,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                         FileReader fr = new FileReader(System.getProperty("net.sf.odinms.channel.config"));
                         initialProp.load(fr);
                         fr.close();
-                        Registry registry = LocateRegistry.getRegistry(initialProp.getProperty("net.sf.odinms.world.host"),
+                        final Registry registry = LocateRegistry.getRegistry(initialProp.getProperty("net.sf.odinms.world.host"),
                         Registry.REGISTRY_PORT, new SslRMIClientSocketFactory());
                         worldRegistry = (WorldRegistry) registry.lookup("WorldRegistry");
                         cwi = new ChannelWorldInterfaceImpl(this);
@@ -170,14 +171,14 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                         GMItems = Boolean.parseBoolean(props.getProperty("net.sf.odinms.world.GMItems", "false"));
                         extraCommands = Boolean.parseBoolean(props.getProperty("net.sf.odinms.world.extraCommands", "false"));
                         PvPis = Integer.parseInt(props.getProperty("net.sf.odinms.world.PvPis", "4"));
-                        Properties dbProp = new Properties();
+                        final Properties dbProp = new Properties();
                         fr = new FileReader("db.properties");
                         dbProp.load(fr);
                         fr.close();
                         DatabaseConnection.setProps(dbProp);
                         DatabaseConnection.getConnection();
                         wci.serverReady();
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         System.err.println("Reconnecting failed: " + e);
                     }
                     worldReady = true;
@@ -216,13 +217,13 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             GMItems = Boolean.parseBoolean(props.getProperty("net.sf.odinms.world.GMItems", "false"));
             extraCommands = Boolean.parseBoolean(props.getProperty("net.sf.odinms.world.extraCommands", "false"));
             PvPis = Integer.parseInt(props.getProperty("net.sf.odinms.world.PvPis", "4"));
-            Properties dbProp = new Properties();
-            FileReader fileReader = new FileReader("db.properties");
+            final Properties dbProp = new Properties();
+            final FileReader fileReader = new FileReader("db.properties");
             dbProp.load(fileReader);
             fileReader.close();
             DatabaseConnection.setProps(dbProp);
             DatabaseConnection.getConnection();
-            Connection c = DatabaseConnection.getConnection();
+            final Connection c = DatabaseConnection.getConnection();
             PreparedStatement ps;
             try {
                 ps = c.prepareStatement("UPDATE accounts SET loggedin = 0");
@@ -230,28 +231,28 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                 ps = c.prepareStatement("UPDATE characters SET HasMerchant = 0");
                 ps.executeUpdate();
                 ps.close();
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 System.err.println("Could not reset databases: " + ex);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
-        int port = Integer.parseInt(props.getProperty("net.sf.odinms.channel.net.port"));
+        final int port = Integer.parseInt(props.getProperty("net.sf.odinms.channel.net.port"));
         ip = props.getProperty("net.sf.odinms.channel.net.interface") + ":" + port;
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
         acceptor = new SocketAcceptor();
-        SocketAcceptorConfig cfg = new SocketAcceptorConfig();
+        final SocketAcceptorConfig cfg = new SocketAcceptorConfig();
         //cfg.setThreadModel(ThreadModel.MANUAL); // *fingers crossed*, I hope the executor filter handles everything
         //executor = new ThreadPoolExecutor(16, 16, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         //cfg.getFilterChain().addLast("executor", new ExecutorFilter(executor));
         cfg.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
         //Item.loadInitialDataFromDB();
-        TimerManager tMan = TimerManager.getInstance();
+        final TimerManager tMan = TimerManager.getInstance();
         tMan.start();
         tMan.register(AutobanManager.getInstance(), 60000);
         try {
-            MapleServerHandler serverHandler =
+            final MapleServerHandler serverHandler =
                 new MapleServerHandler(
                     PacketProcessor.getProcessor(
                         PacketProcessor.Mode.CHANNELSERVER
@@ -262,17 +263,17 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             System.out.println("Channel " + channel + ": Listening on port: " + port);
             wci.serverReady();
             eventSM.init();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("Binding to port " + port + " failed (ch: " + channel + ") " + e);
         }
     }
 
     public void shutdown() {
         shutdown = true;
-        List<CloseFuture> futures = new LinkedList<>();
-        Collection<MapleCharacter> allchars = players.getAllCharacters();
-        MapleCharacter[] chrs = allchars.toArray(new MapleCharacter[allchars.size()]);
-        for (MapleCharacter chr : chrs) {
+        final List<CloseFuture> futures;
+        final Collection<MapleCharacter> allchars = players.getAllCharacters();
+        final MapleCharacter[] chrs = allchars.toArray(new MapleCharacter[allchars.size()]);
+        for (final MapleCharacter chr : chrs) {
             if (chr.getTrade() != null) {
                 MapleTrade.cancelTrade(chr);
             }
@@ -290,10 +291,12 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             }
             removePlayer(chr);
         }
-        for (MapleCharacter chr : chrs) {
-            futures.add(chr.getClient().getSession().close());
-        }
-        for (CloseFuture future : futures) {
+        futures =
+            Arrays
+                .stream(chrs)
+                .map(chr -> chr.getClient().getSession().close())
+                .collect(Collectors.toCollection(LinkedList::new));
+        for (final CloseFuture future : futures) {
             future.join(500);
         }
         finishedShutdown = true;
@@ -313,12 +316,12 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return mapFactory;
     }
 
-    public static ChannelServer newInstance(String key) throws InstanceAlreadyExistsException,
+    public static ChannelServer newInstance(final String key) throws InstanceAlreadyExistsException,
                                                                MBeanRegistrationException,
                                                                NotCompliantMBeanException,
                                                                MalformedObjectNameException {
-        ChannelServer instance = new ChannelServer(key);
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        final ChannelServer instance = new ChannelServer(key);
+        final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         mBeanServer.registerMBean(
             instance,
             new ObjectName(
@@ -329,11 +332,11 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return instance;
     }
 
-    public static ChannelServer getInstance(int channel) {
+    public static ChannelServer getInstance(final int channel) {
         return instances.get(channel);
     }
 
-    public void addPlayer(MapleCharacter chr) {
+    public void addPlayer(final MapleCharacter chr) {
         players.registerPlayer(chr);
         if (chr.getClan() > -1) {
             clans.playerOnline(chr);
@@ -344,14 +347,14 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return players;
     }
 
-    public void removePlayer(MapleCharacter chr) {
+    public void removePlayer(final MapleCharacter chr) {
         players.deregisterPlayer(chr);
         if (chr.getClan() > -1) {
             clans.deregisterPlayer(chr);
         }
     }
 
-    public void addToClan(MapleCharacter chr) {
+    public void addToClan(final MapleCharacter chr) {
         clans.registerPlayer(chr);
     }
 
@@ -370,18 +373,18 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void setServerMessage(String newMessage) {
+    public void setServerMessage(final String newMessage) {
         serverMessage = newMessage;
         broadcastPacket(MaplePacketCreator.serverMessage(serverMessage));
     }
 
-    public void broadcastPacket(MaplePacket data) {
-        for (MapleCharacter chr : players.getAllCharacters()) {
+    public void broadcastPacket(final MaplePacket data) {
+        for (final MapleCharacter chr : players.getAllCharacters()) {
             chr.getClient().getSession().write(data);
         }
     }
 
-    public void setEventMap(int eventMapId) {
+    public void setEventMap(final int eventMapId) {
         eventMap = eventMapId;
     }
 
@@ -395,7 +398,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void setExpRate(int expRate) {
+    public void setExpRate(final int expRate) {
         this.expRate = expRate;
     }
 
@@ -403,7 +406,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return arrayString;
     }
 
-    public void setArrayString(String newStr) {
+    public void setArrayString(final String newStr) {
         arrayString = newStr;
     }
 
@@ -412,7 +415,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return channel;
     }
 
-    public void setChannel(int channel) {
+    public void setChannel(final int channel) {
         if (pendingInstances.containsKey(key)) {
             pendingInstances.remove(key);
         }
@@ -432,10 +435,10 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return ip;
     }
 
-    public String getIP(int channel) {
+    public String getIP(final int channel) {
         try {
             return getWorldInterface().getIP(channel);
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             System.err.println("Lost connection to world server: " + re);
             throw new RuntimeException("Lost connection to world server");
         }
@@ -446,14 +449,14 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
             while (!worldReady) {
                 try {
                     worldReady.wait();
-                } catch (InterruptedException ignored) {
+                } catch (final InterruptedException ignored) {
                 }
             }
         }
         return wci;
     }
 
-    public String getProperty(String name) {
+    public String getProperty(final String name) {
         return props.getProperty(name);
     }
 
@@ -462,7 +465,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void shutdown(int time) {
+    public void shutdown(final int time) {
         broadcastPacket(
             MaplePacketCreator.serverNotice(
                 0,
@@ -475,10 +478,10 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void shutdownWorld(int time) {
+    public void shutdownWorld(final int time) {
         try {
             getWorldInterface().shutdown(time);
-        } catch (RemoteException e) {
+        } catch (final RemoteException e) {
             reconnectWorld();
         }
     }
@@ -498,15 +501,15 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         eventSM.init();
     }
 
-    public PartyQuest getPartyQuest(String name) {
+    public PartyQuest getPartyQuest(final String name) {
         return partyQuests.get(name);
     }
 
-    public void registerPartyQuest(PartyQuest pq) {
+    public void registerPartyQuest(final PartyQuest pq) {
         partyQuests.put(pq.getName(), pq);
     }
 
-    public void unregisterPartyQuest(String name) {
+    public void unregisterPartyQuest(final String name) {
         partyQuests.remove(name);
     }
 
@@ -522,21 +525,21 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         }
     }
 
-    public void addPqItem(PartyQuest pq, int id) {
+    public void addPqItem(final PartyQuest pq, final int id) {
         addPqItem(pq.getName(), id);
     }
 
-    public void addPqItem(String pqName, int id) {
+    public void addPqItem(final String pqName, final int id) {
         if (partyQuestItems.containsKey(pqName)) {
             partyQuestItems.get(pqName).add(id);
         } else {
-            Set<Integer> items = new LinkedHashSet<>(4, 0.8f);
+            final Set<Integer> items = new LinkedHashSet<>(4, 0.8f);
             items.add(id);
             partyQuestItems.put(pqName, items);
         }
     }
 
-    public Set<Integer> readPqItems(String pqName) {
+    public Set<Integer> readPqItems(final String pqName) {
         if (partyQuestItems.containsKey(pqName)) {
             return new LinkedHashSet<>(partyQuestItems.get(pqName));
         } else {
@@ -557,7 +560,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void setMesoRate(int mesoRate) {
+    public void setMesoRate(final int mesoRate) {
         this.mesoRate = mesoRate;
     }
 
@@ -567,7 +570,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void setDropRate(int dropRate) {
+    public void setDropRate(final int dropRate) {
         this.dropRate = dropRate;
     }
 
@@ -577,7 +580,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void setBossDropRate(int bossdropRate) {
+    public void setBossDropRate(final int bossdropRate) {
         this.bossdropRate = bossdropRate;
     }
 
@@ -587,7 +590,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     @Override
-    public void setPetExpRate(int petExpRate) {
+    public void setPetExpRate(final int petExpRate) {
         this.petExpRate = petExpRate;
     }
 
@@ -603,16 +606,16 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return trackMissGodmode;
     }
 
-    public void setTrackMissGodmode(boolean tmg) {
+    public void setTrackMissGodmode(final boolean tmg) {
         trackMissGodmode = tmg;
     }
 
-    public MapleGuild getGuild(MapleGuildCharacter mgc) {
-        int gid = mgc.getGuildId();
-        MapleGuild g;
+    public MapleGuild getGuild(final MapleGuildCharacter mgc) {
+        final int gid = mgc.getGuildId();
+        final MapleGuild g;
         try {
             g = this.getWorldInterface().getGuild(gid, mgc);
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             System.err.println("RemoteException while fetching MapleGuild: " + re);
             return null;
         }
@@ -622,31 +625,31 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return g;
     }
 
-    public MapleGuildSummary getGuildSummary(int gid) {
+    public MapleGuildSummary getGuildSummary(final int gid) {
         if (gsStore.containsKey(gid)) {
             return gsStore.get(gid);
         } else {
             try {
-                MapleGuild g = this.getWorldInterface().getGuild(gid, null);
+                final MapleGuild g = this.getWorldInterface().getGuild(gid, null);
                 if (g != null) {
                     gsStore.put(gid, new MapleGuildSummary(g));
                 }
                 return gsStore.get(gid);
-            } catch (RemoteException re) {
+            } catch (final RemoteException re) {
                 System.err.println("RemoteException while fetching GuildSummary: " + re);
                 return null;
             }
         }
     }
 
-    public void updateGuildSummary(int gid, MapleGuildSummary mgs) {
+    public void updateGuildSummary(final int gid, final MapleGuildSummary mgs) {
         gsStore.put(gid, mgs);
     }
 
     public void reloadGuildSummary() {
         try {
             MapleGuild g;
-            for (int i : gsStore.keySet()) {
+            for (final int i : gsStore.keySet()) {
                 g = this.getWorldInterface().getGuild(i, null);
                 if (g != null) {
                     gsStore.put(i, new MapleGuildSummary(g));
@@ -654,12 +657,12 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                     gsStore.remove(i);
                 }
             }
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             System.err.println("RemoteException while reloading GuildSummary: " + re);
         }
     }
 
-    public static void main(String[] args) throws IOException,
+    public static void main(final String[] args) throws IOException,
                                                   NotBoundException,
                                                   InstanceAlreadyExistsException,
                                                   MBeanRegistrationException,
@@ -667,7 +670,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                                                   MalformedObjectNameException {
         initialProp = new Properties();
         initialProp.load(new FileReader(System.getProperty("net.sf.odinms.channel.config")));
-        Registry registry =
+        final Registry registry =
             LocateRegistry.getRegistry(
                 initialProp.getProperty(
                     "net.sf.odinms.world.host"
@@ -683,9 +686,9 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         CommandProcessor.registerMBean();
         ClanHolder.loadAllClans();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (ChannelServer channel : getAllInstances()) {
+            for (final ChannelServer channel : getAllInstances()) {
                 for (int i = 910000001; i <= 910000022; ++i) {
-                    List<MapleMapObject> hiredMerchants =
+                    final List<MapleMapObject> hiredMerchants =
                         channel
                             .getMapFactory()
                             .getMap(i)
@@ -694,12 +697,12 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                                 Double.POSITIVE_INFINITY,
                                 MapleMapObjectType.HIRED_MERCHANT
                             );
-                    for (MapleMapObject obj : hiredMerchants) {
-                        HiredMerchant hm = (HiredMerchant) obj;
+                    for (final MapleMapObject obj : hiredMerchants) {
+                        final HiredMerchant hm = (HiredMerchant) obj;
                         hm.closeShop(true);
                     }
                 }
-                for (MapleCharacter mc : channel.getPlayerStorage().getAllCharacters()) {
+                for (final MapleCharacter mc : channel.getPlayerStorage().getAllCharacters()) {
                     mc.saveToDB(true, true);
                 }
             }
@@ -707,11 +710,11 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         MapleItemInformationProvider.getInstance().cacheCashEquips();
     }
 
-    public MapleSquad getMapleSquad(MapleSquadType type) {
+    public MapleSquad getMapleSquad(final MapleSquadType type) {
         return mapleSquads.get(type);
     }
 
-    public boolean addMapleSquad(MapleSquad squad, MapleSquadType type) {
+    public boolean addMapleSquad(final MapleSquad squad, final MapleSquadType type) {
         if (mapleSquads.get(type) == null) {
             mapleSquads.remove(type);
             mapleSquads.put(type, squad);
@@ -721,7 +724,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         }
     }
 
-    public boolean removeMapleSquad(MapleSquad squad, MapleSquadType type) {
+    public boolean removeMapleSquad(final MapleSquad squad, final MapleSquadType type) {
         if (mapleSquads.containsKey(type)) {
             if (mapleSquads.get(type) == squad) {
                 mapleSquads.remove(type);
@@ -735,7 +738,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return godlyItems;
     }
 
-    public void setGodlyItems(boolean blahblah) {
+    public void setGodlyItems(final boolean blahblah) {
         this.godlyItems = blahblah;
     }
 
@@ -743,7 +746,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return itemStatMultiplier;
     }
 
-    public void setItemMultiplier(Short blahblah) {
+    public void setItemMultiplier(final Short blahblah) {
         this.itemStatMultiplier = blahblah;
     }
 
@@ -751,20 +754,20 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return godlyItemRate;
     }
 
-    public void setGodlyItemRate(Short blahblah) {
+    public void setGodlyItemRate(final Short blahblah) {
         this.godlyItemRate = blahblah;
     }
 
-    public void broadcastSMega(MaplePacket data) {
-        for (MapleCharacter chr : players.getAllCharacters()) {
+    public void broadcastSMega(final MaplePacket data) {
+        for (final MapleCharacter chr : players.getAllCharacters()) {
             if (chr.getSmegaEnabled()) {
                 chr.getClient().getSession().write(data);
             }
         }
     }
 
-    public void broadcastGMPacket(MaplePacket data) {
-        for (MapleCharacter chr : players.getAllCharacters()) {
+    public void broadcastGMPacket(final MaplePacket data) {
+        for (final MapleCharacter chr : players.getAllCharacters()) {
             if (chr.isGM()) {
                 chr.getClient().getSession().write(data);
             }
@@ -775,35 +778,33 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         return serverName;
     }
 
-    public void broadcastToClan(MaplePacket data, int clan) {
-        for (MapleCharacter chr : clans.getAllOnlinePlayersFromClan(clan)) {
+    public void broadcastToClan(final MaplePacket data, final int clan) {
+        for (final MapleCharacter chr : clans.getAllOnlinePlayersFromClan(clan)) {
             chr.getClient().getSession().write(data);
         }
     }
 
-    public int onlineClanMembers(int clan) {
+    public int onlineClanMembers(final int clan) {
         return clans.countOnlineByClan(clan);
     }
 
-    public List<MapleCharacter> getPartyMembers(MapleParty party) {
-        List<MapleCharacter> partym = new ArrayList<>();
-        for (net.sf.odinms.net.world.MaplePartyCharacter partychar : party.getMembers()) {
-            if (partychar.getChannel() == channel) { // Make sure the thing doesn't get
-                                                          // duplicate plays due to ccing bug
-                MapleCharacter chr = getPlayerStorage().getCharacterByName(partychar.getName());
-                if (chr != null) {
-                    partym.add(chr);
-                }
-            }
-        }
-        return partym;
+    public List<MapleCharacter> getPartyMembers(final MapleParty party) {
+        final int ch = channel;
+        return
+            party
+                .getMembers()
+                .stream()
+                .filter(partychar -> partychar.getChannel() == ch)
+                .map(partychar -> getPlayerStorage().getCharacterByName(partychar.getName()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public void addClone(FakeCharacter fc) {
+    public void addClone(final FakeCharacter fc) {
         clones.add(fc);
     }
 
-    public void removeClone(FakeCharacter fc) {
+    public void removeClone(final FakeCharacter fc) {
         clones.remove(fc);
     }
 

@@ -11,16 +11,16 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.util.Iterator;
 
 public class DamageSummonHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         slea.readInt();
-        int unkByte = slea.readByte();
-        int damage = slea.readInt();
-        int monsterIdFrom = slea.readInt();
+        final int unkByte = slea.readByte();
+        final int damage = slea.readInt();
+        final int monsterIdFrom = slea.readInt();
         slea.readByte();
-        Iterator<MapleSummon> iter = player.getSummons().values().iterator();
+        final Iterator<MapleSummon> iter = player.getSummons().values().iterator();
         while (iter.hasNext()) {
-            MapleSummon summon = iter.next();
+            final MapleSummon summon = iter.next();
             if (summon.isPuppet() && summon.getOwner() == player) {
                 summon.addHP(-damage);
                 if (summon.getHP() <= 0) {

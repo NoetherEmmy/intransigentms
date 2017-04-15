@@ -18,13 +18,13 @@ public class NPCScriptManager extends AbstractScriptManager {
         return instance;
     }
 
-    public void start(MapleClient c, int npc) {
+    public void start(final MapleClient c, final int npc) {
         start(c, npc, null, null);
     }
 
-    public void start(MapleClient c, int npc, String filename, MapleCharacter chr) {
+    public void start(final MapleClient c, final int npc, final String filename, final MapleCharacter chr) {
         try {
-            NPCConversationManager cm = new NPCConversationManager(c, npc, chr, filename);
+            final NPCConversationManager cm = new NPCConversationManager(c, npc, chr, filename);
             if (cms.containsKey(c)) {
                 dispose(c);
                 return;
@@ -43,10 +43,10 @@ public class NPCScriptManager extends AbstractScriptManager {
             }
             addNpcTalkTimes(c.getPlayer().getId(), npc);
             engine.put("cm", cm);
-            NPCScript ns = iv.getInterface(NPCScript.class);
+            final NPCScript ns = iv.getInterface(NPCScript.class);
             scripts.put(c, ns);
             iv.invokeFunction("start");
-        } catch (NoSuchMethodException nsme) {
+        } catch (final NoSuchMethodException nsme) {
             System.err.println(
                 "The `start` method appears to be missing from NPC " +
                     npc +
@@ -54,19 +54,19 @@ public class NPCScriptManager extends AbstractScriptManager {
             );
             dispose(c);
             cms.remove(c);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error executing NPC script. NPC: " + npc + " Script: " + filename, e);
             dispose(c);
             cms.remove(c);
         }
     }
 
-    public void action(MapleClient c, byte mode, byte type, int selection) {
-        NPCScript ns = scripts.get(c);
+    public void action(final MapleClient c, final byte mode, final byte type, final int selection) {
+        final NPCScript ns = scripts.get(c);
         if (ns != null) {
             try {
                 ns.action(mode, type, selection);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error(
                     "Error executing NPC script. NPC: " +
                         (cms.containsKey(c) ? cms.get(c).getNpc() : "???") +
@@ -79,7 +79,7 @@ public class NPCScriptManager extends AbstractScriptManager {
         }
     }
 
-    public void dispose(NPCConversationManager cm) {
+    public void dispose(final NPCConversationManager cm) {
         cms.remove(cm.getC());
         scripts.remove(cm.getC());
         if (cm.getFileName() != null) {
@@ -89,35 +89,35 @@ public class NPCScriptManager extends AbstractScriptManager {
         }
     }
 
-    public void dispose(MapleClient c) {
-        NPCConversationManager npccm = cms.get(c);
+    public void dispose(final MapleClient c) {
+        final NPCConversationManager npccm = cms.get(c);
         if (npccm != null) dispose(npccm);
     }
 
-    public NPCConversationManager getCM(MapleClient c) {
+    public NPCConversationManager getCM(final MapleClient c) {
         return cms.get(c);
     }
 
-    public int getNpcTalkTimes(int chrid, int npc) {
-        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc); // First time looks wrong
+    public int getNpcTalkTimes(final int chrid, final int npc) {
+        final Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc); // First time looks wrong
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }
         return npcTalk.get(pplayer);
     }
 
-    public void addNpcTalkTimes(int chrid, int npc) {
-        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
+    public void addNpcTalkTimes(final int chrid, final int npc) {
+        final Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }
-        int talk = 1 + npcTalk.get(pplayer);
+        final int talk = 1 + npcTalk.get(pplayer);
         npcTalk.remove(pplayer);
         npcTalk.put(pplayer, talk);
     }
 
-    public void setNpcTalkTimes(int chrid, int npc, int amount) {
-        Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
+    public void setNpcTalkTimes(final int chrid, final int npc, final int amount) {
+        final Pair<Integer, Integer> pplayer = new Pair<>(chrid, npc);
         if (!npcTalk.containsKey(pplayer)) {
             npcTalk.put(pplayer, 0);
         }
@@ -125,8 +125,8 @@ public class NPCScriptManager extends AbstractScriptManager {
         npcTalk.put(pplayer, amount);
     }
 
-    public List<Integer> listTalkedNpcsByID(int chrid) {
-        List<Integer> npcs = new ArrayList<>();
+    public List<Integer> listTalkedNpcsByID(final int chrid) {
+        final List<Integer> npcs = new ArrayList<>();
         for (final Pair<Integer, Integer> p : npcTalk.keySet()) {
             if (p.getLeft().equals(chrid)) {
                 npcs.add(p.getRight());
@@ -136,14 +136,14 @@ public class NPCScriptManager extends AbstractScriptManager {
     }
 
     public List<Integer> listAllTalkedNpcs() {
-        List<Integer> npcs = new ArrayList<>();
+        final List<Integer> npcs = new ArrayList<>();
         for (final Pair<Integer, Integer> p : npcTalk.keySet()) {
             npcs.add(p.getRight());
         }
         return npcs;
     }
 
-    public int talkedTimesByNpc(int npc) {
+    public int talkedTimesByNpc(final int npc) {
         int i = 0;
         for (final Pair<Integer, Integer> p : npcTalk.keySet()) {
             if (p.getRight().equals(npc)) i += npcTalk.get(p);

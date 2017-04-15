@@ -8,14 +8,13 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class DoorHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int oid = slea.readInt();
-        @SuppressWarnings("unused")
-        boolean mode = (slea.readByte() == 0); // 1 town to target, 0 target to town.
-        for (MapleMapObject obj : c.getPlayer().getMap().getMapObjects()) {
+        final int oid = slea.readInt();
+        @SuppressWarnings("unused") final boolean mode = (slea.readByte() == 0); // 1 town to target, 0 target to town.
+        for (final MapleMapObject obj : c.getPlayer().getMap().getMapObjects()) {
             if (obj instanceof MapleDoor) {
-                MapleDoor door = (MapleDoor) obj;
+                final MapleDoor door = (MapleDoor) obj;
                 if (door.getOwner().getId() == oid) {
                     door.warp(c.getPlayer(), mode);
                     return;

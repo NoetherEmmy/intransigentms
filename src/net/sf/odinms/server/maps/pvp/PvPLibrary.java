@@ -34,10 +34,10 @@ public class PvPLibrary {
     private static final int MIN_PVP_DAMAGE = 0;
     private static final int DAMAGE_DIVIDER = 2;
 
-    public static void pvpDamageBalance(AbstractDealDamageHandler.AttackInfo attack, MapleCharacter player) {
-        int matk = player.getTotalMagic();
-        int luk = player.getTotalLuk();
-        int watk = player.getTotalWatk();
+    public static void pvpDamageBalance(final AbstractDealDamageHandler.AttackInfo attack, final MapleCharacter player) {
+        final int matk = player.getTotalMagic();
+        final int luk = player.getTotalLuk();
+        final int watk = player.getTotalWatk();
         switch (attack.skill) {
             case 0: // normal attack
                 multi = 1;
@@ -59,9 +59,9 @@ public class PvPLibrary {
             case 2001004:    // Energy Bolt
                 skil = SkillFactory.getSkill(2001004);
                 multi = skil.getEffect(player.getSkillLevel(skil)).getMatk();
-                double mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
+                final double mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d);
-                int min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
+                final int min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
                 maxDis = 200;
                 maxHeight = 35;
@@ -824,7 +824,7 @@ public class PvPLibrary {
         }
     }
 
-    public static void getDirection(AbstractDealDamageHandler.AttackInfo attack) {
+    public static void getDirection(final AbstractDealDamageHandler.AttackInfo attack) {
         if (isAoe) {
             isRight = true;
             isLeft = true;
@@ -883,15 +883,15 @@ public class PvPLibrary {
                 if (pvpDamage < 0) {
                     pvpDamage = MIN_PVP_DAMAGE;
                 }
-                Integer mguard = attackedPlayers.getBuffedValue(MapleBuffStat.MAGIC_GUARD);
-                Integer mesoguard = attackedPlayers.getBuffedValue(MapleBuffStat.MESOGUARD);
+                final Integer mguard = attackedPlayers.getBuffedValue(MapleBuffStat.MAGIC_GUARD);
+                final Integer mesoguard = attackedPlayers.getBuffedValue(MapleBuffStat.MESOGUARD);
                 if (mguard != null) {
                     skil = SkillFactory.getSkill(2001002);
                     skill = attackedPlayers.getSkillLevel(skil);
                     if (skill > 0) {
                         multi = (skil.getEffect(attackedPlayers.getSkillLevel(skil)).getX() / 100.0d);
                     }
-                    int mg = (int) (pvpDamage * multi);
+                    final int mg = (int) (pvpDamage * multi);
                     if (attackedPlayers.getMp() > mg) {
                         attackedPlayers.setMp(attackedPlayers.getMp() - mg);
                         pvpDamage -= mg;
@@ -908,7 +908,7 @@ public class PvPLibrary {
                     if (skill > 0) {
                         multi = (skil.getEffect(attackedPlayers.getSkillLevel(skil)).getX() / 100.0d);
                     }
-                    int mg = (int) (pvpDamage * multi);
+                    final int mg = (int) (pvpDamage * multi);
                     if (attackedPlayers.getMeso() > mg) {
                         attackedPlayers.gainMeso(-mg, false);
                         pvpDamage *= 0.5d;
@@ -917,7 +917,7 @@ public class PvPLibrary {
                     }
                     mesguard = true;
                 }
-                int y = 2;
+                final int y = 2;
                 int skillid;
                 int aPmp;
                 if (magic) {
@@ -981,8 +981,8 @@ public class PvPLibrary {
         }
     }
 
-    public static void playerReward(MapleCharacter player, MapleCharacter attackedPlayers) {
-        Integer holysymbol = player.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
+    public static void playerReward(final MapleCharacter player, final MapleCharacter attackedPlayers) {
+        final Integer holysymbol = player.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
         int resultexpgain = attackedPlayers.getLevel() * 250;
         if (holysymbol != null && (player.getPvpKills() * 0.1d > player.getPvpDeaths())) {
             resultexpgain *= 2;
@@ -1002,10 +1002,10 @@ public class PvPLibrary {
         attackedPlayers.getMap().spawnMesoDrop(mesoReward, mesoReward, attackedPlayers.getPosition(), attackedPlayers, attackedPlayers, false);
     }
 
-    public static synchronized void doPvP(MapleCharacter player, AbstractDealDamageHandler.AttackInfo attack) {
+    public static synchronized void doPvP(final MapleCharacter player, final AbstractDealDamageHandler.AttackInfo attack) {
         pvpDamageBalance(attack, player); // Grab height/distance/damage/aoe | true/false
         getDirection(attack);
-        for (MapleCharacter attackedPlayers : player.getMap().getNearestPvpChar(player.getPosition(), PvPLibrary.maxDis, PvPLibrary.maxHeight, Collections.unmodifiableCollection(player.getMap().getCharacters()))) {
+        for (final MapleCharacter attackedPlayers : player.getMap().getNearestPvpChar(player.getPosition(), PvPLibrary.maxDis, PvPLibrary.maxHeight, Collections.unmodifiableCollection(player.getMap().getCharacters()))) {
             if (attackedPlayers.isAlive() && (player.getParty() == null || player.getParty() != attackedPlayers.getParty())) {
                 monsterBomb(player, attackedPlayers, attack);
             }

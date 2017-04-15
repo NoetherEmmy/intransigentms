@@ -17,17 +17,17 @@ public class PartySearchHandler extends AbstractMaplePacketHandler {
             AllBowman = false, Bowman1 = false, Bowman2 = false;
     List<Integer> boxsumconstructor = new ArrayList<>();
 
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int min = slea.readInt();
-        int max = slea.readInt();
-        int person = slea.readInt();
-        int box = slea.readInt();
+        final int min = slea.readInt();
+        final int max = slea.readInt();
+        final int person = slea.readInt();
+        final int box = slea.readInt();
         System.out.println("MINIMUM PLAYERS: " + min);
         System.out.println("MAXIMUM PLAYERS: " + max);
         System.out.println("AMOUNT OF PLAYERS: " + person);
         System.out.println("BOX VALUE: " + box);
-        String binary = Integer.toBinaryString(box);
+        final String binary = Integer.toBinaryString(box);
         String reverse = "";
         System.out.println("Binary: " + binary);
         for (int z = 0; z < binary.length(); ++z) {
@@ -42,7 +42,7 @@ public class PartySearchHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    public void isJob(char binary, int times, MapleClient c) {
+    public void isJob(final char binary, int times, final MapleClient c) {
         times++;
         if (binary == 1) {
             if (times == 1) {

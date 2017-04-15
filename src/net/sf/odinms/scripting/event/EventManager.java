@@ -19,7 +19,7 @@ public class EventManager {
     private final Properties props = new Properties();
     private final String name;
 
-    public EventManager(ChannelServer cserv, Invocable iv, String name) {
+    public EventManager(final ChannelServer cserv, final Invocable iv, final String name) {
         this.iv = iv;
         this.cserv = cserv;
         this.name = name;
@@ -33,11 +33,11 @@ public class EventManager {
         }
     }
 
-    public void schedule(String methodName, long delay) {
+    public void schedule(final String methodName, final long delay) {
         schedule(methodName, null, delay);
     }
 
-    public void schedule(final String methodName, final EventInstanceManager eim, long delay) {
+    public void schedule(final String methodName, final EventInstanceManager eim, final long delay) {
         TimerManager.getInstance().schedule(() -> {
             try {
                 iv.invokeFunction(methodName, eim);
@@ -47,7 +47,7 @@ public class EventManager {
         }, delay);
     }
 
-    public ScheduledFuture<?> scheduleAtTimestamp(final String methodName, long timestamp) {
+    public ScheduledFuture<?> scheduleAtTimestamp(final String methodName, final long timestamp) {
         return TimerManager.getInstance().scheduleAtTimestamp(() -> {
             try {
                 iv.invokeFunction(methodName, (Object) null);
@@ -57,7 +57,7 @@ public class EventManager {
         }, timestamp);
     }
 
-    public ScheduledFuture<?> scheduleAtFixedRate(final String methodName, long delay) {
+    public ScheduledFuture<?> scheduleAtFixedRate(final String methodName, final long delay) {
         return TimerManager.getInstance().register(() -> {
             try {
                 iv.invokeFunction(methodName, (Object) null);
@@ -71,7 +71,7 @@ public class EventManager {
         return cserv;
     }
 
-    public EventInstanceManager getInstance(String name) {
+    public EventInstanceManager getInstance(final String name) {
         return instances.get(name);
     }
 
@@ -79,13 +79,13 @@ public class EventManager {
         return Collections.unmodifiableCollection(instances.values());
     }
 
-    public EventInstanceManager newInstance(String name) {
-        EventInstanceManager ret = new EventInstanceManager(this, name);
+    public EventInstanceManager newInstance(final String name) {
+        final EventInstanceManager ret = new EventInstanceManager(this, name);
         instances.put(name, ret);
         return ret;
     }
 
-    public void disposeInstance(String name) {
+    public void disposeInstance(final String name) {
         try {
             iv.invokeFunction("dispose", (Object) null);
         } catch (ScriptException | NoSuchMethodException ex) {
@@ -98,11 +98,11 @@ public class EventManager {
         return iv;
     }
 
-    public void setProperty(String key, String value) {
+    public void setProperty(final String key, final String value) {
         props.setProperty(key, value);
     }
 
-    public String getProperty(String key) {
+    public String getProperty(final String key) {
         return props.getProperty(key);
     }
 
@@ -111,9 +111,9 @@ public class EventManager {
     }
 
     // PQ method: starts a PQ
-    public void startInstance(MapleParty party, MapleMap map) {
+    public void startInstance(final MapleParty party, final MapleMap map) {
         try {
-            EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
+            final EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
             eim.registerParty(party, map);
         } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -121,7 +121,7 @@ public class EventManager {
     }
 
     // non-PQ method for starting instance
-    public void startInstance(EventInstanceManager eim) {
+    public void startInstance(final EventInstanceManager eim) {
         try {
             iv.invokeFunction("setup", eim);
         } catch (ScriptException | NoSuchMethodException ex) {

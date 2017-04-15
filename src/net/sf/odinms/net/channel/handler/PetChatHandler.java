@@ -8,12 +8,12 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class PetChatHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int petId = slea.readInt();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int petId = slea.readInt();
         slea.readInt();
-        int unknownShort = slea.readShort();
-        String text = slea.readMapleAsciiString();
-        MapleCharacter player = c.getPlayer();
+        final int unknownShort = slea.readShort();
+        final String text = slea.readMapleAsciiString();
+        final MapleCharacter player = c.getPlayer();
         player
             .getMap()
             .broadcastMessage(

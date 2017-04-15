@@ -14,14 +14,14 @@ import java.sql.SQLException;
 
 public class CouponCodeHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         slea.skip(2);
-        String code = slea.readMapleAsciiString();
-        boolean validcode = getNXCodeValid(code.toUpperCase());
+        final String code = slea.readMapleAsciiString();
+        final boolean validcode = getNXCodeValid(code.toUpperCase());
 
         if (validcode) {
-            int type = getNXCodeType(code);
-            int item = getNXCodeItem(code);
+            final int type = getNXCodeType(code);
+            final int item = getNXCodeItem(code);
 
             if (type != 5) setNXCodeUsed(code, c.getPlayer().getName());
             /*
@@ -65,53 +65,53 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
         c.getSession().write(MaplePacketCreator.enableCSUse2());
     }
 
-    private boolean getNXCodeValid(String code) {
+    private boolean getNXCodeValid(final String code) {
         boolean valid = false;
-        Connection con = DatabaseConnection.getConnection();
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT `valid` FROM nxcode WHERE code = ?");
+            final PreparedStatement ps = con.prepareStatement("SELECT `valid` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) valid = rs.getInt("valid") != 0;
             rs.close();
             ps.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
         return valid;
     }
 
-    private int getNXCodeType(String code) {
+    private int getNXCodeType(final String code) {
         int type = -1;
-        Connection con = DatabaseConnection.getConnection();
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT `type` FROM nxcode WHERE code = ?");
+            final PreparedStatement ps = con.prepareStatement("SELECT `type` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) type = rs.getInt("type");
             rs.close();
             ps.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
         return type;
     }
 
-    private int getNXCodeItem(String code) {
+    private int getNXCodeItem(final String code) {
         int item = -1;
-        Connection con = DatabaseConnection.getConnection();
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT `item` FROM nxcode WHERE code = ?");
+            final PreparedStatement ps = con.prepareStatement("SELECT `item` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) item = rs.getInt("item");
             rs.close();
             ps.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
         return item;
     }
 
-    public void setNXCodeUsed(String code, String name) {
-        Connection con = DatabaseConnection.getConnection();
+    public void setNXCodeUsed(final String code, final String name) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("UPDATE nxcode SET `valid` = 0 WHERE code = ?");
             ps.setString(1, code);
@@ -121,7 +121,7 @@ public class CouponCodeHandler extends AbstractMaplePacketHandler {
             ps.setString(2, code);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
     }
 }

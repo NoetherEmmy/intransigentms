@@ -19,10 +19,10 @@ public class TimerManager implements TimerManagerMBean {
     private ScheduledThreadPoolExecutor ses;
 
     private TimerManager() {
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         try {
             mBeanServer.registerMBean(this, new ObjectName("net.sf.odinms.server:type=TimerManger"));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error registering MBean ", e);
         }
     }
@@ -35,12 +35,12 @@ public class TimerManager implements TimerManagerMBean {
         if (ses != null && !ses.isShutdown() && !ses.isTerminated()) {
             return; // Starting the same TimerManager twice is a no-op.
         }
-        ScheduledThreadPoolExecutor stpe = new ScheduledThreadPoolExecutor(4, new ThreadFactory() {
+        final ScheduledThreadPoolExecutor stpe = new ScheduledThreadPoolExecutor(4, new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(1);
 
             @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
+            public Thread newThread(final Runnable r) {
+                final Thread t = new Thread(r);
                 t.setName("Timermanager-Worker-" + threadNumber.getAndIncrement());
                 return t;
             }
@@ -54,23 +54,23 @@ public class TimerManager implements TimerManagerMBean {
         ses.shutdown();
     }
 
-    public ScheduledFuture<?> register(Runnable r, long repeatTime, long delay) {
+    public ScheduledFuture<?> register(final Runnable r, final long repeatTime, final long delay) {
         return ses.scheduleAtFixedRate(new LoggingSaveRunnable(r), delay, repeatTime, TimeUnit.MILLISECONDS);
     }
 
-    public ScheduledFuture<?> register(Runnable r, long repeatTime) {
+    public ScheduledFuture<?> register(final Runnable r, final long repeatTime) {
         return ses.scheduleAtFixedRate(new LoggingSaveRunnable(r), 0, repeatTime, TimeUnit.MILLISECONDS);
     }
 
-    public ScheduledFuture<?> schedule(Runnable r, long delay) {
+    public ScheduledFuture<?> schedule(final Runnable r, final long delay) {
         return ses.schedule(new LoggingSaveRunnable(r), delay, TimeUnit.MILLISECONDS);
     }
 
-    public ScheduledFuture<?> scheduleAtTimestamp(Runnable r, long timestamp) {
+    public ScheduledFuture<?> scheduleAtTimestamp(final Runnable r, final long timestamp) {
         return schedule(r, timestamp - System.currentTimeMillis());
     }
 
-    public void dropDebugInfo(MessageCallback callback) {
+    public void dropDebugInfo(final MessageCallback callback) {
         StringBuilder builder = new StringBuilder();
         builder.append("Terminated: ");
         builder.append(ses.isTerminated());
@@ -125,7 +125,7 @@ public class TimerManager implements TimerManagerMBean {
 
     private static class LoggingSaveRunnable implements Runnable {
         final Runnable r;
-        public LoggingSaveRunnable(Runnable r) {
+        public LoggingSaveRunnable(final Runnable r) {
             this.r = r;
         }
 
@@ -133,7 +133,7 @@ public class TimerManager implements TimerManagerMBean {
         public void run() {
             try {
                 r.run();
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 log.error("ERROR ", t);
             }
         }

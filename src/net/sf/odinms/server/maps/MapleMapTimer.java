@@ -13,8 +13,8 @@ public class MapleMapTimer {
     private final int minLevelToWarp, maxLevelToWarp;
     private final ScheduledFuture<?> sf0F;
 
-    public MapleMapTimer(ScheduledFuture<?> sfO, int newDuration, int mapToWarpToP, int minLevelToWarpP, int maxLevelToWarpP) {
-        Calendar startTime = Calendar.getInstance();
+    public MapleMapTimer(final ScheduledFuture<?> sfO, final int newDuration, final int mapToWarpToP, final int minLevelToWarpP, final int maxLevelToWarpP) {
+        final Calendar startTime = Calendar.getInstance();
         predictedStopTime = Calendar.getInstance();
         predictedStopTime.add(Calendar.SECOND, newDuration);
         mapToWarpTo = mapToWarpToP;
@@ -31,7 +31,7 @@ public class MapleMapTimer {
         return MaplePacketCreator.getClock(timeLeft);
     }
 
-    public void sendSpawnData(MapleClient c) {
+    public void sendSpawnData(final MapleClient c) {
         c.getSession().write(makeSpawnData());
     }
 

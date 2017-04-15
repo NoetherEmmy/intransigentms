@@ -7,7 +7,7 @@ public abstract class AbstractAnimatedMapleMapObject extends AbstractMapleMapObj
         return stance;
     }
 
-    public void setStance(int stance) {
+    public void setStance(final int stance) {
         this.stance = stance;
     }
 

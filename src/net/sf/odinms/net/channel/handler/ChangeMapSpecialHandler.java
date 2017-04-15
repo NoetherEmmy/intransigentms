@@ -10,17 +10,17 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ChangeMapSpecialHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         try {
             c.getPlayer().setLastKillOnMap(0L);
             c.getPlayer().setLastDamageSource(null);
             c.getPlayer().resetAfkTime();
             slea.readByte();
-            String startwp = slea.readMapleAsciiString();
+            final String startwp = slea.readMapleAsciiString();
             slea.readByte();
             //byte sourcefm = slea.readByte();
             slea.readByte();
-            MapleCharacter player = c.getPlayer();
+            final MapleCharacter player = c.getPlayer();
             if (player.getBuffedValue(MapleBuffStat.MORPH) != null && player.getBuffedValue(MapleBuffStat.COMBO) != null) {
                 player.cancelEffectFromBuffStat(MapleBuffStat.MORPH);
                 player.cancelEffectFromBuffStat(MapleBuffStat.COMBO);
@@ -28,7 +28,7 @@ public class ChangeMapSpecialHandler extends AbstractMaplePacketHandler {
             if (player.getBuffedValue(MapleBuffStat.PUPPET) != null) {
                 player.cancelBuffStats(MapleBuffStat.PUPPET);
             }
-            MaplePortal portal = c.getPlayer().getMap().getPortal(startwp);
+            final MaplePortal portal = c.getPlayer().getMap().getPortal(startwp);
             if (portal != null) {
                 if (c.getPlayer().getMapId() == 222020200 && "elevator".equals(portal.getScriptName())) {
                     c.getPlayer().changeMap(222020100);
@@ -40,7 +40,7 @@ public class ChangeMapSpecialHandler extends AbstractMaplePacketHandler {
             } else {
                 c.getSession().write(MaplePacketCreator.enableActions());
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

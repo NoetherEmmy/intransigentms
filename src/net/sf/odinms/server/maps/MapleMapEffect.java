@@ -9,12 +9,12 @@ public class MapleMapEffect {
     private final int itemId;
     private boolean active = true;
 
-    public MapleMapEffect(String msg, int itemId) {
+    public MapleMapEffect(final String msg, final int itemId) {
         this.msg = msg;
         this.itemId = itemId;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(final boolean active) {
         this.active = active;
     }
 
@@ -26,7 +26,7 @@ public class MapleMapEffect {
         return MaplePacketCreator.startMapEffect(msg, itemId, active);
     }
 
-    public void sendStartData(MapleClient client) {
+    public void sendStartData(final MapleClient client) {
         client.getSession().write(makeStartData());
     }
 }

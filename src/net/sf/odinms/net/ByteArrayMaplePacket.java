@@ -7,7 +7,7 @@ public class ByteArrayMaplePacket implements MaplePacket {
     private final byte[] data;
     private Runnable onSend;
 
-    public ByteArrayMaplePacket(byte[] data) {
+    public ByteArrayMaplePacket(final byte[] data) {
         this.data = data;
     }
 
@@ -25,7 +25,7 @@ public class ByteArrayMaplePacket implements MaplePacket {
         return onSend;
     }
 
-    public void setOnSend(Runnable onSend) {
+    public void setOnSend(final Runnable onSend) {
         this.onSend = onSend;
     }
 }

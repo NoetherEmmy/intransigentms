@@ -20,7 +20,7 @@ public class MobAttackInfoFactory {
             )
         );
 
-    public static MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
+    public static MobAttackInfo getMobAttackInfo(final MapleMonster mob, final int attack) {
         MobAttackInfo ret = mobAttacks.get(new Pair<>(mob.getId(), attack));
         if (ret != null) {
             return ret;
@@ -38,18 +38,18 @@ public class MobAttackInfoFactory {
                         )
                     );
                 if (mobData != null) {
-                    MapleData infoData = mobData.getChildByPath("info");
-                    String linkedmob = MapleDataTool.getString("link", mobData, "");
+                    final MapleData infoData = mobData.getChildByPath("info");
+                    final String linkedmob = MapleDataTool.getString("link", mobData, "");
                     if (!linkedmob.equals("")) {
                         mobData = dataSource.getData(StringUtil.getLeftPaddedStr(linkedmob + ".img", '0', 11));
                     }
-                    MapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
+                    final MapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
                     if (attackData != null) {
-                        MapleData deadlyAttack = attackData.getChildByPath("deadlyAttack");
-                        int mpBurn = MapleDataTool.getInt("mpBurn", attackData, 0);
-                        int disease = MapleDataTool.getInt("disease", attackData, 0);
-                        int level = MapleDataTool.getInt("level", attackData, 0);
-                        int mpCon = MapleDataTool.getInt("conMP", attackData, 0);
+                        final MapleData deadlyAttack = attackData.getChildByPath("deadlyAttack");
+                        final int mpBurn = MapleDataTool.getInt("mpBurn", attackData, 0);
+                        final int disease = MapleDataTool.getInt("disease", attackData, 0);
+                        final int level = MapleDataTool.getInt("level", attackData, 0);
+                        final int mpCon = MapleDataTool.getInt("conMP", attackData, 0);
                         ret = new MobAttackInfo(mob.getId(), attack);
                         //ret.setDeadlyAttack(deadlyAttack != null);
                         ret.setDeadlyAttack();

@@ -9,7 +9,7 @@ public class BuddylistEntry {
     /**
      * @param channel should be -1 if the buddy is offline
      */
-    public BuddylistEntry(String name, int characterId, int channel, boolean visible) {
+    public BuddylistEntry(final String name, final int characterId, final int channel, final boolean visible) {
         super();
         this.name = name;
         this.cid = characterId;
@@ -24,7 +24,7 @@ public class BuddylistEntry {
         return channel;
     }
 
-    public void setChannel(int channel) {
+    public void setChannel(final int channel) {
         this.channel = channel;
     }
 
@@ -44,7 +44,7 @@ public class BuddylistEntry {
         return cid;
     }
 
-    public void setVisible(boolean visible) {
+    public void setVisible(final boolean visible) {
         this.visible = visible;
     }
 
@@ -61,7 +61,7 @@ public class BuddylistEntry {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;

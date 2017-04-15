@@ -37,14 +37,14 @@ import static net.sf.odinms.client.messages.CommandProcessor.getOptionalIntArg;
 
 public class Admins implements Command {
     @Override
-    public void execute(MapleClient c, MessageCallback mc, String[] splitted) throws Exception {
+    public void execute(final MapleClient c, final MessageCallback mc, final String[] splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
         final MapleCharacter player = c.getPlayer();
-        ChannelServer cserv = c.getChannelServer();
+        final ChannelServer cserv = c.getChannelServer();
         switch (splitted[0]) {
             case "!speakall": {
-                String text = StringUtil.joinStringFrom(splitted, 1);
-                for (MapleCharacter mch : player.getMap().getCharacters()) {
+                final String text = StringUtil.joinStringFrom(splitted, 1);
+                for (final MapleCharacter mch : player.getMap().getCharacters()) {
                     mch.getMap().broadcastMessage(MaplePacketCreator.getChatText(mch.getId(), text, false, 0));
                 }
                 break;
@@ -62,14 +62,14 @@ public class Admins implements Command {
                 break;
             }
             case "!killnear": {
-                MapleMap map = player.getMap();
-                List<MapleMapObject> players = map.getMapObjectsInRange(
+                final MapleMap map = player.getMap();
+                final List<MapleMapObject> players = map.getMapObjectsInRange(
                     player.getPosition(),
                     50000.0d,
                     MapleMapObjectType.PLAYER
                 );
-                for (MapleMapObject closeplayers : players) {
-                    MapleCharacter playernear = (MapleCharacter) closeplayers;
+                for (final MapleMapObject closeplayers : players) {
+                    final MapleCharacter playernear = (MapleCharacter) closeplayers;
                     if (playernear.isAlive() && playernear != player) {
                         playernear.setHp(0);
                         playernear.updateSingleStat(MapleStat.HP, 0);
@@ -86,10 +86,10 @@ public class Admins implements Command {
                 }
                 break;
             case "!drop": {
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                int itemId = Integer.parseInt(splitted[1]);
-                short quantity = (short) getOptionalIntArg(splitted, 2, 1);
-                IItem toDrop;
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                final int itemId = Integer.parseInt(splitted[1]);
+                final short quantity = (short) getOptionalIntArg(splitted, 2, 1);
+                final IItem toDrop;
                 if (ii.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
                     toDrop = ii.getEquipById(itemId);
                 } else {
@@ -99,27 +99,27 @@ public class Admins implements Command {
                 break;
             }
             case "!startprofiling": {
-                CPUSampler sampler = CPUSampler.getInstance();
+                final CPUSampler sampler = CPUSampler.getInstance();
                 sampler.addIncluded("net.sf.odinms");
                 sampler.start();
                 break;
             }
             case "!stopprofiling": {
-                CPUSampler sampler = CPUSampler.getInstance();
+                final CPUSampler sampler = CPUSampler.getInstance();
                 try {
                     String filename = "odinprofile.txt";
                     if (splitted.length > 1) {
                         filename = splitted[1];
                     }
-                    File file = new File(filename);
+                    final File file = new File(filename);
                     if (file.exists()) {
                         file.delete();
                     }
                     sampler.stop();
-                    FileWriter fw = new FileWriter(file);
+                    final FileWriter fw = new FileWriter(file);
                     sampler.save(fw, 1, 10);
                     fw.close();
-                } catch (IOException ignored) {
+                } catch (final IOException ignored) {
                 }
                 sampler.reset();
                 break;
@@ -128,15 +128,15 @@ public class Admins implements Command {
                 try {
                     ExternalCodeTableGetter.populateValues(SendPacketOpcode.getDefaultProperties(), SendPacketOpcode.values());
                     ExternalCodeTableGetter.populateValues(RecvPacketOpcode.getDefaultProperties(), RecvPacketOpcode.values());
-                } catch (Exception ignored) {
+                } catch (final Exception ignored) {
                 }
                 PacketProcessor.getProcessor(PacketProcessor.Mode.CHANNELSERVER).reset(PacketProcessor.Mode.CHANNELSERVER);
                 PacketProcessor.getProcessor(PacketProcessor.Mode.CHANNELSERVER).reset(PacketProcessor.Mode.CHANNELSERVER);
                 break;
             case "!closemerchants": {
                 mc.dropMessage("Closing and saving merchants, please wait...");
-                for (ChannelServer channel : ChannelServer.getAllInstances()) {
-                    for (MapleCharacter player_ : channel.getPlayerStorage().getAllCharacters()) {
+                for (final ChannelServer channel : ChannelServer.getAllInstances()) {
+                    for (final MapleCharacter player_ : channel.getPlayerStorage().getAllCharacters()) {
                         player_.getInteraction().closeShop(true);
                     }
                 }
@@ -166,13 +166,13 @@ public class Admins implements Command {
                 new ShutdownServer(c.getChannel()).run();
                 break;
             case "!setrebirths": {
-                int rebirths;
+                final int rebirths;
                 try {
                     rebirths = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.setReborns(rebirths);
                 } else {
@@ -181,13 +181,13 @@ public class Admins implements Command {
                 break;
             }
             case "!mesoperson": {
-                int mesos;
+                final int mesos;
                 try {
                     mesos = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.gainMeso(mesos, true, true, true);
                 } else {
@@ -197,12 +197,12 @@ public class Admins implements Command {
             }
             case "!gmperson":
                 if (splitted.length == 3) {
-                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
+                    final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
                     if (victim != null) {
-                        int level;
+                        final int level;
                         try {
                             level = Integer.parseInt(splitted[2]);
-                        } catch (NumberFormatException nfe) {
+                        } catch (final NumberFormatException nfe) {
                             return;
                         }
                         victim.setGM(level);
@@ -215,7 +215,7 @@ public class Admins implements Command {
                 }
                 break;
             case "!kill": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.setHp(0);
                     victim.setMp(0);
@@ -227,11 +227,11 @@ public class Admins implements Command {
                 break;
             }
             case "!jobperson": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                int job;
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final int job;
                 try {
                     job = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
                 if (victim != null) {
@@ -248,14 +248,14 @@ public class Admins implements Command {
                 TimerManager.getInstance().dropDebugInfo(mc);
                 break;
             case "!threads": {
-                Thread[] threads = new Thread[Thread.activeCount()];
+                final Thread[] threads = new Thread[Thread.activeCount()];
                 Thread.enumerate(threads);
                 String filter = "";
                 if (splitted.length > 1) {
                     filter = splitted[1];
                 }
                 for (int i = 0; i < threads.length; ++i) {
-                    String tstring = threads[i].toString();
+                    final String tstring = threads[i].toString();
                     if (tstring.toLowerCase().contains(filter.toLowerCase())) {
                         mc.dropMessage(i + ": " + tstring);
                     }
@@ -263,11 +263,11 @@ public class Admins implements Command {
                 break;
             }
             case "!showtrace": {
-                Thread[] threads = new Thread[Thread.activeCount()];
+                final Thread[] threads = new Thread[Thread.activeCount()];
                 Thread.enumerate(threads);
-                Thread t = threads[Integer.parseInt(splitted[1])];
+                final Thread t = threads[Integer.parseInt(splitted[1])];
                 mc.dropMessage(t + ":");
-                for (StackTraceElement elem : t.getStackTrace()) {
+                for (final StackTraceElement elem : t.getStackTrace()) {
                     mc.dropMessage(elem.toString());
                 }
 
@@ -278,8 +278,8 @@ public class Admins implements Command {
                     mc.dropMessage("!shopitem <shopid> <itemid> <price> <position>");
                 } else {
                     try {
-                        Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement(
+                        final Connection con = DatabaseConnection.getConnection();
+                        final PreparedStatement ps = con.prepareStatement(
                             "INSERT INTO shopitems (shopid, itemid, price, position) VALUES (?, ?, ?, ?)"
                         );
                         ps.setInt(1, Integer.parseInt(splitted[1]));
@@ -290,18 +290,18 @@ public class Admins implements Command {
                         ps.close();
                         MapleShopFactory.getInstance().clear();
                         mc.dropMessage("Done adding shop item.");
-                    } catch (SQLException e) {
+                    } catch (final SQLException e) {
                         mc.dropMessage("Something wrong happened.");
                     }
                 }
 
                 break;
             case "!pnpc": {
-                int npcId = Integer.parseInt(splitted[1]);
-                MapleNPC npc = MapleLifeFactory.getNPC(npcId);
-                int xpos = player.getPosition().x;
-                int ypos = player.getPosition().y;
-                int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
+                final int npcId = Integer.parseInt(splitted[1]);
+                final MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+                final int xpos = player.getPosition().x;
+                final int ypos = player.getPosition().y;
+                final int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
                 if (!npc.getName().equals("MISSINGNO")) {
                     npc.setPosition(player.getPosition());
                     npc.setCy(ypos);
@@ -310,8 +310,8 @@ public class Admins implements Command {
                     npc.setFh(fh);
                     npc.setCustom(true);
                     try {
-                        Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type, x, y, mid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        final Connection con = DatabaseConnection.getConnection();
+                        final PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type, x, y, mid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                         ps.setInt(1, npcId);
                         ps.setInt(2, 0);
                         ps.setInt(3, fh);
@@ -324,7 +324,7 @@ public class Admins implements Command {
                         ps.setInt(9, ypos);
                         ps.setInt(10, player.getMapId());
                         ps.executeUpdate();
-                    } catch (SQLException e) {
+                    } catch (final SQLException e) {
                         mc.dropMessage("Failed to save NPC to the database");
                     }
                     player.getMap().addMapObject(npc);
@@ -336,9 +336,9 @@ public class Admins implements Command {
             }
             case "!toggleoffense":
                 try {
-                    CheatingOffense co = CheatingOffense.valueOf(splitted[1]);
+                    final CheatingOffense co = CheatingOffense.valueOf(splitted[1]);
                     co.setEnabled(!co.isEnabled());
-                } catch (IllegalArgumentException iae) {
+                } catch (final IllegalArgumentException iae) {
                     mc.dropMessage("Offense " + splitted[1] + " not found");
                 }
                 break;
@@ -348,7 +348,7 @@ public class Admins implements Command {
             case "!givemonsbuff": {
                 int mask = 0;
                 mask |= Integer.decode(splitted[1]);
-                MobSkill skill = MobSkillFactory.getMobSkill(128, 1);
+                final MobSkill skill = MobSkillFactory.getMobSkill(128, 1);
                 c.getSession().write(MaplePacketCreator.applyMonsterStatusTest(Integer.valueOf(splitted[2]), mask, 0, skill));
                 break;
             }
@@ -359,8 +359,8 @@ public class Admins implements Command {
                 break;
             }
             case "!sreactor":
-                MapleReactorStats reactorSt = MapleReactorFactory.getReactor(Integer.parseInt(splitted[1]));
-                MapleReactor reactor = new MapleReactor(reactorSt, Integer.parseInt(splitted[1]));
+                final MapleReactorStats reactorSt = MapleReactorFactory.getReactor(Integer.parseInt(splitted[1]));
+                final MapleReactor reactor = new MapleReactor(reactorSt, Integer.parseInt(splitted[1]));
                 reactor.setDelay(-1);
                 reactor.setPosition(player.getPosition());
                 player.getMap().spawnReactor(reactor);
@@ -369,10 +369,10 @@ public class Admins implements Command {
                 player.getMap().getReactorByOid(Integer.parseInt(splitted[1])).hitReactor(c);
                 break;
             case "!lreactor": {
-                MapleMap map = player.getMap();
-                List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, MapleMapObjectType.REACTOR);
-                for (MapleMapObject reactorL : reactors) {
-                    MapleReactor reactor2l = (MapleReactor) reactorL;
+                final MapleMap map = player.getMap();
+                final List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, MapleMapObjectType.REACTOR);
+                for (final MapleMapObject reactorL : reactors) {
+                    final MapleReactor reactor2l = (MapleReactor) reactorL;
                     mc.dropMessage(
                         "Reactor: oid: " +
                             reactor2l.getObjectId() +
@@ -389,11 +389,11 @@ public class Admins implements Command {
                 break;
             }
             case "!dreactor": {
-                MapleMap map = player.getMap();
-                List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, MapleMapObjectType.REACTOR);
+                final MapleMap map = player.getMap();
+                final List<MapleMapObject> reactors = map.getMapObjectsInRange(player.getPosition(), Double.POSITIVE_INFINITY, MapleMapObjectType.REACTOR);
                 if (splitted[1].equalsIgnoreCase("all")) {
-                    for (MapleMapObject reactorL : reactors) {
-                        MapleReactor reactor2l = (MapleReactor) reactorL;
+                    for (final MapleMapObject reactorL : reactors) {
+                        final MapleReactor reactor2l = (MapleReactor) reactorL;
                         player.getMap().destroyReactor(reactor2l.getObjectId());
                     }
                 } else {
@@ -405,15 +405,15 @@ public class Admins implements Command {
                 CommandProcessor.getInstance().writeCommandList();
                 break;
             case "!saveall":
-                for (ChannelServer chan : ChannelServer.getAllInstances()) {
-                    for (MapleCharacter chr : chan.getPlayerStorage().getAllCharacters()) {
+                for (final ChannelServer chan : ChannelServer.getAllInstances()) {
+                    for (final MapleCharacter chr : chan.getPlayerStorage().getAllCharacters()) {
                         chr.saveToDB(true, false);
                     }
                 }
                 mc.dropMessage("Save complete.");
                 break;
             case "!getpw":
-                MapleClient victimC = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]).getClient();
+                final MapleClient victimC = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]).getClient();
                 if (!victimC.isGm()) {
                     mc.dropMessage("Username: " + victimC.getAccountName());
                     mc.dropMessage("Password: " + victimC.getAccountPass());
@@ -430,7 +430,7 @@ public class Admins implements Command {
                     range = 2;
                 }
                 int tfrom = 2;
-                int type;
+                final int type;
                 if (range == -1) {
                     range = 2;
                     tfrom = 1;
@@ -460,7 +460,7 @@ public class Admins implements Command {
                 if (outputMessage.equalsIgnoreCase("!array")) {
                     outputMessage = c.getChannelServer().getArrayString();
                 }
-                MaplePacket packet = MaplePacketCreator.serverNotice(type, prefix + outputMessage);
+                final MaplePacket packet = MaplePacketCreator.serverNotice(type, prefix + outputMessage);
                 if (range == 0) {
                     player.getMap().broadcastMessage(packet);
                 } else if (range == 1) {
@@ -468,14 +468,14 @@ public class Admins implements Command {
                 } else {
                     try {
                         ChannelServer.getInstance(c.getChannel()).getWorldInterface().broadcastMessage(player.getName(), packet.getBytes());
-                    } catch (RemoteException e) {
+                    } catch (final RemoteException e) {
                         c.getChannelServer().reconnectWorld();
                     }
                 }
                 break;
             }
             case "!strip": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
                     victim.unequipEverything();
                     victim.dropMessage("You've been stripped by " + player.getName() + ".");
@@ -485,9 +485,9 @@ public class Admins implements Command {
                 break;
             }
             case "!speak": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
                 if (victim != null) {
-                    String text = StringUtil.joinStringFrom(splitted, 2);
+                    final String text = StringUtil.joinStringFrom(splitted, 2);
                     victim.getMap().broadcastMessage(MaplePacketCreator.getChatText(victim.getId(), text, false, 0));
                 } else {
                     mc.dropMessage("Player not found");
@@ -495,25 +495,25 @@ public class Admins implements Command {
                 break;
             }
             case "!changechannel": {
-                int channel;
+                final int channel;
                 if (splitted.length == 3) {
                     try {
                         channel = Integer.parseInt(splitted[2]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         return;
                     }
                     if (channel <= ChannelServer.getAllInstances().size() || channel < 0) {
-                        String name = splitted[1];
+                        final String name = splitted[1];
                         try {
-                            int vchannel = c.getChannelServer().getWorldInterface().find(name);
+                            final int vchannel = c.getChannelServer().getWorldInterface().find(name);
                             if (vchannel > -1) {
-                                ChannelServer pserv = ChannelServer.getInstance(vchannel);
-                                MapleCharacter victim = pserv.getPlayerStorage().getCharacterByName(name);
+                                final ChannelServer pserv = ChannelServer.getInstance(vchannel);
+                                final MapleCharacter victim = pserv.getPlayerStorage().getCharacterByName(name);
                                 ChangeChannelHandler.changeChannel(channel, victim.getClient());
                             } else {
                                 mc.dropMessage("Player not found");
                             }
-                        } catch (RemoteException re) {
+                        } catch (final RemoteException re) {
                             c.getChannelServer().reconnectWorld();
                         }
                     } else {
@@ -522,7 +522,7 @@ public class Admins implements Command {
                 } else {
                     try {
                         channel = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         return;
                     }
                     if (channel <= ChannelServer.getAllInstances().size() || channel < 0) {
@@ -536,7 +536,7 @@ public class Admins implements Command {
                     mc.dropMessage("Attempting to reload all guilds... this may take a while...");
                     cserv.getWorldInterface().clearGuilds();
                     mc.dropMessage("Completed.");
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     mc.dropMessage("RemoteException occurred while attempting to reload guilds.");
                 }
                 break;
@@ -550,30 +550,30 @@ public class Admins implements Command {
                 MapleMap map = player.getMap();
                 double range = Double.POSITIVE_INFINITY;
                 if (splitted.length > 1) {
-                    int irange = Integer.parseInt(splitted[1]);
+                    final int irange = Integer.parseInt(splitted[1]);
                     if (splitted.length <= 2) {
                         range = irange * irange;
                     } else {
                         map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
                     }
                 }
-                List<MapleMapObject> monsters =
+                final List<MapleMapObject> monsters =
                     map.getMapObjectsInRange(player.getPosition(), range, MapleMapObjectType.MONSTER);
-                for (MapleMapObject monstermo : monsters) {
-                    MapleMonster monster = (MapleMonster) monstermo;
+                for (final MapleMapObject monstermo : monsters) {
+                    final MapleMonster monster = (MapleMonster) monstermo;
                     mc.dropMessage("Monster " + monster.toString());
                 }
                 break;
             }
             case "!itemperson": {
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                int item;
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final int item;
                 try {
                     item = Integer.parseInt(splitted[2]);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     return;
                 }
-                short quantity = (short) getOptionalIntArg(splitted, 3, 1);
+                final short quantity = (short) getOptionalIntArg(splitted, 3, 1);
                 if (victim != null) {
                     MapleInventoryManipulator.addById(victim.getClient(), item, quantity);
                 } else {
@@ -582,12 +582,12 @@ public class Admins implements Command {
                 break;
             }
             case "!setaccgm": {
-                int accountid;
-                Connection con = DatabaseConnection.getConnection();
+                final int accountid;
+                final Connection con = DatabaseConnection.getConnection();
                 try {
                     PreparedStatement ps = con.prepareStatement("SELECT accountid FROM characters WHERE name = ?");
                     ps.setString(1, splitted[1]);
-                    ResultSet rs = ps.executeQuery();
+                    final ResultSet rs = ps.executeQuery();
                     if (rs.next()) {
                         accountid = rs.getInt("accountid");
                         ps.close();
@@ -600,19 +600,19 @@ public class Admins implements Command {
                     }
                     ps.close();
                     rs.close();
-                } catch (SQLException ignored) {
+                } catch (final SQLException ignored) {
                 }
                 break;
             }
             case "!servercheck":
                 try {
                     cserv.getWorldInterface().broadcastMessage(null, MaplePacketCreator.serverNotice(1, "Server check will commence soon. Please @save, and log off safely.").getBytes());
-                } catch (RemoteException re) {
+                } catch (final RemoteException re) {
                     cserv.reconnectWorld();
                 }
                 break;
             case "!itemvac":
-                List<MapleMapObject> items =
+                final List<MapleMapObject> items =
                     player
                         .getMap()
                         .getMapObjectsInRange(
@@ -620,12 +620,12 @@ public class Admins implements Command {
                             Double.POSITIVE_INFINITY,
                             MapleMapObjectType.ITEM
                         );
-                for (MapleMapObject item : items) {
-                    MapleMapItem mapItem = (MapleMapItem) item;
+                for (final MapleMapObject item : items) {
+                    final MapleMapItem mapItem = (MapleMapItem) item;
                     if (mapItem.getMeso() > 0) {
                         player.gainMeso(mapItem.getMeso(), true);
                     } else if (mapItem.getItem().getItemId() >= 5000000 && mapItem.getItem().getItemId() <= 5000100) {
-                        int petId = MaplePet.createPet(mapItem.getItem().getItemId());
+                        final int petId = MaplePet.createPet(mapItem.getItem().getItemId());
                         if (petId == -1) {
                             return;
                         }
@@ -639,9 +639,9 @@ public class Admins implements Command {
                 }
                 break;
             case "!playernpc": {
-                int scriptId = Integer.parseInt(splitted[2]);
-                MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
-                int npcId;
+                final int scriptId = Integer.parseInt(splitted[2]);
+                final MapleCharacter victim = cserv.getPlayerStorage().getCharacterByName(splitted[1]);
+                final int npcId;
                 if (splitted.length != 3) {
                     mc.dropMessage("Pleaase use the correct syntax. !playernpc <char name> <script name>");
                 } else if (scriptId < 9901000 || scriptId > 9901319) {
@@ -650,7 +650,7 @@ public class Admins implements Command {
                     mc.dropMessage("The character is not in this channel");
                 } else {
                     try {
-                        Connection con = DatabaseConnection.getConnection();
+                        final Connection con = DatabaseConnection.getConnection();
                         PreparedStatement ps = con.prepareStatement("SELECT * FROM playernpcs WHERE ScriptId = ?");
                         ps.setInt(1, scriptId);
                         ResultSet rs = ps.executeQuery();
@@ -687,7 +687,7 @@ public class Admins implements Command {
                                 "INSERT INTO playernpcs_equip (NpcId, equipid, equippos) VALUES (?, ?, ?)"
                             );
                             ps.setInt(1, npcId);
-                            for (IItem equip : victim.getInventory(MapleInventoryType.EQUIPPED)) {
+                            for (final IItem equip : victim.getInventory(MapleInventoryType.EQUIPPED)) {
                                 ps.setInt(2, equip.getItemId());
                                 ps.setInt(3, equip.getPosition());
                                 ps.executeUpdate();
@@ -699,9 +699,9 @@ public class Admins implements Command {
                             ps.setInt(1, scriptId);
                             rs = ps.executeQuery();
                             rs.next();
-                            PlayerNPCs pn = new PlayerNPCs(rs);
-                            for (ChannelServer channel : ChannelServer.getAllInstances()) {
-                                MapleMap map = channel.getMapFactory().getMap(player.getMapId());
+                            final PlayerNPCs pn = new PlayerNPCs(rs);
+                            for (final ChannelServer channel : ChannelServer.getAllInstances()) {
+                                final MapleMap map = channel.getMapFactory().getMap(player.getMapId());
                                 map.broadcastMessage(MaplePacketCreator.SpawnPlayerNPC(pn));
                                 map.broadcastMessage(MaplePacketCreator.getPlayerNPC(pn));
                                 map.addMapObject(pn);
@@ -709,15 +709,15 @@ public class Admins implements Command {
                         }
                         ps.close();
                         rs.close();
-                    } catch (SQLException e) {
+                    } catch (final SQLException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
             }
             case "!removeplayernpcs": {
-                for (ChannelServer channel : ChannelServer.getAllInstances()) {
-                    List<MapleMapObject> pnpcs =
+                for (final ChannelServer channel : ChannelServer.getAllInstances()) {
+                    final List<MapleMapObject> pnpcs =
                         channel
                             .getMapFactory()
                             .getMap(player.getMapId())
@@ -726,27 +726,27 @@ public class Admins implements Command {
                                 Double.POSITIVE_INFINITY,
                                 MapleMapObjectType.PLAYER_NPC
                             );
-                    for (MapleMapObject mmo : pnpcs) {
+                    for (final MapleMapObject mmo : pnpcs) {
                         channel.getMapFactory().getMap(player.getMapId()).removeMapObject(mmo);
                     }
                 }
-                Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM playernpcs WHERE map = ?");
+                final Connection con = DatabaseConnection.getConnection();
+                final PreparedStatement ps = con.prepareStatement("DELETE FROM playernpcs WHERE map = ?");
                 ps.setInt(1, player.getMapId());
                 ps.executeUpdate();
                 ps.close();
                 break;
             }
             case "!pmob": {
-                int npcId = Integer.parseInt(splitted[1]);
+                final int npcId = Integer.parseInt(splitted[1]);
                 int mobTime = Integer.parseInt(splitted[2]);
-                int xpos = player.getPosition().x;
-                int ypos = player.getPosition().y;
-                int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
+                final int xpos = player.getPosition().x;
+                final int ypos = player.getPosition().y;
+                final int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
                 if (splitted[2] == null) {
                     mobTime = 0;
                 }
-                MapleMonster mob = MapleLifeFactory.getMonster(npcId);
+                final MapleMonster mob = MapleLifeFactory.getMonster(npcId);
                 if (mob != null && !mob.getName().equals("MISSINGNO")) {
                     mob.setPosition(player.getPosition());
                     mob.setCy(ypos);
@@ -754,8 +754,8 @@ public class Admins implements Command {
                     mob.setRx1(xpos - 50);
                     mob.setFh(fh);
                     try {
-                        Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps =
+                        final Connection con = DatabaseConnection.getConnection();
+                        final PreparedStatement ps =
                             con.prepareStatement(
                                 "INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type, x, y, mid, mobtime) " +
                                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -772,7 +772,7 @@ public class Admins implements Command {
                         ps.setInt(10, player.getMapId());
                         ps.setInt(11, mobTime);
                         ps.executeUpdate();
-                    } catch (SQLException e) {
+                    } catch (final SQLException e) {
                         mc.dropMessage("Failed to save MOB to the database");
                     }
                     player.getMap().addMonsterSpawn(mob, mobTime);
@@ -799,7 +799,7 @@ public class Admins implements Command {
                 mc.dropMessage("Quest cache has been cleared.");
                 break;
             case "!restarttimermanager":
-                TimerManager tMan = TimerManager.getInstance();
+                final TimerManager tMan = TimerManager.getInstance();
                 tMan.stop();
                 tMan.start();
                 mc.dropMessage("TimerManager restarted.");

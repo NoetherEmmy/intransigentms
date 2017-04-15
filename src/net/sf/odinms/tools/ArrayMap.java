@@ -36,7 +36,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
          * @param key Name of the key
          * @param value The value.
          */
-        public Entry(K key, V value) {
+        public Entry(final K key, final V value) {
             this.key = key;
             this.value = value;
         }
@@ -64,8 +64,8 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
          *
          * @return The old value.
          */
-        public V setValue(V newValue) {
-            V oldValue = value;
+        public V setValue(final V newValue) {
+            final V oldValue = value;
             value = newValue;
             return oldValue;
         }
@@ -78,11 +78,11 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
          */
         @Override
         @SuppressWarnings("unchecked")
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (!(o instanceof Map.Entry)) {
                     return false;
             }
-            Map.Entry e = (Map.Entry) o;
+            final Map.Entry e = (Map.Entry) o;
             return (key == null ? e.getKey() == null : key.equals(e.getKey())) &&
                     (value == null ? e.getValue() == null : value.equals(e.getValue()));
         }
@@ -92,8 +92,8 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
          */
         @Override
         public int hashCode() {
-            int keyHash = (key == null ? 0 : key.hashCode());
-            int valueHash = (value == null ? 0 : value.hashCode());
+            final int keyHash = (key == null ? 0 : key.hashCode());
+            final int valueHash = (value == null ? 0 : value.hashCode());
             return keyHash ^ valueHash;
         }
 
@@ -123,7 +123,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      * @param map The <code>java.util.Map</code> containing keys and values to
      *            import.
      */
-    public ArrayMap(Map<K, V> map) {
+    public ArrayMap(final Map<K, V> map) {
         list = new ArrayList<>();
         putAll(map);
     }
@@ -133,7 +133,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      *
      * @param initialCapacity The initial size of the ArrayMap.
      */
-    public ArrayMap(int initialCapacity) {
+    public ArrayMap(final int initialCapacity) {
         list = new ArrayList<>(initialCapacity);
     }
 
@@ -175,8 +175,8 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      *         otherwise.
      */
     @Override
-    public V put(K key, V value) {
-        int size = list.size();
+    public V put(final K key, final V value) {
+        final int size = list.size();
         Entry<K, V> entry = null;
         int i;
         if (key == null) {

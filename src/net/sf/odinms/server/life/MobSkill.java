@@ -25,58 +25,58 @@ public class MobSkill {
     private int limit;
     private final Random rand = new Random();
 
-    public MobSkill(int skillId, int level) {
+    public MobSkill(final int skillId, final int level) {
         this.skillId = skillId;
         this.skillLevel = level;
     }
 
-    public void setMpCon(int mpCon) {
+    public void setMpCon(final int mpCon) {
         this.mpCon = mpCon;
     }
 
-    public void addSummons(Collection<Integer> toSummon) {
+    public void addSummons(final Collection<Integer> toSummon) {
         this.toSummon.addAll(toSummon);
         ((ArrayList) this.toSummon).trimToSize();
     }
 
-    public void setSpawnEffect(int spawnEffect) {
+    public void setSpawnEffect(final int spawnEffect) {
         this.spawnEffect = spawnEffect;
     }
 
-    public void setHp(int hp) {
+    public void setHp(final int hp) {
         this.hp = hp;
     }
 
-    public void setX(int x) {
+    public void setX(final int x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(final int y) {
         this.y = y;
     }
 
-    public void setDuration(long duration) {
+    public void setDuration(final long duration) {
         this.duration = duration;
     }
 
-    public void setCoolTime(long cooltime) {
+    public void setCoolTime(final long cooltime) {
         this.cooltime = cooltime;
     }
 
-    public void setProp(float prop) {
+    public void setProp(final float prop) {
         this.prop = prop;
     }
 
-    public void setLtRb(Point lt, Point rb) {
+    public void setLtRb(final Point lt, final Point rb) {
         this.lt = lt;
         this.rb = rb;
     }
 
-    public void setLimit(int limit) {
+    public void setLimit(final int limit) {
         this.limit = limit;
     }
 
-    public void applyEffect(MapleCharacter player, final MapleMonster monster, boolean skill) {
+    public void applyEffect(final MapleCharacter player, final MapleMonster monster, final boolean skill) {
         if (monster == null) return;
         MonsterStatus monStat = null;
         MapleDisease disease = null;
@@ -148,7 +148,7 @@ public class MobSkill {
             case 200:
                 if (monster.getMap().getSpawnedMonstersOnMap() < 80) {
                     for (final Integer mobId : getSummons()) {
-                        MapleMonster toSpawn = MapleLifeFactory.getMonster(mobId);
+                        final MapleMonster toSpawn = MapleLifeFactory.getMonster(mobId);
                         if (toSpawn == null) break;
                         toSpawn.setPosition(monster.getPosition());
                         int ypos, xpos;
@@ -198,13 +198,13 @@ public class MobSkill {
         }
         if (monStat != null || heal) {
             if (lt != null && rb != null && skill) {
-                List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
+                final List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
                 if (heal) {
-                    for (MapleMapObject mons : objects) {
+                    for (final MapleMapObject mons : objects) {
                         ((MapleMonster) mons).heal(x, y);
                     }
                 } else {
-                    for (MapleMapObject mons : objects) {
+                    for (final MapleMapObject mons : objects) {
                         if (!monster.isBuffed(monStat)) {
                             ((MapleMonster) mons).applyMonsterBuff(monStat, x, skillId, duration, this);
                         }
@@ -316,7 +316,7 @@ public class MobSkill {
         return prop == 1.0d || Math.random() < prop;
     }
 
-    private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
+    private Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
         final Point mylt, myrb;
         if (facingLeft) {
             mylt = new Point(lt.x + posFrom.x, lt.y + posFrom.y);
@@ -328,7 +328,7 @@ public class MobSkill {
         return new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
     }
 
-    private List<MapleCharacter> getPlayersInRange(MapleMonster monster, MapleCharacter player) {
+    private List<MapleCharacter> getPlayersInRange(final MapleMonster monster, final MapleCharacter player) {
         return
             monster
                 .getMap()
@@ -341,7 +341,7 @@ public class MobSkill {
                 );
     }
 
-    private List<MapleMapObject> getObjectsInRange(MapleMonster monster, MapleMapObjectType objectType) {
+    private List<MapleMapObject> getObjectsInRange(final MapleMonster monster, final MapleMapObjectType objectType) {
         return
             monster
                 .getMap()
@@ -355,7 +355,7 @@ public class MobSkill {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null) return false;
         if (getClass() != o.getClass()) return false;

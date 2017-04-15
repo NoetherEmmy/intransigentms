@@ -20,7 +20,7 @@ public class PortalScriptManager {
     private final ScriptEngineFactory sef;
 
     private PortalScriptManager() {
-        ScriptEngineManager sem = new ScriptEngineManager();
+        final ScriptEngineManager sem = new ScriptEngineManager();
         sef = sem.getEngineByName("nashorn").getFactory();
     }
 
@@ -28,11 +28,11 @@ public class PortalScriptManager {
         return instance;
     }
 
-    private PortalScript getPortalScript(String scriptName) {
+    private PortalScript getPortalScript(final String scriptName) {
         if (scripts.containsKey(scriptName)) {
             return scripts.get(scriptName);
         }
-        File scriptFile = new File("scripts/portal/" + scriptName + ".js");
+        final File scriptFile = new File("scripts/portal/" + scriptName + ".js");
         if (!scriptFile.exists()) {
             scripts.put(scriptName, null);
             return null;
@@ -45,7 +45,7 @@ public class PortalScriptManager {
                 portal.eval(libReader);
             }
             fr = new FileReader(scriptFile);
-            CompiledScript compiled = ((Compilable) portal).compile(fr);
+            final CompiledScript compiled = ((Compilable) portal).compile(fr);
             compiled.eval();
         } catch (ScriptException | IOException e) {
             log.error("THROW from script " + scriptName + ".js", e);
@@ -53,19 +53,19 @@ public class PortalScriptManager {
             if (fr != null) {
                 try {
                     fr.close();
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     log.error("ERROR CLOSING", ioe);
                 }
             }
         }
-        PortalScript script = ((Invocable) portal).getInterface(PortalScript.class);
+        final PortalScript script = ((Invocable) portal).getInterface(PortalScript.class);
         scripts.put(scriptName, script);
         return script;
     }
 
     // Nashorn is thread-safe so this should be fine without synchronization.
-    public boolean executePortalScript(MaplePortal portal, MapleClient c) {
-        PortalScript script = getPortalScript(portal.getScriptName());
+    public boolean executePortalScript(final MaplePortal portal, final MapleClient c) {
+        final PortalScript script = getPortalScript(portal.getScriptName());
         return script != null && script.enter(new PortalPlayerInteraction(c, portal));
     }
 

@@ -11,7 +11,7 @@ public class CheatingOffenseEntry {
     private String param;
     private int dbid = -1;
 
-    public CheatingOffenseEntry(CheatingOffense offense, MapleCharacter chrfor) {
+    public CheatingOffenseEntry(final CheatingOffense offense, final MapleCharacter chrfor) {
         super();
         this.offense = offense;
         this.chrfor = chrfor;
@@ -47,7 +47,7 @@ public class CheatingOffenseEntry {
         return param;
     }
 
-    public void setParam(String param) {
+    public void setParam(final String param) {
         this.param = param;
     }
 
@@ -59,7 +59,7 @@ public class CheatingOffenseEntry {
         return dbid;
     }
 
-    public void setDbId(int dbid) {
+    public void setDbId(final int dbid) {
         this.dbid = dbid;
     }
 
@@ -74,7 +74,7 @@ public class CheatingOffenseEntry {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;

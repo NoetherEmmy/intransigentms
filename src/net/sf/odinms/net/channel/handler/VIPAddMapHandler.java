@@ -18,36 +18,36 @@ public class VIPAddMapHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(VIPAddMapHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        Connection con = DatabaseConnection.getConnection();
-        int operation = slea.readByte();
-        int type = slea.readByte();
-        MapleCharacter player = c.getPlayer();
+        final Connection con = DatabaseConnection.getConnection();
+        final int operation = slea.readByte();
+        final int type = slea.readByte();
+        final MapleCharacter player = c.getPlayer();
 
         switch (operation) {
             case 0: // Remove map
-                int mapid = slea.readInt();
+                final int mapid = slea.readInt();
                 try {
-                    PreparedStatement ps = con.prepareStatement("DELETE FROM viprockmaps WHERE cid = ? AND mapid = ? AND type = ?");
+                    final PreparedStatement ps = con.prepareStatement("DELETE FROM viprockmaps WHERE cid = ? AND mapid = ? AND type = ?");
                     ps.setInt(1, player.getId());
                     ps.setInt(2, mapid);
                     ps.setInt(3, type);
                     ps.executeUpdate();
                     ps.close();
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     System.err.println("Could not handle removing VIP Rock map: " + sqle.getMessage());
                 }
                 break;
             case 1: // Add map
                 try {
-                    PreparedStatement ps = con.prepareStatement("INSERT INTO viprockmaps (`cid`, `mapid`, `type`) VALUES (?, ?, ?)");
+                    final PreparedStatement ps = con.prepareStatement("INSERT INTO viprockmaps (`cid`, `mapid`, `type`) VALUES (?, ?, ?)");
                     ps.setInt(1, player.getId());
                     ps.setInt(2, player.getMapId());
                     ps.setInt(3, type);
                     ps.executeUpdate();
                     ps.close();
-                } catch (SQLException sqle) {
+                } catch (final SQLException sqle) {
                     System.err.println("Could not handle adding VIP Rock map: " + sqle.getMessage());
                 }
                 break;

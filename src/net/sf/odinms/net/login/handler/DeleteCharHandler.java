@@ -9,16 +9,16 @@ import java.util.Calendar;
 
 public class DeleteCharHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int idate = slea.readInt();
-        int cid = slea.readInt();
-        int year = idate / 10000;
-        int month = (idate - year * 10000) / 100;
-        int day = idate - year * 10000 - month * 100;
-        Calendar cal = Calendar.getInstance();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int idate = slea.readInt();
+        final int cid = slea.readInt();
+        final int year = idate / 10000;
+        final int month = (idate - year * 10000) / 100;
+        final int day = idate - year * 10000 - month * 100;
+        final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
         cal.set(year, month - 1, day);
-        boolean shallDelete = c.checkBirthDate(cal);
+        final boolean shallDelete = c.checkBirthDate(cal);
         int state = 0x12;
         if (shallDelete) {
             state = 0;

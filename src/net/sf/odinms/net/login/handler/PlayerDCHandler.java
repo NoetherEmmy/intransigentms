@@ -6,7 +6,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class PlayerDCHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         /*
         Connection con = DatabaseConnection.getConnection();
         try {

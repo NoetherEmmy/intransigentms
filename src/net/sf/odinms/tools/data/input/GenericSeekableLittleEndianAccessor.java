@@ -12,7 +12,7 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
      *
      * @param bs The byte stream to wrap this around.
      */
-    public GenericSeekableLittleEndianAccessor(SeekableInputStreamBytestream bs) {
+    public GenericSeekableLittleEndianAccessor(final SeekableInputStreamBytestream bs) {
         super(bs);
         this.bs = bs;
     }
@@ -24,10 +24,10 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
      * @see net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#seek
      */
     @Override
-    public void seek(long offset) {
+    public void seek(final long offset) {
         try {
             bs.seek(offset);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("Seek failed", e);
         }
     }
@@ -42,7 +42,7 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
     public long getPosition() {
         try {
             return bs.getPosition();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("getPosition failed", e);
             return -1;
         }
@@ -54,7 +54,7 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
      * @param num The number of bytes to skip.
      */
     @Override
-    public void skip(int num) {
+    public void skip(final int num) {
         seek(getPosition() + num);
     }
 }

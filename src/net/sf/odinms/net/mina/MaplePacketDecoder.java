@@ -19,8 +19,8 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
     }
 
     @Override
-    protected boolean doDecode(IoSession session, ByteBuffer in, ProtocolDecoderOutput out) throws Exception {
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+    protected boolean doDecode(final IoSession session, final ByteBuffer in, final ProtocolDecoderOutput out) throws Exception {
+        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         DecoderState decoderState = (DecoderState) session.getAttribute(DECODER_STATE_KEY);
 
         if (decoderState == null) {
@@ -29,7 +29,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         }
 
         if (in.remaining() >= 4 && decoderState.packetlength == -1) {
-            int packetHeader = in.getInt();
+            final int packetHeader = in.getInt();
             if (!client.getReceiveCrypto().checkPacket(packetHeader)) {
                 log.warn(MapleClient.getLogMessage(client, "Client failed packet check -> disconnecting"));
                 session.close();
@@ -42,7 +42,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         }
 
         if (in.remaining() >= decoderState.packetlength) {
-            byte[] decryptedPacket = new byte[decoderState.packetlength];
+            final byte[] decryptedPacket = new byte[decoderState.packetlength];
             in.get(decryptedPacket, 0, decoderState.packetlength);
             decoderState.packetlength = -1;
 

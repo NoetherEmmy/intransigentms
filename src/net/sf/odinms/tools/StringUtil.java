@@ -10,8 +10,8 @@ public class StringUtil {
      * @param length The length to pad to.
      * @return The padded string.
      */
-    public static String getLeftPaddedStr(String in, char padchar, int length) {
-        StringBuilder builder = new StringBuilder(length);
+    public static String getLeftPaddedStr(final String in, final char padchar, final int length) {
+        final StringBuilder builder = new StringBuilder(length);
         for (int x = in.length(); x < length; ++x) {
             builder.append(padchar);
         }
@@ -28,8 +28,8 @@ public class StringUtil {
      * @param length The length to pad to.
      * @return The padded string.
      */
-    public static String getRightPaddedStr(String in, char padchar, int length) {
-        StringBuilder builder = new StringBuilder(in);
+    public static String getRightPaddedStr(final String in, final char padchar, final int length) {
+        final StringBuilder builder = new StringBuilder(in);
         for (int x = in.length(); x < length; ++x) {
             builder.append(padchar);
         }
@@ -44,7 +44,7 @@ public class StringUtil {
      * @param start Starting from which string.
      * @return The joined strings.
      */
-    public static String joinStringFrom(String[] arr, int start) {
+    public static String joinStringFrom(final String[] arr, final int start) {
         return joinStringFrom(arr, start, " ");
     }
 
@@ -56,8 +56,8 @@ public class StringUtil {
      * @param start Starting from which string.
      * @return The joined strings.
      */
-    public static String joinStringFrom(String[] arr, int start, String sep) {
-        StringBuilder builder = new StringBuilder();
+    public static String joinStringFrom(final String[] arr, final int start, final String sep) {
+        final StringBuilder builder = new StringBuilder();
         for (int i = start; i < arr.length; ++i) {
             builder.append(arr[i]);
             if (i != arr.length - 1) builder.append(sep);
@@ -71,10 +71,10 @@ public class StringUtil {
      * @param enumName The name of the enum to neaten up.
      * @return The human-readable enum name.
      */
-    public static String makeEnumHumanReadable(String enumName) {
-        StringBuilder builder = new StringBuilder(enumName.length() + 1);
-        String[] words = enumName.split("_");
-        for (String word : words) {
+    public static String makeEnumHumanReadable(final String enumName) {
+        final StringBuilder builder = new StringBuilder(enumName.length() + 1);
+        final String[] words = enumName.split("_");
+        for (final String word : words) {
             if (word.length() <= 2) {
                 builder.append(word); // Assuming that it's an abbrevation.
             } else {
@@ -93,7 +93,7 @@ public class StringUtil {
      * @param chr The character to check for.
      * @return The number of times <code>chr</code> occurs in <code>str</code>.
      */
-    public static int countCharacters(String str, char chr) {
+    public static int countCharacters(final String str, final char chr) {
         int ret = 0;
         for (int i = 0; i < str.length(); ++i) {
             if (str.charAt(i) == chr) ret++;
@@ -127,7 +127,7 @@ public class StringUtil {
      * @param len The maximum length of the returned {@code String}.
      * @return A cleaned copy of {@code str}.
      */
-    public static String cleanForClientDisplay(String str, int len) {
+    public static String cleanForClientDisplay(String str, final int len) {
         if (str == null || str.length() < 1) return " ";
         if (str.length() > len) str = str.substring(0, len);
         return str.replaceAll("[^\\t\\r\\n -~]+", " ");

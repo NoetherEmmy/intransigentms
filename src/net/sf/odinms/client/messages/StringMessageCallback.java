@@ -4,7 +4,7 @@ public class StringMessageCallback implements MessageCallback {
     final StringBuilder ret = new StringBuilder();
 
     @Override
-    public void dropMessage(String message) {
+    public void dropMessage(final String message) {
         ret.append(message);
         ret.append('\n');
     }

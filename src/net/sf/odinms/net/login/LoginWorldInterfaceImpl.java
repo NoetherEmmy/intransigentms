@@ -14,11 +14,11 @@ public class LoginWorldInterfaceImpl extends UnicastRemoteObject implements Logi
         super(0, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
     }
 
-    public void channelOnline(int channel, String ip) throws RemoteException {
+    public void channelOnline(final int channel, final String ip) throws RemoteException {
         LoginServer.getInstance().addChannel(channel, ip);
     }
 
-    public void channelOffline(int channel) throws RemoteException {
+    public void channelOffline(final int channel) throws RemoteException {
         LoginServer.getInstance().removeChannel(channel);
     }
 

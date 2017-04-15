@@ -20,13 +20,13 @@ public class MapleGenericPortal implements MaplePortal {
     private String scriptName;
     private boolean portalState;
 
-    public MapleGenericPortal(int type) {
+    public MapleGenericPortal(final int type) {
         this.type = type;
         portalState = OPEN;
     }
 
     @Override
-    public void setPortalState(boolean state) {
+    public void setPortalState(final boolean state) {
         this.portalState = state;
     }
 
@@ -40,7 +40,7 @@ public class MapleGenericPortal implements MaplePortal {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -74,31 +74,31 @@ public class MapleGenericPortal implements MaplePortal {
         return scriptName;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setPosition(Point position) {
+    public void setPosition(final Point position) {
         this.position = position;
     }
 
-    public void setTarget(String target) {
+    public void setTarget(final String target) {
         this.target = target;
     }
 
-    public void setTargetMapId(int targetmapid) {
+    public void setTargetMapId(final int targetmapid) {
         this.targetmap = targetmapid;
     }
 
     @Override
-    public void setScriptName(String scriptName) {
+    public void setScriptName(final String scriptName) {
         this.scriptName = scriptName;
     }
 
     @Override
-    public void enterPortal(MapleClient c) {
-        MapleCharacter player = c.getPlayer();
-        double distanceSq = position.distanceSq(player.getPosition());
+    public void enterPortal(final MapleClient c) {
+        final MapleCharacter player = c.getPlayer();
+        final double distanceSq = position.distanceSq(player.getPosition());
         if (distanceSq > 22500) {
             player.getCheatTracker().registerOffense(CheatingOffense.USING_FARAWAY_PORTAL, "D" + Math.sqrt(distanceSq));
         }
@@ -109,7 +109,7 @@ public class MapleGenericPortal implements MaplePortal {
                 changed = PortalScriptManager.getInstance().executePortalScript(this, c);
             }
         } else if (targetmap != 999999999) {
-            MapleMap to;
+            final MapleMap to;
             if (player.getEventInstance() == null) {
                 to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetmap);
             } else {

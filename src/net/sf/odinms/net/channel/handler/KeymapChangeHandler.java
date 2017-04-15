@@ -8,17 +8,17 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class KeymapChangeHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        MapleCharacter player = c.getPlayer();
+        final MapleCharacter player = c.getPlayer();
         if (slea.available() >= 8) {
             slea.readInt();
-            int numChanges = slea.readInt();
+            final int numChanges = slea.readInt();
             for (int i = 0; i < numChanges; ++i) {
-                int key = slea.readInt();
-                int type = slea.readByte();
-                int action = slea.readInt();
-                MapleKeyBinding newbinding = new MapleKeyBinding(type, action);
+                final int key = slea.readInt();
+                final int type = slea.readByte();
+                final int action = slea.readInt();
+                final MapleKeyBinding newbinding = new MapleKeyBinding(type, action);
                 player.changeKeybinding(key, newbinding);
             }
         }

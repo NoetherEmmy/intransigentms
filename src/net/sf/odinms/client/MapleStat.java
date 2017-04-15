@@ -24,7 +24,7 @@ public enum MapleStat implements IntValueHolder {
     PET(0x180008);
     private final int i;
 
-    MapleStat(int i) {
+    MapleStat(final int i) {
         this.i = i;
     }
 
@@ -33,8 +33,8 @@ public enum MapleStat implements IntValueHolder {
         return i;
     }
 
-    public static MapleStat getByValue(int value) {
-        for (MapleStat stat : MapleStat.values()) {
+    public static MapleStat getByValue(final int value) {
+        for (final MapleStat stat : MapleStat.values()) {
             if (stat.getValue() == value) return stat;
         }
         return null;

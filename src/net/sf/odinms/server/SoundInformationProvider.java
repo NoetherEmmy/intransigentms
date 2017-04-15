@@ -29,12 +29,12 @@ public class SoundInformationProvider {
 
     public SortedMap<String, List<String>> getAllBgmNames() {
         if (bgmNamesCached) return bgmNames;
-        MapleDataDirectoryEntry root = soundData.getRoot();
-        for (MapleDataFileEntry file : root.getFiles()) {
+        final MapleDataDirectoryEntry root = soundData.getRoot();
+        for (final MapleDataFileEntry file : root.getFiles()) {
             if (!file.getName().contains("Bgm")) continue;
             final String bareFilename = file.getName().replace(".img", "");
             final List<String> newBgmList = new ArrayList<>();
-            MapleData bgmData = soundData.getData(file.getName());
+            final MapleData bgmData = soundData.getData(file.getName());
             bgmData
                 .getChildren()
                 .stream()

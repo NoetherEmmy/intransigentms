@@ -11,7 +11,7 @@ public class MTSItemInfo {
     private final int id, cid, year, month;
     private int day = 1;
 
-    public MTSItemInfo(IItem item, int price, int id, int cid, String seller, String date) {
+    public MTSItemInfo(final IItem item, final int price, final int id, final int cid, final String seller, final String date) {
         this.item = item;
         this.price = price;
         this.seller = seller;
@@ -47,7 +47,7 @@ public class MTSItemInfo {
     }
 
     public long getEndingDate() {
-        Calendar now = Calendar.getInstance();
+        final Calendar now = Calendar.getInstance();
         now.set(year, month - 1, day);
         return now.getTimeInMillis();
     }

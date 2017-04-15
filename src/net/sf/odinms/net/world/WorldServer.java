@@ -34,7 +34,7 @@ public class WorldServer {
             is = new FileReader("world.properties");
             worldProp.load(is);
             is.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Could not configuration", e);
         }
     }
@@ -58,28 +58,28 @@ public class WorldServer {
         return worldProp;
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
-            Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
+            final Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
             registry.rebind("WorldRegistry", WorldRegistryImpl.getInstance());
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             log.error("Could not initialize RMI system", re);
         }
     }
 
-    public void addEnergyChargeRetention(int charId, int energyLevel) {
+    public void addEnergyChargeRetention(final int charId, final int energyLevel) {
         synchronized (energyChargeRetention) {
             energyChargeRetention.put(charId, energyLevel);
         }
     }
 
-    public Optional<Integer> removeEnergyChargeRetention(int charId) {
+    public Optional<Integer> removeEnergyChargeRetention(final int charId) {
         synchronized (energyChargeRetention) {
             return Optional.ofNullable(energyChargeRetention.remove(charId));
         }
     }
 
-    public Optional<Integer> getEnergyChargeRetention(int charId) {
+    public Optional<Integer> getEnergyChargeRetention(final int charId) {
         synchronized (energyChargeRetention) {
             return Optional.ofNullable(energyChargeRetention.get(charId));
         }

@@ -16,19 +16,19 @@ public class PlayerBuffStorage implements Serializable {
         id = runningId.addAndGet(7);
     }
 
-    public void addBuffsToStorage(int cid, Set<PlayerBuffValueHolder> toStore) {
+    public void addBuffsToStorage(final int cid, final Set<PlayerBuffValueHolder> toStore) {
         buffs.put(cid, toStore);
     }
 
-    public void addCooldownsToStorage(int cid, Set<PlayerCoolDownValueHolder> toStore) {
+    public void addCooldownsToStorage(final int cid, final Set<PlayerCoolDownValueHolder> toStore) {
         coolDowns.put(cid, toStore);
     }
 
-    public Set<PlayerBuffValueHolder> getBuffsFromStorage(int cid) {
+    public Set<PlayerBuffValueHolder> getBuffsFromStorage(final int cid) {
         return buffs.remove(cid);
     }
 
-    public Set<PlayerCoolDownValueHolder> getCooldownsFromStorage(int cid) {
+    public Set<PlayerCoolDownValueHolder> getCooldownsFromStorage(final int cid) {
         return coolDowns.remove(cid);
     }
 
@@ -41,7 +41,7 @@ public class PlayerBuffStorage implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;

@@ -17,7 +17,7 @@ public class MaplePartyCharacter implements Serializable {
     private boolean scpqFlag = false;
     private boolean isGM = false;
 
-    public MaplePartyCharacter(MapleCharacter maplechar) {
+    public MaplePartyCharacter(final MapleCharacter maplechar) {
         this.name = maplechar.getName();
         this.level = maplechar.getLevel();
         this.channel = maplechar.getClient().getChannel();
@@ -73,7 +73,7 @@ public class MaplePartyCharacter implements Serializable {
         return online;
     }
 
-    public void setOnline(boolean online) {
+    public void setOnline(final boolean online) {
         this.online = online;
     }
 
@@ -122,7 +122,7 @@ public class MaplePartyCharacter implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;

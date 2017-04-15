@@ -10,14 +10,14 @@ import java.sql.SQLException;
 public class ZakSquad {
     private static ResultSet rs;
 
-    public static int createSquad(int ch, int id) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT status FROM zaksquads WHERE channel = ?");
+    public static int createSquad(final int ch, final int id) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps = con.prepareStatement("SELECT status FROM zaksquads WHERE channel = ?");
         ps.setInt(1, ch);
         rs = ps.executeQuery();
         rs.next();
         if (rs.getInt("status") == 0) {
-            PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET leaderid = ?, status = 1, members = 1 WHERE channel = ?");
+            final PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET leaderid = ?, status = 1, members = 1 WHERE channel = ?");
             ps1.setInt(1, id);
             ps1.setInt(2, ch);
             ps1.executeUpdate();
@@ -32,9 +32,9 @@ public class ZakSquad {
         }
     }
 
-    public static int checkSquad(int ch) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT status FROM zaksquads WHERE channel = ?");
+    public static int checkSquad(final int ch) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps = con.prepareStatement("SELECT status FROM zaksquads WHERE channel = ?");
         ps.setInt(1, ch);
         rs = ps.executeQuery();
         rs.next();
@@ -53,14 +53,14 @@ public class ZakSquad {
         }
     }
 
-    public static int setFighting(int ch) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT status FROM zaksquads WHERE channel = ?");
+    public static int setFighting(final int ch) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps = con.prepareStatement("SELECT status FROM zaksquads WHERE channel = ?");
         ps.setInt(1, ch);
         rs = ps.executeQuery();
         rs.next();
         if (rs.getInt("status") == 1) {
-            PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET status = '2' WHERE channel = ?");
+            final PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET status = '2' WHERE channel = ?");
             ps1.setInt(1, ch);
             ps1.executeUpdate();
             rs.close();
@@ -74,9 +74,9 @@ public class ZakSquad {
         }
     }
 
-    public static int checkLeader(int ch, int id) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT count(*) as num FROM zaksquads WHERE channel = ? AND leaderid = ?");
+    public static int checkLeader(final int ch, final int id) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps = con.prepareStatement("SELECT count(*) as num FROM zaksquads WHERE channel = ? AND leaderid = ?");
         ps.setInt(1, ch);
         ps.setInt(2, id);
         rs = ps.executeQuery();
@@ -92,15 +92,15 @@ public class ZakSquad {
         }
     }
 
-    public static int removeSquad(int ch, int id) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT count(*) as num FROM zaksquads WHERE channel = ? AND leaderid = ?");
+    public static int removeSquad(final int ch, final int id) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps = con.prepareStatement("SELECT count(*) as num FROM zaksquads WHERE channel = ? AND leaderid = ?");
         ps.setInt(1, ch);
         ps.setInt(2, id);
         rs = ps.executeQuery();
         rs.next();
         if (rs.getInt("num") > 0) {
-            PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET leaderid = 0, status = 0, members = 0 WHERE channel = ?");
+            final PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET leaderid = 0, status = 0, members = 0 WHERE channel = ?");
             ps1.setInt(1, ch);
             ps1.executeUpdate();
             rs.close();
@@ -114,26 +114,26 @@ public class ZakSquad {
         }
     }
 
-    public static int numMembers(int ch) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT * FROM zaksquads WHERE channel = ?");
+    public static int numMembers(final int ch) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps = con.prepareStatement("SELECT * FROM zaksquads WHERE channel = ?");
         ps.setInt(1, ch);
         rs = ps.executeQuery();
         rs.next();
-        int toReturn = rs.getInt("members");
+        final int toReturn = rs.getInt("members");
         rs.close();
         ps.close();
         return toReturn;
     }
 
-    public static int addMember(int ch) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT * FROM zaksquads WHERE channel = ?");
+    public static int addMember(final int ch) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
+        final PreparedStatement ps = con.prepareStatement("SELECT * FROM zaksquads WHERE channel = ?");
         ps.setInt(1, ch);
         rs = ps.executeQuery();
         rs.next();
         if (rs.getInt("status") == 1) {
-            PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET members = ? WHERE channel = ?");
+            final PreparedStatement ps1 = con.prepareStatement("UPDATE zaksquads SET members = ? WHERE channel = ?");
             ps1.setInt(1, rs.getInt("members") + 1);
             ps1.setInt(2, ch);
             ps1.executeUpdate();

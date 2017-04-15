@@ -12,16 +12,16 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class StorageHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        byte mode = slea.readByte();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final byte mode = slea.readByte();
         final MapleStorage storage = c.getPlayer().getStorage();
         if (mode == 4) { // Take out
-            byte type = slea.readByte();
+            final byte type = slea.readByte();
             byte slot = slea.readByte();
             slot = storage.getSlot(MapleInventoryType.getByType(type), slot);
-            IItem item = storage.takeOut(slot);
+            final IItem item = storage.takeOut(slot);
             if (item != null) {
                 if (
                     MapleInventoryManipulator.checkSpace(
@@ -46,8 +46,8 @@ public class StorageHandler extends AbstractMaplePacketHandler {
                     );
             }
         } else if (mode == 5) { // Store
-            byte slot = (byte) slea.readShort();
-            int itemId = slea.readInt();
+            final byte slot = (byte) slea.readShort();
+            final int itemId = slea.readInt();
             short quantity = slea.readShort();
             if (quantity < 1) {
                 AutobanManager.getInstance().autoban(c, "Trying to store " + quantity + " of " + itemId);
@@ -66,8 +66,8 @@ public class StorageHandler extends AbstractMaplePacketHandler {
                      )
                  );
             } else {
-                MapleInventoryType type = ii.getInventoryType(itemId);
-                IItem item = c.getPlayer().getInventory(type).getItem(slot).copy();
+                final MapleInventoryType type = ii.getInventoryType(itemId);
+                final IItem item = c.getPlayer().getInventory(type).getItem(slot).copy();
                 if (
                     item.getItemId() == itemId &&
                     (item.getQuantity() >= quantity || ii.isThrowingStar(itemId) || ii.isBullet(itemId))
@@ -104,8 +104,8 @@ public class StorageHandler extends AbstractMaplePacketHandler {
             c.getPlayer().dropMessage(1, "Sorry, storage sorting is unavailable.");
         } else if (mode == 7) { // Meso.
             int meso = slea.readInt();
-            int storageMesos = storage.getMeso();
-            int playerMesos = c.getPlayer().getMeso();
+            final int storageMesos = storage.getMeso();
+            final int playerMesos = c.getPlayer().getMeso();
             if ((meso > 0 && storageMesos >= meso) || (meso < 0 && playerMesos >= -meso)) {
                 if (meso < 0 && storageMesos - meso < 0) { // Storing with overflow
                     meso = -(Integer.MAX_VALUE - storageMesos);

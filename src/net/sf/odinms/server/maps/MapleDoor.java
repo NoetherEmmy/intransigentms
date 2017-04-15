@@ -18,7 +18,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     private final MapleMap target;
     private final Point targetPosition;
 
-    public MapleDoor(MapleCharacter owner, Point targetPosition) {
+    public MapleDoor(final MapleCharacter owner, final Point targetPosition) {
         super();
         this.owner = owner;
         target = owner.getMap();
@@ -35,7 +35,7 @@ public class MapleDoor extends AbstractMapleMapObject {
         townPortal = getFreePortal();
     }
 
-    public MapleDoor(MapleDoor origDoor) {
+    public MapleDoor(final MapleDoor origDoor) {
         super();
         owner = origDoor.owner;
         town = origDoor.town;
@@ -47,17 +47,17 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     private MaplePortal getFreePortal() {
-        List<MaplePortal> freePortals = new ArrayList<>();
+        final List<MaplePortal> freePortals = new ArrayList<>();
 
-        for (MaplePortal port : town.getPortals()) {
+        for (final MaplePortal port : town.getPortals()) {
             if (port.getType() == 6) freePortals.add(port);
         }
 
         freePortals.sort(Comparator.comparingInt(MaplePortal::getId));
 
-        for (MapleMapObject obj : town.getMapObjects()) {
+        for (final MapleMapObject obj : town.getMapObjects()) {
             if (obj instanceof MapleDoor) {
-                MapleDoor door = (MapleDoor) obj;
+                final MapleDoor door = (MapleDoor) obj;
                 if (
                     door.getOwner().getParty() != null &&
                     owner.getParty().containsMembers(new MaplePartyCharacter(door.getOwner()))
@@ -75,7 +75,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         if (
             target.getId() == client.getPlayer().getMapId() ||
             owner == client.getPlayer() &&
@@ -121,7 +121,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         if (
             target.getId() == client.getPlayer().getMapId() ||
             owner == client.getPlayer() ||
@@ -148,7 +148,7 @@ public class MapleDoor extends AbstractMapleMapObject {
         }
     }
 
-    public void warp(MapleCharacter chr, boolean toTown) {
+    public void warp(final MapleCharacter chr, final boolean toTown) {
         if (
             chr == owner ||
             owner.getParty() != null &&

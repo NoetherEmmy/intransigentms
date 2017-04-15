@@ -8,7 +8,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
     //private static org.slf4j.Logger log = LoggerFactory.getLogger(SpecialPortalHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         /*
         // TODO Need to code this check somehow =/
         [5D 00] // Opcode

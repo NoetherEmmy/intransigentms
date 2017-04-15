@@ -10,16 +10,16 @@ public class SkillMacroHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int num = slea.readByte();
+        final int num = slea.readByte();
         for (int i = 0; i < num; ++i) {
-            String name = slea.readMapleAsciiString();
-            int shout = slea.readByte();
-            int skill1 = slea.readInt();
-            int skill2 = slea.readInt();
-            int skill3 = slea.readInt();
-            SkillMacro macro = new SkillMacro(skill1, skill2, skill3, name, shout, i);
+            final String name = slea.readMapleAsciiString();
+            final int shout = slea.readByte();
+            final int skill1 = slea.readInt();
+            final int skill2 = slea.readInt();
+            final int skill3 = slea.readInt();
+            final SkillMacro macro = new SkillMacro(skill1, skill2, skill3, name, shout, i);
             c.getPlayer().updateMacros(i, macro);
         }
     }

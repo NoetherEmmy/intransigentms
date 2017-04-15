@@ -11,9 +11,9 @@ public class StreamUtil {
      * @param lea The accessor to read the point from.
      * @return A <code>point</code> object read from the accessor.
      */
-    public static Point readShortPoint(LittleEndianAccessor lea) {
-        int x = lea.readShort();
-        int y = lea.readShort();
+    public static Point readShortPoint(final LittleEndianAccessor lea) {
+        final int x = lea.readShort();
+        final int y = lea.readShort();
         return new Point(x, y);
     }
 
@@ -23,7 +23,7 @@ public class StreamUtil {
      * @param lew The stream-writer to write the point to.
      * @param p The point to write to the stream-writer.
      */
-    public static void writeShortPoint(LittleEndianWriter lew, Point p) {
+    public static void writeShortPoint(final LittleEndianWriter lew, final Point p) {
         lew.writeShort(p.x);
         lew.writeShort(p.y);
     }

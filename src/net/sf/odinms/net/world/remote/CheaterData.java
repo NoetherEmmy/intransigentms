@@ -7,7 +7,7 @@ public class CheaterData implements Serializable, Comparable<CheaterData> {
     private final int points;
     private final String info;
 
-    public CheaterData(int points, String info) {
+    public CheaterData(final int points, final String info) {
         this.points = points;
         this.info = info;
     }
@@ -20,9 +20,9 @@ public class CheaterData implements Serializable, Comparable<CheaterData> {
         return points;
     }
 
-    public int compareTo(CheaterData o) {
-        int thisVal = points;
-        int anotherVal = o.getPoints();
+    public int compareTo(final CheaterData o) {
+        final int thisVal = points;
+        final int anotherVal = o.getPoints();
         return (thisVal<anotherVal ? 1 : (thisVal==anotherVal ? 0 : -1));
     }
 }

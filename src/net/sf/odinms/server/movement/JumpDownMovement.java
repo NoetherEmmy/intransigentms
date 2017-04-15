@@ -8,7 +8,7 @@ public class JumpDownMovement extends AbstractLifeMovement {
     private Point pixelsPerSecond;
     private int unk, fh;
 
-    public JumpDownMovement(int type, Point position, int duration, int newstate) {
+    public JumpDownMovement(final int type, final Point position, final int duration, final int newstate) {
         super(type, position, duration, newstate);
     }
 
@@ -16,7 +16,7 @@ public class JumpDownMovement extends AbstractLifeMovement {
         return pixelsPerSecond;
     }
 
-    public void setPixelsPerSecond(Point wobble) {
+    public void setPixelsPerSecond(final Point wobble) {
         this.pixelsPerSecond = wobble;
     }
 
@@ -24,7 +24,7 @@ public class JumpDownMovement extends AbstractLifeMovement {
         return unk;
     }
 
-    public void setUnk(int unk) {
+    public void setUnk(final int unk) {
         this.unk = unk;
     }
 
@@ -32,12 +32,12 @@ public class JumpDownMovement extends AbstractLifeMovement {
         return fh;
     }
 
-    public void setFH(int fh) {
+    public void setFH(final int fh) {
         this.fh = fh;
     }
 
     @Override
-    public void serialize(LittleEndianWriter lew) {
+    public void serialize(final LittleEndianWriter lew) {
         lew.write(getType());
         lew.writeShort(getPosition().x);
         lew.writeShort(getPosition().y);

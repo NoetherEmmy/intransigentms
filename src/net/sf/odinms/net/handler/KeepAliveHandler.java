@@ -6,12 +6,12 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class KeepAliveHandler implements MaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.pongReceived();
     }
 
     @Override
-    public boolean validateState(MapleClient c) {
+    public boolean validateState(final MapleClient c) {
         return true;
     }
 }

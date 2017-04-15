@@ -17,7 +17,7 @@ import java.util.List;
 
 public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         player.resetAfkTime();
 
@@ -28,7 +28,7 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
             return;
         }
 
-        AttackInfo attack = parseDamage(slea, false);
+        final AttackInfo attack = parseDamage(slea, false);
 
         final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(5110001);
         if (questEffectiveBlock || player.getMap().isDamageMuted()) {
@@ -38,10 +38,10 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                 if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
                 if (monster == null) continue;
                 final List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                for (Integer dmgNumber : dmg.getRight()) {
+                for (final Integer dmgNumber : dmg.getRight()) {
                     additionalDmg.add(-dmgNumber);
                 }
-                for (Integer additionald : additionalDmg) {
+                for (final Integer additionald : additionalDmg) {
                     c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
                 }
             }
@@ -74,22 +74,22 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
         );
 
         for (int i = 0; i < attack.allDamage.size(); ++i) {
-            Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
+            final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
 
             if (player.getParty() != null && player.isBareHanded() && player.getTotalInt() >= 350) {
                 // Monk healing
                 final Rectangle bounds = calculateBoundingBox(player.getPosition(), player.isFacingLeft());
-                List<MapleMapObject> affecteds =
+                final List<MapleMapObject> affecteds =
                     player
                         .getMap()
                         .getMapObjectsInRect(
                             bounds,
                             MapleMapObjectType.PLAYER
                         );
-                List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
+                final List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
 
-                for (MapleMapObject affectedmo : affecteds) {
-                    MapleCharacter affected = (MapleCharacter) affectedmo;
+                for (final MapleMapObject affectedmo : affecteds) {
+                    final MapleCharacter affected = (MapleCharacter) affectedmo;
                     if (
                         affected != null &&
                         !affected.equals(player) &&
@@ -101,8 +101,8 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                 }
 
                 if (!affectedp.isEmpty()) {
-                    int healing = (int) ((double) player.getTotalMagic() * ((double) player.getTotalInt() / 300.0d) * (0.5d + 0.5d / affectedp.size()) * (2.0d - Math.random()));
-                    for (MapleCharacter affected : affectedp) {
+                    final int healing = (int) ((double) player.getTotalMagic() * ((double) player.getTotalInt() / 300.0d) * (0.5d + 0.5d / affectedp.size()) * (2.0d - Math.random()));
+                    for (final MapleCharacter affected : affectedp) {
                         affected.setHp(Math.min(affected.getHp() + healing, affected.getMaxHp()));
                         affected.updateSingleStat(MapleStat.HP, affected.getHp());
                         affected
@@ -131,17 +131,17 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
             MapleMonster monster = null;
             if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
             if (monster != null) {
-                double multiplier = monster.getVulnerability();
+                final double multiplier = monster.getVulnerability();
                 if (multiplier != 1.0d) {
-                    List<Integer> additionalDmg = new ArrayList<>(1);
-                    List<Integer> newDmg = new ArrayList<>(1);
+                    final List<Integer> additionalDmg = new ArrayList<>(1);
+                    final List<Integer> newDmg = new ArrayList<>(1);
 
-                    for (Integer dmgNumber : dmg.getRight()) {
+                    for (final Integer dmgNumber : dmg.getRight()) {
                         additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
                         newDmg.add((int) (dmgNumber * multiplier));
                     }
                     attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
-                    for (Integer additionald : additionalDmg) {
+                    for (final Integer additionald : additionalDmg) {
                         player
                             .getMap()
                             .broadcastMessage(
@@ -158,8 +158,9 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
         }
     }
 
-    private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
-        Point mylt, myrb;
+    private Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
+        final Point mylt;
+        final Point myrb;
         if (facingLeft) {
             mylt = new Point(-300 + posFrom.x, -200 + posFrom.y);
             myrb = new Point(300 + posFrom.x, 200 + posFrom.y);

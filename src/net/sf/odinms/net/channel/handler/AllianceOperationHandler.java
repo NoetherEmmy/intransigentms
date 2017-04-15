@@ -7,17 +7,18 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 import java.rmi.RemoteException;
+import java.util.stream.IntStream;
 
 public class AllianceOperationHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         //System.out.println(slea.toString());
 
         MapleAlliance alliance = null;
         if (c.getPlayer().getGuild() != null && c.getPlayer().getGuild().getAllianceId() > 0) {
             try {
                 alliance = c.getChannelServer().getWorldInterface().getAlliance(c.getPlayer().getGuild().getAllianceId());
-            } catch (RemoteException re) {
+            } catch (final RemoteException re) {
                 c.getChannelServer().reconnectWorld();
             }
         }
@@ -33,15 +34,16 @@ public class AllianceOperationHandler extends AbstractMaplePacketHandler {
         try {
             switch (slea.readByte()) {
                 case 0x0A:
-                    String notice = slea.readMapleAsciiString();
+                    final String notice = slea.readMapleAsciiString();
                     c.getChannelServer().getWorldInterface().setAllianceNotice(alliance.getId(), notice);
                     c.getChannelServer().getWorldInterface().allianceMessage(alliance.getId(), MaplePacketCreator.allianceNotice(alliance.getId(), notice), -1, -1);
                     break;
                 case 0x08:
-                    String[] ranks = new String[5];
-                    for (int i = 0; i < 5; ++i) {
-                        ranks[i] = slea.readMapleAsciiString();
-                    }
+                    final String[] ranks =
+                        IntStream
+                            .range(0, 5)
+                            .mapToObj(i -> slea.readMapleAsciiString())
+                            .toArray(String[]::new);
                     c.getChannelServer().getWorldInterface().setAllianceRanks(alliance.getId(), ranks);
                     c.getChannelServer().getWorldInterface().allianceMessage(alliance.getId(), MaplePacketCreator.changeAllianceRankTitle(alliance.getId(), ranks), -1, -1);
                     break;
@@ -64,7 +66,7 @@ public class AllianceOperationHandler extends AbstractMaplePacketHandler {
                     //c.getPlayer().dropMessage("Feature not available");
             }
             alliance.saveToDB();
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             c.getChannelServer().reconnectWorld();
         }
     }

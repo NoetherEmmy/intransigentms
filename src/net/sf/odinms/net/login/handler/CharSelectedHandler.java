@@ -15,13 +15,13 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(CharSelectedHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         //String channelHost = System.getProperty("net.sf.odinms.channelserver.host");
-        int charId = slea.readInt();
-        String macs;
+        final int charId = slea.readInt();
+        final String macs;
         try {
             macs = slea.readMapleAsciiString();
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
+        } catch (final ArrayIndexOutOfBoundsException aioobe) {
             System.err.println(
                 c.getSession().getRemoteAddress() +
                     " sending bad packets at CharSelectedHandler#handlePacket"
@@ -39,14 +39,14 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
             }
             //c.getSession().write(MaplePacketCreator.getServerIP(InetAddress.getByName("127.0.0.1"), 7575, charId));
             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
-            String channelServerIP =
+            final String channelServerIP =
                 MapleClient
                     .getChannelServerIPFromSubnet(
                         c.getSession().getRemoteAddress().toString().replace("/", "").split(":")[0],
                         c.getChannel()
                     );
             if (channelServerIP.equals("0.0.0.0")) {
-                String[] socket =
+                final String[] socket =
                     LoginServer
                         .getInstance()
                         .getIP(c.getChannel())
@@ -61,7 +61,7 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
                          )
                  );
             } else {
-                String[] socket =
+                final String[] socket =
                     LoginServer
                         .getInstance()
                         .getIP(c.getChannel())
@@ -76,7 +76,7 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
                          )
                  );
             }
-        } catch (UnknownHostException uhe) {
+        } catch (final UnknownHostException uhe) {
             log.error("Host not found. ", uhe);
         }
     }

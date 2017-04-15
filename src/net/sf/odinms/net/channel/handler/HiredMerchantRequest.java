@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class HiredMerchantRequest extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         if (!c.isGuest()) {
             if (
                 c.getPlayer()

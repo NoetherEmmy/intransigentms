@@ -28,11 +28,11 @@ public class MapleReactorStats {
     }
     */
 
-    public void setTL(Point tl) {
+    public void setTL(final Point tl) {
         this.tl = tl;
     }
 
-    public void setBR(Point br) {
+    public void setBR(final Point br) {
         this.br = br;
     }
 
@@ -44,25 +44,25 @@ public class MapleReactorStats {
         return br;
     }
 
-    public void addState(byte state, int type, Pair<Integer, Integer> reactItem, byte nextState) {
-        StateData newState = new StateData(type, reactItem, nextState);
+    public void addState(final byte state, final int type, final Pair<Integer, Integer> reactItem, final byte nextState) {
+        final StateData newState = new StateData(type, reactItem, nextState);
         stateInfo.put(state, newState);
     }
 
-    public byte getNextState(byte state) {
-        StateData nextState = stateInfo.get(state);
+    public byte getNextState(final byte state) {
+        final StateData nextState = stateInfo.get(state);
         if (nextState != null) return nextState.getNextState();
         return -1;
     }
 
-    public int getType(byte state) {
-        StateData nextState = stateInfo.get(state);
+    public int getType(final byte state) {
+        final StateData nextState = stateInfo.get(state);
         if (nextState != null) return nextState.getType();
         return -1;
     }
 
-    public Pair<Integer, Integer> getReactItem(byte state) {
-        StateData nextState = stateInfo.get(state);
+    public Pair<Integer, Integer> getReactItem(final byte state) {
+        final StateData nextState = stateInfo.get(state);
         if (nextState != null) return nextState.getReactItem();
         return null;
     }
@@ -72,7 +72,7 @@ public class MapleReactorStats {
         private final Pair<Integer, Integer> reactItem;
         private final byte nextState;
 
-        private StateData(int type, Pair<Integer, Integer> reactItem, byte nextState) {
+        private StateData(final int type, final Pair<Integer, Integer> reactItem, final byte nextState) {
             this.type = type;
             this.reactItem = reactItem;
             this.nextState = nextState;

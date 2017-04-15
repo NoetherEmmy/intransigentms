@@ -12,7 +12,7 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
      *
      * @param arr Array of bytes to wrap the stream around.
      */
-    public ByteArrayByteStream(byte[] arr) {
+    public ByteArrayByteStream(final byte[] arr) {
         this.arr = arr;
     }
 
@@ -34,7 +34,7 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
      * @see net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#seek(long)
      */
     @Override
-    public void seek(long offset) throws IOException {
+    public void seek(final long offset) throws IOException {
         pos = (int) offset;
     }
 

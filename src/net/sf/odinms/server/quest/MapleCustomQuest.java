@@ -12,22 +12,22 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class MapleCustomQuest extends MapleQuest {
-    public MapleCustomQuest(int id) {
+    public MapleCustomQuest(final int id) {
         try {
             this.id = id;
             startActs = new ArrayList<>();
             completeActs = new ArrayList<>();
             startReqs = new ArrayList<>();
             completeReqs = new ArrayList<>();
-            Connection con = DatabaseConnection.getConnection();
+            final Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT * FROM questrequirements WHERE questid = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             MapleQuestRequirement req;
             MapleCustomQuestData data;
             while (rs.next()) {
-                Blob blob = rs.getBlob("data");
-                ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
+                final Blob blob = rs.getBlob("data");
+                final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
                     blob.getBytes(1, (int) blob.length())));
                 data = (MapleCustomQuestData) ois.readObject();
                 req = new MapleQuestRequirement(
@@ -35,7 +35,7 @@ public class MapleCustomQuest extends MapleQuest {
                     MapleQuestRequirementType.getByWZName(data.getName()),
                     data
                 );
-                MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(rs.getInt("status"));
+                final MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(rs.getInt("status"));
                 if (status.equals(MapleQuestStatus.Status.NOT_STARTED)) {
                     startReqs.add(req);
                 } else if (status.equals(MapleQuestStatus.Status.STARTED)) {
@@ -49,12 +49,12 @@ public class MapleCustomQuest extends MapleQuest {
             rs = ps.executeQuery();
             MapleQuestAction act;
             while (rs.next()) {
-                Blob blob = rs.getBlob("data");
-                ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
+                final Blob blob = rs.getBlob("data");
+                final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
                     blob.getBytes(1, (int) blob.length())));
                 data = (MapleCustomQuestData) ois.readObject();
                 act = new MapleQuestAction(MapleQuestActionType.getByWZName(data.getName()), data, this);
-                MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(
+                final MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(
                     rs.getInt("status"));
                 if (status.equals(MapleQuestStatus.Status.NOT_STARTED)) {
                     startActs.add(act);
@@ -64,7 +64,7 @@ public class MapleCustomQuest extends MapleQuest {
             }
             rs.close();
             ps.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Error loading custom quest. ", e);
         }
     }

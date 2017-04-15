@@ -11,13 +11,13 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class NPCTalkHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int oid = slea.readInt();
+        final int oid = slea.readInt();
         slea.readInt();
-        MapleMapObject obj = c.getPlayer().getMap().getMapObject(oid);
+        final MapleMapObject obj = c.getPlayer().getMap().getMapObject(oid);
         if (obj instanceof MapleNPC) {
-            MapleNPC npc = (MapleNPC) obj;
+            final MapleNPC npc = (MapleNPC) obj;
             if (NPCScriptManager.getInstance() != null)
                 NPCScriptManager.getInstance().dispose(c);
             if (!c.getPlayer().getCheatTracker().Spam(1000, 4)) {
@@ -57,7 +57,7 @@ public class NPCTalkHandler extends AbstractMaplePacketHandler {
                 }
             }
         } else if (obj instanceof PlayerNPCs) {
-            PlayerNPCs npc = (PlayerNPCs) obj;
+            final PlayerNPCs npc = (PlayerNPCs) obj;
             NPCScriptManager.getInstance().start(c, npc.getId(), npc.getName(), null);
         }
     }

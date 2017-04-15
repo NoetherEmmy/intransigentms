@@ -6,7 +6,7 @@ import net.sf.odinms.provider.MapleDataFileEntry;
 public class WZFileEntry extends WZEntry implements MapleDataFileEntry {
     private int offset;
 
-    public WZFileEntry(String name, int size, int checksum, MapleDataEntity parent) {
+    public WZFileEntry(final String name, final int size, final int checksum, final MapleDataEntity parent) {
         super(name, size, checksum, parent);
     }
 
@@ -15,7 +15,7 @@ public class WZFileEntry extends WZEntry implements MapleDataFileEntry {
         return offset;
     }
 
-    public void setOffset(int offset) {
+    public void setOffset(final int offset) {
         this.offset = offset;
     }
 }

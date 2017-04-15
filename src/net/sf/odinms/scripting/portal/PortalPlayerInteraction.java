@@ -7,7 +7,7 @@ import net.sf.odinms.server.MaplePortal;
 public class PortalPlayerInteraction extends AbstractPlayerInteraction {
     private final MaplePortal portal;
 
-    public PortalPlayerInteraction(MapleClient c, MaplePortal portal) {
+    public PortalPlayerInteraction(final MapleClient c, final MaplePortal portal) {
         super(c);
         this.portal = portal;
     }

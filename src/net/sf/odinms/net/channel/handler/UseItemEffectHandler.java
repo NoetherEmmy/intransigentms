@@ -14,16 +14,16 @@ import org.slf4j.LoggerFactory;
 public class UseItemEffectHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(UseItemHandler.class);
 
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        int itemId = slea.readInt();
+        final int itemId = slea.readInt();
 
         if (itemId >= 5000000 && itemId <= 5000053) {
             log.warn(slea.toString());
         }
 
         if (itemId != 0) {
-            IItem toUse = c.getPlayer().getInventory(MapleInventoryType.CASH).findById(itemId);
+            final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.CASH).findById(itemId);
             if (toUse == null) {
                 c.getPlayer()
                  .getCheatTracker()
@@ -46,7 +46,7 @@ public class UseItemEffectHandler extends AbstractMaplePacketHandler {
              false
          );
         if (c.getPlayer().hasFakeChar()) {
-            for (FakeCharacter ch : c.getPlayer().getFakeChars()) {
+            for (final FakeCharacter ch : c.getPlayer().getFakeChars()) {
                 ch.getFakeChar().setItemEffect(itemId);
                 c.getPlayer()
                  .getMap()

@@ -106,7 +106,7 @@ public class MockIOSession extends BaseIoSession {
      * Does nothing.
      */
     @Override
-    public WriteFuture write(Object message, SocketAddress remoteAddress) {
+    public WriteFuture write(final Object message, final SocketAddress remoteAddress) {
         return null;
     }
 
@@ -115,9 +115,9 @@ public class MockIOSession extends BaseIoSession {
      * the packet.
      */
     @Override
-    public WriteFuture write(Object message) {
+    public WriteFuture write(final Object message) {
         if (message instanceof MaplePacket) {
-            MaplePacket mp = (MaplePacket) message;
+            final MaplePacket mp = (MaplePacket) message;
             if (mp.getOnSend() != null) {
                 mp.getOnSend().run();
             }
@@ -129,6 +129,6 @@ public class MockIOSession extends BaseIoSession {
      * Does nothing.
      */
     @Override
-    protected void write0(WriteRequest writeRequest) {
+    protected void write0(final WriteRequest writeRequest) {
     }
 }

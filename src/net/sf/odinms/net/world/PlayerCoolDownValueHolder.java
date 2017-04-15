@@ -8,7 +8,7 @@ public class PlayerCoolDownValueHolder implements Serializable {
     public final long startTime, length;
     private final int id;
 
-    public PlayerCoolDownValueHolder(int skillId, long startTime, long length) {
+    public PlayerCoolDownValueHolder(final int skillId, final long startTime, final long length) {
         this.skillId = skillId;
         this.startTime = startTime;
         this.length = length;
@@ -24,7 +24,7 @@ public class PlayerCoolDownValueHolder implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;

@@ -29,7 +29,7 @@ public class EventInstanceManager {
     private final Properties props = new Properties();
     private long timeStarted, eventTime;
 
-    public EventInstanceManager(EventManager em, String name) {
+    public EventInstanceManager(final EventManager em, final String name) {
         this.em = em;
         this.name = name;
         mapFactory =
@@ -48,7 +48,7 @@ public class EventInstanceManager {
         mapFactory.setChannel(em.getChannelServer().getChannel());
     }
 
-    public void registerPlayer(MapleCharacter chr) {
+    public void registerPlayer(final MapleCharacter chr) {
         if (chr != null) {
             try {
                 chars.add(chr);
@@ -60,7 +60,7 @@ public class EventInstanceManager {
         }
     }
 
-    public void startEventTimer(long time) {
+    public void startEventTimer(final long time) {
         timeStarted = System.currentTimeMillis();
         eventTime = time;
     }
@@ -73,14 +73,14 @@ public class EventInstanceManager {
         return eventTime - (System.currentTimeMillis() - timeStarted);
     }
 
-    public void registerParty(MapleParty party, MapleMap map) {
-        for (MaplePartyCharacter pc : party.getMembers()) {
-            MapleCharacter c = map.getCharacterById(pc.getId());
+    public void registerParty(final MapleParty party, final MapleMap map) {
+        for (final MaplePartyCharacter pc : party.getMembers()) {
+            final MapleCharacter c = map.getCharacterById(pc.getId());
             registerPlayer(c);
         }
     }
 
-    public void unregisterPlayer(MapleCharacter chr) {
+    public void unregisterPlayer(final MapleCharacter chr) {
         chars.remove(chr);
         if (chr != null) chr.setEventInstance(null);
     }
@@ -93,12 +93,12 @@ public class EventInstanceManager {
         return new ArrayList<>(chars);
     }
 
-    public void registerMonster(MapleMonster mob) {
+    public void registerMonster(final MapleMonster mob) {
         mobs.add(mob);
         mob.setEventInstance(this);
     }
 
-    public void unregisterMonster(MapleMonster mob) {
+    public void unregisterMonster(final MapleMonster mob) {
         mobs.remove(mob);
         mob.setEventInstance(null);
         if (mobs.isEmpty()) {
@@ -110,7 +110,7 @@ public class EventInstanceManager {
         }
     }
 
-    public void playerKilled(MapleCharacter chr) {
+    public void playerKilled(final MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("playerDead", this, chr);
         } catch (ScriptException | NoSuchMethodException e) {
@@ -118,9 +118,9 @@ public class EventInstanceManager {
         }
     }
 
-    public boolean revivePlayer(MapleCharacter chr) {
+    public boolean revivePlayer(final MapleCharacter chr) {
         try {
-            Object b = em.getIv().invokeFunction("playerRevive", this, chr);
+            final Object b = em.getIv().invokeFunction("playerRevive", this, chr);
             if (b instanceof Boolean) {
                 return (Boolean) b;
             }
@@ -130,7 +130,7 @@ public class EventInstanceManager {
         return true;
     }
 
-    public void playerDisconnected(MapleCharacter chr) {
+    public void playerDisconnected(final MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("playerDisconnected", this, chr);
         } catch (ScriptException | NoSuchMethodException e) {
@@ -138,10 +138,10 @@ public class EventInstanceManager {
         }
     }
 
-    public void monsterKilled(MapleCharacter chr, MapleMonster mob) {
+    public void monsterKilled(final MapleCharacter chr, final MapleMonster mob) {
         try {
             Integer kc = killCount.get(chr);
-            int inc = ((Double) em.getIv().invokeFunction("monsterValue", this, mob.getId())).intValue();
+            final int inc = ((Double) em.getIv().invokeFunction("monsterValue", this, mob.getId())).intValue();
             if (kc == null) {
                 kc = inc;
             } else {
@@ -153,8 +153,8 @@ public class EventInstanceManager {
         }
     }
 
-    public int getKillCount(MapleCharacter chr) {
-        Integer kc = killCount.get(chr);
+    public int getKillCount(final MapleCharacter chr) {
+        final Integer kc = killCount.get(chr);
         if (kc == null) {
             return 0;
         } else {
@@ -175,11 +175,11 @@ public class EventInstanceManager {
         return mapFactory;
     }
 
-    public void schedule(final String methodName, long delay) {
+    public void schedule(final String methodName, final long delay) {
         TimerManager.getInstance().schedule(() -> {
             try {
                 em.getIv().invokeFunction(methodName, EventInstanceManager.this);
-            } catch (NullPointerException ignored) {
+            } catch (final NullPointerException ignored) {
             } catch (ScriptException | NoSuchMethodException e) {
                 Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, e);
             }
@@ -190,7 +190,7 @@ public class EventInstanceManager {
         return name;
     }
 
-    public void killByCount(MapleCharacter player) {
+    public void killByCount(final MapleCharacter player) {
         try {
             em.getIv().invokeFunction("addKillCount", this, player);
         } catch (ScriptException | NoSuchMethodException e) {
@@ -198,10 +198,10 @@ public class EventInstanceManager {
         }
     }
 
-    public void saveWinner(MapleCharacter chr) {
+    public void saveWinner(final MapleCharacter chr) {
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps =
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)"
                 );
@@ -210,14 +210,14 @@ public class EventInstanceManager {
             ps.setInt(3, chr.getId());
             ps.setInt(4, chr.getClient().getChannel());
             ps.executeUpdate();
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, sqle);
         }
     }
 
-    public MapleMap getMapInstance(int mapId) {
-        boolean wasLoaded = mapFactory.isMapLoaded(mapId);
-        MapleMap map = mapFactory.getMap(mapId);
+    public MapleMap getMapInstance(final int mapId) {
+        final boolean wasLoaded = mapFactory.isMapLoaded(mapId);
+        final MapleMap map = mapFactory.getMap(mapId);
         // in case reactors need shuffling and we are actually loading the map
         if (!wasLoaded) {
             if (em.getProperty("shuffleReactors") != null && em.getProperty("shuffleReactors").equals("true")) {
@@ -227,20 +227,20 @@ public class EventInstanceManager {
         return map;
     }
 
-    public void setProperty(String key, String value) {
+    public void setProperty(final String key, final String value) {
         props.setProperty(key, value);
     }
 
     @SuppressWarnings("UnusedParameters")
-    public Object setProperty(String key, String value, boolean prev) {
+    public Object setProperty(final String key, final String value, final boolean prev) {
         return props.setProperty(key, value);
     }
 
-    public String getProperty(String key) {
+    public String getProperty(final String key) {
         return props.getProperty(key);
     }
 
-    public void leftParty(MapleCharacter chr) {
+    public void leftParty(final MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("leftParty", this, chr);
         } catch (ScriptException | NoSuchMethodException e) {
@@ -265,7 +265,7 @@ public class EventInstanceManager {
         }
     }
 
-    public void removePlayer(MapleCharacter chr) {
+    public void removePlayer(final MapleCharacter chr) {
         try {
             em.getIv().invokeFunction("playerExit", this, chr);
         } catch (ScriptException | NoSuchMethodException e) {
@@ -273,7 +273,7 @@ public class EventInstanceManager {
         }
     }
 
-    public boolean isLeader(MapleCharacter chr) {
+    public boolean isLeader(final MapleCharacter chr) {
         return (chr.getParty().getLeader().getId() == chr.getId());
     }
 }

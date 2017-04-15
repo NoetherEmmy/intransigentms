@@ -15,7 +15,7 @@ public class WZIMGEntry implements MapleData {
     private Object data;
     private final MapleDataEntity parent;
 
-    public WZIMGEntry(MapleDataEntity parent) {
+    public WZIMGEntry(final MapleDataEntity parent) {
         this.parent = parent;
     }
 
@@ -36,8 +36,8 @@ public class WZIMGEntry implements MapleData {
     }
 
     @Override
-    public MapleData getChildByPath(String path) {
-        String[] segments = path.split("/");
+    public MapleData getChildByPath(final String path) {
+        final String[] segments = path.split("/");
         if (segments[0].equals("..")) {
             return ((MapleData) parent).getChildByPath(path.substring(path.indexOf("/") + 1));
         }
@@ -45,7 +45,7 @@ public class WZIMGEntry implements MapleData {
         MapleData ret = this;
         for (int x = 0; x < segments.length; ++x) {
             boolean foundChild = false;
-            for (MapleData child : ret.getChildren()) {
+            for (final MapleData child : ret.getChildren()) {
                 if (child.getName().equals(segments[x])) {
                     ret = child;
                     foundChild = true;
@@ -62,19 +62,19 @@ public class WZIMGEntry implements MapleData {
         return data;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setType(MapleDataType type) {
+    public void setType(final MapleDataType type) {
         this.type = type;
     }
 
-    public void setData(Object data) {
+    public void setData(final Object data) {
         this.data = data;
     }
 
-    public void addChild(WZIMGEntry entry) {
+    public void addChild(final WZIMGEntry entry) {
         children.add(entry);
     }
 

@@ -9,7 +9,7 @@ public class WZEntry implements MapleDataEntry {
     private int offset;
     private final MapleDataEntity parent;
 
-    public WZEntry(String name, int size, int checksum, MapleDataEntity parent) {
+    public WZEntry(final String name, final int size, final int checksum, final MapleDataEntity parent) {
         super();
         this.name = name;
         this.size = size;

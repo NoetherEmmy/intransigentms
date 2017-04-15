@@ -18,7 +18,7 @@ public class RandomAccessByteStream implements SeekableInputStreamBytestream {
      *            The RandomAccessFile instance to wrap this around.
      * @see java.io.RandomAccessFile
      */
-    public RandomAccessByteStream(RandomAccessFile raf) {
+    public RandomAccessByteStream(final RandomAccessFile raf) {
         super();
         this.raf = raf;
     }
@@ -30,14 +30,14 @@ public class RandomAccessByteStream implements SeekableInputStreamBytestream {
      */
     @Override
     public int readByte() {
-        int temp;
+        final int temp;
         try {
             temp = raf.read();
             if (temp == -1)
                 throw new RuntimeException("EOF");
             read++;
             return temp;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -46,7 +46,7 @@ public class RandomAccessByteStream implements SeekableInputStreamBytestream {
      * @see net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#seek(long)
      */
     @Override
-    public void seek(long offset) throws IOException {
+    public void seek(final long offset) throws IOException {
         raf.seek(offset);
     }
 
@@ -77,7 +77,7 @@ public class RandomAccessByteStream implements SeekableInputStreamBytestream {
     public long available() {
         try {
             return raf.length() - raf.getFilePointer();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("ERROR", e);
             return 0;
         }

@@ -8,11 +8,11 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
     private boolean hide;
     private int fh, start_fh, cy, rx0, rx1;
 
-    public AbstractLoadedMapleLife(int id) {
+    public AbstractLoadedMapleLife(final int id) {
         this.id = id;
     }
 
-    public AbstractLoadedMapleLife(AbstractLoadedMapleLife life) {
+    public AbstractLoadedMapleLife(final AbstractLoadedMapleLife life) {
         this(life.getId());
         this.f = life.f;
         this.hide = life.hide;
@@ -27,7 +27,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         return f;
     }
 
-    public void setF(int f) {
+    public void setF(final int f) {
         this.f = f;
     }
 
@@ -35,7 +35,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         return hide;
     }
 
-    public void setHide(boolean hide) {
+    public void setHide(final boolean hide) {
         this.hide = hide;
     }
 
@@ -43,7 +43,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         return fh;
     }
 
-    public void setFh(int fh) {
+    public void setFh(final int fh) {
         this.fh = fh;
     }
 
@@ -55,7 +55,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         return cy;
     }
 
-    public void setCy(int cy) {
+    public void setCy(final int cy) {
         this.cy = cy;
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         return rx0;
     }
 
-    public void setRx0(int rx0) {
+    public void setRx0(final int rx0) {
         this.rx0 = rx0;
     }
 
@@ -71,7 +71,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         return rx1;
     }
 
-    public void setRx1(int rx1) {
+    public void setRx1(final int rx1) {
         this.rx1 = rx1;
     }
 

@@ -8,8 +8,8 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class CheckCharNameHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        String name = slea.readMapleAsciiString();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final String name = slea.readMapleAsciiString();
         c.getSession()
          .write(
              MaplePacketCreator.charNameResponse(

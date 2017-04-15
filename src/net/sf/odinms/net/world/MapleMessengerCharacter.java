@@ -12,7 +12,7 @@ public class MapleMessengerCharacter implements Serializable {
     private boolean online;
     private int position;
 
-    public MapleMessengerCharacter(MapleCharacter maplechar) {
+    public MapleMessengerCharacter(final MapleCharacter maplechar) {
         this.name = maplechar.getName();
         this.channel = maplechar.getClient().getChannel();
         this.id = maplechar.getId();
@@ -20,7 +20,7 @@ public class MapleMessengerCharacter implements Serializable {
         this.position = 0;
     }
 
-    public MapleMessengerCharacter(MapleCharacter maplechar, int position) {
+    public MapleMessengerCharacter(final MapleCharacter maplechar, final int position) {
         this.name = maplechar.getName();
         this.channel = maplechar.getClient().getChannel();
         this.id = maplechar.getId();
@@ -41,7 +41,7 @@ public class MapleMessengerCharacter implements Serializable {
         return online;
     }
 
-    public void setOnline(boolean online) {
+    public void setOnline(final boolean online) {
         this.online = online;
     }
 
@@ -57,7 +57,7 @@ public class MapleMessengerCharacter implements Serializable {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(final int position) {
         this.position = position;
     }
 
@@ -70,7 +70,7 @@ public class MapleMessengerCharacter implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj)
             return true;
         if (obj == null)

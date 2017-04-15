@@ -35,7 +35,7 @@ public class MapleQuest {
     protected MapleQuest() {
     }
 
-    private MapleQuest(int id) {
+    private MapleQuest(final int id) {
         this.id = id;
         // Read requirements
         final MapleData startReqData = requirements.getChildByPath(String.valueOf(id)).getChildByPath("0");
@@ -106,8 +106,8 @@ public class MapleQuest {
         quests.clear();
     }
 
-    public static MapleQuest getInstance(int id) {
-        MapleQuest ret;
+    public static MapleQuest getInstance(final int id) {
+        final MapleQuest ret;
         if (!quests.containsKey(id)) {
             try {
                 if (id > 99999) {
@@ -115,7 +115,7 @@ public class MapleQuest {
                 } else {
                     ret = new MapleQuest(id);
                 }
-            } catch (NullPointerException npe) {
+            } catch (final NullPointerException npe) {
                 System.err.println("Bad quest data or no quest data at all for ID " + id);
                 quests.put(id, null);
                 return null;
@@ -127,22 +127,22 @@ public class MapleQuest {
         return ret;
     }
 
-    private boolean canStart(MapleCharacter c, Integer npcid) {
+    private boolean canStart(final MapleCharacter c, final Integer npcid) {
         if (
             c.getQuest(this).getStatus() != Status.NOT_STARTED &&
             !(c.getQuest(this).getStatus() == Status.COMPLETED && repeatable)
         ) {
             return false;
         }
-        for (MapleQuestRequirement r : startReqs) {
+        for (final MapleQuestRequirement r : startReqs) {
             if (!r.check(c, npcid)) return false;
         }
         return true;
     }
 
-    public boolean canComplete(MapleCharacter c, Integer npcid) {
+    public boolean canComplete(final MapleCharacter c, final Integer npcid) {
         if (!c.getQuest(this).getStatus().equals(Status.STARTED)) return false;
-        for (MapleQuestRequirement r : completeReqs) {
+        for (final MapleQuestRequirement r : completeReqs) {
             if (!r.check(c, npcid)) return false;
         }
         return true;
@@ -152,59 +152,59 @@ public class MapleQuest {
         return completeReqs;
     }
 
-    public void start(MapleCharacter c, int npc) {
+    public void start(final MapleCharacter c, final int npc) {
         if ((autoStart || checkNPCOnMap(c, npc)) && canStart(c, npc)) {
-            for (MapleQuestAction a : startActs) {
+            for (final MapleQuestAction a : startActs) {
                 a.run(c, null);
             }
-            MapleQuestStatus oldStatus = c.getQuest(this);
-            MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.STARTED, npc);
+            final MapleQuestStatus oldStatus = c.getQuest(this);
+            final MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.STARTED, npc);
             newStatus.setCompletionTime(oldStatus.getCompletionTime());
             newStatus.setForfeited(oldStatus.getForfeited());
             c.updateQuest(newStatus);
         }
     }
 
-    public void complete(MapleCharacter c, int npc) {
+    public void complete(final MapleCharacter c, final int npc) {
         complete(c, npc, null);
     }
 
-    public void complete(MapleCharacter c, int npc, Integer selection) {
+    public void complete(final MapleCharacter c, final int npc, final Integer selection) {
         if ((autoPreComplete || checkNPCOnMap(c, npc)) && canComplete(c, npc)) {
-            for (MapleQuestAction a : completeActs) {
+            for (final MapleQuestAction a : completeActs) {
                 if (!a.check(c)) return;
             }
-            for (MapleQuestAction a : completeActs) {
+            for (final MapleQuestAction a : completeActs) {
                 a.run(c, selection);
             }
             // We save forfeits only for logging purposes, they shouldn't matter anymore.
             // Completion time is set by the constructor.
-            MapleQuestStatus oldStatus = c.getQuest(this);
-            MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.COMPLETED, npc);
+            final MapleQuestStatus oldStatus = c.getQuest(this);
+            final MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.COMPLETED, npc);
             newStatus.setForfeited(oldStatus.getForfeited());
             c.updateQuest(newStatus);
         }
     }
 
-    public void forfeit(MapleCharacter c) {
+    public void forfeit(final MapleCharacter c) {
         if (!c.getQuest(this).getStatus().equals(Status.STARTED)) return;
-        MapleQuestStatus oldStatus = c.getQuest(this);
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.NOT_STARTED);
+        final MapleQuestStatus oldStatus = c.getQuest(this);
+        final MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.NOT_STARTED);
         newStatus.setForfeited(oldStatus.getForfeited() + 1);
         newStatus.setCompletionTime(oldStatus.getCompletionTime());
         c.updateQuest(newStatus);
     }
 
-    public void forceStart(MapleCharacter c, int npc) {
-        MapleQuestStatus oldStatus = c.getQuest(this);
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.STARTED, npc);
+    public void forceStart(final MapleCharacter c, final int npc) {
+        final MapleQuestStatus oldStatus = c.getQuest(this);
+        final MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.STARTED, npc);
         newStatus.setForfeited(oldStatus.getForfeited());
         c.updateQuest(newStatus);
     }
 
-    public void forceComplete(MapleCharacter c, int npc) {
-        MapleQuestStatus oldStatus = c.getQuest(this);
-        MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.COMPLETED, npc);
+    public void forceComplete(final MapleCharacter c, final int npc) {
+        final MapleQuestStatus oldStatus = c.getQuest(this);
+        final MapleQuestStatus newStatus = new MapleQuestStatus(this, MapleQuestStatus.Status.COMPLETED, npc);
         newStatus.setForfeited(oldStatus.getForfeited());
         c.updateQuest(newStatus);
     }
@@ -221,7 +221,7 @@ public class MapleQuest {
         return Collections.unmodifiableList(relevantMobs);
     }
 
-    private boolean checkNPCOnMap(MapleCharacter player, int npcid) {
+    private boolean checkNPCOnMap(final MapleCharacter player, final int npcid) {
         return player.getMap().containsNPC(npcid);
     }
 

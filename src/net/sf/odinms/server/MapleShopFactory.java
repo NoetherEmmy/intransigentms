@@ -17,8 +17,8 @@ public class MapleShopFactory {
         npcShops.clear();
     }
 
-    private MapleShop loadShop(int id, boolean isShopId) {
-        MapleShop ret = MapleShop.createFromDB(id, isShopId);
+    private MapleShop loadShop(final int id, final boolean isShopId) {
+        final MapleShop ret = MapleShop.createFromDB(id, isShopId);
         if (ret != null) {
             shops.put(ret.getId(), ret);
             npcShops.put(ret.getNpcId(), ret);
@@ -30,14 +30,14 @@ public class MapleShopFactory {
         return ret;
     }
 
-    public MapleShop getShop(int shopId) {
+    public MapleShop getShop(final int shopId) {
         if (shops.containsKey(shopId)) {
             return shops.get(shopId);
         }
         return loadShop(shopId, true);
     }
 
-    public MapleShop getShopForNPC(int npcId) {
+    public MapleShop getShopForNPC(final int npcId) {
         if (npcShops.containsKey(npcId)) {
             npcShops.get(npcId);
         }

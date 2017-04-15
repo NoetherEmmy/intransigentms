@@ -11,7 +11,7 @@ public class MapleMount {
     private final MapleCharacter owner;
     private boolean active = true;
 
-    public MapleMount(MapleCharacter owner, int id, int skillId) {
+    public MapleMount(final MapleCharacter owner, final int id, final int skillId) {
         this.itemId = id;
         this.skillId = skillId;
         this.level = 1;
@@ -56,7 +56,7 @@ public class MapleMount {
         return level;
     }
 
-    public void setTiredness(int newTiredness) {
+    public void setTiredness(final int newTiredness) {
         tiredness = newTiredness;
         if (tiredness < 0) {
             tiredness = 0;
@@ -69,19 +69,19 @@ public class MapleMount {
         if (tiredness > 100) owner.dispelSkill(1004);
     }
 
-    public void setExp(int exp) {
+    public void setExp(final int exp) {
         this.exp = exp;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(final int level) {
         this.level = level;
     }
 
-    public void setItemId(int itemId) {
+    public void setItemId(final int itemId) {
         this.itemId = itemId;
     }
 
-    public void setSkillId(int skillId) {
+    public void setSkillId(final int skillId) {
         this.skillId = skillId;
     }
 
@@ -95,7 +95,7 @@ public class MapleMount {
         }
     }
 
-    public void setActive(boolean set) {
+    public void setActive(final boolean set) {
         active = set;
     }
 

@@ -22,17 +22,17 @@ public class BuddyList {
     private int capacity;
     private final Deque<CharacterNameAndId> pendingRequests = new LinkedList<>();
 
-    public BuddyList(int capacity) {
+    public BuddyList(final int capacity) {
         super();
         this.capacity = capacity;
     }
 
-    public boolean contains(int characterId) {
+    public boolean contains(final int characterId) {
         return buddies.containsKey(characterId);
     }
 
-    public boolean containsVisible(int characterId) {
-        BuddylistEntry ble = buddies.get(characterId);
+    public boolean containsVisible(final int characterId) {
+        final BuddylistEntry ble = buddies.get(characterId);
         return ble != null && ble.isVisible();
     }
 
@@ -40,33 +40,34 @@ public class BuddyList {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(final int capacity) {
         this.capacity = capacity;
     }
 
-    public void addCapacity(int capacity) {
+    public void addCapacity(final int capacity) {
         this.capacity += capacity;
     }
 
-    public BuddylistEntry get(int characterId) {
+    public BuddylistEntry get(final int characterId) {
         return buddies.get(characterId);
     }
 
-    public BuddylistEntry get(String characterName) {
-        String lowerCaseName = characterName.toLowerCase();
-        for (BuddylistEntry ble : buddies.values()) {
-            if (ble.getName().toLowerCase().equals(lowerCaseName)) {
-                return ble;
-            }
-        }
-        return null;
+    public BuddylistEntry get(final String characterName) {
+        final String lowerCaseName = characterName.toLowerCase();
+        return
+            buddies
+                .values()
+                .stream()
+                .filter(ble -> ble.getName().toLowerCase().equals(lowerCaseName))
+                .findFirst()
+                .orElse(null);
     }
 
-    public void put(BuddylistEntry entry) {
+    public void put(final BuddylistEntry entry) {
         buddies.put(entry.getCharacterId(), entry);
     }
 
-    public void remove(int characterId) {
+    public void remove(final int characterId) {
         buddies.remove(characterId);
     }
 
@@ -79,16 +80,16 @@ public class BuddyList {
     }
 
     public int[] getBuddyIds() {
-        int[] buddyIds = new int[buddies.size()];
+        final int[] buddyIds = new int[buddies.size()];
         int i = 0;
-        for (BuddylistEntry ble : buddies.values()) {
+        for (final BuddylistEntry ble : buddies.values()) {
             buddyIds[i++] = ble.getCharacterId();
         }
         return buddyIds;
     }
 
-    public void loadFromDb(int characterId) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
+    public void loadFromDb(final int characterId) throws SQLException {
+        final Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps =
             con.prepareStatement(
                 "SELECT b.buddyid, b.pending, c.name as buddyname FROM " +
@@ -96,7 +97,7 @@ public class BuddyList {
                     "c.id = b.buddyid AND b.characterid = ?"
             );
         ps.setInt(1, characterId);
-        ResultSet rs = ps.executeQuery();
+        final ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             if (rs.getInt("pending") == 1) {
                 pendingRequests.push(
@@ -119,7 +120,7 @@ public class BuddyList {
         return pendingRequests.pollLast();
     }
 
-    public void addBuddyRequest(MapleClient c, int cidFrom, String nameFrom, int channelFrom) {
+    public void addBuddyRequest(final MapleClient c, final int cidFrom, final String nameFrom, final int channelFrom) {
         put(new BuddylistEntry(nameFrom, cidFrom, channelFrom, false));
         if (pendingRequests.isEmpty()) {
             c.getSession().write(MaplePacketCreator.requestBuddylistAdd(cidFrom, nameFrom));

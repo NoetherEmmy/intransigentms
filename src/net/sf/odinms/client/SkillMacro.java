@@ -6,7 +6,7 @@ public class SkillMacro {
     private int shout;
     private int position;
 
-    public SkillMacro(int skill1, int skill2, int skill3, String name, int shout, int position) {
+    public SkillMacro(final int skill1, final int skill2, final int skill3, final String name, final int shout, final int position) {
         this.skill1 = skill1;
         this.skill2 = skill2;
         this.skill3 = skill3;
@@ -43,31 +43,31 @@ public class SkillMacro {
         return position;
     }
 
-    public void setMacroId(int macroId) {
+    public void setMacroId(final int macroId) {
         this.macroId = macroId;
     }
 
-    public void setSkill1(int skill1) {
+    public void setSkill1(final int skill1) {
         this.skill1 = skill1;
     }
 
-    public void setSkill2(int skill2) {
+    public void setSkill2(final int skill2) {
         this.skill2 = skill2;
     }
 
-    public void setSkill3(int skill3) {
+    public void setSkill3(final int skill3) {
         this.skill3 = skill3;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setShout(int shout) {
+    public void setShout(final int shout) {
         this.shout = shout;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(final int position) {
         this.position = position;
     }
 }

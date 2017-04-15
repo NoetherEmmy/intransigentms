@@ -13,7 +13,7 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     private int hp;
     private final SummonMovementType movementType;
 
-    public MapleSummon(MapleCharacter owner, int skill, Point pos, SummonMovementType movementType) {
+    public MapleSummon(final MapleCharacter owner, final int skill, final Point pos, final SummonMovementType movementType) {
         super();
         this.owner = owner;
         this.skill = skill;
@@ -26,12 +26,12 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         client.getSession().write(MaplePacketCreator.spawnSpecialMapObject(this, skillLevel, false));
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         client.getSession().write(MaplePacketCreator.removeSpecialMapObject(this, false));
     }
 
@@ -47,7 +47,7 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
         return this.hp;
     }
 
-    public void addHP(int delta) {
+    public void addHP(final int delta) {
         this.hp += delta;
     }
 

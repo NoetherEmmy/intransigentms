@@ -19,7 +19,7 @@ public class PlayerNPCs extends AbstractMapleMapObject {
     private String name = "";
     private int FH, RX0, RX1, CY;
 
-    public PlayerNPCs(ResultSet rs) {
+    public PlayerNPCs(final ResultSet rs) {
         try {
             CY = rs.getInt("cy");
             name = rs.getString("name");
@@ -35,16 +35,16 @@ public class PlayerNPCs extends AbstractMapleMapObject {
             npcId = rs.getInt("ScriptId");
             setPosition(new Point(rs.getInt("x"), CY));
 
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM playernpcs_equip WHERE NpcId = ?");
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement ps = con.prepareStatement("SELECT * FROM playernpcs_equip WHERE NpcId = ?");
             ps.setInt(1, rs.getInt("id"));
-            ResultSet rs2 = ps.executeQuery();
+            final ResultSet rs2 = ps.executeQuery();
             while (rs2.next()) {
                 equips.put(rs2.getByte("equippos"), rs2.getInt("equipid"));
             }
             rs2.close();
             ps.close();
-        } catch (SQLException sql) {
+        } catch (final SQLException sql) {
             sql.printStackTrace();
         }
     }
@@ -102,7 +102,7 @@ public class PlayerNPCs extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         throw new UnsupportedOperationException();
     }
 
@@ -112,7 +112,7 @@ public class PlayerNPCs extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         client.getSession().write(MaplePacketCreator.SpawnPlayerNPC(this));
         client.getSession().write(MaplePacketCreator.getPlayerNPC(this));
     }

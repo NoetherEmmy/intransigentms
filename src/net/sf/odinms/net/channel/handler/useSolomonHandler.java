@@ -10,12 +10,12 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class useSolomonHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         slea.readInt();
-        byte slot = (byte) slea.readShort();
-        int itemid = slea.readInt();
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        IItem item = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
+        final byte slot = (byte) slea.readShort();
+        final int itemid = slea.readInt();
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        final IItem item = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
         if (item == null || item.getItemId() != itemid) {
             c.disconnect();
             return;

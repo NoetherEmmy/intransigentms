@@ -25,18 +25,18 @@ public class MaplePet extends Item {
     private Point pos;
     private int stance;
 
-    private MaplePet(int id, byte position, int uniqueid) {
+    private MaplePet(final int id, final byte position, final int uniqueid) {
         super(id, position, (short) 1);
         this.uniqueid = uniqueid;
     }
 
-    public static MaplePet loadFromDb(int itemid, byte position, int petid) {
+    public static MaplePet loadFromDb(final int itemid, final byte position, final int petid) {
         try {
-            MaplePet ret = new MaplePet(itemid, position, petid);
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM pets WHERE petid = ?");
+            final MaplePet ret = new MaplePet(itemid, position, petid);
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement ps = con.prepareStatement("SELECT * FROM pets WHERE petid = ?");
             ps.setInt(1, petid);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 ret.setName(rs.getString("name"));
                 ret.setCloseness(rs.getInt("closeness"));
@@ -50,7 +50,7 @@ public class MaplePet extends Item {
                 ps.close();
                 return null;
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             Logger.getLogger(MaplePet.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
@@ -58,9 +58,9 @@ public class MaplePet extends Item {
 
     public void saveToDb() {
         try {
-            Connection con = DatabaseConnection.getConnection();
+            final Connection con = DatabaseConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ? WHERE petid = ?");
+            final PreparedStatement ps = con.prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ? WHERE petid = ?");
             ps.setString(1, name);
             if (this.level > 30) {
                 this.level = 30;
@@ -71,28 +71,28 @@ public class MaplePet extends Item {
             ps.setInt(5, uniqueid);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             Logger.getLogger(MaplePet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public static int createPet(int itemid) {
+    public static int createPet(final int itemid) {
         try {
-            MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO pets (name, level, closeness, fullness) VALUES (?, ?, ?, ?)");
+            final MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
+            final Connection con = DatabaseConnection.getConnection();
+            final PreparedStatement ps = con.prepareStatement("INSERT INTO pets (name, level, closeness, fullness) VALUES (?, ?, ?, ?)");
             ps.setString(1, mii.getName(itemid));
             ps.setInt(2, 1);
             ps.setInt(3, 0);
             ps.setInt(4, 100);
             ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
+            final ResultSet rs = ps.getGeneratedKeys();
             rs.next();
-            int ret = rs.getInt(1);
+            final int ret = rs.getInt(1);
             rs.close();
             ps.close();
             return ret;
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             Logger.getLogger(MaplePet.class.getName()).log(Level.SEVERE, null, ex);
             return -1;
         }
@@ -103,7 +103,7 @@ public class MaplePet extends Item {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -111,7 +111,7 @@ public class MaplePet extends Item {
         return uniqueid;
     }
 
-    public void setUniqueId(int id) {
+    public void setUniqueId(final int id) {
         this.uniqueid = id;
     }
 
@@ -119,7 +119,7 @@ public class MaplePet extends Item {
         return closeness;
     }
 
-    public void setCloseness(int closeness) {
+    public void setCloseness(final int closeness) {
         this.closeness = closeness;
     }
 
@@ -127,7 +127,7 @@ public class MaplePet extends Item {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(final int level) {
         this.level = level;
     }
 
@@ -135,7 +135,7 @@ public class MaplePet extends Item {
         return fullness;
     }
 
-    public void setFullness(int fullness) {
+    public void setFullness(final int fullness) {
         this.fullness = fullness;
     }
 
@@ -143,7 +143,7 @@ public class MaplePet extends Item {
         return Fh;
     }
 
-    public void setFh(int Fh) {
+    public void setFh(final int Fh) {
         this.Fh = Fh;
     }
 
@@ -151,7 +151,7 @@ public class MaplePet extends Item {
         return pos;
     }
 
-    public void setPos(Point pos) {
+    public void setPos(final Point pos) {
         this.pos = pos;
     }
 
@@ -159,23 +159,23 @@ public class MaplePet extends Item {
         return stance;
     }
 
-    public void setStance(int stance) {
+    public void setStance(final int stance) {
         this.stance = stance;
     }
 
-    public boolean canConsume(int itemId) {
-        MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
-        for (int petId : mii.petsCanConsume(itemId)) {
+    public boolean canConsume(final int itemId) {
+        final MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
+        for (final int petId : mii.petsCanConsume(itemId)) {
             if (petId == this.getItemId()) return true;
         }
         return false;
     }
 
-    public void updatePosition(List<LifeMovementFragment> movement) {
-        for (LifeMovementFragment move : movement) {
+    public void updatePosition(final List<LifeMovementFragment> movement) {
+        for (final LifeMovementFragment move : movement) {
             if (move instanceof LifeMovement) {
                 if (move instanceof AbsoluteLifeMovement) {
-                    Point position = move.getPosition();
+                    final Point position = move.getPosition();
                     this.setPos(position);
                 }
                 this.setStance(((LifeMovement) move).getNewstate());

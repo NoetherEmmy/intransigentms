@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 public class CheatTracker {
     private final Map<CheatingOffense, CheatingOffenseEntry> offenses =
@@ -40,7 +41,7 @@ public class CheatTracker {
     private final long[] lastTime = new long[8];
     private final ScheduledFuture<?> invalidationTask;
 
-    public CheatTracker(MapleCharacter chr) {
+    public CheatTracker(final MapleCharacter chr) {
         this.chr = new WeakReference<>(chr);
         invalidationTask = TimerManager.getInstance().register(new InvalidationTask(), 60000);
         takingDamageSince = attackingSince = regenMPSince = regenHPSince = System.currentTimeMillis();
@@ -63,7 +64,7 @@ public class CheatTracker {
      *
      * @return Whether or not it's spam.
      */
-    public synchronized boolean Spam(int limit, int type) {
+    public synchronized boolean Spam(final int limit, int type) {
         if (type < 0 || lastTime.length <= type) {
             type = 1; // Default.
         }
@@ -76,12 +77,12 @@ public class CheatTracker {
         return false;
     }
 
-    public boolean checkAttack(int skillId) {
+    public boolean checkAttack(final int skillId) {
         numSequentialAttacks++;
 
-        long oldLastAttackTime = lastAttackTime;
+        final long oldLastAttackTime = lastAttackTime;
         lastAttackTime = System.currentTimeMillis();
-        long attackTime = lastAttackTime - attackingSince;
+        final long attackTime = lastAttackTime - attackingSince;
         if (numSequentialAttacks > 3) {
             final int divisor;
             if (skillId == 3121004 || skillId == 5221004) { // Hurricane.
@@ -103,9 +104,9 @@ public class CheatTracker {
 
     public void checkTakeDamage() {
         numSequentialDamage++;
-        long oldLastDamageTakenTime = lastDamageTakenTime;
+        final long oldLastDamageTakenTime = lastDamageTakenTime;
         lastDamageTakenTime = System.currentTimeMillis();
-        long timeBetweenDamage = lastDamageTakenTime - takingDamageSince;
+        final long timeBetweenDamage = lastDamageTakenTime - takingDamageSince;
         if (timeBetweenDamage / 500 < numSequentialDamage) {
             registerOffense(CheatingOffense.FAST_TAKE_DAMAGE);
         }
@@ -115,7 +116,7 @@ public class CheatTracker {
         }
     }
 
-    public int checkDamage(long dmg) {
+    public int checkDamage(final long dmg) {
         if (dmg > 1 && lastDamage == dmg) {
             numSameDamage++;
         } else {
@@ -125,7 +126,7 @@ public class CheatTracker {
         return numSameDamage;
     }
 
-    public void checkMoveMonster(Point pos) {
+    public void checkMoveMonster(final Point pos) {
         if (pos.equals(lastMonsterMove)) {
             monsterMoveCount++;
             if (monsterMoveCount > 15) {
@@ -153,7 +154,7 @@ public class CheatTracker {
 
     public boolean checkMPRegen() {
         numMPRegens++;
-        long allowedRegens = (System.currentTimeMillis() - regenMPSince) / 10000;
+        final long allowedRegens = (System.currentTimeMillis() - regenMPSince) / 10000;
         // System.out.println(numMPRegens + "/" + allowedRegens);
         if (allowedRegens < numMPRegens) {
             registerOffense(CheatingOffense.FAST_MP_REGEN);
@@ -174,7 +175,7 @@ public class CheatTracker {
 
     public boolean checkSummonAttack() {
         numSequentialSummonAttack++;
-        long allowedAttacks = (System.currentTimeMillis() - summonSummonTime) / 2000 + 1;
+        final long allowedAttacks = (System.currentTimeMillis() - summonSummonTime) / 2000 + 1;
         if (allowedAttacks < numSequentialAttacks) {
             registerOffense(CheatingOffense.FAST_SUMMON_ATTACK);
             return false;
@@ -202,7 +203,7 @@ public class CheatTracker {
         return attacksWithoutHit;
     }
 
-    public void setAttacksWithoutHit(int attacksWithoutHit) {
+    public void setAttacksWithoutHit(final int attacksWithoutHit) {
         this.attacksWithoutHit = attacksWithoutHit;
     }
 
@@ -210,7 +211,7 @@ public class CheatTracker {
         return numGotMissed;
     }
 
-    public void setNumGotMissed(int ngm) {
+    public void setNumGotMissed(final int ngm) {
         numGotMissed = ngm;
     }
 
@@ -218,12 +219,12 @@ public class CheatTracker {
         numGotMissed++;
     }
 
-    public void registerOffense(CheatingOffense offense) {
+    public void registerOffense(final CheatingOffense offense) {
         registerOffense(offense, null);
     }
 
-    public void registerOffense(CheatingOffense offense, String param) {
-        MapleCharacter chrhardref = chr.get();
+    public void registerOffense(final CheatingOffense offense, final String param) {
+        final MapleCharacter chrhardref = chr.get();
         if (chrhardref == null || !offense.isEnabled()) return;
         CheatingOffenseEntry entry = offenses.get(offense);
         if (entry != null && entry.isExpired()) {
@@ -245,17 +246,17 @@ public class CheatTracker {
         CheatingOffensePersister.getInstance().persistEntry(entry);
     }
 
-    public void expireEntry(CheatingOffenseEntry coe) {
+    public void expireEntry(final CheatingOffenseEntry coe) {
         offenses.remove(coe.getOffense());
     }
 
     public int getPoints() {
         int ret = 0;
-        CheatingOffenseEntry[] offensesCopy;
+        final CheatingOffenseEntry[] offensesCopy;
         synchronized (offenses) {
             offensesCopy = offenses.values().toArray(new CheatingOffenseEntry[offenses.size()]);
         }
-        for (CheatingOffenseEntry entry : offensesCopy) {
+        for (final CheatingOffenseEntry entry : offensesCopy) {
             if (entry.isExpired()) {
                 expireEntry(entry);
             } else {
@@ -270,19 +271,22 @@ public class CheatTracker {
     }
 
     public String getSummary() {
-        StringBuilder ret = new StringBuilder();
-        List<CheatingOffenseEntry> offenseList = new ArrayList<>();
+        final StringBuilder ret = new StringBuilder();
+        final List<CheatingOffenseEntry> offenseList;
         synchronized (offenses) {
-            for (CheatingOffenseEntry entry : offenses.values()) {
-                if (!entry.isExpired()) offenseList.add(entry);
-            }
+            offenseList =
+                offenses
+                    .values()
+                    .stream()
+                    .filter(entry -> !entry.isExpired())
+                    .collect(Collectors.toCollection(ArrayList::new));
         }
         offenseList.sort((o1, o2) -> {
-            int thisVal = o1.getPoints();
-            int anotherVal = o2.getPoints();
+            final int thisVal = o1.getPoints();
+            final int anotherVal = o2.getPoints();
             return (thisVal < anotherVal ? 1 : (thisVal == anotherVal ? 0 : -1));
         });
-        int to = Math.min(offenseList.size(), 4);
+        final int to = Math.min(offenseList.size(), 4);
         for (int x = 0; x < to; ++x) {
             ret.append(StringUtil.makeEnumHumanReadable(offenseList.get(x).getOffense().name()));
             ret.append(": ");
@@ -307,11 +311,11 @@ public class CheatTracker {
     private class InvalidationTask implements Runnable {
         @Override
         public void run() {
-            CheatingOffenseEntry[] offenses_copy;
+            final CheatingOffenseEntry[] offenses_copy;
             synchronized (offenses) {
                 offenses_copy = offenses.values().toArray(new CheatingOffenseEntry[offenses.size()]);
             }
-            for (CheatingOffenseEntry offense : offenses_copy) {
+            for (final CheatingOffenseEntry offense : offenses_copy) {
                 if (offense.isExpired()) expireEntry(offense);
             }
             if (chr.get() == null) dispose();

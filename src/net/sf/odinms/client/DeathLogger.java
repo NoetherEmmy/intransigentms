@@ -34,13 +34,13 @@ public final class DeathLogger {
      * @return <code>true</code> upon successful write,
      * <code>false</code> otherwise.
      */
-    public static synchronized boolean logDeath(MapleCharacter p,
-                                                int deathMap,
-                                                int monsterTrialPoints,
-                                                StringBuilder fourthJobSkills,
-                                                StringBuilder questProgress) {
+    public static synchronized boolean logDeath(final MapleCharacter p,
+                                                final int deathMap,
+                                                final int monsterTrialPoints,
+                                                final StringBuilder fourthJobSkills,
+                                                final StringBuilder questProgress) {
         final List<String> toWrite = new ArrayList<>();
-        Optional<List<Integer>> life = p.getLastPastLife();
+        final Optional<List<Integer>> life = p.getLastPastLife();
 
         toWrite.add("================================================================================");
         toWrite.add(MapleClient.getLogMessage(p, ""));
@@ -53,7 +53,7 @@ public final class DeathLogger {
             deathMap
         );
         life.ifPresent(l -> {
-            MapleMonster mob = MapleLifeFactory.getMonster(l.get(2));
+            final MapleMonster mob = MapleLifeFactory.getMonster(l.get(2));
             toWrite.add(
                 "Level: " +
                 l.get(0) +
@@ -86,7 +86,7 @@ public final class DeathLogger {
      * @return <code>true</code> upon successful write,
      * <code>false</code> otherwise.
      */
-    public static synchronized boolean logItems(List<IItem> items, MapleClient c) {
+    public static synchronized boolean logItems(final List<IItem> items, final MapleClient c) {
         final List<String> toWrite = new ArrayList<>();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 

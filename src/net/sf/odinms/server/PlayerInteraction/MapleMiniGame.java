@@ -31,13 +31,13 @@ public class MapleMiniGame extends PlayerInteractionManager {
         MATCH_CARDS
     }
 
-    public MapleMiniGame(MapleCharacter owner, int type, String desc) {
+    public MapleMiniGame(final MapleCharacter owner, final int type, final String desc) {
         super(owner, type, desc, 1);
         this.owner = owner;
     }
 
     @Override
-    public void buy(MapleClient c, int item, short quantity) {
+    public void buy(final MapleClient c, final int item, final short quantity) {
         throw new UnsupportedOperationException();
     }
 
@@ -51,13 +51,13 @@ public class MapleMiniGame extends PlayerInteractionManager {
     }
 
     @Override
-    public void closeShop(boolean saveItems) {
+    public void closeShop(final boolean saveItems) {
         owner.getMap().broadcastMessage(MaplePacketCreator.removeCharBox(owner));
         owner.getMap().removeMapObject(this);
         owner.setInteraction(null);
     }
 
-    public void setStarted(boolean start) {
+    public void setStarted(final boolean start) {
         started = start;
     }
 
@@ -65,7 +65,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
         return started;
     }
 
-    public void setFirstSlot(int type) {
+    public void setFirstSlot(final int type) {
         firstslot = type;
     }
 
@@ -107,8 +107,8 @@ public class MapleMiniGame extends PlayerInteractionManager {
         return ownerpoints;
     }
 
-    public void setMatchCardPoints(int winnerslot) { // 1 = owner, 2 = visitor 3 = tie
-        Connection con = DatabaseConnection.getConnection();
+    public void setMatchCardPoints(final int winnerslot) { // 1 = owner, 2 = visitor 3 = tie
+        final Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps;
         try {
             if (winnerslot < 3) {
@@ -142,60 +142,60 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 ps.executeUpdate();
                 ps.close();
             }
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             owner.dropMessage("An exception has occured: " + sqle);
             sqle.printStackTrace();
         }
     }
 
-    public int getOmokPoints(String type) { // Wins, losses, ties
-        Connection con = DatabaseConnection.getConnection();
+    public int getOmokPoints(final String type) { // Wins, losses, ties
+        final Connection con = DatabaseConnection.getConnection();
         int points = 0;
 
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "SELECT " + ("omok" + type) + " FROM characters WHERE name = ?"
                 );
             ps.setString(1, owner.getName());
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             rs.next();
             points = rs.getInt("omok" + type);
             rs.close();
             ps.close();
             return points;
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             owner.dropMessage("An exception has occured: " + sqle);
             sqle.printStackTrace();
         }
         return points;
     }
 
-    public int getMatchCardPoints(String type) { // wins, losses, ties
-        Connection con = DatabaseConnection.getConnection();
+    public int getMatchCardPoints(final String type) { // wins, losses, ties
+        final Connection con = DatabaseConnection.getConnection();
         int points = 0;
 
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "SELECT " + ("matchcard" + type) + " FROM characters WHERE name = ?"
                 );
             ps.setString(1, owner.getName());
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             rs.next();
             points = rs.getInt("matchcard" + type);
             rs.close();
             ps.close();
             return points;
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             owner.dropMessage("An exception has occured: " + sqle);
             sqle.printStackTrace();
         }
         return points;
     }
 
-    public void setOmokPoints(int winnerslot) { // 1 = owner, 2 = visitor, 3 = tie
-        Connection con = DatabaseConnection.getConnection();
+    public void setOmokPoints(final int winnerslot) { // 1 = owner, 2 = visitor, 3 = tie
+        final Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps;
 
         try {
@@ -231,7 +231,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
                 ps.executeUpdate();
                 ps.close();
             }
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
         }
     }
@@ -240,11 +240,11 @@ public class MapleMiniGame extends PlayerInteractionManager {
         return ownerpoints;
     }
 
-    public void setMatchesToWin(int type) {
+    public void setMatchesToWin(final int type) {
         matchestowin = type;
     }
 
-    public void setGameType(MiniGameType game) {
+    public void setGameType(final MiniGameType game) {
         GameType = game;
         if (game == MiniGameType.MATCH_CARDS) {
             switch (matchestowin) {
@@ -288,8 +288,8 @@ public class MapleMiniGame extends PlayerInteractionManager {
         }
     }
 
-    public int getCardId(int slot) {
-        int cardid = 0;
+    public int getCardId(final int slot) {
+        final int cardid = 0;
         switch (matchestowin) {
             case 6:
                 return list4x3.get(slot - 1);
@@ -305,7 +305,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
         return matchestowin;
     }
 
-    public void setLoser(int type) {
+    public void setLoser(final int type) {
         loser = type;
     }
 
@@ -325,8 +325,8 @@ public class MapleMiniGame extends PlayerInteractionManager {
         return ready;
     }
 
-    public void setPiece(int move1, int move2, int type, MapleCharacter chr) {
-        int slot = move2 * 15 + move1 + 1;
+    public void setPiece(final int move1, final int move2, final int type, final MapleCharacter chr) {
+        final int slot = move2 * 15 + move1 + 1;
         if (piece[slot] == 0) {
             piece[slot] = type;
             broadcast(MaplePacketCreator.getMiniGameMoveOmok(move1, move2, type), true);
@@ -345,7 +345,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
                         }
                         for (int y2 = 0; y2 < 15; ++y2) {
                             for (int x2 = 0; x2 < 15; ++x2) {
-                                int slot2 = y2 * 15 + x2 + 1;
+                                final int slot2 = y2 * 15 + x2 + 1;
                                 piece[slot2] = 0;
                             }
                         }
@@ -367,7 +367,7 @@ public class MapleMiniGame extends PlayerInteractionManager {
                         }
                         for (int y2 = 0; y2 < 15; ++y2) {
                             for (int x2 = 0; x2 < 15; ++x2) {
-                                int slot2 = y2 * 15 + x2 + 1;
+                                final int slot2 = y2 * 15 + x2 + 1;
                                 piece[slot2] = 0;
                             }
                         }
@@ -377,9 +377,9 @@ public class MapleMiniGame extends PlayerInteractionManager {
         }
     }
 
-    public boolean searchCombo(int x, int y, int type) {
+    public boolean searchCombo(final int x, final int y, final int type) {
         boolean winner = false;
-        int slot = y * 15 + x + 1;
+        final int slot = y * 15 + x + 1;
 
         if (piece[slot] == type) {
             if (
@@ -413,9 +413,9 @@ public class MapleMiniGame extends PlayerInteractionManager {
         return winner;
     }
 
-    public boolean searchCombo2(int x, int y, int type) {
+    public boolean searchCombo2(final int x, final int y, final int type) {
         boolean winner = false;
-        int slot = y * 15 + x + 1;
+        final int slot = y * 15 + x + 1;
 
         if (piece[slot] == type) {
             if (
@@ -441,12 +441,12 @@ public class MapleMiniGame extends PlayerInteractionManager {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(final MapleClient client) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(final MapleClient client) {
         throw new UnsupportedOperationException();
     }
 

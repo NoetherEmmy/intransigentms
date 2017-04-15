@@ -19,40 +19,40 @@ public class ViewCharHandler extends AbstractMaplePacketHandler {
     private static final Logger log = LoggerFactory.getLogger(ViewCharHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        Connection con = DatabaseConnection.getConnection();
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE accountid = ?");
+            final PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE accountid = ?");
             ps.setInt(1, c.getAccID());
             int charsNum = 0;
-            List<Integer> worlds = new ArrayList<>();
-            List<MapleCharacter> chars = new ArrayList<>();
-            ResultSet rs = ps.executeQuery();
+            final List<Integer> worlds = new ArrayList<>();
+            final List<MapleCharacter> chars = new ArrayList<>();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                int cworld = rs.getInt("world");
+                final int cworld = rs.getInt("world");
                 boolean inside = false;
-                for (int w : worlds) {
+                for (final int w : worlds) {
                     if (w == cworld) inside = true;
                 }
                 if (!inside) worlds.add(cworld);
-                MapleCharacter chr = MapleCharacter.loadCharFromDB(rs.getInt("id"), c, false);
+                final MapleCharacter chr = MapleCharacter.loadCharFromDB(rs.getInt("id"), c, false);
                 chars.add(chr);
                 charsNum++;
             }
             rs.close();
             ps.close();
-            int unk = charsNum + (3 - charsNum % 3);
+            final int unk = charsNum + (3 - charsNum % 3);
             c.getSession().write(MaplePacketCreator.showAllCharacter(charsNum, unk));
-            for (int w : worlds) {
-                List<MapleCharacter> chrsinworld = new ArrayList<>();
-                for (MapleCharacter chr : chars) {
+            for (final int w : worlds) {
+                final List<MapleCharacter> chrsinworld = new ArrayList<>();
+                for (final MapleCharacter chr : chars) {
                     if (chr.getWorld() == w) {
                         chrsinworld.add(chr);
                     }
                 }
                 c.getSession().write(MaplePacketCreator.showAllCharacterInfo(w, chrsinworld));
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Viewing all chars failed", e);
         }
     }

@@ -13,17 +13,17 @@ public class WZTool {
     private WZTool() {
     }
 
-    public static char[] xorCharArray(char[] cypher, char[] key) {
-        char[] ret = new char[cypher.length];
+    public static char[] xorCharArray(final char[] cypher, final char[] key) {
+        final char[] ret = new char[cypher.length];
         for (int i = 0; i < cypher.length; ++i) {
             ret[i] = (char) (cypher[i] ^ key[i]);
         }
         return ret;
     }
 
-    public static String dumpCharArray(char[] arr) {
+    public static String dumpCharArray(final char[] arr) {
         String ret = " new char[] {";
-        for (char c : arr) {
+        for (final char c : arr) {
             ret += "(char) " + ((int) c) + ", ";
         }
         ret = ret.substring(0, ret.length() - 2);
@@ -31,11 +31,11 @@ public class WZTool {
         return ret;
     }
 
-    public static void writeEncodedString(LittleEndianWriter leo, String s) {
+    public static void writeEncodedString(final LittleEndianWriter leo, final String s) {
         writeEncodedString(leo, s, true);
     }
 
-    public static void writeEncodedString(LittleEndianWriter leo, String s, boolean unicode) {
+    public static void writeEncodedString(final LittleEndianWriter leo, final String s, final boolean unicode) {
         if (s.equals("")) {
             leo.write(0);
             return;
@@ -62,7 +62,7 @@ public class WZTool {
                 leo.write(-s.length());
             else
                 leo.writeInt(s.length());
-            char[] str = new char[s.length()];
+            final char[] str = new char[s.length()];
             for (int i = 0; i < s.length(); ++i) {
                 byte b2 = (byte) s.charAt(i);
                 b2 ^= mask;
@@ -92,22 +92,22 @@ public class WZTool {
         return new byte[0];
     }
 
-    public static String readDecodedStringAtOffset(SeekableLittleEndianAccessor slea, int offset) {
+    public static String readDecodedStringAtOffset(final SeekableLittleEndianAccessor slea, final int offset) {
         slea.seek(offset);
         return readDecodedString();
     }
 
-    public static String readDecodedStringAtOffsetAndReset(SeekableLittleEndianAccessor slea, int offset) {
-        long pos;
+    public static String readDecodedStringAtOffsetAndReset(final SeekableLittleEndianAccessor slea, final int offset) {
+        final long pos;
         pos = slea.getPosition();
         slea.seek(offset);
-        String ret = readDecodedString();
+        final String ret = readDecodedString();
         slea.seek(pos);
         return ret;
     }
 
-    public static int readValue(LittleEndianAccessor lea) {
-        byte b = lea.readByte();
+    public static int readValue(final LittleEndianAccessor lea) {
+        final byte b = lea.readByte();
         if (b == -128) {
             return lea.readInt();
         } else {
@@ -115,7 +115,7 @@ public class WZTool {
         }
     }
 
-    public static void writeValue(LittleEndianWriter lew, int val) {
+    public static void writeValue(final LittleEndianWriter lew, final int val) {
         if (val <= 127)
             lew.write(val);
         else {
@@ -124,8 +124,8 @@ public class WZTool {
         }
     }
 
-    public static float readFloatValue(LittleEndianAccessor lea) {
-        byte b = lea.readByte();
+    public static float readFloatValue(final LittleEndianAccessor lea) {
+        final byte b = lea.readByte();
         if (b == -128) {
             return lea.readFloat();
         } else {
@@ -133,7 +133,7 @@ public class WZTool {
         }
     }
 
-    public static void writeFloatValue(LittleEndianWriter leo, float val) {
+    public static void writeFloatValue(final LittleEndianWriter leo, final float val) {
         if (val == 0) {
             leo.write(-128);
         } else {

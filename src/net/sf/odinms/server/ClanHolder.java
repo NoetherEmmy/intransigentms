@@ -16,7 +16,7 @@ public class ClanHolder {
     private final Map<MapleCharacter, Integer> online = new LinkedHashMap<>(); // Only for each channel, sadly
     private static final Map<String, Integer> offline = new LinkedHashMap<>(); // Only contains name
 
-    public void registerPlayer(MapleCharacter chr) {
+    public void registerPlayer(final MapleCharacter chr) {
         if (!offline.containsKey(chr.getName())) {
             offline.put(chr.getName(), chr.getClan());
         }
@@ -25,57 +25,57 @@ public class ClanHolder {
         }
     }
 
-    public void playerOnline(MapleCharacter chr) {
+    public void playerOnline(final MapleCharacter chr) {
         online.put(chr, chr.getClan());
     }
 
-    public void deregisterPlayer(MapleCharacter chr) {
+    public void deregisterPlayer(final MapleCharacter chr) {
         online.remove(chr);
     }
 
-    public static int countOfflineByClan(int clan) {
+    public static int countOfflineByClan(final int clan) {
         int size = 0;
-        for (String name : offline.keySet()) {
+        for (final String name : offline.keySet()) {
             if (offline.get(name) == clan) size++;
         }
         return size;
     }
 
-    public int countOnlineByClan(int clan) {
+    public int countOnlineByClan(final int clan) {
         int size = 0;
-        for (MapleCharacter chr : online.keySet()) {
+        for (final MapleCharacter chr : online.keySet()) {
             if (online.get(chr) == clan) size++;
         }
         return size;
     }
 
-    public List<MapleCharacter> getAllOnlinePlayersFromClan(int clan) {
-        List<MapleCharacter> players = new ArrayList<>();
-        for (MapleCharacter player : online.keySet()) {
+    public List<MapleCharacter> getAllOnlinePlayersFromClan(final int clan) {
+        final List<MapleCharacter> players = new ArrayList<>();
+        for (final MapleCharacter player : online.keySet()) {
             if (online.get(player) == clan) players.add(player);
         }
         return players;
     }
 
-    public List<String> getAllOfflinePlayersFromClan(int clan) {
-        List<String> players = new ArrayList<>();
-        for (String name : offline.keySet()) {
+    public List<String> getAllOfflinePlayersFromClan(final int clan) {
+        final List<String> players = new ArrayList<>();
+        for (final String name : offline.keySet()) {
             if (offline.get(name) == clan) players.add(name);
         }
         return players;
     }
 
     public static void loadAllClans() {
-        Connection con = DatabaseConnection.getConnection();
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT name, clan FROM characters WHERE clan >= 0");
-            ResultSet rs = ps.executeQuery();
+            final PreparedStatement ps = con.prepareStatement("SELECT name, clan FROM characters WHERE clan >= 0");
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 offline.put(rs.getString("name"), rs.getInt("clan"));
             }
             rs.close();
             ps.close();
-        } catch (SQLException se) {
+        } catch (final SQLException se) {
             se.printStackTrace();
         }
     }

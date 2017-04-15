@@ -15,17 +15,17 @@ public class XMLWZFile implements MapleDataProvider {
     private final File root;
     private final WZDirectoryEntry rootForNavigation;
 
-    public XMLWZFile(File fileIn) {
+    public XMLWZFile(final File fileIn) {
         root = fileIn;
         rootForNavigation = new WZDirectoryEntry(fileIn.getName(), 0, 0, null);
         fillMapleDataEntitys(root, rootForNavigation);
     }
 
-    private void fillMapleDataEntitys(File lroot, WZDirectoryEntry wzdir) {
-        for (File file : lroot.listFiles()) {
-            String fileName = file.getName();
+    private void fillMapleDataEntitys(final File lroot, final WZDirectoryEntry wzdir) {
+        for (final File file : lroot.listFiles()) {
+            final String fileName = file.getName();
             if (file.isDirectory() && !fileName.endsWith(".img")) {
-                WZDirectoryEntry newDir = new WZDirectoryEntry(fileName, 0, 0, wzdir);
+                final WZDirectoryEntry newDir = new WZDirectoryEntry(fileName, 0, 0, wzdir);
                 wzdir.addDirectory(newDir);
                 fillMapleDataEntitys(file, newDir);
             } else if (fileName.endsWith(".xml")) {
@@ -36,9 +36,9 @@ public class XMLWZFile implements MapleDataProvider {
 
     @SuppressWarnings("ThrowFromFinallyBlock")
     @Override
-    public MapleData getData(String path) {
-        File dataFile = new File(root, path + ".xml");
-        File imageDataDir = new File(root, path);
+    public MapleData getData(final String path) {
+        final File dataFile = new File(root, path + ".xml");
+        final File imageDataDir = new File(root, path);
         boolean exists = true;
         if (!dataFile.exists()) {
             //throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
@@ -47,7 +47,7 @@ public class XMLWZFile implements MapleDataProvider {
         FileInputStream fis;
         try {
             fis = new FileInputStream(dataFile);
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             //throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
             fis = null;
             exists = false;
@@ -71,7 +71,7 @@ public class XMLWZFile implements MapleDataProvider {
         } finally {
             try {
                 if (fis != null) fis.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         }

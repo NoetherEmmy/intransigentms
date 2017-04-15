@@ -9,13 +9,13 @@ import java.io.IOException;
 public class MapleDataProviderFactory {
     private static final String wzPath = System.getProperty("net.sf.odinms.wzpath");
 
-    private static MapleDataProvider getWZ(Object in, boolean provideImages) {
+    private static MapleDataProvider getWZ(final Object in, final boolean provideImages) {
         if (in instanceof File) {
-            File fileIn = (File) in;
+            final File fileIn = (File) in;
             if (fileIn.getName().endsWith("wz") && !fileIn.isDirectory()) {
                 try {
                     return new WZFile(fileIn, provideImages);
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     throw new RuntimeException("Loading WZ File failed", e);
                 }
             } else {
@@ -28,15 +28,15 @@ public class MapleDataProviderFactory {
         throw new IllegalArgumentException("Can't create data provider for input " + in);
     }
 
-    public static MapleDataProvider getDataProvider(Object in) {
+    public static MapleDataProvider getDataProvider(final Object in) {
         return getWZ(in, false);
     }
 
-    public static MapleDataProvider getImageProvidingDataProvider(Object in) {
+    public static MapleDataProvider getImageProvidingDataProvider(final Object in) {
         return getWZ(in, true);
     }
 
-    public static File fileInWZPath(String filename) {
+    public static File fileInWZPath(final String filename) {
         return new File(wzPath, filename);
     }
 }

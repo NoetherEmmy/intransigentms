@@ -22,12 +22,12 @@ import java.rmi.RemoteException;
 
 public class ChangeChannelHandler extends AbstractMaplePacketHandler {
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int channel = slea.readByte() + 1;
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        final int channel = slea.readByte() + 1;
         changeChannel(channel, c);
     }
 
-    public static void changeChannel(int channel, MapleClient c) {
+    public static void changeChannel(final int channel, final MapleClient c) {
         final MapleCharacter player = c.getPlayer();
         if (!player.isAlive()) {
             c.getSession().write(MaplePacketCreator.enableActions());
@@ -53,13 +53,13 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
             PublicChatHandler.getPublicChatHolder().remove(player.getId());
             PublicChatHandler.getPublicChatHolder().put(player.getId(), channel);
         }
-        String ip = ChannelServer.getInstance(c.getChannel()).getIP(channel);
-        String[] socket = ip.split(":");
+        final String ip = ChannelServer.getInstance(c.getChannel()).getIP(channel);
+        final String[] socket = ip.split(":");
         if (player.getTrade() != null) {
             MapleTrade.cancelTrade(player);
         }
         player.cancelMagicDoor();
-        IPlayerInteractionManager ips = c.getPlayer().getInteraction();
+        final IPlayerInteractionManager ips = c.getPlayer().getInteraction();
         if (ips != null) {
             if (ips.isOwner(c.getPlayer())) {
                 if (ips.getShopType() == 2) {
@@ -97,14 +97,14 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
             player.cancelEffectFromBuffStat(MapleBuffStat.COMBO);
         }
         try {
-            WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
+            final WorldChannelInterface wci = c.getChannelServer().getWorldInterface();
             wci.addBuffsToStorage(player.getId(), player.getAllBuffs());
             wci.addCooldownsToStorage(player.getId(), player.getAllCooldowns());
             if (player.getMessenger() != null) {
-                MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
+                final MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(player);
                 wci.silentLeaveMessenger(player.getMessenger().getId(), messengerplayer);
             }
-        } catch (RemoteException e) {
+        } catch (final RemoteException e) {
             c.getChannelServer().reconnectWorld();
         }
         player.saveToDB(true, true);
@@ -116,7 +116,7 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
         try {
             c.getSession().write(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }

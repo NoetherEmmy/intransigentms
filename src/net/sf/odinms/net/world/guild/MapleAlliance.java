@@ -27,7 +27,7 @@ public class MapleAlliance implements java.io.Serializable {
     public MapleAlliance() {
     }
 
-    public MapleAlliance(String name, int id, int guild1, int guild2) {
+    public MapleAlliance(final String name, final int id, final int guild1, final int guild2) {
         this.name = name;
         allianceId = id;
         guilds[0] = guild1;
@@ -42,14 +42,14 @@ public class MapleAlliance implements java.io.Serializable {
         rankTitles[4] = "Member";
     }
 
-    public static MapleAlliance loadAlliance(int id) {
+    public static MapleAlliance loadAlliance(final int id) {
         if (id <= 0) return null;
-        Connection con = DatabaseConnection.getConnection();
-        MapleAlliance alliance = new MapleAlliance();
+        final Connection con = DatabaseConnection.getConnection();
+        final MapleAlliance alliance = new MapleAlliance();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE id = ?");
+            final PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE id = ?");
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 ps.close();
                 rs.close();
@@ -67,73 +67,73 @@ public class MapleAlliance implements java.io.Serializable {
             }
             ps.close();
             rs.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
         return alliance;
     }
 
-    public static void disbandAlliance(MapleClient c, int allianceId) {
-        Connection con = DatabaseConnection.getConnection();
+    public static void disbandAlliance(final MapleClient c, final int allianceId) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM `alliance` WHERE id = ?");
+            final PreparedStatement ps = con.prepareStatement("DELETE FROM `alliance` WHERE id = ?");
             ps.setInt(1, allianceId);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
         try {
             c.getChannelServer().getWorldInterface().allianceMessage(c.getPlayer().getGuild().getAllianceId(), MaplePacketCreator.disbandAlliance(allianceId), -1, -1);
             c.getChannelServer().getWorldInterface().disbandAlliance(allianceId);
-        } catch (RemoteException r) {
+        } catch (final RemoteException r) {
             c.getChannelServer().reconnectWorld();
         }
     }
 
-    public static boolean canBeUsedAllianceName(String name) {
+    public static boolean canBeUsedAllianceName(final String name) {
         if (name.contains(" ") || name.length() > 12) {
             return false;
         }
-        Connection con = DatabaseConnection.getConnection();
+        final Connection con = DatabaseConnection.getConnection();
         boolean ret = true;
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE name = ?");
+            final PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE name = ?");
             ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 ret = false;
             }
             ps.close();
             rs.close();
             return ret;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             return false;
         }
     }
 
-    public static MapleAlliance createAlliance(MapleCharacter chr1, MapleCharacter chr2, String name) {
-        Connection con = DatabaseConnection.getConnection();
-        int id;
-        int guild1 = chr1.getGuildId();
-        int guild2 = chr2.getGuildId();
+    public static MapleAlliance createAlliance(final MapleCharacter chr1, final MapleCharacter chr2, final String name) {
+        final Connection con = DatabaseConnection.getConnection();
+        final int id;
+        final int guild1 = chr1.getGuildId();
+        final int guild2 = chr2.getGuildId();
         try {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO `alliance` (`name`, `guild1`, `guild2`) VALUES (?, ?, ?)");
+            final PreparedStatement ps = con.prepareStatement("INSERT INTO `alliance` (`name`, `guild1`, `guild2`) VALUES (?, ?, ?)");
             ps.setString(1, name);
             ps.setInt(2, guild1);
             ps.setInt(3, guild2);
             ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
+            final ResultSet rs = ps.getGeneratedKeys();
             rs.next();
             id = rs.getInt(1);
             rs.close();
             ps.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
             return null;
         }
-        MapleAlliance alliance = new MapleAlliance(name, id, guild1, guild2);
+        final MapleAlliance alliance = new MapleAlliance(name, id, guild1, guild2);
         try {
-            WorldChannelInterface wci = chr1.getClient().getChannelServer().getWorldInterface();
+            final WorldChannelInterface wci = chr1.getClient().getChannelServer().getWorldInterface();
             wci.setGuildAllianceId(guild1, id);
             wci.setGuildAllianceId(guild2, id);
             chr1.setAllianceRank(1);
@@ -143,15 +143,15 @@ public class MapleAlliance implements java.io.Serializable {
             wci.addAlliance(id, alliance);
             wci.allianceMessage(id, MaplePacketCreator.makeNewAlliance(alliance, chr1.getClient()), -1, -1);
             return alliance;
-        } catch (RemoteException e) {
+        } catch (final RemoteException e) {
             chr1.getClient().getChannelServer().reconnectWorld();
             return null;
         }
     }
 
     public void saveToDB() {
-        Connection con = DatabaseConnection.getConnection();
-        StringBuilder sb = new StringBuilder();
+        final Connection con = DatabaseConnection.getConnection();
+        final StringBuilder sb = new StringBuilder();
         sb.append("capacity = ?, ");
         sb.append("notice = ?, ");
         for (int i = 1; i <= 5; ++i) {
@@ -161,7 +161,7 @@ public class MapleAlliance implements java.io.Serializable {
             sb.append("guild").append(i).append(" = ?, ");
         }
         try {
-            PreparedStatement ps = con.prepareStatement("UPDATE `alliance` SET " + sb.toString() + " WHERE id = ?");
+            final PreparedStatement ps = con.prepareStatement("UPDATE `alliance` SET " + sb.toString() + " WHERE id = ?");
             ps.setInt(1, this.capacity);
             ps.setString(2, this.notice);
             for (int i = 0; i < rankTitles.length; ++i) {
@@ -173,21 +173,21 @@ public class MapleAlliance implements java.io.Serializable {
             ps.setInt(13, this.allianceId);
             ps.executeQuery();
             ps.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
     }
 
-    public boolean addRemGuildFromDB(int gid, boolean add) {
-        Connection con = DatabaseConnection.getConnection();
+    public boolean addRemGuildFromDB(final int gid, final boolean add) {
+        final Connection con = DatabaseConnection.getConnection();
         boolean ret = false;
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE id = ?");
             ps.setInt(1, this.allianceId);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 int avail = -1;
                 for (int i = 1; i <= 5; ++i) {
-                    int guildId = rs.getInt("guild" + i);
+                    final int guildId = rs.getInt("guild" + i);
                     if (add) {
                         if (guildId == -1) {
                             avail = i;
@@ -215,14 +215,14 @@ public class MapleAlliance implements java.io.Serializable {
                 ps.close();
                 rs.close();
             }
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
         return ret;
     }
 
-    public boolean removeGuild(int gid) {
+    public boolean removeGuild(final int gid) {
         synchronized (guilds) {
-            int gIndex = getGuildIndex(gid);
+            final int gIndex = getGuildIndex(gid);
             if (gIndex != -1) {
                 guilds[gIndex] = -1;
             }
@@ -230,10 +230,10 @@ public class MapleAlliance implements java.io.Serializable {
         }
     }
 
-    public boolean addGuild(int gid) {
+    public boolean addGuild(final int gid) {
         synchronized (guilds) {
             if (getGuildIndex(gid) == -1) {
-                int emptyIndex = getGuildIndex(-1);
+                final int emptyIndex = getGuildIndex(-1);
                 if (emptyIndex != -1) {
                     guilds[emptyIndex] = gid;
                     return addRemGuildFromDB(gid, true);
@@ -243,7 +243,7 @@ public class MapleAlliance implements java.io.Serializable {
         return false;
     }
 
-    private int getGuildIndex(int gid) {
+    private int getGuildIndex(final int gid) {
         for (int i = 0; i < guilds.length; ++i) {
             if (guilds[i] == gid) {
                 return i;
@@ -252,11 +252,11 @@ public class MapleAlliance implements java.io.Serializable {
         return -1;
     }
 
-    public void setRankTitle(String[] ranks) {
+    public void setRankTitle(final String[] ranks) {
         rankTitles = ranks;
     }
 
-    public void setNotice(String notice) {
+    public void setNotice(final String notice) {
         this.notice = notice;
     }
 
@@ -268,7 +268,7 @@ public class MapleAlliance implements java.io.Serializable {
         return name;
     }
 
-    public String getRankTitle(int rank) {
+    public String getRankTitle(final int rank) {
         return rankTitles[rank - 1];
     }
 
@@ -277,8 +277,8 @@ public class MapleAlliance implements java.io.Serializable {
     }
 
     public List<Integer> getGuilds() {
-        List<Integer> guilds_ = new ArrayList<>();
-        for (int guild : guilds) {
+        final List<Integer> guilds_ = new ArrayList<>();
+        for (final int guild : guilds) {
             if (guild != -1) {
                 guilds_.add(guild);
             }
@@ -290,7 +290,7 @@ public class MapleAlliance implements java.io.Serializable {
         return notice;
     }
 
-    public void increaseCapacity(int inc) {
+    public void increaseCapacity(final int inc) {
         capacity += inc;
     }
 

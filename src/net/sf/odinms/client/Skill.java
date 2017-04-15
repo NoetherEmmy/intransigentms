@@ -17,7 +17,7 @@ public class Skill implements ISkill {
     private int animationTime;
     private final Map<Integer, Integer> requirements = new LinkedHashMap<>(3);
 
-    private Skill(int id) {
+    private Skill(final int id) {
         super();
         this.id = id;
     }
@@ -27,23 +27,23 @@ public class Skill implements ISkill {
         return id;
     }
 
-    public static Skill loadFromData(int id, MapleData data) {
-        Skill ret = new Skill(id);
+    public static Skill loadFromData(final int id, final MapleData data) {
+        final Skill ret = new Skill(id);
         boolean isBuff = false;
-        int skillType = MapleDataTool.getInt("skillType", data, -1);
-        String elem = MapleDataTool.getString("elemAttr", data, null);
+        final int skillType = MapleDataTool.getInt("skillType", data, -1);
+        final String elem = MapleDataTool.getString("elemAttr", data, null);
         if (elem != null) {
             ret.element = Element.getFromChar(elem.charAt(0));
         } else {
             ret.element = Element.NEUTRAL;
         }
-        MapleData effect = data.getChildByPath("effect");
+        final MapleData effect = data.getChildByPath("effect");
         if (skillType != -1) {
             if (skillType == 2) isBuff = true;
         } else {
-            MapleData action = data.getChildByPath("action");
-            MapleData hit = data.getChildByPath("hit");
-            MapleData ball = data.getChildByPath("ball");
+            final MapleData action = data.getChildByPath("action");
+            final MapleData hit = data.getChildByPath("hit");
+            final MapleData ball = data.getChildByPath("ball");
             isBuff = effect != null && hit == null && ball == null;
             isBuff |= action != null && MapleDataTool.getString("0", action, "").equals("alert2");
             switch (id) {
@@ -199,28 +199,28 @@ public class Skill implements ISkill {
                     break;
             }
         }
-        for (MapleData level : data.getChildByPath("level")) {
-            MapleStatEffect statEffect = MapleStatEffect.loadSkillEffectFromData(level, id, isBuff);
+        for (final MapleData level : data.getChildByPath("level")) {
+            final MapleStatEffect statEffect = MapleStatEffect.loadSkillEffectFromData(level, id, isBuff);
             ret.effects.add(statEffect);
         }
 
         try {
-            MapleData reqData = data.getChildByPath("req");
+            final MapleData reqData = data.getChildByPath("req");
             if (reqData != null) {
-                for (MapleData req : reqData) {
+                for (final MapleData req : reqData) {
                     ret.requirements.put(
                         Integer.parseInt(req.getName()),
                         MapleDataTool.getInt(req.getName(), reqData, 0)
                     );
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
         ret.animationTime = 0;
         if (effect != null) {
-            for (MapleData effectEntry : effect) {
+            for (final MapleData effectEntry : effect) {
                 ret.animationTime += MapleDataTool.getIntConvert("delay", effectEntry, 0);
             }
         }
@@ -228,7 +228,7 @@ public class Skill implements ISkill {
     }
 
     @Override
-    public MapleStatEffect getEffect(int level) {
+    public MapleStatEffect getEffect(final int level) {
         return effects.get(level - 1);
     }
 
@@ -238,9 +238,9 @@ public class Skill implements ISkill {
     }
 
     @Override
-    public boolean canBeLearnedBy(MapleJob job) {
-        int jid = job.getId();
-        int skillForJob = id / 10000;
+    public boolean canBeLearnedBy(final MapleJob job) {
+        final int jid = job.getId();
+        final int skillForJob = id / 10000;
         if (jid / 100 != skillForJob / 100 && skillForJob / 100 != 0) {
             return false;
         }
@@ -267,8 +267,8 @@ public class Skill implements ISkill {
 
     @Override
     public boolean isBeginnerSkill() {
-        boolean output = false;
-        String idString = String.valueOf(id);
+        final boolean output = false;
+        final String idString = String.valueOf(id);
         if (idString.length() == 4 || idString.length() == 1) {
             return true;
         }

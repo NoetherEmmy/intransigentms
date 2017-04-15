@@ -15,14 +15,14 @@ public class IPAddressTool {
      * @return The IP as a long integer.
      * @throws RuntimeException
      */
-    public static long dottedQuadToLong(String dottedQuad) throws RuntimeException {
-        String[] quads = dottedQuad.split("\\.");
+    public static long dottedQuadToLong(final String dottedQuad) throws RuntimeException {
+        final String[] quads = dottedQuad.split("\\.");
         if (quads.length != 4) {
             throw new RuntimeException("Invalid IP Address format.");
         }
         long ipAddress = 0;
         for (int i = 0; i < 4; ++i) {
-            int quad = Integer.parseInt(quads[i]);
+            final int quad = Integer.parseInt(quads[i]);
             ipAddress += (long) (quad % 256) * (long) Math.pow(256, (double) (4 - i));
         }
         return ipAddress;
@@ -36,9 +36,9 @@ public class IPAddressTool {
      * @throws RuntimeException
      */
     public static String longToDottedQuad(long longIP) throws RuntimeException {
-        StringBuilder ipAddress = new StringBuilder();
+        final StringBuilder ipAddress = new StringBuilder();
         for (int i = 0; i < 4; ++i) {
-            int quad = (int) (longIP / (long) Math.pow(256, (double) (4 - i)));
+            final int quad = (int) (longIP / (long) Math.pow(256, (double) (4 - i)));
             longIP -= (long) quad * (long) Math.pow(256, (double) (4 - i));
             if (i > 0) {
                 ipAddress.append('.');

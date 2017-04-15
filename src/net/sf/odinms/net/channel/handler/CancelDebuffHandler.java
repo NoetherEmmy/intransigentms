@@ -8,7 +8,7 @@ public class CancelDebuffHandler extends AbstractMaplePacketHandler {
     // private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CancelDebuffHandler.class);
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         // MapleCharacter handles the timing.
     }
 }

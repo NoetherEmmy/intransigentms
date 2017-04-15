@@ -7,19 +7,19 @@ public class Equip extends Item implements IEquip {
                   mdef, acc, avoid, hands, speed, jump;
     private int ringid;
 
-    public Equip(int id, byte position) {
+    public Equip(final int id, final byte position) {
         super(id, position, (short) 1);
         this.ringid = -1;
     }
 
-    public Equip(int id, byte position, int ringid) {
+    public Equip(final int id, final byte position, final int ringid) {
         super(id, position, (short) 1);
         this.ringid = ringid;
     }
 
     @Override
     public IItem copy() {
-        Equip ret = new Equip(getItemId(), getPosition(), ringid);
+        final Equip ret = new Equip(getItemId(), getPosition(), ringid);
         ret.str = str;
         ret.dex = dex;
         ret._int = _int;
@@ -142,71 +142,71 @@ public class Equip extends Item implements IEquip {
         return job;
     }
 
-    public void setStr(short str) {
+    public void setStr(final short str) {
         this.str = str;
     }
 
-    public void setDex(short dex) {
+    public void setDex(final short dex) {
         this.dex = dex;
     }
 
-    public void setInt(short _int) {
+    public void setInt(final short _int) {
         this._int = _int;
     }
 
-    public void setLuk(short luk) {
+    public void setLuk(final short luk) {
         this.luk = luk;
     }
 
-    public void setHp(short hp) {
+    public void setHp(final short hp) {
         this.hp = hp;
     }
 
-    public void setMp(short mp) {
+    public void setMp(final short mp) {
         this.mp = mp;
     }
 
-    public void setWatk(short watk) {
+    public void setWatk(final short watk) {
         this.watk = watk;
     }
 
-    public void setMatk(short matk) {
+    public void setMatk(final short matk) {
         this.matk = matk;
     }
 
-    public void setWdef(short wdef) {
+    public void setWdef(final short wdef) {
         this.wdef = wdef;
     }
 
-    public void setMdef(short mdef) {
+    public void setMdef(final short mdef) {
         this.mdef = mdef;
     }
 
-    public void setAcc(short acc) {
+    public void setAcc(final short acc) {
         this.acc = acc;
     }
 
-    public void setAvoid(short avoid) {
+    public void setAvoid(final short avoid) {
         this.avoid = avoid;
     }
 
-    public void setHands(short hands) {
+    public void setHands(final short hands) {
         this.hands = hands;
     }
 
-    public void setSpeed(short speed) {
+    public void setSpeed(final short speed) {
         this.speed = speed;
     }
 
-    public void setJump(short jump) {
+    public void setJump(final short jump) {
         this.jump = jump;
     }
 
-    public void setLocked(byte locked) {
+    public void setLocked(final byte locked) {
         this.locked = locked;
     }
 
-    public void setUpgradeSlots(byte upgradeSlots) {
+    public void setUpgradeSlots(final byte upgradeSlots) {
         this.upgradeSlots = upgradeSlots;
     }
 
@@ -214,12 +214,12 @@ public class Equip extends Item implements IEquip {
         return level;
     }
 
-    public void setLevel(byte level) {
+    public void setLevel(final byte level) {
         this.level = level;
     }
 
     @Override
-    public void setQuantity(short quantity) {
+    public void setQuantity(final short quantity) {
         if (quantity < 0 || quantity > 1) {
             throw new RuntimeException(
                 "Setting the quantity to " +
@@ -232,11 +232,11 @@ public class Equip extends Item implements IEquip {
         super.setQuantity(quantity);
     }
 
-    public void setJob(MapleJob job) {
+    public void setJob(final MapleJob job) {
         this.job = job;
     }
 
-    public void setRingId(int ringId) {
+    public void setRingId(final int ringId) {
         this.ringid = ringId;
     }
 }

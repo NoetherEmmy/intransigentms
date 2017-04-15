@@ -34,7 +34,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         TOCLIENT_SUCCESSFULLY_SENT(0x12);
         final byte code;
 
-        Actions(int code) {
+        Actions(final int code) {
             this.code = (byte) code;
         }
 
@@ -42,8 +42,8 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             return code;
         }
 
-        public static Actions getByType(byte type) {
-            for (Actions a : Actions.values()) {
+        public static Actions getByType(final byte type) {
+            for (final Actions a : Actions.values()) {
                 if (a.getCode() == type) {
                     return a;
                 }
@@ -53,25 +53,25 @@ public class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
-        byte operation = slea.readByte();
+        final byte operation = slea.readByte();
         if (operation == Actions.TOSERVER_SEND_ITEM.getCode()) {
             final int fee = 5000;
-            byte inventId = slea.readByte();
-            short itemPos = slea.readShort();
-            short amount = slea.readShort();
-            int mesos = slea.readInt();
-            String recipient = slea.readMapleAsciiString();
+            final byte inventId = slea.readByte();
+            final short itemPos = slea.readShort();
+            final short amount = slea.readShort();
+            final int mesos = slea.readInt();
+            final String recipient = slea.readMapleAsciiString();
             if (mesos < 0 || mesos > 2000000000 || ((long) mesos + fee + getFee(mesos)) > Integer.MAX_VALUE) {
                 c.disconnect();
                 c.getSession().close();
                 return;
             }
-            int finalcost = mesos + fee + getFee(mesos);
+            final int finalcost = mesos + fee + getFee(mesos);
             boolean send = false;
             if (c.getPlayer().getMeso() >= finalcost) {
-                int accid = MapleCharacter.getAccIdFromCNAME(recipient);
+                final int accid = MapleCharacter.getAccIdFromCNAME(recipient);
                 if (accid != -1) {
                     if (accid != c.getAccID()) {
                         c.getPlayer().gainMeso(-finalcost, false);
@@ -105,22 +105,22 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             boolean recipientOn = false;
             MapleClient rClient = null;
             try {
-                int channel = c.getChannelServer().getWorldInterface().find(recipient);
+                final int channel = c.getChannelServer().getWorldInterface().find(recipient);
                 if (channel > -1) {
                     recipientOn = true;
-                    ChannelServer rcserv = ChannelServer.getInstance(channel);
+                    final ChannelServer rcserv = ChannelServer.getInstance(channel);
                     rClient = rcserv.getPlayerStorage().getCharacterByName(recipient).getClient();
                 }
-            } catch (RemoteException re) {
+            } catch (final RemoteException re) {
                 c.getChannelServer().reconnectWorld();
             }
             if (send) {
                 if (inventId > 0) {
-                    MapleInventoryType inv = MapleInventoryType.getByType(inventId);
-                    IItem item = c.getPlayer().getInventory(inv).getItem((byte) itemPos);
+                    final MapleInventoryType inv = MapleInventoryType.getByType(inventId);
+                    final IItem item = c.getPlayer().getInventory(inv).getItem((byte) itemPos);
                     // NOTE. The checks aren't in GMS order.
                     if (item != null && c.getPlayer().haveItem(item.getItemId(), amount, false, true)) {
-                        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                         if (ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId())) {
                             MapleInventoryManipulator.removeFromSlot(
                                 c,
@@ -172,12 +172,12 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                 c.getPlayer().gainMeso(-fee, false);
             }
         } else if (operation == Actions.TOSERVER_REMOVE_PACKAGE.getCode()) {
-            int packageid = slea.readInt();
+            final int packageid = slea.readInt();
             removeItemFromDB(packageid);
             c.getSession().write(MaplePacketCreator.removeItemFromDuey(true, packageid));
         } else if (operation == Actions.TOSERVER_CLAIM_PACKAGE.getCode()) {
-            int packageid = slea.readInt();
-            DueyPackages dp = loadSingleItem(packageid);
+            final int packageid = slea.readInt();
+            final DueyPackages dp = loadSingleItem(packageid);
             if (dp.getItem() != null) {
                 if (
                     !MapleInventoryManipulator.checkSpace(
@@ -194,8 +194,8 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                     MapleInventoryManipulator.addFromDrop(c, dp.getItem(), false);
                 }
             }
-            int gainmesos;
-            long totalmesos = (long) dp.getMesos() + (long) c.getPlayer().getMeso();
+            final int gainmesos;
+            final long totalmesos = (long) dp.getMesos() + (long) c.getPlayer().getMeso();
             if (totalmesos >= Integer.MAX_VALUE) {
                 gainmesos = Integer.MAX_VALUE - c.getPlayer().getMeso();
             } else {
@@ -211,14 +211,14 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private void addMesoToDB(int mesos, String sName, int recipientID, boolean isOn) {
+    private void addMesoToDB(final int mesos, final String sName, final int recipientID, final boolean isOn) {
         addItemToDB(null, 1, mesos, sName, recipientID, isOn);
     }
 
-    private void addItemToDB(IItem item, int quantity, int mesos, String sName, int recipientID, boolean isOn) {
-        Connection con = DatabaseConnection.getConnection();
+    private void addItemToDB(final IItem item, final int quantity, final int mesos, final String sName, final int recipientID, final boolean isOn) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "INSERT INTO dueypackages " +
                         "(RecieverId, SenderName, Mesos, TimeStamp, Checked, Type) " +
@@ -235,9 +235,9 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             } else {
                 ps.setInt(6, item.getType());
                 ps.executeUpdate();
-                ResultSet rs = ps.getGeneratedKeys();
+                final ResultSet rs = ps.getGeneratedKeys();
                 rs.next();
-                PreparedStatement ps2;
+                final PreparedStatement ps2;
                 if (item.getType() == 1) { // Equips
                     ps2 = con.prepareStatement(
                         "INSERT INTO dueyitems " +
@@ -246,7 +246,7 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                             "wdef, mdef, acc, avoid, hands, speed, jump, owner) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                     );
-                    Equip eq = (Equip) item;
+                    final Equip eq = (Equip) item;
                     ps2.setInt(2, eq.getItemId());
                     ps2.setInt(3, 1);
                     ps2.setInt(4, eq.getUpgradeSlots());
@@ -281,23 +281,23 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                 rs.close();
             }
             ps.close();
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
         }
     }
 
-    public static List<DueyPackages> loadItems(MapleCharacter chr) {
-        List<DueyPackages> packages = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
+    public static List<DueyPackages> loadItems(final MapleCharacter chr) {
+        final List<DueyPackages> packages = new ArrayList<>();
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE RecieverId = ?"
                 );
             ps.setInt(1, chr.getId());
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                DueyPackages dueypack = getItemByPID(rs);
+                final DueyPackages dueypack = getItemByPID(rs);
                 dueypack.setSender(rs.getString("SenderName"));
                 dueypack.setMesos(rs.getInt("Mesos"));
                 dueypack.setSentTime(rs.getString("TimeStamp"));
@@ -306,21 +306,21 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
             return packages;
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
             return null;
         }
     }
 
-    public static DueyPackages loadSingleItem(int packageid) {
-        Connection con = DatabaseConnection.getConnection();
+    public static DueyPackages loadSingleItem(final int packageid) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE PackageId = ?"
                 );
             ps.setInt(1, packageid);
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             DueyPackages dueypack = null;
             if (rs.next()) {
                 dueypack = getItemByPID(rs);
@@ -331,43 +331,43 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
             return dueypack;
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
             return null;
         }
     }
 
-    public static void reciveMsg(MapleClient c, int recipientId) {
-        Connection con = DatabaseConnection.getConnection();
+    public static void reciveMsg(final MapleClient c, final int recipientId) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "UPDATE dueypackages SET Checked = 0 where RecieverId = ?"
                 );
             ps.setInt(1, recipientId);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
         }
         c.getSession().write(MaplePacketCreator.sendDueyMSG(Actions.TOCLIENT_PACKAGE_MSG.getCode()));
     }
 
-    public static int dueyStorageSize(MapleCharacter chr) {
-        Connection con = DatabaseConnection.getConnection();
+    public static int dueyStorageSize(final MapleCharacter chr) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps =
+            final PreparedStatement ps =
                 con.prepareStatement(
                     "SELECT COUNT(*) as dueysize FROM dueypackages WHERE RecieverId = ?"
                 );
             ps.setInt(1, chr.getId());
-            ResultSet rs = ps.executeQuery();
+            final ResultSet rs = ps.executeQuery();
             rs.next();
-            int size = rs.getInt("dueysize");
+            final int size = rs.getInt("dueysize");
             rs.close();
             ps.close();
             return size;
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
             return 0;
         }
@@ -376,10 +376,10 @@ public class DueyHandler extends AbstractMaplePacketHandler {
 
     private String getCurrentDate() {
         String date = "";
-        Calendar cal = Calendar.getInstance();
-        int day = cal.get(Calendar.DATE) - 1; // Instant Duey?
-        int month = cal.get(Calendar.MONTH) + 1; // It's an array of months.
-        int year = cal.get(Calendar.YEAR);
+        final Calendar cal = Calendar.getInstance();
+        final int day = cal.get(Calendar.DATE) - 1; // Instant Duey?
+        final int month = cal.get(Calendar.MONTH) + 1; // It's an array of months.
+        final int year = cal.get(Calendar.YEAR);
         if (day < 9) {
             date += "0" + day + "-";
         } else {
@@ -396,8 +396,8 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         return date;
     }
 
-    private int getFee(int meso) {
-        int fee = 0;
+    private int getFee(final int meso) {
+        final int fee = 0;
         if (meso >= 10000000) {
             return (int) Math.round(0.04d * meso);
         } else if (meso >= 5000000) {
@@ -412,8 +412,8 @@ public class DueyHandler extends AbstractMaplePacketHandler {
         return fee;
     }
 
-    private void removeItemFromDB(int packageid) {
-        Connection con = DatabaseConnection.getConnection();
+    private void removeItemFromDB(final int packageid) {
+        final Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps =
                 con.prepareStatement(
@@ -426,16 +426,16 @@ public class DueyHandler extends AbstractMaplePacketHandler {
             ps.setInt(1, packageid);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
         }
     }
 
-    private static DueyPackages getItemByPID(ResultSet rs) {
+    private static DueyPackages getItemByPID(final ResultSet rs) {
         try {
             DueyPackages dueypack;
             if (rs.getInt("type") == 1) {
-                Equip eq = new Equip(rs.getInt("itemid"), (byte) 0, -1);
+                final Equip eq = new Equip(rs.getInt("itemid"), (byte) 0, -1);
                 eq.setUpgradeSlots((byte) rs.getInt("upgradeslots"));
                 eq.setLevel((byte) rs.getInt("level"));
                 eq.setStr((short) rs.getInt("str"));
@@ -456,13 +456,13 @@ public class DueyHandler extends AbstractMaplePacketHandler {
                 eq.setOwner(rs.getString("owner"));
                 return new DueyPackages(rs.getInt("PackageId"), eq);
             } else if (rs.getInt("type") == 2) {
-                Item newItem = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
+                final Item newItem = new Item(rs.getInt("itemid"), (byte) 0, (short) rs.getInt("quantity"));
                 newItem.setOwner(rs.getString("owner"));
                 return new DueyPackages(rs.getInt("PackageId"), newItem);
             } else {
                 return new DueyPackages(rs.getInt("PackageId"));
             }
-        } catch (SQLException sqle) {
+        } catch (final SQLException sqle) {
             sqle.printStackTrace();
             return null;
         }

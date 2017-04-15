@@ -25,7 +25,7 @@ public class LoginWorker implements Runnable {
         return instance;
     }
 
-    public void registerClient(MapleClient c) {
+    public void registerClient(final MapleClient c) {
         synchronized (waiting) {
             if (!waiting.contains(c) && !waitingNames.contains(c.getAccountName().toLowerCase())) {
                 waiting.add(c);
@@ -35,7 +35,7 @@ public class LoginWorker implements Runnable {
         }
     }
 
-    public void registerGMClient(MapleClient c) {
+    public void registerGMClient(final MapleClient c) {
         synchronized (waiting) {
             if (!waiting.contains(c) && !waitingNames.contains(c.getAccountName().toLowerCase())) {
                 waiting.addFirst(c);
@@ -45,7 +45,7 @@ public class LoginWorker implements Runnable {
         }
     }
 
-    public void deregisterClient(MapleClient c) {
+    public void deregisterClient(final MapleClient c) {
         synchronized (waiting) {
             waiting.remove(c);
             if (c.getAccountName() != null) {
@@ -98,20 +98,20 @@ public class LoginWorker implements Runnable {
                 }
             }
 
-            Map<Integer, Integer> load = LoginServer.getInstance().getWorldInterface().getChannelLoad();
-            double loadFactor = 1200.0d / ((double) LoginServer.getInstance().getUserLimit() / load.size());
-            for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
+            final Map<Integer, Integer> load = LoginServer.getInstance().getWorldInterface().getChannelLoad();
+            final double loadFactor = 1200.0d / ((double) LoginServer.getInstance().getUserLimit() / load.size());
+            for (final Map.Entry<Integer, Integer> entry : load.entrySet()) {
                 load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
             }
             LoginServer.getInstance().setLoad(load);
-        } catch (RemoteException re) {
+        } catch (final RemoteException re) {
             LoginServer.getInstance().reconnectWorld();
         }
     }
 
     public double getPossibleLoginAverage() {
         int sum = 0;
-        for (Integer i : possibleLoginHistory) {
+        for (final Integer i : possibleLoginHistory) {
             sum += i;
         }
         return (double) sum / (double) possibleLoginHistory.size();

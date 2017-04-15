@@ -25,11 +25,11 @@ public class XMLDomMapleData implements MapleData {
     private final Node node;
     private File imageDataDir;
 
-    public XMLDomMapleData(FileInputStream fis, File imageDataDir) {
+    public XMLDomMapleData(final FileInputStream fis, final File imageDataDir) {
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(fis);
+            final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            final Document document = documentBuilder.parse(fis);
             this.node = document.getFirstChild();
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
@@ -37,29 +37,29 @@ public class XMLDomMapleData implements MapleData {
         this.imageDataDir = imageDataDir;
     }
 
-    private XMLDomMapleData(Node node) {
+    private XMLDomMapleData(final Node node) {
         this.node = node;
     }
 
     @Override
-    public MapleData getChildByPath(String path) {
-        String[] segments = path.split("/");
+    public MapleData getChildByPath(final String path) {
+        final String[] segments = path.split("/");
         if (segments[0].equals("..")) {
             return ((MapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
         }
         Node myNode = node;
         for (int x = 0; x < segments.length; ++x) {
-            NodeList childNodes = myNode.getChildNodes();
+            final NodeList childNodes = myNode.getChildNodes();
             boolean foundChild = false;
             int numChildNodes;
             try {
                 numChildNodes = childNodes.getLength();
-            } catch (NullPointerException npe) {
+            } catch (final NullPointerException npe) {
                 //System.err.print("Exception in XMLDomMapleData.getChildByPath() for path " + path + ", " + npe + "\n");
                 numChildNodes = 0;
             }
             for (int i = 0; i < numChildNodes; ++i) {
-                Node childNode = childNodes.item(i);
+                final Node childNode = childNodes.item(i);
                 if (childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segments[x])) {
                     myNode = childNode;
                     foundChild = true;
@@ -70,28 +70,28 @@ public class XMLDomMapleData implements MapleData {
                 return null;
             }
         }
-        XMLDomMapleData ret = new XMLDomMapleData(myNode);
+        final XMLDomMapleData ret = new XMLDomMapleData(myNode);
         ret.imageDataDir = new File(imageDataDir, getName() + "/" + path).getParentFile();
         return ret;
     }
 
     @Override
     public List<MapleData> getChildren() {
-        List<MapleData> ret = new ArrayList<>();
+        final List<MapleData> ret = new ArrayList<>();
         try {
-            NodeList childNodes = node.getChildNodes();
+            final NodeList childNodes = node.getChildNodes();
             if (childNodes != null && childNodes.getLength() > 0) {
                 for (int i = 0; i < childNodes.getLength(); ++i) {
-                    Node childNode = childNodes.item(i);
+                    final Node childNode = childNodes.item(i);
                     if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE) {
-                        XMLDomMapleData child = new XMLDomMapleData(childNode);
+                        final XMLDomMapleData child = new XMLDomMapleData(childNode);
                         child.imageDataDir = new File(imageDataDir, getName());
                         ret.add(child);
                     }
                 }
             }
             return ret;
-        } catch (NullPointerException npe) {
+        } catch (final NullPointerException npe) {
             /*
             try {
                 System.err.println("NPE in XMLDomMapleData.java in method getChildren(), XML file path: " + imageDataDir.getCanonicalPath());
@@ -105,8 +105,8 @@ public class XMLDomMapleData implements MapleData {
 
     @Override
     public Object getData() {
-        NamedNodeMap attributes = node.getAttributes();
-        MapleDataType type = getType();
+        final NamedNodeMap attributes = node.getAttributes();
+        final MapleDataType type = getType();
         switch (type) {
             case DOUBLE:
             case FLOAT:
@@ -114,7 +114,7 @@ public class XMLDomMapleData implements MapleData {
             case SHORT:
             case STRING:
             case UOL: {
-                String value = attributes.getNamedItem("value").getNodeValue();
+                final String value = attributes.getNamedItem("value").getNodeValue();
                 switch (type) {
                     case DOUBLE:
                         return Double.parseDouble(value);
@@ -130,13 +130,13 @@ public class XMLDomMapleData implements MapleData {
                 }
             }
             case VECTOR: {
-                String x = attributes.getNamedItem("x").getNodeValue();
-                String y = attributes.getNamedItem("y").getNodeValue();
+                final String x = attributes.getNamedItem("x").getNodeValue();
+                final String y = attributes.getNamedItem("y").getNodeValue();
                 return new Point(Integer.parseInt(x), Integer.parseInt(y));
             }
             case CANVAS: {
-                String width = attributes.getNamedItem("width").getNodeValue();
-                String height = attributes.getNamedItem("height").getNodeValue();
+                final String width = attributes.getNamedItem("width").getNodeValue();
+                final String height = attributes.getNamedItem("height").getNodeValue();
                 return new FileStoredPngMapleCanvas(
                     Integer.parseInt(width),
                     Integer.parseInt(height),
@@ -176,9 +176,9 @@ public class XMLDomMapleData implements MapleData {
 
     @Override
     public MapleDataEntity getParent() {
-        Node parentNode = node.getParentNode();
+        final Node parentNode = node.getParentNode();
         if (parentNode.getNodeType() == Node.DOCUMENT_NODE) return null;
-        XMLDomMapleData parentData = new XMLDomMapleData(parentNode);
+        final XMLDomMapleData parentData = new XMLDomMapleData(parentNode);
         parentData.imageDataDir = imageDataDir.getParentFile();
         return parentData;
     }

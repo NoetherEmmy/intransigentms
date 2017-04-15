@@ -17,24 +17,24 @@ public class MapleServerHandler extends IoHandlerAdapter {
     private final PacketProcessor processor;
     private int channel = -1;
 
-    public MapleServerHandler(PacketProcessor processor) {
+    public MapleServerHandler(final PacketProcessor processor) {
         this.processor = processor;
     }
 
-    public MapleServerHandler(PacketProcessor processor, int channel) {
+    public MapleServerHandler(final PacketProcessor processor, final int channel) {
         this.processor = processor;
         this.channel = channel;
     }
 
     @Override
-    public void messageSent(IoSession session, Object message) throws Exception {
-        Runnable r = ((MaplePacket) message).getOnSend();
+    public void messageSent(final IoSession session, final Object message) throws Exception {
+        final Runnable r = ((MaplePacket) message).getOnSend();
         if (r != null) r.run();
         super.messageSent(session, message);
     }
 
     @Override
-    public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+    public void exceptionCaught(final IoSession session, final Throwable cause) throws Exception {
         //cause.printStackTrace();
         /*
         MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
@@ -51,7 +51,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void sessionOpened(IoSession session) throws Exception {
+    public void sessionOpened(final IoSession session) throws Exception {
         //log.info("IoSession with {} opened", session.getRemoteAddress());
         if (channel > -1) {
             if (ChannelServer.getInstance(channel).isShutdown()) {
@@ -59,7 +59,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return;
             }
         }
-        byte[] key = {
+        final byte[] key = {
             (byte) 0x13, (byte) 0x00, (byte) 0x00, (byte) 0x00,
             (byte) 0x08, (byte) 0x00, (byte) 0x00, (byte) 0x00,
             (byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -69,13 +69,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
             (byte) 0x33, (byte) 0x00, (byte) 0x00, (byte) 0x00,
             (byte) 0x52, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
-        byte[] ivRecv = {(byte) 70, (byte) 114, (byte) 122, (byte) 82};
-        byte[] ivSend = {(byte) 82, (byte) 48, (byte) 120, (byte) 115};
+        final byte[] ivRecv = {(byte) 70, (byte) 114, (byte) 122, (byte) 82};
+        final byte[] ivSend = {(byte) 82, (byte) 48, (byte) 120, (byte) 115};
         ivRecv[3] = (byte) (Math.random() * 255.0d);
         ivSend[3] = (byte) (Math.random() * 255.0d);
-        MapleAESOFB sendCypher = new MapleAESOFB(key, ivSend, (short) (0xFFFF - MAPLE_VERSION));
-        MapleAESOFB recvCypher = new MapleAESOFB(key, ivRecv, MAPLE_VERSION);
-        MapleClient client = new MapleClient(sendCypher, recvCypher, session);
+        final MapleAESOFB sendCypher = new MapleAESOFB(key, ivSend, (short) (0xFFFF - MAPLE_VERSION));
+        final MapleAESOFB recvCypher = new MapleAESOFB(key, ivRecv, MAPLE_VERSION);
+        final MapleClient client = new MapleClient(sendCypher, recvCypher, session);
         client.setChannel(channel);
         session.write(MaplePacketCreator.getHello(MAPLE_VERSION, ivSend, ivRecv, false));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
@@ -86,7 +86,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     @Override
     public void sessionClosed(final IoSession session) throws Exception {
         synchronized (session) {
-            MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+            final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
             if (client != null) {
                 client.disconnect();
                 LoginWorker.getInstance().deregisterClient(client);
@@ -97,15 +97,15 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void messageReceived(IoSession session, Object message) throws Exception {
-        byte[] content = (byte[]) message;
-        SeekableLittleEndianAccessor slea =
+    public void messageReceived(final IoSession session, final Object message) throws Exception {
+        final byte[] content = (byte[]) message;
+        final SeekableLittleEndianAccessor slea =
             new GenericSeekableLittleEndianAccessor(
                 new ByteArrayByteStream(content)
             );
-        short packetId = slea.readShort();
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-        MaplePacketHandler packetHandler = processor.getHandler(packetId);
+        final short packetId = slea.readShort();
+        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        final MaplePacketHandler packetHandler = processor.getHandler(packetId);
         //
         client.pongReceived();
         //
@@ -129,7 +129,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 //}
                 //System.out.println(packetHandler.getClass().getSimpleName());
                 packetHandler.handlePacket(slea, client);
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 if (!packetHandler.getClass().getName().contains("ItemPickupHandler")) {
                     System.err.println(
                         "Exception during processing packet: " +
@@ -144,7 +144,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         /*
         if (client != null && client.getPlayer() != null) {
             System.out.println("Player " + client.getPlayer().getName() + " went idle.");
