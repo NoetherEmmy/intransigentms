@@ -3938,17 +3938,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public final List<MapleQuestStatus> getCompletedQuests() {
         return
-            Collections
-                .unmodifiableList(
-                    quests
-                        .values()
-                        .stream()
-                        .filter(q ->
-                            q.getStatus().equals(MapleQuestStatus.Status.COMPLETED) &&
-                            !(q.getQuest() instanceof MapleCustomQuest)
-                        )
-                        .collect(Collectors.toCollection(ArrayList::new))
-                );
+            quests
+                .values()
+                .stream()
+                .filter(q ->
+                    q.getStatus().equals(MapleQuestStatus.Status.COMPLETED) &&
+                    !(q.getQuest() instanceof MapleCustomQuest)
+                )
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public IPlayerInteractionManager getInteraction() {
