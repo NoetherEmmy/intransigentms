@@ -81,8 +81,8 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
                 break;
             case 4: // Reply.
                 localthreadid = slea.readInt();
-                text = correctLength(slea.readMapleAsciiString(), 25);
-                newBBSReply(c, localthreadid, text);
+                final String text_ = correctLength(slea.readMapleAsciiString(), 25);
+                newBBSReply(c, localthreadid, text_);
                 break;
             case 5: // Delete reply.
                 localthreadid = slea.readInt();

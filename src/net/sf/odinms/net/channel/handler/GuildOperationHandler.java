@@ -14,16 +14,17 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class GuildOperationHandler extends AbstractMaplePacketHandler {
     private boolean isGuildNameAcceptable(final String name) {
-        if (name.length() < 3 || name.length() > 12) return false;
-        for (int i = 0; i < name.length(); ++i) {
-            if (!Character.isLowerCase(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
+        return !(name.length() < 3 || name.length() > 12) &&
+               IntStream
+                   .range(0, name.length())
+                   .noneMatch(i ->
+                       !Character.isLowerCase(name.charAt(i)) &&
+                       !Character.isUpperCase(name.charAt(i))
+                   );
     }
 
     private void respawnPlayer(final MapleCharacter mc) {
@@ -117,7 +118,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     System.err.println("[hax] " + mc.getName() + " used guild invitation when s/he isn't allowed.");
                     return;
                 }
-                final String name = slea.readMapleAsciiString();
+                String name = slea.readMapleAsciiString();
                 final MapleGuildResponse mgr = MapleGuild.sendInvite(c, name);
                 if (mgr != null) {
                     c.getSession().write(mgr.getPacket());
@@ -134,7 +135,7 @@ public class GuildOperationHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 gid = slea.readInt();
-                final int cid = slea.readInt();
+                int cid = slea.readInt();
 
                 if (cid != mc.getId()) {
                     System.err.println("[hax] " + mc.getName() + " attempted to join a guild with a different character id.");
