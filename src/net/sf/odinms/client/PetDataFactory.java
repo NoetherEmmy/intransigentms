@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PetDataFactory {
+public final class PetDataFactory {
     private static final MapleDataProvider dataRoot =
         MapleDataProviderFactory.getDataProvider(
             new File(

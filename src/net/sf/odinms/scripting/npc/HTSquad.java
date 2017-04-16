@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class HTSquad {
+public final class HTSquad {
     private static ResultSet results;
 
     public static int createSquad(final int ch, final int id) throws SQLException {

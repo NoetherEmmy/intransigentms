@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SkillFactory {
+public final class SkillFactory {
     private static final Map<Integer, ISkill> skills = new HashMap<>();
     private static final MapleDataProvider datasource =
         MapleDataProviderFactory.getDataProvider(

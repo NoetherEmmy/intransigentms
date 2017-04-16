@@ -1,6 +1,6 @@
 package net.sf.odinms.tools;
 
-public class BitTools {
+public final class BitTools {
     /**
      * Static class dummy constructor.
      */

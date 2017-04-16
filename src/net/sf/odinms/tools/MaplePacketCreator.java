@@ -40,7 +40,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 
-public class MaplePacketCreator {
+public final class MaplePacketCreator {
     private static final Logger log = LoggerFactory.getLogger(MaplePacketCreator.class);
     private static final byte[] CHAR_INFO_MAGIC = new byte[] {(byte) 0xff, (byte) 0xc9, (byte) 0x9a, (byte) 0x3b};
     private static final byte[] ITEM_MAGIC = new byte[]{(byte) 0x80, 5};

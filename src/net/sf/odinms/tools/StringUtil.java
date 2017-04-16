@@ -1,6 +1,6 @@
 package net.sf.odinms.tools;
 
-public class StringUtil {
+public final class StringUtil {
     /**
      * Gets a string padded from the left to <code>length</code> by
      * <code>padchar</code>.

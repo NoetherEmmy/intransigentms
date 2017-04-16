@@ -6,7 +6,7 @@ import net.sf.odinms.tools.data.output.LittleEndianWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WZTool {
+public final class WZTool {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(WZTool.class);
 

@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class AutoRegister {
+public final class AutoRegister {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleClient.class);
     //private static final int ACCOUNTS_PER_IP = 5;
     public static final boolean autoRegister = true;

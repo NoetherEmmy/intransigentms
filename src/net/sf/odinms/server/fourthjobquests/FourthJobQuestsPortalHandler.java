@@ -10,7 +10,7 @@ import net.sf.odinms.tools.MaplePacketCreator;
 
 import java.util.Collection;
 
-public class FourthJobQuestsPortalHandler {
+public final class FourthJobQuestsPortalHandler {
     public enum FourthJobQuests implements StringValueHolder {
         RUSH("s4rush"),
         BERSERK("s4berserk");

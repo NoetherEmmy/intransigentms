@@ -50,12 +50,13 @@ public class MapleCustomQuestData implements MapleData, Serializable {
             lookup = name.substring(0, name.indexOf("/"));
             nextName = name.substring(name.indexOf("/") + 1);
         }
-        for (final MapleData child : children) {
-            if (child.getName().equals(lookup)) {
-                return child.getChildByPath(nextName);
-            }
-        }
-        return null;
+        return
+            children
+                .stream()
+                .filter(child -> child.getName().equals(lookup))
+                .findFirst()
+                .map(child -> child.getChildByPath(nextName))
+                .orElse(null);
     }
 
     public Object getData() {

@@ -35,6 +35,7 @@ import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 public class MapleClient {
     public static final int
@@ -110,11 +111,11 @@ public class MapleClient {
     }
 
     public List<String> loadCharacterNames(final int serverId) {
-        final List<String> chars = new ArrayList<>();
-        for (final CharNameAndId cni : loadCharactersInternal(serverId)) {
-            chars.add(cni.name);
-        }
-        return chars;
+        return
+            loadCharactersInternal(serverId)
+                .stream()
+                .map(cni -> cni.name)
+                .collect(Collectors.toList());
     }
 
     private List<CharNameAndId> loadCharactersInternal(final int serverId) {
@@ -173,9 +174,7 @@ public class MapleClient {
             ps.setString(1, session.getRemoteAddress().toString());
             final ResultSet rs = ps.executeQuery();
             rs.next();
-            if (rs.getInt(1) > 0) {
-                ret = true;
-            }
+            if (rs.getInt(1) > 0) ret = true;
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
@@ -246,14 +245,7 @@ public class MapleClient {
             ps.close();
             ps = con.prepareStatement("INSERT INTO macbans (mac) VALUES (?)");
             for (final String mac : macs) {
-                boolean matched = false;
-                for (final String filter : filtered) {
-                    if (mac.matches(filter)) {
-                        matched = true;
-                        break;
-                    }
-                }
-                if (!matched) {
+                if (filtered.stream().noneMatch(mac::matches)) {
                     ps.setString(1, mac);
                     try {
                         ps.executeUpdate();

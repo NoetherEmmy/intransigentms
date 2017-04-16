@@ -38,6 +38,8 @@ public final class PvPLibrary {
         final int matk = player.getTotalMagic();
         final int luk = player.getTotalLuk();
         final int watk = player.getTotalWatk();
+        final double mastery;
+        final int min;
         switch (attack.skill) {
             case 0: // Normal attack
                 multi = 1;
@@ -59,9 +61,9 @@ public final class PvPLibrary {
             case 2001004:    // Energy Bolt
                 skil = SkillFactory.getSkill(2001004);
                 multi = skil.getEffect(player.getSkillLevel(skil)).getMatk();
-                double mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
+                mastery = skil.getEffect(player.getSkillLevel(skil)).getMastery() * 5;
                 pvpDamage = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d);
-                int min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
+                min = (int) ((matk * 0.8d) + (luk / 4) / 18 * multi * 0.8d * mastery);
                 pvpDamage = MapleCharacter.rand(min, pvpDamage);
                 maxDis = 200;
                 maxHeight = 35;

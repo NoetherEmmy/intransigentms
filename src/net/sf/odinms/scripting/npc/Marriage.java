@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class Marriage {
+public final class Marriage {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Marriage.class);
 
     public static boolean createMarriage(final MapleCharacter player, final MapleCharacter partner) {

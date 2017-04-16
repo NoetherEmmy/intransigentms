@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class MobAttackInfoFactory {
+public final class MobAttackInfoFactory {
     private static final Map<Pair<Integer, Integer>, MobAttackInfo> mobAttacks = new LinkedHashMap<>();
     private static final MapleDataProvider dataSource =
         MapleDataProviderFactory.getDataProvider(

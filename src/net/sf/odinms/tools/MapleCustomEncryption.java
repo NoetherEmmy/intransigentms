@@ -1,6 +1,6 @@
 package net.sf.odinms.tools;
 
-public class MapleCustomEncryption {
+public final class MapleCustomEncryption {
     /**
      * Encrypts <code>data</code> with Maple's encryption routines.
      *

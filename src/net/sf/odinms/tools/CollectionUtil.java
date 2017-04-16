@@ -3,7 +3,7 @@ package net.sf.odinms.tools;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CollectionUtil {
+public final class CollectionUtil {
     /**
      * Static class dummy constructor
      */

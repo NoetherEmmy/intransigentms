@@ -10,7 +10,7 @@ import net.sf.odinms.tools.StringUtil;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PublicChatHandler {
+public final class PublicChatHandler {
     private static final Map<Integer, Integer> playerHolder = new LinkedHashMap<>();
 
     private static void addPlayer(final MapleCharacter chr) {

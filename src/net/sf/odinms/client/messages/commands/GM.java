@@ -123,17 +123,16 @@ public class GM implements Command {
                 invent = MapleInventoryType.CASH;
                 break;
         }
-        final List<Integer> itemMap = new ArrayList<>();
-        for (final IItem item : c.getPlayer().getInventory(invent).list()) {
-            itemMap.add(item.getItemId());
-        }
-        for (final int itemid : itemMap) {
-            MapleInventoryManipulator.removeAllById(c, itemid, false);
-        }
+        c.getPlayer()
+         .getInventory(invent)
+         .list()
+         .stream()
+         .map(IItem::getItemId)
+         .forEach(itemId -> MapleInventoryManipulator.removeAllById(c, itemId, false));
     }
 
     @Override
-    public void execute(final MapleClient c, final MessageCallback mc, final String[] splitted) throws Exception {
+    public void execute(final MapleClient c, final MessageCallback mc, final String... splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
         final ChannelServer cserv = c.getChannelServer();
         final Collection<ChannelServer> cservs = ChannelServer.getAllInstances();
@@ -1923,19 +1922,16 @@ public class GM implements Command {
                 if (splitted.length == 2) {
                     final MapleMap map = c.getPlayer().getMap();
                     final int targetId = Integer.parseInt(splitted[1]);
-                    final List<MapleMapObject> monsters =
-                        map.getMapObjectsInRange(
-                            c.getPlayer().getPosition(),
-                            Double.POSITIVE_INFINITY,
-                            MapleMapObjectType.MONSTER
-                        );
-                    for (final MapleMapObject monsterm : monsters) {
-                        final MapleMonster monster = (MapleMonster) monsterm;
-                        if (monster.getId() == targetId) {
-                            map.killMonster(monster, player, false);
-                            break;
-                        }
-                    }
+                    map.getMapObjectsInRange(
+                        c.getPlayer().getPosition(),
+                        Double.POSITIVE_INFINITY,
+                        MapleMapObjectType.MONSTER
+                    )
+                    .stream()
+                    .map(monsterm -> (MapleMonster) monsterm)
+                    .filter(monster -> monster.getId() == targetId)
+                    .findFirst()
+                    .ifPresent(monster -> map.killMonster(monster, player, false));
                 }
                 break;
             case "!removeoid":
@@ -2749,12 +2745,7 @@ public class GM implements Command {
                     mc.dropMessage("Could not parse integer argument for item ID.");
                     return;
                 }
-                final boolean checkEquipped;
-                if (splitted.length == 4) {
-                    checkEquipped = Boolean.parseBoolean(splitted[3]);
-                } else {
-                    checkEquipped = false;
-                }
+                final boolean checkEquipped = splitted.length == 4 && Boolean.parseBoolean(splitted[3]);
                 final int q = victim.getItemQuantity(itemId, checkEquipped);
                 mc.dropMessage(victim.getName() + " has " + q + " of item " + itemId + ".");
                 break;

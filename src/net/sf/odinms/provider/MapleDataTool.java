@@ -5,7 +5,7 @@ import net.sf.odinms.provider.wz.MapleDataType;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class MapleDataTool {
+public final class MapleDataTool {
     private MapleDataTool() {
     }
 

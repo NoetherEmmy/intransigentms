@@ -1,6 +1,6 @@
 package net.sf.odinms.tools;
 
-public class KoreanDateUtil {
+public final class KoreanDateUtil {
     private static final int ITEM_YEAR2000 = -1085019342;
     private static final long REAL_YEAR2000 = 946681229830L;
     //private final static long FT_UT_OFFSET2 = 116444484000000000L; // PDT

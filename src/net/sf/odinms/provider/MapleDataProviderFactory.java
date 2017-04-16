@@ -6,7 +6,7 @@ import net.sf.odinms.provider.xmlwz.XMLWZFile;
 import java.io.File;
 import java.io.IOException;
 
-public class MapleDataProviderFactory {
+public final class MapleDataProviderFactory {
     private static final String wzPath = System.getProperty("net.sf.odinms.wzpath");
 
     private static MapleDataProvider getWZ(final Object in, final boolean provideImages) {

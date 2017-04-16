@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CashItemFactory {
+public final class CashItemFactory {
     private static final Map<Integer, Integer> snLookup = new LinkedHashMap<>();
     private static final Map<Integer, CashItemInfo> itemStats = new LinkedHashMap<>();
     private static final MapleDataProvider data =

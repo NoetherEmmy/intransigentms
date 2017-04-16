@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
 
-public class DatabaseConnection {
+public final class DatabaseConnection {
     private static final ThreadLocal<Connection> con = new ThreadLocalConnection();
     private static final Logger log = LoggerFactory.getLogger(DatabaseConnection.class);
     private static Properties props;

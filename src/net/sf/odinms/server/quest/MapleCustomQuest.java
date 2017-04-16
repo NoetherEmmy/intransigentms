@@ -36,6 +36,10 @@ public class MapleCustomQuest extends MapleQuest {
                     data
                 );
                 final MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(rs.getInt("status"));
+                if (status == null) {
+                    System.err.println("status == null in new MapleCustomQuest(int). 0");
+                    return;
+                }
                 if (status.equals(MapleQuestStatus.Status.NOT_STARTED)) {
                     startReqs.add(req);
                 } else if (status.equals(MapleQuestStatus.Status.STARTED)) {
@@ -50,12 +54,22 @@ public class MapleCustomQuest extends MapleQuest {
             MapleQuestAction act;
             while (rs.next()) {
                 final Blob blob = rs.getBlob("data");
-                final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
-                    blob.getBytes(1, (int) blob.length())));
+                final ObjectInputStream ois =
+                    new ObjectInputStream(
+                        new ByteArrayInputStream(
+                            blob.getBytes(1, (int) blob.length())
+                        )
+                    );
                 data = (MapleCustomQuestData) ois.readObject();
                 act = new MapleQuestAction(MapleQuestActionType.getByWZName(data.getName()), data, this);
-                final MapleQuestStatus.Status status = MapleQuestStatus.Status.getById(
-                    rs.getInt("status"));
+                final MapleQuestStatus.Status status =
+                    MapleQuestStatus.Status.getById(
+                        rs.getInt("status")
+                    );
+                if (status == null) {
+                    System.err.println("status == null in new MapleCustomQuest(int). 1");
+                    return;
+                }
                 if (status.equals(MapleQuestStatus.Status.NOT_STARTED)) {
                     startActs.add(act);
                 } else if (status.equals(MapleQuestStatus.Status.STARTED)) {

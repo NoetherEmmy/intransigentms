@@ -37,7 +37,7 @@ import static net.sf.odinms.client.messages.CommandProcessor.getOptionalIntArg;
 
 public class Admins implements Command {
     @Override
-    public void execute(final MapleClient c, final MessageCallback mc, final String[] splitted) throws Exception {
+    public void execute(final MapleClient c, final MessageCallback mc, final String... splitted) throws Exception {
         splitted[0] = splitted[0].toLowerCase();
         final MapleCharacter player = c.getPlayer();
         final ChannelServer cserv = c.getChannelServer();
@@ -113,7 +113,9 @@ public class Admins implements Command {
                     }
                     final File file = new File(filename);
                     if (file.exists()) {
-                        file.delete();
+                        if (!file.delete()) {
+                            System.err.println("Error deleting file in !stopprofiling");
+                        }
                     }
                     sampler.stop();
                     final FileWriter fw = new FileWriter(file);

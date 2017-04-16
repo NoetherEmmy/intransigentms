@@ -4,7 +4,7 @@ import net.sf.odinms.tools.data.output.LittleEndianWriter;
 
 import java.awt.*;
 
-public class StreamUtil {
+public final class StreamUtil {
     /**
      * Read a 2-D coordinate of short integers (x, y).
      *

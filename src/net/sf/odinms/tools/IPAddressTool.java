@@ -1,6 +1,6 @@
 package net.sf.odinms.tools;
 
-public class IPAddressTool {
+public final class IPAddressTool {
     /**
      * Dummy constructor for static classes.
      */

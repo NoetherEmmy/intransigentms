@@ -3437,11 +3437,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         setLastTrialTime(0L);
         final StringBuilder fourthJobSkills = new StringBuilder();
         if (job.getId() % 10 == 2) { // Fourth job
-            for (final int skillId : MapleCharacter.SKILL_IDS) {
+            final int[] skill_ids = MapleCharacter.SKILL_IDS;
+            for (int i = 0, skill_idsLength = skill_ids.length; i < skill_idsLength; i++) {
+                final int skillId = skill_ids[i];
                 if (
                     skillId / 10000 == job.getId() &&
-                    (getMasterLevelById(skillId) > 10 || skillId == 2321006 || skillId == 2321008)
-                ) {
+                        (getMasterLevelById(skillId) > 10 || skillId == 2321006 || skillId == 2321008)
+                    ) {
                     fourthJobSkills
                         .append(skillId)
                         .append(", ")
@@ -3523,16 +3525,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             causeofdeath = "by their own hand";
         }
         final MaplePacket packet = MaplePacketCreator.serverNotice(
-           6,
-           "[Graveyard] " +
-               name +
-            ", level " +
-               levelAchieved +
-            " " +
-            jobachieved +
-            ", has just perished " +
-            causeofdeath +
-            ". May the gods let their soul rest until eternity."
+            6,
+            "[Graveyard] " +
+                name +
+                ", level " +
+                levelAchieved +
+                " " +
+                jobachieved +
+                ", has just perished " +
+                causeofdeath +
+                ". May the gods let their soul rest until eternity."
         );
         try {
             client.getChannelServer().getWorldInterface().broadcastMessage(name, packet.getBytes());
@@ -6803,17 +6805,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
 
-        equipped
-            .list()
-            .stream()
-            .map(IItem::getPosition)
-            .forEach(pos ->
-                MapleInventoryManipulator.unequip(
-                    client,
-                    pos,
-                    getInventory(MapleInventoryType.EQUIP).getNextFreeSlot()
-                )
-            );
+        final List<Byte> equippedPos =
+            equipped
+                .list()
+                .stream()
+                .map(IItem::getPosition)
+                .collect(Collectors.toList());
+
+        equippedPos.forEach(pos ->
+            MapleInventoryManipulator.unequip(
+                client,
+                pos,
+                getInventory(MapleInventoryType.EQUIP).getNextFreeSlot()
+            )
+        );
     }
 
     private void setOffOnline(final boolean online) {

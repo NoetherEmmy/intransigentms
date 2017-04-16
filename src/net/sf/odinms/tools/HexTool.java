@@ -5,7 +5,7 @@ import org.apache.mina.common.ByteBuffer;
 
 import java.io.ByteArrayOutputStream;
 
-public class HexTool {
+public final class HexTool {
     private static final char[] HEX =
     {
         '0', '1', '2', '3',

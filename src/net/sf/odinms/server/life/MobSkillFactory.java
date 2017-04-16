@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MobSkillFactory {
+public final class MobSkillFactory {
     private static final Map<Pair<Integer, Integer>, MobSkill> mobSkills = new HashMap<>();
     private static final MapleDataProvider dataSource =
         MapleDataProviderFactory.getDataProvider(

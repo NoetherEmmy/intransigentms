@@ -2,6 +2,8 @@ package net.sf.odinms.client;
 
 import net.sf.odinms.net.IntValueHolder;
 
+import java.util.Arrays;
+
 public enum CQuestStatus implements IntValueHolder {
     NONE(-1),
     IN_PROGRESS(0),
@@ -21,10 +23,12 @@ public enum CQuestStatus implements IntValueHolder {
     }
 
     public static CQuestStatus getByValue(final int val) {
-        for (final CQuestStatus cqs : CQuestStatus.values()) {
-            if (cqs.getValue() == val) return cqs;
-        }
-        return null;
+        return
+            Arrays
+                .stream(CQuestStatus.values())
+                .filter(cqs -> cqs.getValue() == val)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
