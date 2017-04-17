@@ -3,6 +3,7 @@ package net.sf.odinms.server.quest;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleQuestStatus;
 import net.sf.odinms.client.MapleQuestStatus.Status;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -24,7 +25,7 @@ public class MapleQuest {
     private String name = "MISSINGNO";
     private static final MapleDataProvider questData =
         MapleDataProviderFactory.getDataProvider(
-            new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz")
+            new File(System.getProperty(WorldServer.WZPATH) + "/Quest.wz")
         );
     private static final MapleData
         actions = questData.getData("Act.img"),

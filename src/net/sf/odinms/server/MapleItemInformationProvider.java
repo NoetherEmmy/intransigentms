@@ -2,6 +2,7 @@ package net.sf.odinms.server;
 
 import net.sf.odinms.client.*;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.*;
 import net.sf.odinms.tools.Pair;
 
@@ -49,15 +50,15 @@ public class MapleItemInformationProvider {
 
     /** Creates a new instance of MapleItemInformationProvider */
     protected MapleItemInformationProvider() {
-        itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Item.wz"));
-        equipData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Character.wz"));
-        stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
-        cashStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Cash.img");
-        consumeStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Consume.img");
-        eqpStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Eqp.img");
-        etcStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Etc.img");
-        insStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Ins.img");
-        petStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Pet.img");
+        itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/Item.wz"));
+        equipData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/Character.wz"));
+        stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/String.wz"));
+        cashStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/String.wz")).getData("Cash.img");
+        consumeStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/String.wz")).getData("Consume.img");
+        eqpStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/String.wz")).getData("Eqp.img");
+        etcStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/String.wz")).getData("Etc.img");
+        insStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/String.wz")).getData("Ins.img");
+        petStringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty(WorldServer.WZPATH) + "/String.wz")).getData("Pet.img");
     }
 
     public static MapleItemInformationProvider getInstance() {

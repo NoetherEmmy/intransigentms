@@ -4,6 +4,7 @@ import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.world.MapleParty;
 import net.sf.odinms.net.world.MaplePartyCharacter;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.server.life.MapleMonster;
@@ -36,12 +37,12 @@ public class EventInstanceManager {
             new MapleMapFactory(
                 MapleDataProviderFactory.getDataProvider(
                     new File(
-                        System.getProperty("net.sf.odinms.wzpath") + "/Map.wz"
+                        System.getProperty(WorldServer.WZPATH) + "/Map.wz"
                     )
                 ),
                 MapleDataProviderFactory.getDataProvider(
                     new File(
-                        System.getProperty("net.sf.odinms.wzpath") + "/String.wz"
+                        System.getProperty(WorldServer.WZPATH) + "/String.wz"
                     )
                 )
             );

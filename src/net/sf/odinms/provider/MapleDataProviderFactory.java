@@ -1,5 +1,6 @@
 package net.sf.odinms.provider;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.wz.WZFile;
 import net.sf.odinms.provider.xmlwz.XMLWZFile;
 
@@ -7,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 public final class MapleDataProviderFactory {
-    private static final String wzPath = System.getProperty("net.sf.odinms.wzpath");
+    private static final String wzPath = System.getProperty(WorldServer.WZPATH);
 
     private static MapleDataProvider getWZ(final Object in, final boolean provideImages) {
         if (in instanceof File) {

@@ -6,6 +6,7 @@ import net.sf.odinms.client.messages.CommandDefinition;
 import net.sf.odinms.client.messages.MessageCallback;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.channel.ChannelServer;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
@@ -695,10 +696,17 @@ public class PlayerCommands implements Command {
                         final Set<String> retItems = new LinkedHashSet<>();
                         String bestMatch = null;
                         final Set<Map.Entry<Integer, MapleMonsterStats>> monsterStats =
-                            MapleLifeFactory.readMonsterStats().entrySet();
+                            MapleLifeFactory
+                                .readMonsterStats()
+                                .entrySet();
+                        final String searchString_ = searchString.toString();
                         for (final Map.Entry<Integer, MapleMonsterStats> ms : monsterStats) {
+                            if (ms == null) continue;
+                            final MapleMonsterStats stats = ms.getValue();
+                            if (stats == null) continue;
                             final String name = ms.getValue().getName();
-                            if (name.toUpperCase().startsWith(searchString.toString())) {
+                            if (name == null) continue;
+                            if (name.toUpperCase().startsWith(searchString_)) {
                                 if (bestMatch == null || name.length() < bestMatch.length()) {
                                     bestMatch = name;
                                     searchId = ms.getKey();
@@ -714,7 +722,7 @@ public class PlayerCommands implements Command {
                         } else {
                             mc.dropMessage(
                                 "No mobs were found that start with \"" +
-                                    searchString.toString().toLowerCase() +
+                                    searchString_.toLowerCase() +
                                     "\"."
                             );
                             return;
@@ -879,7 +887,7 @@ public class PlayerCommands implements Command {
                 final MapleData data;
                 final MapleDataProvider dataProvider =
                     MapleDataProviderFactory.getDataProvider(
-                        new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
+                        new File(System.getProperty(WorldServer.WZPATH) + "/" + "String.wz")
                     );
                 data = dataProvider.getData("Mob.img");
                 final List<MapleMonster> mobList = new ArrayList<>();

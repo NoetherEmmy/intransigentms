@@ -1,5 +1,6 @@
 package net.sf.odinms.client;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -15,13 +16,13 @@ public final class SkillFactory {
     private static final MapleDataProvider datasource =
         MapleDataProviderFactory.getDataProvider(
             new File(
-                System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"
+                System.getProperty(WorldServer.WZPATH) + "/Skill.wz"
             )
         );
     private static final MapleData stringData =
         MapleDataProviderFactory.getDataProvider(
             new File(
-                System.getProperty("net.sf.odinms.wzpath") + "/String.wz"
+                System.getProperty(WorldServer.WZPATH) + "/String.wz"
             )
         ).getData("Skill.img");
 

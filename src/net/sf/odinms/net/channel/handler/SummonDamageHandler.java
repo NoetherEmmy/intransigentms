@@ -10,8 +10,6 @@ import net.sf.odinms.client.status.MonsterStatusEffect;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.AutobanManager;
 import net.sf.odinms.server.MapleStatEffect;
-import net.sf.odinms.server.life.Element;
-import net.sf.odinms.server.life.ElementalEffectiveness;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.maps.MapleSummon;
 import net.sf.odinms.tools.MaplePacketCreator;
@@ -24,8 +22,7 @@ import java.util.stream.Collectors;
 
 public class SummonDamageHandler extends AbstractMaplePacketHandler {
     public class SummonAttackEntry {
-        private final int monsterOid;
-        private final int damage;
+        private final int monsterOid, damage;
 
         public SummonAttackEntry(final int monsterOid, final int damage) {
             super();
@@ -82,13 +79,24 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
                 .filter(d -> player.getMap().getMonsterByOid(d.getMonsterOid()) != null)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        if (player.getMap().isDamageMuted()) {
-            for (final SummonAttackEntry attackEntry : allDamage) {
+        final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(summon.getSkill());
+        if (questEffectiveBlock || player.getMap().isDamageMuted()) {
+            allDamage.forEach(attackEntry ->
                 c.getSession().write(
                     MaplePacketCreator.damageMonster(
                         attackEntry.getMonsterOid(),
                         -attackEntry.getDamage()
                     )
+                )
+            );
+            if (questEffectiveBlock) {
+                player.dropMessage(
+                    5,
+                    "Your quest effective level (" +
+                        player.getQuestEffectiveLevel() +
+                        ") is too low to use " +
+                        SkillFactory.getSkillName(summon.getSkill()) +
+                        "."
                 );
             }
             return;
@@ -99,10 +107,11 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             return;
         }
 
-        final List<SummonAttackEntry> additionalDmg = new ArrayList<>(numAttacked);
-        for (final SummonAttackEntry attackEntry : allDamage) {
-            additionalDmg.add(new SummonAttackEntry(attackEntry.getMonsterOid(), 0));
-        }
+        final List<SummonAttackEntry> additionalDmg =
+            allDamage
+                .stream()
+                .map(attackEntry -> new SummonAttackEntry(attackEntry.getMonsterOid(), 0))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         if (summonSkill.getId() == 2311006 || summonSkill.getId() == 2321003) { // Summon Dragon | Bahamut
             final double percentPerLevel;
@@ -185,31 +194,18 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             final MapleMonster target = player.getMap().getMonsterByOid(attackEntry.getMonsterOid());
             if (target == null) continue;
 
-            ElementalEffectiveness ee = null;
-            if (summonSkill.getElement() != Element.NEUTRAL) {
-                ee = target.getAddedEffectiveness(summonSkill.getElement());
-                if (
-                    (ee == ElementalEffectiveness.WEAK || ee == ElementalEffectiveness.IMMUNE) &&
-                    target.getEffectiveness(summonSkill.getElement()) == ElementalEffectiveness.WEAK
-                ) {
-                    ee = null;
-                }
+            final double multiplier = AbstractDealDamageHandler.getMobDamageMulti(target, summonSkill.getElement());
+            final double dpMultiplier;
+            final double qeMultiplier = player.getQuestEffectiveLevelDmgMulti();
+            if (player.getDeathPenalty() > 0) {
+                dpMultiplier = Math.max(
+                    1.0d - (double) player.getDeathPenalty() * 0.03d,
+                    0.0d
+                );
+            } else {
+                dpMultiplier = 1.0d;
             }
-
-            double multiplier = target.getVulnerability();
-            if (ee != null) {
-                switch (ee) {
-                    case WEAK:
-                        multiplier *= 1.5d;
-                        break;
-                    case STRONG:
-                        multiplier *= 0.5d;
-                        break;
-                    case IMMUNE:
-                        multiplier *= 0.0d;
-                        break;
-                }
-            }
+            final double totalMultiplier = multiplier * dpMultiplier * qeMultiplier;
 
             if (multiplier != 1.0d) {
                 final int newDmg = (int) (attackEntry.getDamage() * multiplier);
@@ -275,12 +271,11 @@ public class SummonDamageHandler extends AbstractMaplePacketHandler {
             )
         );
 
-        for (int i = 0; i < allDamage.size(); ++i) {
-            final SummonAttackEntry attackEntry = allDamage.get(i);
+        allDamage.forEach(attackEntry -> {
             final MapleMonster target = player.getMap().getMonsterByOid(attackEntry.getMonsterOid());
-            if (target == null) continue;
+            if (target == null) return;
             player.getMap().damageMonster(player, target, attackEntry.getDamage());
             player.checkMonsterAggro(target);
-        }
+        });
     }
 }

@@ -1,5 +1,6 @@
 package net.sf.odinms.client;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -14,7 +15,7 @@ public final class PetDataFactory {
     private static final MapleDataProvider dataRoot =
         MapleDataProviderFactory.getDataProvider(
             new File(
-                System.getProperty("net.sf.odinms.wzpath") + "/Item.wz"
+                System.getProperty(WorldServer.WZPATH) + "/Item.wz"
             )
         );
     private static final Map<Pair<Integer, Integer>, PetCommand> petCommands = new HashMap<>();

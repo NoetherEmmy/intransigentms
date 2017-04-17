@@ -1,5 +1,6 @@
 package net.sf.odinms.server;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.*;
 
 import java.io.File;
@@ -18,7 +19,7 @@ public class SoundInformationProvider {
     protected SoundInformationProvider() {
         soundData =
             MapleDataProviderFactory.getDataProvider(
-                new File(System.getProperty("net.sf.odinms.wzpath") + "/Sound.wz")
+                new File(System.getProperty(WorldServer.WZPATH) + "/Sound.wz")
             );
     }
 

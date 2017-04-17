@@ -3580,7 +3580,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
             final NPCScriptManager npc = NPCScriptManager.getInstance();
             npc.start(client, 2041024); // Open up Tombstone, who asks if you want to use a candle
-                                             // or instantly exits if you have no candles
+                                        // or instantly exits if you have no candles
 
             final TimerManager tMan = TimerManager.getInstance();
             tMan.schedule(() -> {
@@ -6805,20 +6805,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             }
         }
 
-        final List<Byte> equippedPos =
-            equipped
-                .list()
-                .stream()
-                .map(IItem::getPosition)
-                .collect(Collectors.toList());
-
-        equippedPos.forEach(pos ->
-            MapleInventoryManipulator.unequip(
-                client,
-                pos,
-                getInventory(MapleInventoryType.EQUIP).getNextFreeSlot()
-            )
-        );
+        equipped
+            .list()
+            .stream()
+            .map(IItem::getPosition)
+            .collect(Collectors.toList()) // Forcing strict evaluation to prevent concurrent modification
+            .forEach(pos ->
+                MapleInventoryManipulator.unequip(
+                    client,
+                    pos,
+                    getInventory(MapleInventoryType.EQUIP).getNextFreeSlot()
+                )
+            );
     }
 
     private void setOffOnline(final boolean online) {

@@ -1,5 +1,6 @@
 package net.sf.odinms.server.life;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -18,7 +19,7 @@ public final class MobSkillFactory {
     private static final MapleDataProvider dataSource =
         MapleDataProviderFactory.getDataProvider(
             new File(
-                System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"
+                System.getProperty(WorldServer.WZPATH) + "/Skill.wz"
             )
         );
     private static final MapleData skillRoot = dataSource.getData("MobSkill.img");

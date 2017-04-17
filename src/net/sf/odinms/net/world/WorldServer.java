@@ -17,6 +17,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldServer {
+    public static final String WZPATH = "net.sf.odinms.wzpath";
     private static WorldServer instance = null;
     private static final Logger log = LoggerFactory.getLogger(WorldServer.class);
     private int worldId;

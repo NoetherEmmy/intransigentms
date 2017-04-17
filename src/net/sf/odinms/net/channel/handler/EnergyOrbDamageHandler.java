@@ -3,7 +3,6 @@ package net.sf.odinms.net.channel.handler;
 import net.sf.odinms.client.MapleCharacter;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.MapleStat;
-import net.sf.odinms.client.SkillFactory;
 import net.sf.odinms.server.life.MapleMonster;
 import net.sf.odinms.server.maps.MapleMapObject;
 import net.sf.odinms.server.maps.MapleMapObjectType;
@@ -14,6 +13,7 @@ import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
     @Override
@@ -32,33 +32,10 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
 
         final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(5110001);
         if (questEffectiveBlock || player.getMap().isDamageMuted()) {
-            for (int i = 0; i < attack.allDamage.size(); ++i) {
-                final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
-                MapleMonster monster = null;
-                if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
-                if (monster == null) continue;
-                final List<Integer> additionalDmg = new ArrayList<>(dmg.getRight().size());
-                for (final Integer dmgNumber : dmg.getRight()) {
-                    additionalDmg.add(-dmgNumber);
-                }
-                for (final Integer additionald : additionalDmg) {
-                    c.getSession().write(MaplePacketCreator.damageMonster(dmg.getLeft(), additionald));
-                }
-            }
-            if (questEffectiveBlock) {
-                player.dropMessage(
-                    5,
-                    "Your quest effective level (" +
-                        player.getQuestEffectiveLevel() +
-                        ") is too low to use " +
-                        SkillFactory.getSkillName(attack.skill) +
-                        "."
-                );
-            }
+            AbstractDealDamageHandler.cancelDamage(attack, c, questEffectiveBlock);
             return;
         }
 
-        applyAttack(attack, player, 1);
         player.getMap().broadcastMessage(
             player,
             MaplePacketCreator.closeRangeAttack(
@@ -73,6 +50,8 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
             true
         );
 
+        applyAttack(attack, player, 1);
+
         for (int i = 0; i < attack.allDamage.size(); ++i) {
             final Pair<Integer, List<Integer>> dmg = attack.allDamage.get(i);
 
@@ -86,24 +65,22 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                             bounds,
                             MapleMapObjectType.PLAYER
                         );
-                final List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
-
-                for (final MapleMapObject affectedmo : affecteds) {
-                    final MapleCharacter affected = (MapleCharacter) affectedmo;
-                    if (
-                        affected != null &&
-                        !affected.equals(player) &&
-                        affected.isAlive() &&
-                        player.getParty().equals(affected.getParty())
-                    ) {
-                        affectedp.add(affected);
-                    }
-                }
+                final List<MapleCharacter> affectedp =
+                    affecteds
+                        .stream()
+                        .map(affectedmo -> (MapleCharacter) affectedmo)
+                        .filter(affected ->
+                            affected != null &&
+                            !affected.equals(player) &&
+                            affected.isAlive() &&
+                            player.getParty().equals(affected.getParty())
+                        )
+                        .collect(Collectors.toCollection(ArrayList::new));
 
                 if (!affectedp.isEmpty()) {
                     final int healing = (int) ((double) player.getTotalMagic() * ((double) player.getTotalInt() / 300.0d) * (0.5d + 0.5d / affectedp.size()) * (2.0d - Math.random()));
-                    for (final MapleCharacter affected : affectedp) {
-                        affected.setHp(Math.min(affected.getHp() + healing, affected.getMaxHp()));
+                    affectedp.forEach(affected -> {
+                        affected.setHp(affected.getHp() + healing);
                         affected.updateSingleStat(MapleStat.HP, affected.getHp());
                         affected
                             .getClient()
@@ -124,36 +101,34 @@ public class EnergyOrbDamageHandler extends AbstractDealDamageHandler {
                             ),
                             false
                         );
-                    }
+                    });
                 }
             }
 
-            MapleMonster monster = null;
-            if (dmg != null) monster = player.getMap().getMonsterByOid(dmg.getLeft());
-            if (monster != null) {
-                final double multiplier = monster.getVulnerability();
-                if (multiplier != 1.0d) {
-                    final List<Integer> additionalDmg = new ArrayList<>(1);
-                    final List<Integer> newDmg = new ArrayList<>(1);
-
-                    for (final Integer dmgNumber : dmg.getRight()) {
-                        additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
-                        newDmg.add((int) (dmgNumber * multiplier));
-                    }
-                    attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
-                    for (final Integer additionald : additionalDmg) {
-                        player
-                            .getMap()
-                            .broadcastMessage(
-                                player,
-                                MaplePacketCreator.damageMonster(
-                                    dmg.getLeft(),
-                                    additionald
-                                ),
-                                true
-                            );
-                    }
-                }
+            if (dmg == null) continue;
+            final MapleMonster monster = player.getMap().getMonsterByOid(dmg.getLeft());
+            if (monster == null) continue;
+            final double multiplier = monster.getVulnerability();
+            if (multiplier != 1.0d) {
+                final List<Integer> additionalDmg = new ArrayList<>(1);
+                final List<Integer> newDmg = new ArrayList<>(1);
+                dmg.getRight().forEach(dmgNumber -> {
+                    additionalDmg.add((int) (dmgNumber * (multiplier - 1.0d)));
+                    newDmg.add((int) (dmgNumber * multiplier));
+                });
+                attack.allDamage.set(i, new Pair<>(dmg.getLeft(), newDmg));
+                additionalDmg.forEach(additionald ->
+                    player
+                        .getMap()
+                        .broadcastMessage(
+                            player,
+                            MaplePacketCreator.damageMonster(
+                                dmg.getLeft(),
+                                additionald
+                            ),
+                            true
+                        )
+                );
             }
         }
     }

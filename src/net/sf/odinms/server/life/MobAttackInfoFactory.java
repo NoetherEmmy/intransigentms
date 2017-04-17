@@ -1,5 +1,6 @@
 package net.sf.odinms.server.life;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -16,7 +17,7 @@ public final class MobAttackInfoFactory {
     private static final MapleDataProvider dataSource =
         MapleDataProviderFactory.getDataProvider(
             new File(
-                System.getProperty("net.sf.odinms.wzpath") + "/Mob.wz"
+                System.getProperty(WorldServer.WZPATH) + "/Mob.wz"
             )
         );
 

@@ -9,6 +9,7 @@ import net.sf.odinms.net.PacketProcessor;
 import net.sf.odinms.net.channel.remote.ChannelWorldInterface;
 import net.sf.odinms.net.mina.MapleCodecFactory;
 import net.sf.odinms.net.world.MapleParty;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.net.world.guild.MapleGuild;
 import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 import net.sf.odinms.net.world.guild.MapleGuildSummary;
@@ -105,14 +106,14 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                     MapleDataProviderFactory.getDataProvider(
                         new File(
                         System.getProperty(
-                                "net.sf.odinms.wzpath"
+                            WorldServer.WZPATH
                             ) +
                                 "/Map.wz"
                         )
                     ), MapleDataProviderFactory.getDataProvider(
                         new File(
                             System.getProperty(
-                                "net.sf.odinms.wzpath"
+                                WorldServer.WZPATH
                             ) +
                                 "/String.wz"
                         )

@@ -1,5 +1,6 @@
 package net.sf.odinms.server;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -17,7 +18,7 @@ public final class CashItemFactory {
     private static final Map<Integer, CashItemInfo> itemStats = new LinkedHashMap<>();
     private static final MapleDataProvider data =
         MapleDataProviderFactory.getDataProvider(
-            new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz")
+            new File(System.getProperty(WorldServer.WZPATH) + "/Etc.wz")
         );
     private static final MapleData commodities =
         data.getData(

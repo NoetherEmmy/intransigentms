@@ -9,6 +9,7 @@ import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.channel.PartyQuest;
 import net.sf.odinms.net.channel.handler.ChangeChannelHandler;
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.net.world.remote.CheaterData;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.net.world.remote.WorldLocation;
@@ -1553,7 +1554,7 @@ public class GM implements Command {
                     final MapleData data;
                     final MapleDataProvider dataProvider =
                         MapleDataProviderFactory.getDataProvider(
-                            new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz")
+                            new File(System.getProperty(WorldServer.WZPATH) + "/" + "String.wz")
                         );
                     mc.dropMessage("<< Type: " + type + " | Search: " + (search != null ? search : pattern) + " >>");
                     final List<String> retNpcs = new ArrayList<>();

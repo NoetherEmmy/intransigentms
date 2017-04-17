@@ -1,5 +1,6 @@
 package net.sf.odinms.server.life;
 
+import net.sf.odinms.net.world.WorldServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
@@ -18,11 +19,11 @@ public final class MapleLifeFactory {
     private static final Logger log = LoggerFactory.getLogger(MapleMapFactory.class);
     private static final MapleDataProvider data =
         MapleDataProviderFactory.getDataProvider(
-            new File(System.getProperty("net.sf.odinms.wzpath") + "/Mob.wz")
+            new File(System.getProperty(WorldServer.WZPATH) + "/Mob.wz")
         );
     private static final MapleDataProvider stringDataWZ =
         MapleDataProviderFactory.getDataProvider(
-            new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")
+            new File(System.getProperty(WorldServer.WZPATH) + "/String.wz")
         );
     private static final MapleData mobStringData = stringDataWZ.getData("Mob.img");
     private static final MapleData npcStringData = stringDataWZ.getData("Npc.img");
