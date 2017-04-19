@@ -3,10 +3,11 @@ package net.sf.odinms.client;
 import net.sf.odinms.server.MapleItemInformationProvider;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MapleInventory implements Iterable<IItem>, InventoryContainer {
     private final Map<Byte, IItem> inventory;
-    private byte slotLimit;
+    private final byte slotLimit;
     private final MapleInventoryType type;
 
     /** Creates a new instance of MapleInventory */
@@ -18,25 +19,32 @@ public class MapleInventory implements Iterable<IItem>, InventoryContainer {
 
     /** Returns the item with its slot ID if it exists within the inventory, otherwise {@code null} is returned. */
     public IItem findById(final int itemId) {
-        for (final IItem item : inventory.values()) {
-            if (item.getItemId() == itemId) return item;
-        }
-        return null;
+        return
+            inventory
+                .values()
+                .stream()
+                .filter(item -> item.getItemId() == itemId)
+                .findFirst()
+                .orElse(null);
     }
 
     public int countById(final int itemId) {
-        int possesed = 0;
-        for (final IItem item : inventory.values()) {
-            if (item.getItemId() == itemId) possesed += item.getQuantity();
-        }
-        return possesed;
+        return
+            inventory
+                .values()
+                .stream()
+                .filter(item -> item.getItemId() == itemId)
+                .mapToInt(IItem::getQuantity)
+                .sum();
     }
 
     public List<IItem> listById(final int itemId) {
-        final List<IItem> ret = new ArrayList<>();
-        for (final IItem item : inventory.values()) {
-            if (item.getItemId() == itemId) ret.add(item);
-        }
+        final List<IItem> ret =
+            inventory
+                .values()
+                .stream()
+                .filter(item -> item.getItemId() == itemId)
+                .collect(Collectors.toCollection(ArrayList::new));
         if (ret.size() > 1) Collections.sort(ret);
         return ret;
     }

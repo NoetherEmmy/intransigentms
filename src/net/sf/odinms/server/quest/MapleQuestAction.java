@@ -5,6 +5,7 @@ import net.sf.odinms.client.messages.ServernoticeMapleClientMessageCallback;
 import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataTool;
+import net.sf.odinms.scripting.AbstractPlayerInteraction;
 import net.sf.odinms.server.MapleInventoryManipulator;
 import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.MaplePacketCreator;
@@ -94,6 +95,7 @@ public class MapleQuestAction {
                     final Random r = new Random();
                     selection = props.get(r.nextInt(props.size()));
                 }
+                final AbstractPlayerInteraction api = new AbstractPlayerInteraction(c.getClient());
                 for (final MapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, c)) continue;
                     if (iEntry.getChildByPath("prop") != null) {
@@ -125,8 +127,13 @@ public class MapleQuestAction {
                     } else { // Add items
                         final int itemId = MapleDataTool.getInt(iEntry.getChildByPath("id"));
                         final short quantity = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"));
-                        MapleInventoryManipulator.addById(c.getClient(), itemId, quantity, null, -1);
-                        c.getClient().getSession().write(MaplePacketCreator.getShowItemGain(itemId, quantity, true));
+                        if (!api.gainItem(itemId, quantity, false, true)) {
+                            c.dropMessage(
+                                6,
+                                "Your inventory is full. Please make sure you have room in your inventory, " +
+                                    "and then type @mapleadmin into chat to claim the item."
+                            );
+                        }
                     }
                 }
                 break;

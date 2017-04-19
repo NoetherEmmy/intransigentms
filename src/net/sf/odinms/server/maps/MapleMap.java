@@ -650,26 +650,27 @@ public class MapleMap {
         }
     }
 
-    public void startPeriodicMonsterDrop(final MapleMonster monster, final long period, final long duration) {
+    public Pair<PeriodicMonsterDrop, ScheduledFuture<?>> startPeriodicMonsterDrop(final MapleMonster monster, final long period, final long duration) {
         if (playerCount() > 0) {
-            startPeriodicMonsterDrop((MapleCharacter) getAllPlayers().get(0), monster, period, duration);
-        } else {
-            startPeriodicMonsterDrop(null, monster, period, duration);
+            return startPeriodicMonsterDrop((MapleCharacter) getAllPlayers().get(0), monster, period, duration);
         }
+        return startPeriodicMonsterDrop(null, monster, period, duration);
     }
 
-    public void startPeriodicMonsterDrop(final MapleCharacter chr, final MapleMonster monster, final long period, final long duration) {
+    public Pair<PeriodicMonsterDrop, ScheduledFuture<?>> startPeriodicMonsterDrop(final MapleCharacter chr, final MapleMonster monster, final long period, final long duration) {
         final TimerManager timerManager = TimerManager.getInstance();
         final PeriodicMonsterDrop pmd = new PeriodicMonsterDrop(chr, monster);
         final ScheduledFuture<?> dropTask = timerManager.register(pmd, period, period);
         pmd.setTask(dropTask);
         final Runnable cancelTask = () -> dropTask.cancel(false);
         final ScheduledFuture<?> schedule = timerManager.schedule(cancelTask, duration);
-        addPeriodicMonsterDrop(pmd, schedule);
+        return addPeriodicMonsterDrop(pmd, schedule);
     }
 
-    private void addPeriodicMonsterDrop(final PeriodicMonsterDrop pmd, final ScheduledFuture<?> cancelTask) {
-        periodicMonsterDrops.add(new Pair<>(pmd, cancelTask));
+    private Pair<PeriodicMonsterDrop, ScheduledFuture<?>> addPeriodicMonsterDrop(final PeriodicMonsterDrop pmd, final ScheduledFuture<?> cancelTask) {
+        final Pair<PeriodicMonsterDrop, ScheduledFuture<?>> newPmd = new Pair<>(pmd, cancelTask);
+        periodicMonsterDrops.add(newPmd);
+        return newPmd;
     }
 
     public DynamicSpawnWorker registerDynamicSpawnWorker(final int monsterId, final Point spawnPoint, final int period) {
@@ -901,7 +902,7 @@ public class MapleMap {
             }
             dropFromMonster(dropOwner, monster);
         }
-        if (hasPeriodicMonsterDrop(monster.getObjectId())) {
+        if (!periodicMonsterDrops.isEmpty()) {
             cancelPeriodicMonsterDrops(monster.getObjectId());
         }
     }
@@ -1428,51 +1429,45 @@ public class MapleMap {
         activateItemReactors(drop);
     }
 
-    public boolean hasPeriodicMonsterDrop(final int monsterOid) {
-        return periodicMonsterDrops.stream().anyMatch(pmd -> pmd.getLeft().getMonsterOid() == monsterOid);
-    }
-
-    private void cancelCancelPeriodicMonsterDrop(final int monsterOid) {
-        synchronized (periodicMonsterDrops) {
-            periodicMonsterDrops.forEach(pmdh -> {
-                if (pmdh.getLeft().getMonsterOid() == monsterOid) {
-                    pmdh.getRight().cancel(false);
-                }
-            });
-        }
-    }
-
     public void cancelPeriodicMonsterDrops(final int monsterOid) {
         synchronized (periodicMonsterDrops) {
-            for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
-                if (periodicMonsterDrops.get(i).getLeft().getMonsterOid() == monsterOid) {
-                    periodicMonsterDrops.get(i--).getLeft().selfCancel();
-                }
-            }
+            periodicMonsterDrops
+                .stream()
+                .filter(pmd -> pmd.getLeft().getMonsterOid() == monsterOid)
+                .forEach(pmd -> {
+                    pmd.getRight().cancel(false);
+                    pmd.getLeft().cancel();
+                });
         }
+        cleanCancelledPeriodicMonsterDrops();
     }
 
     public void cancelAllPeriodicMonsterDrops() {
         synchronized (periodicMonsterDrops) {
-            for (int i = 0; i < periodicMonsterDrops.size() && i >= 0; ++i) {
-                periodicMonsterDrops.get(i--).getLeft().selfCancel();
-            }
+            periodicMonsterDrops.forEach(pmd -> {
+                pmd.getRight().cancel(false);
+                pmd.getLeft().cancel();
+            });
             periodicMonsterDrops.clear();
         }
     }
 
     private void cancelPeriodicMonsterDrop(final PeriodicMonsterDrop pmd) {
         synchronized (periodicMonsterDrops) {
-            final Pair<PeriodicMonsterDrop, ScheduledFuture<?>> pmdh =
-                periodicMonsterDrops
-                    .stream()
-                    .filter(_pmdh -> _pmdh.getLeft().equals(pmd))
-                    .findFirst()
-                    .orElse(null);
-            if (pmdh != null) {
-                pmdh.getRight().cancel(false);
-            }
-            periodicMonsterDrops.remove(pmdh);
+            periodicMonsterDrops
+                .stream()
+                .filter(_pmdh -> _pmdh.getLeft().equals(pmd))
+                .findFirst()
+                .ifPresent(pmdh -> {
+                    pmdh.getRight().cancel(false);
+                    periodicMonsterDrops.remove(pmdh);
+                });
+        }
+    }
+
+    private void cleanCancelledPeriodicMonsterDrops() {
+        synchronized (periodicMonsterDrops) {
+            periodicMonsterDrops.removeIf(pmd -> pmd.getLeft().isCancelled());
         }
     }
 
@@ -2468,9 +2463,10 @@ public class MapleMap {
     }
 
     private class PeriodicMonsterDrop implements Runnable {
-        private final MapleCharacter chr;
-        private final MapleMonster monster;
+        private MapleCharacter chr;
+        private MapleMonster monster;
         private ScheduledFuture<?> task;
+        private boolean cancelled = false;
 
         public PeriodicMonsterDrop(final MapleCharacter chr, final MapleMonster monster) {
             this.chr = chr;
@@ -2479,13 +2475,16 @@ public class MapleMap {
 
         @Override
         public void run() {
-            if (chr != null && monster != null) {
+            if (monster != null && chr != null) {
                 if (monster.isAlive()) {
                     if (monster.getMap().playerCount() > 0) {
                         monster.getMap().dropFromMonster(chr, monster);
                     }
                 } else {
-                    selfCancel();
+                    monster = null;
+                    chr = null;
+                    cancel();
+                    task = null;
                 }
             }
         }
@@ -2498,9 +2497,13 @@ public class MapleMap {
             return monster.getObjectId();
         }
 
-        public void selfCancel() {
+        public boolean isCancelled() {
+            return cancelled;
+        }
+
+        public void cancel() {
             if (task != null) {
-                MapleMap.this.cancelPeriodicMonsterDrop(this);
+                cancelled = true;
                 task.cancel(false);
             }
         }
@@ -2514,6 +2517,7 @@ public class MapleMap {
         private int monsterDropPeriod;
         private final MapleMonsterStats overrideStats;
         private ScheduledFuture<?> spawnTask, cancelTask;
+        private final List<Pair<PeriodicMonsterDrop, ScheduledFuture<?>>> pmds = new LinkedList<>();
 
         public DynamicSpawnWorker(final int monsterId, final Point spawnPoint, final int period) {
             this(monsterId, spawnPoint, period, 0, false, 0);
@@ -2584,7 +2588,7 @@ public class MapleMap {
                             MapleMap.this.spawnMonster(toSpawn);
 
                             if (putPeriodicMonsterDrops) {
-                                MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
+                                pmds.add(MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 2000000));
                             }
                             break;
                         } catch (final Exception ignored) {
@@ -2609,7 +2613,7 @@ public class MapleMap {
                     MapleMap.this.spawnMonster(toSpawn);
 
                     if (putPeriodicMonsterDrops) {
-                        MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 3000000);
+                        pmds.add(MapleMap.this.startPeriodicMonsterDrop(toSpawn, monsterDropPeriod, 2000000));
                     }
                 }, period);
             }
@@ -2641,6 +2645,11 @@ public class MapleMap {
             return overrideStats;
         }
 
+        private void cancelPmds() {
+            pmds.forEach(pmd -> MapleMap.this.cancelPeriodicMonsterDrop(pmd.getLeft()));
+            pmds.clear();
+        }
+
         public void turnOffPeriodicMonsterDrops() {
             setPeriodicMonsterDrops(false, 0);
         }
@@ -2659,6 +2668,7 @@ public class MapleMap {
             if (cancelTask != null) cancelTask.cancel(false);
             cancelTask = null;
             spawnTask = null;
+            cancelPmds();
         }
     }
 

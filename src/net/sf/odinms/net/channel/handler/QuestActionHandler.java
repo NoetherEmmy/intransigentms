@@ -53,7 +53,7 @@ public class QuestActionHandler extends AbstractMaplePacketHandler {
             // 7 = unknown error
             // 8 = equip is full
             // 9 = not enough mesos
-            // 11 = due to the equipment currently being worn wtf o.o
+            // 11 = due to the equipment currently being worn
             // 12 = you may not posess more than one of this item
         } else if (action == 3) { // Forfeit quest
             q.forfeit(player);

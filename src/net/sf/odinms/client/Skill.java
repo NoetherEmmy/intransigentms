@@ -5,17 +5,25 @@ import net.sf.odinms.provider.MapleDataTool;
 import net.sf.odinms.server.MapleStatEffect;
 import net.sf.odinms.server.life.Element;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Skill implements ISkill {
+    private static final int[] VSKILL_CLASSES = {230, 232, 300, 310, 311, 312, 511};
+    private static final int[][] VSKILL_IDS = {
+        {1200001},
+        {1221002},
+        {4001334},
+        {1300000, 1301004, 1311003, 420000, 4201002},
+        {1310000, 4001003, 4220002},
+        {1311001, 4211002, 4220005},
+        {4111006}
+    };
     private final int id;
     private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
     private int animationTime;
     private final Map<Integer, Integer> requirements = new LinkedHashMap<>(3);
+    private final Set<Integer> vskillJobs = new HashSet<>(2);
 
     private Skill(final int id) {
         super();
@@ -204,18 +212,14 @@ public class Skill implements ISkill {
             ret.effects.add(statEffect);
         }
 
-        try {
-            final MapleData reqData = data.getChildByPath("req");
-            if (reqData != null) {
-                for (final MapleData req : reqData) {
-                    ret.requirements.put(
-                        Integer.parseInt(req.getName()),
-                        MapleDataTool.getInt(req.getName(), reqData, 0)
-                    );
-                }
+        final MapleData reqData = data.getChildByPath("req");
+        if (reqData != null) {
+            for (final MapleData req : reqData) {
+                ret.requirements.put(
+                    Integer.parseInt(req.getName()),
+                    MapleDataTool.getInt(req.getName(), reqData, 0)
+                );
             }
-        } catch (final Exception e) {
-            e.printStackTrace();
         }
 
         ret.animationTime = 0;
@@ -224,6 +228,15 @@ public class Skill implements ISkill {
                 ret.animationTime += MapleDataTool.getIntConvert("delay", effectEntry, 0);
             }
         }
+
+        for (int i = 0, len = VSKILL_IDS.length; i < len; ++i) {
+            for (final int vskillId : VSKILL_IDS[i]) {
+                if (id != vskillId) continue;
+                ret.vskillJobs.add(VSKILL_CLASSES[i]);
+                break;
+            }
+        }
+
         return ret;
     }
 
@@ -241,13 +254,10 @@ public class Skill implements ISkill {
     public boolean canBeLearnedBy(final MapleJob job) {
         final int jid = job.getId();
         final int skillForJob = id / 10000;
-        if (jid / 100 != skillForJob / 100 && skillForJob / 100 != 0) {
-            return false;
-        }
-        if ((skillForJob / 10) % 10 > (jid / 10) % 10) {
-            return false;
-        }
-        return skillForJob % 10 <= jid % 10;
+        return
+            !(jid / 100 != skillForJob / 100 && skillForJob / 100 != 0) &&
+            (skillForJob / 10) % 10 <= (jid / 10) % 10 &&
+            skillForJob % 10 <= jid % 10;
     }
 
     @Override
@@ -267,12 +277,8 @@ public class Skill implements ISkill {
 
     @Override
     public boolean isBeginnerSkill() {
-        final boolean output = false;
         final String idString = String.valueOf(id);
-        if (idString.length() == 4 || idString.length() == 1) {
-            return true;
-        }
-        return output;
+        return idString.length() == 4 || idString.length() == 1;
     }
 
     @Override
@@ -283,5 +289,15 @@ public class Skill implements ISkill {
     @Override
     public Map<Integer, Integer> getRequirements() {
         return requirements;
+    }
+
+    @Override
+    public Set<Integer> getVskillJobs() {
+        return vskillJobs;
+    }
+
+    @Override
+    public boolean isVskill() {
+        return !vskillJobs.isEmpty();
     }
 }

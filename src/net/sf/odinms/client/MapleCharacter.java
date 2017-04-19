@@ -2007,6 +2007,35 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         if (questEffectiveLevel <= 0 || questEffectiveLevel >= level) {
             return true;
         }
+
+        final ISkill theSkill = SkillFactory.getSkill(skillId);
+        if (theSkill.isVskill()) {
+            final int actualJobId =
+                theSkill
+                    .getVskillJobs()
+                    .stream()
+                    .mapToInt(Integer::intValue)
+                    .filter(vjobid -> job.isA(MapleJob.getById(vjobid)))
+                    .findAny()
+                    .orElse(-1);
+            if (actualJobId >= 0) {
+                final MapleJob actualJob = MapleJob.getById(actualJobId);
+                assert actualJob != null;
+                switch (actualJob.getAdvancement()) {
+                    case 0:
+                        return true;
+                    case 1:
+                        return !((!job.isA(MapleJob.MAGICIAN) && questEffectiveLevel < 10) || questEffectiveLevel < 8);
+                    case 2:
+                        return questEffectiveLevel >= 30;
+                    case 3:
+                        return questEffectiveLevel >= 70;
+                    case 4:
+                        return questEffectiveLevel >= 120;
+                }
+            }
+        }
+
         if (skillId < 1000000) { // 0th job skill
             if (skillId == 1005 && questEffectiveLevel < 200) { // Echo of Hero
                 return false;
@@ -2179,11 +2208,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             date *= 1000;
             rs.close();
             ps.close();
-            final long timeleft = (24 * 60 * 60 * 1000) - (System.currentTimeMillis() - date);
+            final long timeleft = (24L * 60L * 60L * 1000L) - (System.currentTimeMillis() - date);
             if (timeleft < 1) {
                 dropMessage("You may vote right now! Remember to use @voteupdate if you want to spend your new vote point/NX without logging out!");
             } else {
-                final int hours = (int) ((timeleft - (timeleft % (1000 * 60 * 60))) / (1000 * 60 * 60));
+                final int hours = (int) ((timeleft - (timeleft % (1000L * 60L * 60L))) / (1000L * 60L * 60L));
                 int remainder = (int) (timeleft - (hours * (1000 * 60 * 60)));
                 final int minutes = (remainder - (remainder % (1000 * 60))) / (1000 * 60);
                 remainder -= minutes * (1000 * 60);

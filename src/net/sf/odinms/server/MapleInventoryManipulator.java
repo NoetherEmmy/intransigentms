@@ -245,7 +245,12 @@ public final class MapleInventoryManipulator {
         removeFromSlot(c, type, slot, quantity, fromDrop, false);
     }
 
-    public static void removeFromSlot(final MapleClient c, final MapleInventoryType type, final byte slot, final short quantity, final boolean fromDrop, final boolean consume) {
+    public static void removeFromSlot(final MapleClient c,
+                                      final MapleInventoryType type,
+                                      final byte slot,
+                                      final short quantity,
+                                      final boolean fromDrop,
+                                      final boolean consume) {
         final IItem item = c.getPlayer().getInventory(type).getItem(slot);
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         final boolean allowZero = consume && (ii.isThrowingStar(item.getItemId()) || ii.isBullet(item.getItemId()));

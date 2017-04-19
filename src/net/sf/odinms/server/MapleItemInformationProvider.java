@@ -908,16 +908,25 @@ public class MapleItemInformationProvider {
 
     public Map<String, Integer> getEquipStats(final int itemId) {
         if (equipStatsCache.containsKey(itemId)) return equipStatsCache.get(itemId);
-        final Map<String, Integer> ret = new LinkedHashMap<>();
+        final Map<String, Integer> ret;
         final MapleData item = getItemData(itemId);
         if (item == null) return null;
         final MapleData info = item.getChildByPath("info");
         if (info == null) return null;
-        for (final MapleData data : info.getChildren()) {
-            if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), MapleDataTool.getIntConvert(data));
-            }
-        }
+        ret =
+            info.getChildren()
+                .stream()
+                .filter(data -> data.getName().startsWith("inc"))
+                .collect(
+                    Collectors.toMap(
+                        data ->
+                            data.getName()
+                                .substring(3),
+                        MapleDataTool::getIntConvert,
+                        (a, b) -> b,
+                        LinkedHashMap::new
+                    )
+                );
         ret.put("tuc", MapleDataTool.getInt("tuc", info, 0));
         ret.put("reqLevel", MapleDataTool.getInt("reqLevel", info, 0));
         ret.put("cursed", MapleDataTool.getInt("cursed", info, 0));

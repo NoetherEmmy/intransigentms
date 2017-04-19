@@ -805,13 +805,6 @@ public class MapleStatEffect implements Serializable {
                 final MapleMap target;
                 if (moveTo == 999999999) {
                     target = applyTo.getMap().getReturnMap();
-                    if (target == null) {
-                        System.err.println(
-                            "No return map for map " +
-                                applyTo.getMap().getId() +
-                                ", MapleStatEffect#applyTo"
-                        );
-                    }
                 } else {
                     target =
                         ChannelServer
