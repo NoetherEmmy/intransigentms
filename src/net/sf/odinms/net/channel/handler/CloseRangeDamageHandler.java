@@ -33,6 +33,11 @@ public class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         final MapleCharacter player = c.getPlayer();
         player.resetAfkTime();
 
+        if (SkillFactory.getSkill(attack.skill) == null) {
+            System.err.println(player.getName() + " is using nonexistent skill: " + attack.skill);
+            return;
+        }
+
         final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(attack.skill);
         if (questEffectiveBlock || player.getMap().isDamageMuted()) {
             AbstractDealDamageHandler.cancelDamage(attack, c, questEffectiveBlock);

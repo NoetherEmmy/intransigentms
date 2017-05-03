@@ -3055,6 +3055,13 @@ public class GM implements Command {
                           .forEach(MapleCharacter::softReloadCQuests)
                     );
                 break;
+            case "!reloadallspawnworkers":
+                ChannelServer
+                    .getAllInstances()
+                    .forEach(cs ->
+                        cs.getMapFactory().viewLoadedMaps().forEach(MapleMap::restartRespawnWorker)
+                    );
+                break;
         }
     }
 
@@ -3225,7 +3232,8 @@ public class GM implements Command {
             new CommandDefinition("warpmy", 3),
             new CommandDefinition("hackcheck", 3),
             new CommandDefinition("clearquestcache", 3),
-            new CommandDefinition("reloadallquests", 3)
+            new CommandDefinition("reloadallquests", 3),
+            new CommandDefinition("reloadallspawnworkers", 3)
         };
     }
 

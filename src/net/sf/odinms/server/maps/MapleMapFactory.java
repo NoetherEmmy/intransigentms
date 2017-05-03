@@ -21,10 +21,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class MapleMapFactory {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
@@ -272,6 +270,10 @@ public class MapleMapFactory {
 
     public int getLoadedMaps() {
         return maps.size();
+    }
+
+    public Collection<MapleMap> viewLoadedMaps() {
+        return Collections.unmodifiableCollection(maps.values());
     }
 
     private AbstractLoadedMapleLife loadLife(final int id,

@@ -99,7 +99,7 @@ public class MapleMap {
             if (hasElevatedSpawn(mapid)) {
                 this.monsterRate /= 8.0f;
             }
-            respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5000L);
+            respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5L * 1000L);
         }
     }
 
@@ -226,7 +226,7 @@ public class MapleMap {
 
     public void restartRespawnWorker() {
         if (respawnWorker != null) respawnWorker.cancel(false);
-        respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5000);
+        respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5L * 1000L);
     }
 
     public void toggleDrops() {
@@ -1454,14 +1454,14 @@ public class MapleMap {
 
     private void cancelPeriodicMonsterDrop(final PeriodicMonsterDrop pmd) {
         synchronized (periodicMonsterDrops) {
-            periodicMonsterDrops
-                .stream()
-                .filter(_pmdh -> _pmdh.getLeft().equals(pmd))
-                .findFirst()
-                .ifPresent(pmdh -> {
-                    pmdh.getRight().cancel(false);
-                    periodicMonsterDrops.remove(pmdh);
-                });
+            Pair<PeriodicMonsterDrop, ScheduledFuture<?>> pmdh_ = null;
+            for (final Pair<PeriodicMonsterDrop, ScheduledFuture<?>> pmdh : periodicMonsterDrops) {
+                if (!pmdh.getLeft().equals(pmd)) continue;
+                pmdh.getRight().cancel(false);
+                pmdh_ = pmdh;
+                break;
+            }
+            periodicMonsterDrops.remove(pmdh_);
         }
     }
 

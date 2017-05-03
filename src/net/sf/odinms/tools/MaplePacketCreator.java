@@ -5167,9 +5167,6 @@ public final class MaplePacketCreator {
             mplew.write(0);
             mplew.write(hunger ? 1 : 0);
         } else {
-            if (pet.getPos() == null) {
-                System.err.println("pet.getPos() == null in MaplePacketCreator#showPet");
-            }
             mplew.write(1);
             mplew.write(0);
             mplew.writeInt(pet.getItemId());

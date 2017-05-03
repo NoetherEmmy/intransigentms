@@ -22,6 +22,11 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         final AttackInfo attack = parseDamage(slea, false);
         final MapleCharacter player = c.getPlayer();
 
+        if (SkillFactory.getSkill(attack.skill) == null) {
+            System.err.println(player.getName() + " is using nonexistent skill: " + attack.skill);
+            return;
+        }
+
         final boolean questEffectiveBlock = !player.canQuestEffectivelyUseSkill(attack.skill);
         if (questEffectiveBlock || player.getMap().isDamageMuted()) {
             AbstractDealDamageHandler.cancelDamage(attack, c, questEffectiveBlock);
@@ -50,10 +55,8 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 eleAmpMulti = 1.0d;
             }
 
-            final int baseMin;
-            final int baseMax;
-            final int min;
-            final int max;
+            final int baseMin, baseMax,
+                      min,     max;
             final double baseRange;
             if (isHeal) {
                 baseMin = (int) (((double) player.getTotalInt() * 0.3d + (double) player.getTotalLuk()) * 1999.0d / 1000.0d * (1.5d + 5.0d / (double) (attack.allDamage.size() + 1)));
