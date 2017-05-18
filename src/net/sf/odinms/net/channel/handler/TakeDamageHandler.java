@@ -40,7 +40,7 @@ public class TakeDamageHandler extends AbstractMaplePacketHandler {
         MapleMonster attacker = null;
         int removedDamage = 0;
         final boolean belowLevelLimit = player.getMap().getPartyQuestInstance() != null &&
-                                  player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
+                                        player.getMap().getPartyQuestInstance().getLevelLimit() > player.getLevel();
         boolean dodge = false, advaita = false;
 
         if (player.getMap().isDamageMuted()) return;

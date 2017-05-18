@@ -869,17 +869,21 @@ public class MapleStatEffect implements Serializable {
             //applyTo.cancelMagicDoor();
             final Point doorPosition = new Point(applyTo.getPosition());
             //doorPosition.y -= 280;
-            MapleDoor door = new MapleDoor(applyTo, doorPosition);
-            applyTo.getMap().spawnDoor(door);
-            applyTo.addDoor(door);
-            door = new MapleDoor(door);
-            applyTo.addDoor(door);
-            door.getTown().spawnDoor(door);
-            if (applyTo.getParty() != null) {
-                // Update town doors
-                applyTo.silentPartyUpdate();
+            if (applyTo.getMap().getReturnMap() == null) {
+                applyTo.dropMessage(1, "You can't put a door here!");
+            } else {
+                MapleDoor door = new MapleDoor(applyTo, doorPosition);
+                applyTo.getMap().spawnDoor(door);
+                applyTo.addDoor(door);
+                door = new MapleDoor(door);
+                applyTo.addDoor(door);
+                door.getTown().spawnDoor(door);
+                if (applyTo.getParty() != null) {
+                    // Update town doors
+                    applyTo.silentPartyUpdate();
+                }
+                applyTo.disableDoor();
             }
-            applyTo.disableDoor();
         } else if (isMist()) {
             final Rectangle bounds = calculateBoundingBox(applyFrom.getPosition(), applyFrom.isFacingLeft());
             final MapleMist mist = new MapleMist(bounds, applyFrom, this);

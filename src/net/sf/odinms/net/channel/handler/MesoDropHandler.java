@@ -6,13 +6,16 @@ import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class MesoDropHandler extends AbstractMaplePacketHandler {
-    public MesoDropHandler() {
-    }
-
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();
         slea.readInt();
-        final int meso = slea.readInt();
+        final int meso;
+        try {
+            meso = slea.readInt();
+        } catch (IndexOutOfBoundsException ioobe) {
+            c.getSession().write(MaplePacketCreator.enableActions());
+            return;
+        }
         if (!c.getPlayer().isAlive() || c.getPlayer().getCheatTracker().Spam(500, 2) || meso > 50000) {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
