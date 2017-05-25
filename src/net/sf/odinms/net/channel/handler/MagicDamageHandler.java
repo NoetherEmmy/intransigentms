@@ -22,7 +22,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         final AttackInfo attack = parseDamage(slea, false);
         final MapleCharacter player = c.getPlayer();
 
-        if (SkillFactory.getSkill(attack.skill) == null) {
+        if (attack.skill > 0 && SkillFactory.getSkill(attack.skill) == null) {
             System.err.println(player.getName() + " is using nonexistent skill: " + attack.skill);
             return;
         }
