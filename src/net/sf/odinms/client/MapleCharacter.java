@@ -2004,7 +2004,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     }
 
     public boolean canQuestEffectivelyUseSkill(final int skillId) {
-        if (questEffectiveLevel <= 0 || questEffectiveLevel >= level) {
+        if (questEffectiveLevel <= 0 || questEffectiveLevel >= level || skillId < 1) {
             return true;
         }
 
