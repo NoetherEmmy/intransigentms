@@ -950,9 +950,7 @@ public class MapleItemInformationProvider {
 
     public void cacheCashEquips() {
         if (!cashEquipsCached) {
-            final Set<String> excludes = new HashSet<String>() {{
-                add("Afterimage"); add("TamingMob"); add("Face"); add("Hair");
-            }};
+            final Set<String> excludes = Set.of("Afterimage", "TamingMob", "Face", "Hair");
             final MapleDataDirectoryEntry root = equipData.getRoot();
             root.getSubdirectories().forEach(topDir -> {
                 if (!excludes.contains(topDir.getName())) {

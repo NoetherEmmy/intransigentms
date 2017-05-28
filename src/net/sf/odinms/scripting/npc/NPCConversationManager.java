@@ -1491,12 +1491,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 .boxed()
                 .collect(Collectors.toCollection(HashSet::new));
         final List<IItem> cleared = new LinkedList<>(); // Linked list for a damn reason
-        final Set<Integer> keep = new HashSet<Integer>() {{
-            add(1002419); /* Mark of the Beta */ add(1002475); /* Mark of the Gamma */
-        }};
-        final Set<Integer> cashRemove = new HashSet<Integer>() {{
-            add(1112500); /* Ring of Transcendence */ add(1112501); /* Ring of David */
-        }};
+        final Set<Integer> keep = Set.of(1002419 /* Mark of the Beta */, 1002475 /* Mark of the Gamma */);
+        final Set<Integer> cashRemove = Set.of(1112500 /* Ring of Transcendence */, 1112501 /* Ring of David */);
 
         int i = 0;
         final byte[] equipSlots = new byte[equip.list().size()];
