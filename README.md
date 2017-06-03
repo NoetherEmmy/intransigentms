@@ -5,7 +5,7 @@ Repository for the IntransigentMS Maplestory private server:
 
 - Maplestory base version: **GMS v62**
 - Source used: **XiuzSource**
-- Java version: **openJDK 1.8.0u121**
+- Java version: **openJDK 1.9.0 [internal]**
 
 ---
 
@@ -15,7 +15,7 @@ IntransigentMS is also highly customized, including features such as:
 - Permadeath (duh)
 - Custom EXP scaling/bonuses/penalties
 - Heavily rebalanced classes and skills to create distinct classes and suit permadeath
-- Fully custom quest system
+- Fully custom quest system and 70+ custom quests
 - Custom classes (3 so far)
 - Custom party quest and fully custom PQ system from scratch
 - Heavily modified items, including modified equipment, scrolls, custom equipment, etc.
