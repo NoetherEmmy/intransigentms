@@ -11,6 +11,7 @@ import net.sf.odinms.server.maps.MapleMap;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PartyQuest {
@@ -88,7 +89,10 @@ public class PartyQuest {
     public void registerMap(final MapleMap newMap) {
         if (newMap.getPartyQuestInstance() != null) {
             //throw new IllegalStateException("Attempting to register map that is currently in use.");
-            System.err.println("Attempting to register map that is currently in use.");
+            System.err.println(
+                "Attempting to register map that is currently in use: " +
+                    newMap.getId()
+            );
         }
         newMap.resetReactors();
         final PartyQuestMapInstance newInstance = new PartyQuestMapInstance(this, newMap);
@@ -109,7 +113,10 @@ public class PartyQuest {
         if (oldMap.getPartyQuestInstance() != null) {
             if (!mapInstances.contains(oldMap.getPartyQuestInstance())) {
                 //throw new IllegalStateException("Attempting to deregister map that is not owned by the PartyQuest.");
-                System.err.println("Attempting to deregister map that is not owned by the PartyQuest.");
+                System.err.println(
+                    "Attempting to deregister map that is not owned by the PartyQuest: " +
+                        oldMap.getId()
+                );
             }
             oldMap.getPartyQuestInstance().dispose();
         }
@@ -338,10 +345,10 @@ public class PartyQuest {
     }
 
     public Map<PartyQuestMapInstance, Object> invokeInAllInstances(final String functionName) {
-        return mapInstances.stream().collect(Collectors.toMap(mi -> mi, mi -> mi.invokeMethod(functionName)));
+        return mapInstances.stream().collect(Collectors.toMap(Function.identity(), mi -> mi.invokeMethod(functionName)));
     }
 
     public Map<PartyQuestMapInstance, Object> invokeInAllInstances(final String functionName, final Object... args) {
-        return mapInstances.stream().collect(Collectors.toMap(mi -> mi, mi -> mi.invokeMethod(functionName, args)));
+        return mapInstances.stream().collect(Collectors.toMap(Function.identity(), mi -> mi.invokeMethod(functionName, args)));
     }
 }

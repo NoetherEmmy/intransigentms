@@ -267,7 +267,7 @@ public class LoginServer implements Runnable, LoginServerMBean {
         return wli;
     }
 
-    public static void main(final String[] args) {
+    public static void main(final String... args) {
         try {
             LoginServer.getInstance().run();
         } catch (final Exception ex) {

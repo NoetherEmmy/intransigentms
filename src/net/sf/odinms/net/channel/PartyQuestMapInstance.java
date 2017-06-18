@@ -94,12 +94,10 @@ public class PartyQuestMapInstance {
     public Object invokeMethod(final String name) {
         try {
             return invocable.invokeFunction(name);
-        } catch (final ScriptException se) {
-            System.err.println("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
-            se.printStackTrace();
         } catch (final NoSuchMethodException ignored) {
         } catch (final Exception e) {
-            throw new RuntimeException("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
+            System.err.println("Error invoking " + name + "() in PartyQuestMapInstance at path " + path);
+            e.printStackTrace();
         }
         return null;
     }
