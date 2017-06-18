@@ -26,7 +26,7 @@ public class EventScriptManager extends AbstractScriptManager {
 
     private final Map<String, EventEntry> events = new LinkedHashMap<>();
 
-    public EventScriptManager(final ChannelServer cserv, final String[] scripts) {
+    public EventScriptManager(final ChannelServer cserv, final String... scripts) {
         super();
         for (final String script : scripts) {
             if (!script.equals("")) {
@@ -54,8 +54,6 @@ public class EventScriptManager extends AbstractScriptManager {
     }
 
     public void cancel() {
-        for (final EventEntry entry : events.values()) {
-            entry.em.cancel();
-        }
+        events.values().forEach(entry -> entry.em.cancel());
     }
 }

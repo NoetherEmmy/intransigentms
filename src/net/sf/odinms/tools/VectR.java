@@ -391,20 +391,22 @@ public class VectR implements IVect {
         return cross(v.cross(u));
     }
 
-    /** Returns the <b>unsigned magnitude</b> of the wedge product of this vector and the specified vector {@code v},
-     ** equal to:
-     ** <pre>
-     **     ||<code>this</code>|| ||<code>v</code>|| sin(&#952;)</pre>
-     ** Where &#952; is the shortest angle between <code>this</code> and <code>v</code>. Or, in code,
-     ** <pre>
-     **    {@code this.norm() * v.norm() * Math.sin(this.angle(v))}</pre>
-     ** Normally (mathematically), the wedge product returns a <i>bivector</i>, not a scalar. This returns
-     ** the magnitude of that bivector, as a generalization of the magnitude of the cross product to n-dimensional
-     ** space.
-     **
-     ** @throws IllegalArgumentException when {@code this.dim() != v.dim()}
-     **
-     ** @throws NullPointerException when {@code v == null} */
+    /**
+     * Returns the <b>unsigned magnitude</b> of the wedge product of this vector and the specified vector {@code v},
+     * equal to:
+     * <pre>
+     *     ||<code>this</code>|| ||<code>v</code>|| sin(&#952;)</pre>
+     * Where &#952; is the shortest angle between <code>this</code> and <code>v</code>. Or, in code,
+     * <pre>
+     *    {@code this.norm() * v.norm() * Math.sin(this.angle(v))}</pre>
+     * Normally (mathematically), the wedge product returns a <i>bivector</i>, not a scalar. This returns
+     * the magnitude of that bivector, as a generalization of the magnitude of the cross product to n-dimensional
+     * space.
+     *
+     * @throws IllegalArgumentException when {@code this.dim() != v.dim()}
+     *
+     * @throws NullPointerException when {@code v == null}
+     */
     @Override
     public double wedge(final IVect v) {
         if (dim() != v.dim()) {
@@ -413,12 +415,14 @@ public class VectR implements IVect {
         return norm() * v.norm() * Math.sin(angle(v));
     }
 
-    /** <p>Returns the shortest angle between this vector and the given vector {@code v}</p>
-     ** <p>Value is in the range from 0.0 through &#960; radians.</p>
-     **
-     ** @throws IllegalArgumentException when {@code this.dim() != v.dim()}
-     **
-     ** @throws NullPointerException when {@code v == null} */
+    /**
+     * <p>Returns the shortest angle between this vector and the given vector {@code v}</p>
+     * <p>Value is in the range from 0.0 through &#960; radians.</p>
+     *
+     * @throws IllegalArgumentException when {@code this.dim() != v.dim()}
+     *
+     * @throws NullPointerException when {@code v == null}
+     */
     @Override
     public double angle(final IVect v) {
         if (dim() != v.dim()) {
@@ -432,12 +436,14 @@ public class VectR implements IVect {
         return elems.stream().allMatch(e -> e.equals(0.0d));
     }
 
-    /** Performs the projection of this vector onto the specified vector {@code v},
-     ** and then returns the new resulting vector.
-     **
-     ** @throws IllegalArgumentException when {@code this.dim() != v.dim()}
-     **
-     ** @throws NullPointerException when {@code v == null} */
+    /**
+     * Performs the projection of this vector onto the specified vector {@code v},
+     * and then returns the new resulting vector.
+     *
+     * @throws IllegalArgumentException when {@code this.dim() != v.dim()}
+     *
+     * @throws NullPointerException when {@code v == null}
+     */
     @Override
     public VectR proj(final IVect v) {
         if (dim() != v.dim()) {
@@ -450,14 +456,16 @@ public class VectR implements IVect {
         return _v.scalarMult(dot(_v) / _v.dot(_v));
     }
 
-    /** Performs the <b>directional</b> projection of this vector onto the specified vector {@code v},
-     ** and then returns the new resulting vector. The directional projection acts like a normal
-     ** projection, except that it returns the zero-vector any time the projection is <i>anti</i> -parallel
-     ** to the vector being projected onto (in this case, <code>v</code>).
-     **
-     ** @throws IllegalArgumentException when {@code this.dim() != v.dim()}
-     **
-     ** @throws NullPointerException when {@code v == null} */
+    /**
+     * Performs the <b>directional</b> projection of this vector onto the specified vector {@code v},
+     * and then returns the new resulting vector. The directional projection acts like a normal
+     * projection, except that it returns the zero-vector any time the projection is <i>anti</i> -parallel
+     * to the vector being projected onto (in this case, <code>v</code>).
+     *
+     * @throws IllegalArgumentException when {@code this.dim() != v.dim()}
+     *
+     * @throws NullPointerException when {@code v == null}
+     */
     @Override
     public VectR directionalProj(final IVect v) {
         if (dim() != v.dim()) {
@@ -469,11 +477,13 @@ public class VectR implements IVect {
         return proj(v);
     }
 
-    /** <p>Determines whether or not two vectors are equal.</p>
-     ** <p>If the vectors being compared are dissimilar types ({@code Vect} and {@code VectR}),
-     ** then the <code>.doubleValue()</code>s of the {@code Vect}'s elements must
-     ** <code>.equals()</code> the values of the {@code VectR}'s elements for this to
-     ** return <code>true</code></p> */
+    /**
+     * <p>Determines whether or not two vectors are equal.</p>
+     * <p>If the vectors being compared are dissimilar types ({@code Vect} and {@code VectR}),
+     * then the <code>.doubleValue()</code>s of the {@code Vect}'s elements must
+     * <code>.equals()</code> the values of the {@code VectR}'s elements for this to
+     * return <code>true</code></p>
+     */
     @Override
     public boolean equals(final Object o) {
         if (o instanceof IVect) {
