@@ -261,7 +261,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
                     channel
                 );
             acceptor.bind(new InetSocketAddress(port), serverHandler, cfg);
-            System.out.println("Channel " + channel + ": Listening on port: " + port);
+            System.out.println("Channel " + channel + "; Listening on port: " + port);
             wci.serverReady();
             eventSM.init();
         } catch (final IOException e) {
@@ -318,9 +318,9 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
     }
 
     public static ChannelServer newInstance(final String key) throws InstanceAlreadyExistsException,
-                                                               MBeanRegistrationException,
-                                                               NotCompliantMBeanException,
-                                                               MalformedObjectNameException {
+                                                                     MBeanRegistrationException,
+                                                                     NotCompliantMBeanException,
+                                                                     MalformedObjectNameException {
         final ChannelServer instance = new ChannelServer(key);
         final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         mBeanServer.registerMBean(

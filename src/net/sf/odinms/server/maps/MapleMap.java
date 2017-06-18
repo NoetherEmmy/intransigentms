@@ -920,6 +920,7 @@ public class MapleMap {
             );
         for (final MapleMapObject monstermo : monsters) {
             final MapleMonster monster = (MapleMonster) monstermo;
+            cancelPeriodicMonsterDrops(monster.getObjectId());
             spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
             broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), true), monster.getPosition());
@@ -1520,8 +1521,8 @@ public class MapleMap {
                                    );
                             }
                         } catch (final Exception e) {
-                            final String errormsg = "There was a problem warping you. Please contact a GM.";
-                            chr.getClient().getSession().write(MaplePacketCreator.serverNotice(5, errormsg));
+                            final String errorMsg = "There was a problem warping you. Please contact a GM.";
+                            chr.getClient().getSession().write(MaplePacketCreator.serverNotice(5, errorMsg));
                         }
                     }
                 }

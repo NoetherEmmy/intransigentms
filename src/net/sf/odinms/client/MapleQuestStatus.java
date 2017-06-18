@@ -2,10 +2,7 @@ package net.sf.odinms.client;
 
 import net.sf.odinms.server.quest.MapleQuest;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MapleQuestStatus {
     public enum Status {
@@ -24,10 +21,7 @@ public class MapleQuestStatus {
         }
 
         public static Status getById(final int id) {
-            for (final Status l : Status.values()) {
-                if (l.getId() == id) return l;
-            }
-            return null;
+            return Arrays.stream(Status.values()).filter(l -> l.getId() == id).findFirst().orElse(null);
         }
     }
     private final MapleQuest quest;
