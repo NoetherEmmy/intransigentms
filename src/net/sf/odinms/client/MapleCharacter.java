@@ -2338,10 +2338,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
     /** Nullable */
     public Integer getBuffedValue(final MapleBuffStat effect) {
         final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return null;
-        }
-        return mbsvh.value;
+        return mbsvh == null ? null : mbsvh.value;
     }
 
     public boolean isBuffFrom(final MapleBuffStat stat, final ISkill skill) {
@@ -2351,10 +2348,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     public int getBuffSource(final MapleBuffStat stat) {
         final MapleBuffStatValueHolder mbsvh = effects.get(stat);
-        if (mbsvh == null) {
-            return -1;
-        }
-        return mbsvh.effect.getSourceId();
+        return mbsvh == null ? -1 : mbsvh.effect.getSourceId();
     }
 
     public int getItemQuantity(final int itemid, final boolean checkEquipped) {
@@ -2369,34 +2363,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
 
     private void setBuffedValue(final MapleBuffStat effect, final int value) {
         final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return;
+        if (mbsvh != null) {
+            mbsvh.value = value;
         }
-        mbsvh.value = value;
     }
 
     private Long getBuffedStartTime(final MapleBuffStat effect) {
         final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return null;
-        }
-        return mbsvh.startTime;
+        return mbsvh == null ? null : mbsvh.startTime;
     }
 
     public Long getBuffedRemainingTime(final MapleBuffStat effect) {
         final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return null;
-        }
-        return mbsvh.schedule.getDelay(TimeUnit.MILLISECONDS);
+        return mbsvh == null ? null : mbsvh.schedule.getDelay(TimeUnit.MILLISECONDS);
     }
 
     public MapleStatEffect getStatForBuff(final MapleBuffStat effect) {
         final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return null;
-        }
-        return mbsvh.effect;
+        return mbsvh == null ? null : mbsvh.effect;
     }
 
     private void prepareDragonBlood(final MapleStatEffect bloodEffect) {
@@ -2433,8 +2417,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
             case 2:
                 fullnessSchedule_2 = schedule;
                 break;
-            default:
-                break;
         }
     }
 
@@ -2442,11 +2424,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements In
         switch (petSlot) {
             case 0:
                 if (fullnessSchedule != null) fullnessSchedule.cancel(false);
+                break;
             case 1:
                 if (fullnessSchedule_1 != null) fullnessSchedule_1.cancel(false);
+                break;
             case 2:
                 if (fullnessSchedule_2 != null) fullnessSchedule_2.cancel(false);
-            default:
                 break;
         }
     }

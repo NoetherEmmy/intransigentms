@@ -9,6 +9,11 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public abstract class AbstractScriptManager {
     protected ScriptEngine engine;
@@ -18,6 +23,7 @@ public abstract class AbstractScriptManager {
         "ecma6-array-polyfill.min",
         "intransigentms-utils.min"
     };
+    public static final Map<String, String> libContents = new LinkedHashMap<>(3);
 
     protected AbstractScriptManager() {
         sem = new ScriptEngineManager();
@@ -37,8 +43,20 @@ public abstract class AbstractScriptManager {
                 engine = sem.getEngineByName("nashorn");
                 if (c != null) c.setScriptEngine(path, engine);
                 for (final String libName : libs) {
-                    final FileReader libReader = new FileReader("scripts/" + libName + ".js");
-                    engine.eval(libReader);
+                    if (libContents.containsKey(libName)) {
+                        engine.eval(libContents.get(libName));
+                    } else {
+                        final String fileContents =
+                            String.join(
+                                "\n",
+                                Files.readAllLines(
+                                    Paths.get("scripts/" + libName + ".js"),
+                                    StandardCharsets.UTF_8
+                                )
+                            );
+                        libContents.put(libName, fileContents);
+                        engine.eval(fileContents);
+                    }
                 }
                 final FileReader fr = new FileReader(scriptFile);
                 engine.eval(fr);
@@ -55,5 +73,9 @@ public abstract class AbstractScriptManager {
     protected void resetContext(String path, final MapleClient c) {
         path = "scripts/" + path;
         c.removeScriptEngine(path);
+    }
+
+    public static void clearLibCache() {
+        libContents.clear();
     }
 }

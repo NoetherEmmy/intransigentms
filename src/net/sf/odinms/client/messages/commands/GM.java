@@ -17,6 +17,7 @@ import net.sf.odinms.provider.MapleData;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.provider.MapleDataProviderFactory;
 import net.sf.odinms.provider.MapleDataTool;
+import net.sf.odinms.scripting.AbstractScriptManager;
 import net.sf.odinms.scripting.npc.NPCScriptManager;
 import net.sf.odinms.server.*;
 import net.sf.odinms.server.life.*;
@@ -3062,6 +3063,9 @@ public class GM implements Command {
                         cs.getMapFactory().viewLoadedMaps().forEach(MapleMap::restartRespawnWorker)
                     );
                 break;
+            case "!clearlibcache":
+                AbstractScriptManager.clearLibCache();
+                break;
         }
     }
 
@@ -3233,7 +3237,8 @@ public class GM implements Command {
             new CommandDefinition("hackcheck", 3),
             new CommandDefinition("clearquestcache", 3),
             new CommandDefinition("reloadallquests", 3),
-            new CommandDefinition("reloadallspawnworkers", 3)
+            new CommandDefinition("reloadallspawnworkers", 3),
+            new CommandDefinition("clearlibcache", 3)
         };
     }
 

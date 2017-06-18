@@ -10,6 +10,9 @@ import javax.script.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,8 +44,20 @@ public class PortalScriptManager {
         final ScriptEngine portal = sef.getScriptEngine();
         try {
             for (final String libName : AbstractScriptManager.libs) {
-                final FileReader libReader = new FileReader("scripts/" + libName + ".js");
-                portal.eval(libReader);
+                if (AbstractScriptManager.libContents.containsKey(libName)) {
+                    portal.eval(AbstractScriptManager.libContents.get(libName));
+                } else {
+                    final String fileContents =
+                        String.join(
+                            "\n",
+                            Files.readAllLines(
+                                Paths.get("scripts/" + libName + ".js"),
+                                StandardCharsets.UTF_8
+                            )
+                        );
+                    AbstractScriptManager.libContents.put(libName, fileContents);
+                    portal.eval(fileContents);
+                }
             }
             fr = new FileReader(scriptFile);
             final CompiledScript compiled = ((Compilable) portal).compile(fr);

@@ -17,6 +17,9 @@ import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,8 +46,20 @@ public class PartyQuestMapInstance {
         path = SCRIPT_PATH + this.map.getId() + ".js";
         try {
             for (final String libName : AbstractScriptManager.libs) {
-                final FileReader libReader = new FileReader("scripts/" + libName + ".js");
-                scriptEngine.eval(libReader);
+                if (AbstractScriptManager.libContents.containsKey(libName)) {
+                    scriptEngine.eval(AbstractScriptManager.libContents.get(libName));
+                } else {
+                    final String fileContents =
+                        String.join(
+                            "\n",
+                            Files.readAllLines(
+                                Paths.get("scripts/" + libName + ".js"),
+                                StandardCharsets.UTF_8
+                            )
+                        );
+                    AbstractScriptManager.libContents.put(libName, fileContents);
+                    scriptEngine.eval(fileContents);
+                }
             }
             final FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
@@ -401,8 +416,20 @@ public class PartyQuestMapInstance {
         final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
         try {
             for (final String libName : AbstractScriptManager.libs) {
-                final FileReader libReader = new FileReader("scripts/" + libName + ".js");
-                scriptEngine.eval(libReader);
+                if (AbstractScriptManager.libContents.containsKey(libName)) {
+                    scriptEngine.eval(AbstractScriptManager.libContents.get(libName));
+                } else {
+                    final String fileContents =
+                        String.join(
+                            "\n",
+                            Files.readAllLines(
+                                Paths.get("scripts/" + libName + ".js"),
+                                StandardCharsets.UTF_8
+                            )
+                        );
+                    AbstractScriptManager.libContents.put(libName, fileContents);
+                    scriptEngine.eval(fileContents);
+                }
             }
             final FileReader scriptFile = new FileReader(path);
             scriptEngine.eval(scriptFile);
