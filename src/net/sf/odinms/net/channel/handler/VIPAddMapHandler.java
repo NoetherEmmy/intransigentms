@@ -52,7 +52,7 @@ public class VIPAddMapHandler extends AbstractMaplePacketHandler {
                 }
                 break;
             default:
-                log.info(
+                System.err.println(
                     "Unhandled VIP Rock operation, operation = " +
                         operation +
                         ", remaining:\n" +

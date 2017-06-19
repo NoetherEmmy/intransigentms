@@ -35,7 +35,7 @@ public final class MapleLifeFactory {
         } else if (type.equalsIgnoreCase("m")) {
             return getMonster(id);
         } else {
-            log.warn("Unknown Life type: {}", type);
+            System.err.println("Unknown Life type: " + type);
             return null;
         }
     }
@@ -97,7 +97,7 @@ public final class MapleLifeFactory {
                     final MapleData hpTagColor = monsterInfoData.getChildByPath("hpTagColor");
                     final MapleData hpTagBgColor = monsterInfoData.getChildByPath("hpTagBgcolor");
                     if (hpTagBgColor == null || hpTagColor == null) {
-                        log.trace(
+                        System.err.println(
                             "Monster " +
                                 stats.getName() +
                                 " (" +

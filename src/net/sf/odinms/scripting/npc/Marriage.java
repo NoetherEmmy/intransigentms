@@ -22,7 +22,8 @@ public final class Marriage {
             ps.executeUpdate();
             ps.close();
         } catch (final SQLException sqle) {
-            log.warn("Problem marrying " + player.getName() + " and " + partner.getName(), sqle);
+            System.err.println("Problem marrying " + player.getName() + " and " + partner.getName());
+            sqle.printStackTrace();
             return false;
         }
         return true;
@@ -40,13 +41,13 @@ public final class Marriage {
             ps.executeUpdate();
             ps.close();
         } catch (final SQLException sqle) {
-            log.warn(
+            System.err.println(
                 "Problem announcing engagement with " +
                     player.getName() +
                     " and " +
-                    partner.getName(),
-                sqle
+                    partner.getName()
             );
+            sqle.printStackTrace();
             return false;
         }
         return true;

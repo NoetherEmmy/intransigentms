@@ -56,7 +56,7 @@ public class WZIMGFile {
                 entry.setName(name);
                 break;
             } default:
-                log.error("Unknown Image identifier: {} at offset {}", marker, (slea.getPosition() - file.getOffset()));
+                System.err.println("Unknown Image identifier: " + marker + " at offset " + (slea.getPosition() - file.getOffset()));
         }
         marker = slea.readByte();
         switch (marker) {
@@ -89,7 +89,7 @@ public class WZIMGFile {
                 } else if (iMarker == 1) {
                     entry.setData(WZTool.readDecodedStringAtOffsetAndReset(slea, slea.readInt() + file.getOffset()));
                 } else {
-                    log.error("Unknown String type {}", iMarker);
+                    System.err.println("Unknown String type " + iMarker);
                 }
                 break;
             case 9:
@@ -99,7 +99,7 @@ public class WZIMGFile {
                 parseExtended(entry, slea, endOfExtendedBlock);
                 break;
             default:
-                log.error("Unknown Image type {}", marker);
+                System.err.println("Unknown Image type " + marker);
         }
     }
 
@@ -157,7 +157,7 @@ public class WZIMGFile {
                         entry.addChild(child);
                     }
                 } else {
-                    log.warn("Canvas marker != 1 ({})", marker);
+                    System.err.println("Canvas marker != 1 (" + marker + ")");
                 }
                 final int width = WZTool.readValue(slea);
                 final int height = WZTool.readValue(slea);
@@ -214,7 +214,7 @@ public class WZIMGFile {
                         entry.setData(WZTool.readDecodedStringAtOffsetAndReset(slea, file.getOffset() + slea.readInt()));
                         break;
                     default:
-                        log.error("Unknown UOL marker: {} {}", uolmarker, entry.getName());
+                        System.err.println("Unknown UOL marker: " + uolmarker + " " + entry.getName());
                 }
                 break;
             default:

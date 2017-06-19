@@ -4360,7 +4360,7 @@ public final class MaplePacketCreator {
         final MapleGuild g = c.getClient().getChannelServer().getGuild(initiator);
         if (g == null) { // Failed to read from DB - don't show a guild
             mplew.write(0);
-            log.warn(MapleClient.getLogMessage(c, "Couldn't load a guild"));
+            System.err.println(MapleClient.getLogMessage(c, "Couldn't load a guild"));
             return mplew.getPacket();
         } else {
             // MapleGuild holds the absolute correct value of guild rank

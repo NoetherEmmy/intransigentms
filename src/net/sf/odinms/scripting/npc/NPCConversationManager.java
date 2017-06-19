@@ -1556,7 +1556,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             );
         }
 
-        //if (!DeathLogger.logItems(cleared, c)) {
+        if (!DeathLogger.logItems(cleared, c)) {
             System.err.println(
                 "There was an error logging " +
                     getPlayer().getName() +

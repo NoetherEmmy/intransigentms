@@ -71,8 +71,8 @@ public class ExternalCodeTableGetter {
             code.setValue(exc.getValue(code.name(), values, -2));
         }
         //final Logger log = LoggerFactory.getLogger(ExternalCodeTableGetter.class);
-        if (log.isTraceEnabled()) {
-            log.trace(getOpcodeTable(values));
-        }
+        //if (log.isTraceEnabled()) {
+            //log.trace(getOpcodeTable(values));
+        //}
     }
 }

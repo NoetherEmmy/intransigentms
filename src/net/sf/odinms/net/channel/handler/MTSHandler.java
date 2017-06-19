@@ -186,7 +186,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                         ps.close();
                         MapleInventoryManipulator.removeFromSlot(c, type, slot, quantity, false);
                     } catch (final SQLException e) {
-                        log.error("SQLErr4: " + e);
+                        e.printStackTrace();
                     }
 
                     c.getPlayer().gainMeso(-1337, false);
@@ -263,7 +263,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     ps.executeUpdate();
                     ps.close();
                 } catch (final SQLException e) {
-                    log.error("SQLErr4: " + e);
+                    e.printStackTrace();
                 }
                 c.getSession().write(MaplePacketCreator.enableMTS());
                 c.getSession().write(getMTS(c.getPlayer().getCurrentTab(), c.getPlayer().getCurrentType(), c.getPlayer().getCurrentPage()));
@@ -331,7 +331,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     rs.close();
                     ps.close();
                 } catch (final SQLException e) {
-                    log.error("Err8: " + e);
+                    e.printStackTrace();
                 }
             } else if (op == 9) { //add to cart
                 final int id = slea.readInt(); //id of the item
@@ -457,7 +457,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     ps.close();
                 } catch (final SQLException e) {
                     c.getSession().write(MaplePacketCreator.MTSFailBuy());
-                    log.error("Err8: " + e);
+                    e.printStackTrace();
                 }
             } else if (op == 17) { //buy from cart
                 final int id = slea.readInt(); //id of the item
@@ -519,10 +519,10 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     ps.close();
                 } catch (final SQLException e) {
                     c.getSession().write(MaplePacketCreator.MTSFailBuy());
-                    log.error("Err8: " + e);
+                    e.printStackTrace();
                 }
             } else {
-                log.info("Unhandled OP(MTS): " + op + " Packet:\n" + HexTool.toString(slea));
+                System.err.println("Unhandled OP(MTS): " + op + " Packet:\n" + HexTool.toString(slea));
             }
         } else {
             c.getSession().write(MaplePacketCreator.showMTSCash(c.getPlayer()));
@@ -572,7 +572,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.error("Err8: " + e);
+            e.printStackTrace();
         }
         return items;
     }
@@ -638,7 +638,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.error("Err8: " + e);
+            e.printStackTrace();
         }
         return MaplePacketCreator.sendMTS(items, 4, 0, 0, pages);
     }
@@ -687,7 +687,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.error("Err7: " + e);
+            e.printStackTrace();
         }
         return items;
     }
@@ -764,7 +764,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.error("Err6: " + e);
+            e.printStackTrace();
         }
         return MaplePacketCreator.sendMTS(items, tab, type, page, pages);
     }
@@ -894,7 +894,7 @@ public class MTSHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.error("Err6: " + e);
+            e.printStackTrace();
         }
         return MaplePacketCreator.sendMTS(items, tab, type, page, pages);
     }

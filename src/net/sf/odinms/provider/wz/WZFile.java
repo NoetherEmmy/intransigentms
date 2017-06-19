@@ -100,7 +100,7 @@ public class WZFile implements MapleDataProvider {
                     }
                     break;
                 default:
-                    log.error("Default case in marker ({}):/", marker);
+                    System.err.println("Default case in marker (" + marker + ")");
             }
         }
 

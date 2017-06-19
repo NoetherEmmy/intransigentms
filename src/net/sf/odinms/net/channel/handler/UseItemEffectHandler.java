@@ -19,7 +19,7 @@ public class UseItemEffectHandler extends AbstractMaplePacketHandler {
         final int itemId = slea.readInt();
 
         if (itemId >= 5000000 && itemId <= 5000053) {
-            log.warn(slea.toString());
+            System.err.println(slea.toString());
         }
 
         if (itemId != 0) {

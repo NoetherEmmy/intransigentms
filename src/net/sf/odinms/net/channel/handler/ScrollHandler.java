@@ -53,11 +53,8 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             wscroll = useInventory.findById(2340000);
             if (wscroll == null || wscroll.getItemId() != 2340000) {
                 whiteScroll = false;
-                log.info(
-                    "[h4x] Player {} is trying to scroll with non-existent white scroll",
-                    new Object[] {
-                        c.getPlayer().getName()
-                    }
+                System.err.println(
+                    "[h4x] Player " + c.getPlayer().getName() + " is trying to scroll with non-existent white scroll"
                 );
             }
             if (ii.getEquipStats(scroll.getItemId()).get("success") >= 100) {
@@ -87,9 +84,15 @@ public class ScrollHandler extends AbstractMaplePacketHandler {
             !ii.isCleanSlate(scroll.getItemId())
         ) {
             if (!ii.canScroll(scroll.getItemId(), toScroll.getItemId())) {
-                log.info("[h4x] Player {} is trying to scroll {} with {}, which should not work.", new Object[] {
-                    c.getPlayer().getName(), toScroll.getItemId(), scroll.getItemId()
-                });
+                System.err.println(
+                    "[h4x] Player " +
+                        c.getPlayer().getName() +
+                        " is trying to scroll " +
+                        toScroll.getItemId() +
+                        " with " +
+                        scroll.getItemId() +
+                        ", which should not work."
+                );
                 return;
             }
         }

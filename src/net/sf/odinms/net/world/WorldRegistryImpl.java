@@ -138,7 +138,7 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
         for (final LoginWorldInterface wli : loginServer) {
             wli.channelOffline(channel);
         }
-        log.info("Channel {} is offline.", channel);
+        System.out.println("Channel " + channel + " is offline.");
     }
 
     @Override

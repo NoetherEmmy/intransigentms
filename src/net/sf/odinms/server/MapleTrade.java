@@ -94,7 +94,7 @@ public class MapleTrade {
     public void setMeso(final int meso) {
         if (locked) throw new RuntimeException("Trade is locked.");
         if (meso < 0) {
-            log.info("[h4x] {} Trying to trade < 0 meso", chr.getName());
+            System.err.println("[h4x] " + chr.getName() + " Trying to trade < 0 meso");
             return;
         }
         if (chr.getMeso() >= meso) {

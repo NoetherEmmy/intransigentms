@@ -384,7 +384,7 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
             ps.execute();
             ps.close();
         } catch (final SQLException sqle) {
-            log.error("SQLException: " + sqle.getLocalizedMessage(), sqle);
+            System.err.println("SQLException: " + sqle.getLocalizedMessage());
         }
     }
 

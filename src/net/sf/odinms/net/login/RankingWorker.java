@@ -36,7 +36,8 @@ public class RankingWorker implements Runnable {
                 System.err.println("Could not update rankings");
                 sqle.printStackTrace();
             } catch (final SQLException sqle2) {
-                log.error("Could not rollback unfinished ranking transaction", sqle2);
+                System.err.println("Could not rollback unfinished ranking transaction");
+                sqle2.printStackTrace();
             }
         }
     }

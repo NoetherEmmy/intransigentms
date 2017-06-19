@@ -136,13 +136,13 @@ public class MapleShop {
         final IItem item = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
         if (item == null || (!ii.isThrowingStar(item.getItemId()) && !ii.isBullet(item.getItemId()))) {
             if (item != null && (!ii.isThrowingStar(item.getItemId()) || !ii.isBullet(item.getItemId()))) {
-                log.warn(c.getPlayer().getName() + " is trying to recharge " + item.getItemId());
+                System.err.println(c.getPlayer().getName() + " is trying to recharge " + item.getItemId());
             }
             return;
         }
         final short slotMax = ii.getSlotMax(c, item.getItemId());
         if (item.getQuantity() < 0) {
-            log.warn(
+            System.err.println(
                 c.getPlayer().getName() +
                     " is trying to recharge " +
                     item.getItemId() +

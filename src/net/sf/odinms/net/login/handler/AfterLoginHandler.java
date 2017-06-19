@@ -20,7 +20,7 @@ public class AfterLoginHandler extends AbstractMaplePacketHandler {
         } else if (c2 == 1 && c3 == 0) {
             slea.seek(8);
             final String pin = slea.readMapleAsciiString();
-            log.info("Received Pin: " + pin);
+            System.err.println("Received Pin: " + pin);
             if (pin.equals("1234")) {
                 c.getSession().write(MaplePacketCreator.pinAccepted());
             } else {

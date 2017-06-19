@@ -95,7 +95,8 @@ public class MapleMonsterInformationProvider {
             rs2.close();
             ps2.close();
         } catch (final Exception e) {
-            log.error("Error retrieving drops for monster " + monsterId, e);
+            System.err.println("Error retrieving drops for monster " + monsterId);
+            e.printStackTrace();
         }
         drops.put(monsterId, ret);
         return ret;

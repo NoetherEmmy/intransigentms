@@ -90,7 +90,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
                 deleteBBSReply(c, replyid);
                 break;
             default:
-                log.warn("Unhandled BBS mode: " + mode);
+                System.err.println("Unhandled BBS mode: " + mode);
                 break;
         }
     }
@@ -109,7 +109,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
             rs.close();
             ps.close();
         } catch (final SQLException sqle) {
-            log.error("SQLException: " + sqle.getLocalizedMessage(), sqle);
+            System.err.println("SQLException: " + sqle.getLocalizedMessage());
         }
     }
 
@@ -156,7 +156,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
             ps.close();
             displayThread(client, localthreadid);
         } catch (final SQLException sqle) {
-            log.error("SQLException: " + sqle.getLocalizedMessage(), sqle);
+            System.err.println("SQLException: " + sqle.getLocalizedMessage());
         }
     }
 
@@ -183,7 +183,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
             ps.close();
             displayThread(client, localthreadid);
         } catch (final SQLException sqle) {
-            log.error("SQLException: " + sqle.getLocalizedMessage(), sqle);
+            System.err.println("SQLException: " + sqle.getLocalizedMessage());
         }
 
     }
@@ -223,7 +223,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
             ps.close();
             displayThread(client, nextId);
         } catch (final SQLException se) {
-            log.error("SQLException: " + se.getLocalizedMessage(), se);
+            System.err.println("SQLException: " + se.getLocalizedMessage());
         }
 
     }
@@ -267,7 +267,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
             ps.execute();
             ps.close();
         } catch (final SQLException se) {
-            log.error("SQLException: " + se.getLocalizedMessage(), se);
+            System.err.println("SQLException: " + se.getLocalizedMessage());
         }
     }
 
@@ -312,7 +312,7 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
             ps.close();
             displayThread(client, threadid, false);
         } catch (final SQLException sqle) {
-            log.error("SQLException: " + sqle.getLocalizedMessage(), sqle);
+            System.err.println("SQLException: " + sqle.getLocalizedMessage());
         }
     }
 
@@ -367,12 +367,11 @@ public class BBSOperationHandler extends AbstractMaplePacketHandler {
                 repliesRS.close();
             }
         } catch (final SQLException se) {
-            log.error("SQLException: " + se.getLocalizedMessage(), se);
+            System.err.println("SQLException: " + se.getLocalizedMessage());
         } catch (final RuntimeException re) {
-            log.error(
+            System.err.println(
                 "The number of reply rows does not match the replycount in thread. Thread Id = " +
-                    re.getMessage(),
-                re
+                    re.getLocalizedMessage()
             );
             try {
                 PreparedStatement ps =

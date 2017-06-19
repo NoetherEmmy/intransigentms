@@ -95,7 +95,7 @@ public class MapleAESOFB {
         try {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
         } catch (final InvalidKeyException ike) {
-            log.error(
+            System.err.println(
                 "Error initalizing the encryption cipher. " +
                     "Make sure you're using the Unlimited Strength cryptography jar files."
             );
