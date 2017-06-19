@@ -7,8 +7,8 @@ import net.sf.odinms.client.MaplePet;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.PacketProcessor;
 import net.sf.odinms.tools.MaplePacketCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +23,7 @@ public class MapleShop {
     private static final Set<Integer> rechargeableItems = new HashSet<>();
     private final int id, npcId;
     private final List<MapleShopItem> items;
-    private static final Logger log = LoggerFactory.getLogger(PacketProcessor.class);
+    //private static final Logger log = LoggerFactory.getLogger(PacketProcessor.class);
 
     static {
         for (int i = 2070000; i <= 2070018; ++i) {
@@ -216,7 +216,8 @@ public class MapleShop {
             rs.close();
             ps.close();
         } catch (final SQLException sqle) {
-            log.error("Could not load shop. ", sqle);
+            System.err.println("Could not load shop. ");
+            sqle.printStackTrace();
         }
         return ret;
     }

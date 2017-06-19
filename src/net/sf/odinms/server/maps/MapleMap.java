@@ -19,8 +19,8 @@ import net.sf.odinms.tools.Direction;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.Vect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.rmi.RemoteException;
@@ -66,7 +66,7 @@ public class MapleMap {
     private int forcedReturnMap = 999999999;
     private int timeLimit;
     private int fieldLimit;
-    private static final Logger log = LoggerFactory.getLogger(MapleMap.class);
+    //private static final Logger log = LoggerFactory.getLogger(MapleMap.class);
     private MapleMapTimer mapTimer;
     private final int dropLife = 180000;
     private int decHP;
@@ -1074,7 +1074,7 @@ public class MapleMap {
 
             if (monster.getController() != null) {
                 if (monster.getController().getMap() != this) {
-                    log.warn("Monstercontroller wasn't on same map");
+                    System.err.println("Monstercontroller wasn't on same map");
                     monster.getController().stopControllingMonster(monster);
                 } else {
                     return;
@@ -1930,7 +1930,7 @@ public class MapleMap {
                 }
             }
         } else {
-            log.info("MapleMap#sendObjectPlacement invoked with null chr");
+            System.err.println("MapleMap#sendObjectPlacement invoked with null chr");
         }
     }
 

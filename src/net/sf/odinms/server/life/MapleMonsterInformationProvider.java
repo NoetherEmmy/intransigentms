@@ -1,8 +1,8 @@
 package net.sf.odinms.server.life;
 
 import net.sf.odinms.database.DatabaseConnection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,7 +36,7 @@ public class MapleMonsterInformationProvider {
     public static final int APPROX_FADE_DELAY = 90;
     private static MapleMonsterInformationProvider instance;
     private final Map<Integer, List<DropEntry>> drops = new HashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(MapleMonsterInformationProvider.class);
+    //private static final Logger log = LoggerFactory.getLogger(MapleMonsterInformationProvider.class);
 
     private MapleMonsterInformationProvider() {
     }

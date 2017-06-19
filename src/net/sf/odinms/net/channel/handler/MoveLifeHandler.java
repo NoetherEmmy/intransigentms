@@ -13,8 +13,8 @@ import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.server.movement.LifeMovementFragment;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.rmi.RemoteException;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 public class MoveLifeHandler extends AbstractMovementPacketHandler {
-    private static final Logger log = LoggerFactory.getLogger(MoveLifeHandler.class);
+    //private static final Logger log = LoggerFactory.getLogger(MoveLifeHandler.class);
 
     @Override
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -117,7 +117,7 @@ public class MoveLifeHandler extends AbstractMovementPacketHandler {
         if (slea.available() != 9) {
             map.removePlayer(c.getPlayer());
             map.addPlayer(c.getPlayer());
-            log.warn("slea.available != 9 (movement parsing error)");
+            System.err.println("slea.available != 9 (movement parsing error)");
             c.getPlayer().getCheatTracker().incrementVac();
             if (c.getPlayer().getCheatTracker().getVac() >= 5) {
                 AutobanManager.getInstance().autoban(c, "Monster vac.");

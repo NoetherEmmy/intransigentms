@@ -9,14 +9,14 @@ import net.sf.odinms.provider.wz.MapleDataType;
 import net.sf.odinms.server.maps.MapleMapFactory;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
 
 public final class MapleLifeFactory {
-    private static final Logger log = LoggerFactory.getLogger(MapleMapFactory.class);
+    //private static final Logger log = LoggerFactory.getLogger(MapleMapFactory.class);
     private static final MapleDataProvider data =
         MapleDataProviderFactory.getDataProvider(
             new File(System.getProperty(WorldServer.WZPATH) + "/Mob.wz")

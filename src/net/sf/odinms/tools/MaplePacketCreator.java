@@ -27,8 +27,8 @@ import net.sf.odinms.server.maps.*;
 import net.sf.odinms.server.movement.LifeMovementFragment;
 import net.sf.odinms.tools.data.output.LittleEndianWriter;
 import net.sf.odinms.tools.data.output.MaplePacketLittleEndianWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.net.InetAddress;
@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.List;
 
 public final class MaplePacketCreator {
-    private static final Logger log = LoggerFactory.getLogger(MaplePacketCreator.class);
+    //private static final Logger log = LoggerFactory.getLogger(MaplePacketCreator.class);
     private static final byte[] CHAR_INFO_MAGIC = new byte[] {(byte) 0xff, (byte) 0xc9, (byte) 0x9a, (byte) 0x3b};
     private static final byte[] ITEM_MAGIC = new byte[]{(byte) 0x80, 5};
     public static final List<Pair<MapleStat, Integer>> EMPTY_STATUPDATE = Collections.emptyList();
@@ -2658,7 +2658,8 @@ public final class MaplePacketCreator {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.info("Error getting wishlist data:", e);
+            System.err.println("Error getting wishlist data:");
+            e.printStackTrace();
         }
         mplew.writeInt(1);
         mplew.writeLong(0);
@@ -5073,7 +5074,8 @@ public final class MaplePacketCreator {
             rs.close();
             ps.close();
         } catch (final SQLException se) {
-            log.info("Error getting wishlist data:", se);
+            System.err.println("Error getting wishlist data:");
+            se.printStackTrace();
         }
         while (i > 0) {
             mplew.writeInt(0);

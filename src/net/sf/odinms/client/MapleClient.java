@@ -27,8 +27,8 @@ import net.sf.odinms.tools.MapleAESOFB;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import org.apache.mina.common.IoSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
 import java.rmi.RemoteException;
@@ -44,7 +44,7 @@ public class MapleClient {
         LOGIN_LOGGEDIN = 2,
         LOGIN_WAITING = 3;
     public static final String CLIENT_KEY = "CLIENT";
-    private static final Logger log = LoggerFactory.getLogger(MapleClient.class);
+    //private static final Logger log = LoggerFactory.getLogger(MapleClient.class);
     private final MapleAESOFB send;
     private final MapleAESOFB receive;
     private final IoSession session;
@@ -104,7 +104,8 @@ public class MapleClient {
             try {
                 chars.add(MapleCharacter.loadCharFromDB(cni.id, this, false));
             } catch (final SQLException e) {
-                log.error("Loading characters failed", e);
+                System.err.println("Loading characters failed");
+                e.printStackTrace();
             }
         }
         return chars;
@@ -133,7 +134,8 @@ public class MapleClient {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.error("THROW", e);
+            System.err.println("THROW");
+            e.printStackTrace();
         }
         return chars;
     }
@@ -178,7 +180,8 @@ public class MapleClient {
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
-            log.error("Error checking ip bans", ex);
+            System.err.println("Error checking ip bans");
+            ex.printStackTrace();
         }
         return ret;
     }
@@ -207,7 +210,8 @@ public class MapleClient {
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
-            log.error("Error checking mac bans. ", ex);
+            System.err.println("Error checking mac bans. ");
+            ex.printStackTrace();
         }
         return ret;
     }
@@ -255,7 +259,8 @@ public class MapleClient {
             }
             ps.close();
         } catch (final SQLException e) {
-            log.error("Error banning MACs", e);
+            System.err.println("Error banning MACs:");
+            e.printStackTrace();
         }
     }
 
@@ -376,7 +381,8 @@ public class MapleClient {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
         }
         return loginok;
     }
@@ -432,7 +438,8 @@ public class MapleClient {
             ps.executeUpdate();
             ps.close();
         } catch (final SQLException e) {
-            log.error("Error while unbanning", e);
+            System.err.println("Error while unbanning");
+            e.printStackTrace();
         }
     }
 
@@ -455,7 +462,8 @@ public class MapleClient {
             ps.executeUpdate();
             ps.close();
         } catch (final SQLException e) {
-            log.error("Error saving MACs", e);
+            System.err.println("Error saving MACs");
+            e.printStackTrace();
         }
     }
 
@@ -479,7 +487,8 @@ public class MapleClient {
             ps.executeUpdate();
             ps.close();
         } catch (final SQLException e) {
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
         }
         if (newstate == LOGIN_NOTLOGGEDIN) {
             loggedIn = false;
@@ -531,7 +540,8 @@ public class MapleClient {
             return state;
         } catch (final SQLException e) {
             loggedIn = false;
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
             throw new DatabaseException("Everything sucks", e);
         }
     }
@@ -633,7 +643,8 @@ public class MapleClient {
                         chrp.setOnline(false);
                         wci.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, chrp);
                     } catch (final Exception e) {
-                        log.warn("Failed removing party character. Player already removed.", e);
+                        System.err.println("Failed removing party character. Player already removed.");
+                        e.printStackTrace();
                     }
                 }
                 if (!this.serverTransition && loggedIn) {
@@ -656,12 +667,13 @@ public class MapleClient {
             } catch (final RemoteException e) {
                 getChannelServer().reconnectWorld();
             } catch (final Exception e) {
-                log.error(getLogMessage(this, "ERROR"), e);
+                System.err.println(getLogMessage(this, "ERROR"));
+                e.printStackTrace();
             } finally {
                 if (getChannelServer() != null) {
                     getChannelServer().removePlayer(chr);
                 } else {
-                    log.error(getLogMessage(this, "No channelserver associated to char {}", chr.getName()));
+                    System.err.println(getLogMessage(this, "No channelserver associated to char {}", chr.getName()));
                 }
             }
             if (guest) {
@@ -734,7 +746,8 @@ public class MapleClient {
             ps.close();
             return true;
         } catch (final SQLException e) {
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
         }
         return false;
     }
@@ -837,7 +850,8 @@ public class MapleClient {
             ps.close();
             return ret;
         } catch (final SQLException e) {
-            log.error("SQL THROW");
+            System.err.println("SQL THROW");
+            e.printStackTrace();
         }
         return -1;
     }
@@ -856,7 +870,8 @@ public class MapleClient {
             ps.close();
             return ret;
         } catch (final SQLException e) {
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
         }
         return -1;
     }

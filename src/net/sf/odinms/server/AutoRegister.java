@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public final class AutoRegister {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleClient.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleClient.class);
     //private static final int ACCOUNTS_PER_IP = 5;
     public static final boolean autoRegister = true;
     public static boolean success;
@@ -26,7 +26,8 @@ public final class AutoRegister {
             rs.close();
             ps.close();
         } catch (final Exception ex) {
-            log.warn("Error acquiring the account of (" + login + "), check AutoRegister.");
+            System.err.println("Error acquiring the account of (" + login + "), check AutoRegister.");
+            ex.printStackTrace();
         }
         return accountExists;
     }
@@ -61,7 +62,8 @@ public final class AutoRegister {
                     ps.close();
                     success = true;
                 } catch (final Exception ex) {
-                    log.warn("Error creating the account of (" + login + " | " + pwd + " | " + eip + ").");
+                    System.err.println("Error creating the account of (" + login + " | " + pwd + " | " + eip + ").");
+                    ex.printStackTrace();
                     ipq.close();
                     rs.close();
                     return;

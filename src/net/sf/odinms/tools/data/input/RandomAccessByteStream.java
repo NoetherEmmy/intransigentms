@@ -1,7 +1,7 @@
 package net.sf.odinms.tools.data.input;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -9,7 +9,7 @@ import java.io.RandomAccessFile;
 public class RandomAccessByteStream implements SeekableInputStreamBytestream {
     private final RandomAccessFile raf;
     private long read = 0;
-    private static final Logger log = LoggerFactory.getLogger(RandomAccessByteStream.class);
+    //private static final Logger log = LoggerFactory.getLogger(RandomAccessByteStream.class);
 
     /**
      * Class constructor. Wraps this object around a RandomAccessFile.
@@ -78,7 +78,8 @@ public class RandomAccessByteStream implements SeekableInputStreamBytestream {
         try {
             return raf.length() - raf.getFilePointer();
         } catch (final IOException e) {
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
             return 0;
         }
     }

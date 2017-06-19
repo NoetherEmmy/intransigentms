@@ -14,8 +14,8 @@ import net.sf.odinms.server.ShutdownServer;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.CollectionUtil;
 import net.sf.odinms.tools.MaplePacketCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -371,7 +371,7 @@ public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements Ch
 
     @Override
     public void setOfflineGuildStatus(final int guildid, final byte guildrank, final int cid) throws RemoteException {
-        final Logger log = LoggerFactory.getLogger(this.getClass());
+        //final Logger log = LoggerFactory.getLogger(this.getClass());
         try {
             final Connection con = DatabaseConnection.getConnection();
             final PreparedStatement ps =

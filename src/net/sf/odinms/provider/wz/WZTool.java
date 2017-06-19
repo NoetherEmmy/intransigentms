@@ -3,12 +3,12 @@ package net.sf.odinms.provider.wz;
 import net.sf.odinms.tools.data.input.LittleEndianAccessor;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 import net.sf.odinms.tools.data.output.LittleEndianWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public final class WZTool {
-    @SuppressWarnings("unused")
-    private static final Logger log = LoggerFactory.getLogger(WZTool.class);
+    //@SuppressWarnings("unused")
+    //private static final Logger log = LoggerFactory.getLogger(WZTool.class);
 
     private WZTool() {
     }

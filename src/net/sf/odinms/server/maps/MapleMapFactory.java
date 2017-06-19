@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.List;
 
 public class MapleMapFactory {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleMapFactory.class);
     private final MapleDataProvider source;
     private final MapleData nameData;
     private final Map<Integer, MapleMap> maps = new HashMap<>();
@@ -260,7 +260,8 @@ public class MapleMapFactory {
                         faekchar.setMap(map);
                         map.addPlayer(faekchar);
                     } catch (final SQLException e) {
-                        log.error("Loading FAEK failed", e);
+                        System.err.println("Loading FAEK failed");
+                        e.printStackTrace();
                     }
                 }
             }
@@ -320,7 +321,7 @@ public class MapleMapFactory {
         if (hide == 1) {
             myLife.setHide(true);
         } else if (hide > 1) {
-            log.warn("Hide > 1 ({})", hide);
+            System.err.println("Hide > 1 (" + hide + ")");
         }
         return myLife;
     }

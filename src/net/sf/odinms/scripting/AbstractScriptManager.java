@@ -1,8 +1,8 @@
 package net.sf.odinms.scripting;
 
 import net.sf.odinms.client.MapleClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -18,7 +18,7 @@ import java.util.Map;
 public abstract class AbstractScriptManager {
     protected ScriptEngine engine;
     private final ScriptEngineManager sem;
-    protected static final Logger log = LoggerFactory.getLogger(AbstractScriptManager.class);
+    //protected static final Logger log = LoggerFactory.getLogger(AbstractScriptManager.class);
     public static final String[] libs = {
         "ecma6-array-polyfill.min",
         "intransigentms-utils.min"

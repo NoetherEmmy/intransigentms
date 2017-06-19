@@ -1,8 +1,8 @@
 package net.sf.odinms.server;
 
 import net.sf.odinms.client.messages.MessageCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TimerManager implements TimerManagerMBean {
-    private static final Logger log = LoggerFactory.getLogger(TimerManager.class);
+    //private static final Logger log = LoggerFactory.getLogger(TimerManager.class);
     private static final TimerManager instance = new TimerManager();
     private ScheduledThreadPoolExecutor ses;
 
@@ -23,7 +23,8 @@ public class TimerManager implements TimerManagerMBean {
         try {
             mBeanServer.registerMBean(this, new ObjectName("net.sf.odinms.server:type=TimerManger"));
         } catch (final Exception e) {
-            log.error("Error registering MBean ", e);
+            System.err.println("Error registering MBean ");
+            e.printStackTrace();
         }
     }
 
@@ -134,7 +135,8 @@ public class TimerManager implements TimerManagerMBean {
             try {
                 r.run();
             } catch (final Throwable t) {
-                log.error("ERROR ", t);
+                System.err.println("ERROR ");
+                t.printStackTrace();
             }
         }
     }

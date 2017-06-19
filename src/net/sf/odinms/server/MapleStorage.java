@@ -4,8 +4,8 @@ import net.sf.odinms.client.*;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.database.DatabaseException;
 import net.sf.odinms.tools.MaplePacketCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,7 +20,7 @@ public class MapleStorage {
     private byte slots;
     //private Set<MapleInventoryType> updatedTypes = new HashSet<MapleInventoryType>();
     private final Map<MapleInventoryType, List<IItem>> typeItems = new LinkedHashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(MapleStorage.class);
+    //private static final Logger log = LoggerFactory.getLogger(MapleStorage.class);
 
     private MapleStorage(final int id, final byte slots, final int meso) {
         this.id = id;
@@ -41,7 +41,8 @@ public class MapleStorage {
             ps.executeUpdate();
             ps.close();
         } catch (final SQLException sqle) {
-            log.error("Error creating storage. ", sqle);
+            System.err.println("Error creating storage. ");
+            sqle.printStackTrace();
         }
         return loadOrCreateFromDB(id);
     }
@@ -112,7 +113,8 @@ public class MapleStorage {
                 ps.close();
             }
         } catch (final SQLException sqle) {
-            log.error("Error loading storage. ", sqle);
+            System.err.println("Error loading storage. ");
+            sqle.printStackTrace();
         }
         return ret;
     }
@@ -189,7 +191,8 @@ public class MapleStorage {
             ps.close();
             pse.close();
         } catch (final SQLException sqle) {
-            log.error("Error saving storage. ", sqle);
+            System.err.println("Error saving storage. ");
+            sqle.printStackTrace();
         }
     }
 

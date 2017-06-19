@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public final class Marriage {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Marriage.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Marriage.class);
 
     public static boolean createMarriage(final MapleCharacter player, final MapleCharacter partner) {
         try {
@@ -70,7 +70,8 @@ public final class Marriage {
             ps1.close();
             ps.close();
         } catch (final SQLException sqle) {
-            log.warn("Problem divorcing " + player.getName() + " and his or her partner", sqle);
+            System.err.println("Problem divorcing " + player.getName() + " and his or her partner");
+            sqle.printStackTrace();
         }
     }
 
@@ -99,7 +100,8 @@ public final class Marriage {
             ps1.close();
             ps2.close();
         } catch (final SQLException sqle) {
-            log.warn("Problem divorcing " + player.getName() + " and his or her partner", sqle);
+            System.err.println("Problem divorcing " + player.getName() + " and his or her partner");
+            sqle.printStackTrace();
         }
     }
 }

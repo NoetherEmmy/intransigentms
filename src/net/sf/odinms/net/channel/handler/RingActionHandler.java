@@ -9,7 +9,7 @@ import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
 
 public class RingActionHandler extends AbstractMaplePacketHandler {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RingActionHandler.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RingActionHandler.class);
 
     @Override
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {

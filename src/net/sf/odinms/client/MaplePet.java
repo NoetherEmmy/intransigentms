@@ -12,8 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 public class MaplePet extends Item {
     private String name;
@@ -51,7 +51,7 @@ public class MaplePet extends Item {
                 return null;
             }
         } catch (final SQLException ex) {
-            Logger.getLogger(MaplePet.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             return null;
         }
     }
@@ -72,7 +72,7 @@ public class MaplePet extends Item {
             ps.executeUpdate();
             ps.close();
         } catch (final SQLException ex) {
-            Logger.getLogger(MaplePet.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -93,7 +93,7 @@ public class MaplePet extends Item {
             ps.close();
             return ret;
         } catch (final SQLException ex) {
-            Logger.getLogger(MaplePet.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             return -1;
         }
 

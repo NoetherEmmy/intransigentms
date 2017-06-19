@@ -20,7 +20,7 @@ import static net.sf.odinms.client.BuddyList.BuddyOperation.ADDED;
 import static net.sf.odinms.client.BuddyList.BuddyOperation.DELETED;
 
 public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BuddylistModifyHandler.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BuddylistModifyHandler.class);
 
     private static class CharacterIdNameBuddyCapacity extends CharacterNameAndId {
         private final int buddyCapacity;
@@ -172,7 +172,8 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                         c.getSession().write(MaplePacketCreator.buddylistMessage((byte) 15));
                     }
                 } catch (RemoteException | SQLException e) {
-                    log.error("Exception in BuddylistModifyHandler#handlePacket", e);
+                    System.err.println("Exception in BuddylistModifyHandler#handlePacket");
+                    e.printStackTrace();
                 }
             }
         } else if (mode == 2) { // Accept buddy
@@ -205,9 +206,11 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                         notifyRemoteChannel(c, channel, otherCid, ADDED);
                     }
                 } catch (final RemoteException e) {
-                    log.error("REMOTE THROW", e);
+                    System.err.println("REMOTE THROW");
+                    e.printStackTrace();
                 } catch (final SQLException e) {
-                    log.error("SQL THROW", e);
+                    System.err.println("SQL THROW");
+                    e.printStackTrace();
                 }
             }
             nextPendingRequest(c);
@@ -217,7 +220,8 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                 try {
                     notifyRemoteChannel(c, worldInterface.find(otherCid), otherCid, DELETED);
                 } catch (final RemoteException e) {
-                    log.error("REMOTE THROW", e);
+                    System.err.println("REMOTE THROW");
+                    e.printStackTrace();
                 }
             }
             buddylist.remove(otherCid);

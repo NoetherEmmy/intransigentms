@@ -3,8 +3,8 @@ package net.sf.odinms.scripting.portal;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.scripting.AbstractScriptManager;
 import net.sf.odinms.server.MaplePortal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.script.*;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PortalScriptManager {
-    private static final Logger log = LoggerFactory.getLogger(PortalScriptManager.class);
+    //private static final Logger log = LoggerFactory.getLogger(PortalScriptManager.class);
     private static final PortalScriptManager instance = new PortalScriptManager();
     private final Map<String, PortalScript> scripts = new LinkedHashMap<>();
     private final ScriptEngineFactory sef;
@@ -63,13 +63,15 @@ public class PortalScriptManager {
             final CompiledScript compiled = ((Compilable) portal).compile(fr);
             compiled.eval();
         } catch (ScriptException | IOException e) {
-            log.error("THROW from script " + scriptName + ".js", e);
+            System.err.println("THROW from script " + scriptName + ".js");
+            e.printStackTrace();
         } finally {
             if (fr != null) {
                 try {
                     fr.close();
                 } catch (final IOException ioe) {
-                    log.error("ERROR CLOSING", ioe);
+                    System.err.println("ERROR CLOSING");
+                    ioe.printStackTrace();
                 }
             }
         }

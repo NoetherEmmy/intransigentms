@@ -3,7 +3,7 @@ package net.sf.odinms.tools.data.input;
 import java.io.IOException;
 
 public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAccessor implements SeekableLittleEndianAccessor {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GenericSeekableLittleEndianAccessor.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GenericSeekableLittleEndianAccessor.class);
     private final SeekableInputStreamBytestream bs;
 
     /**
@@ -28,7 +28,8 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
         try {
             bs.seek(offset);
         } catch (final IOException e) {
-            log.error("Seek failed", e);
+            System.err.println("Seek failed");
+            e.printStackTrace();
         }
     }
 
@@ -43,7 +44,8 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
         try {
             return bs.getPosition();
         } catch (final IOException e) {
-            log.error("getPosition failed", e);
+            System.err.println("getPosition failed");
+            e.printStackTrace();
             return -1;
         }
     }

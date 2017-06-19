@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 public class UseCashItemHandler extends AbstractMaplePacketHandler {
     @Override
@@ -394,7 +394,7 @@ public class UseCashItemHandler extends AbstractMaplePacketHandler {
                         try {
                             player.sendNote(recipientId, msg);
                         } catch (final SQLException ex) {
-                            Logger.getLogger(UseCashItemHandler.class.getName()).log(Level.SEVERE, null, ex);
+                            //Logger.getLogger(UseCashItemHandler.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false);
                     } else {

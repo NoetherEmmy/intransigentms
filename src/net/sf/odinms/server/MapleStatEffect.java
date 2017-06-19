@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class MapleStatEffect implements Serializable {
     static final long serialVersionUID = 9179541993413738569L;
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleStatEffect.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleStatEffect.class);
     private short watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, hp, mp;
     private double hpR, mpR;
     private short mpCon, hpCon;

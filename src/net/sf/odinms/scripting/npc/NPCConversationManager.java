@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -757,7 +757,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
-            Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return r;
     }
@@ -787,7 +787,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
-            Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return r;
     }
@@ -813,7 +813,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
-            Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return r;
     }
@@ -840,7 +840,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
-            Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return r;
     }
@@ -867,7 +867,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             rs.close();
             ps.close();
         } catch (SQLException ex) {
-            Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     */
@@ -1556,7 +1556,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             );
         }
 
-        if (!DeathLogger.logItems(cleared, c)) {
+        //if (!DeathLogger.logItems(cleared, c)) {
             System.err.println(
                 "There was an error logging " +
                     getPlayer().getName() +

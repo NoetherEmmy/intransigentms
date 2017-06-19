@@ -18,7 +18,7 @@ import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 public class AbstractPlayerInteraction {
     private final MapleClient c;
@@ -218,7 +218,7 @@ public class AbstractPlayerInteraction {
         try {
             return c.getChannelServer().getWorldInterface().getGuild(getPlayer().getGuildId(), null);
         } catch (final RemoteException ex) {
-            Logger.getLogger(AbstractPlayerInteraction.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return null;
     }

@@ -1,7 +1,7 @@
 package net.sf.odinms.tools.data.input;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +9,7 @@ import java.io.InputStream;
 public class InputStreamByteStream implements ByteInputStream {
     private final InputStream is;
     private long read = 0;
-    private static final Logger log = LoggerFactory.getLogger(InputStreamByteStream.class);
+    //private static final Logger log = LoggerFactory.getLogger(InputStreamByteStream.class);
 
     /**
      * Class constructor.
@@ -60,7 +60,8 @@ public class InputStreamByteStream implements ByteInputStream {
         try {
             return is.available();
         } catch (final IOException e) {
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
             return 0;
         }
     }

@@ -19,7 +19,7 @@ public class EventLogger {
     private final Path path;
 
     /**
-     * Creates a new instance of EventLogger that writes to
+     //* Creates a new instance of EventLogger that writes to
      * the filepath specified by <code>pathString</code>.
      *
      * <ul>
@@ -36,7 +36,7 @@ public class EventLogger {
     }
 
     /**
-     * Creates a new instance of EventLogger that writes to
+     //* Creates a new instance of EventLogger that writes to
      * the non-null filepath specified by <code>path</code>.
      *
      * <ul>

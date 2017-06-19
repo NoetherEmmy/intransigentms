@@ -9,7 +9,7 @@ import javax.script.ScriptException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 public class EventScriptManager extends AbstractScriptManager {
     private class EventEntry {
@@ -48,7 +48,7 @@ public class EventScriptManager extends AbstractScriptManager {
                 ((ScriptEngine) entry.iv).put("em", entry.em);
                 entry.iv.invokeFunction("init", (Object) null);
             } catch (ScriptException | NoSuchMethodException e) {
-                Logger.getLogger(EventScriptManager.class.getName()).log(Level.SEVERE, null, e);
+                //Logger.getLogger(EventScriptManager.class.getName()).log(Level.SEVERE, null, e);
             }
         }
     }

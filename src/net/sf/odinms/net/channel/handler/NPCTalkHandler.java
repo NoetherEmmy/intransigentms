@@ -18,8 +18,9 @@ public class NPCTalkHandler extends AbstractMaplePacketHandler {
         final MapleMapObject obj = c.getPlayer().getMap().getMapObject(oid);
         if (obj instanceof MapleNPC) {
             final MapleNPC npc = (MapleNPC) obj;
-            if (NPCScriptManager.getInstance() != null)
+            if (NPCScriptManager.getInstance() != null) {
                 NPCScriptManager.getInstance().dispose(c);
+            }
             if (!c.getPlayer().getCheatTracker().Spam(1000, 4)) {
                 if (npc.getId() == 9010009) {
                     if (c.isGuest()) {
@@ -47,13 +48,13 @@ public class NPCTalkHandler extends AbstractMaplePacketHandler {
                         return;
                     }
                     NPCScriptManager.getInstance().start(c, npc.getId());
-                // NPCMoreTalkHandler.npc = npc.getId();
-                // 0 = next button
-                // 1 = yes no
-                // 2 = accept decline
-                // 5 = select a link
-                // c.getSession().write(MaplePacketCreator.getNPCTalk(npc.getId(), (byte) 0,
-                // "Yoo! I'm #p" + npc.getId() + "#, I can warp you.", "00 01"));
+                    // NPCMoreTalkHandler.npc = npc.getId();
+                    // 0 = next button
+                    // 1 = yes no
+                    // 2 = accept decline
+                    // 5 = select a link
+                    // c.getSession().write(MaplePacketCreator.getNPCTalk(npc.getId(), (byte) 0,
+                    // "Yoo! I'm #p" + npc.getId() + "#, I can warp you.", "00 01"));
                 }
             }
         } else if (obj instanceof PlayerNPCs) {

@@ -1,7 +1,7 @@
 package net.sf.odinms.tools;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -85,11 +85,12 @@ public class MapleAESOFB {
      */
     public MapleAESOFB(final byte[] key, final byte[] iv, final short mapleVersion) {
         final SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-        final Logger log = LoggerFactory.getLogger(MapleAESOFB.class);
+        //final Logger log = LoggerFactory.getLogger(MapleAESOFB.class);
         try {
             cipher = Cipher.getInstance("AES");
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            log.error("ERROR", e);
+            System.err.println("ERROR");
+            e.printStackTrace();
         }
         try {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);

@@ -2,8 +2,8 @@ package net.sf.odinms.net.login;
 
 import net.sf.odinms.client.MapleJob;
 import net.sf.odinms.database.DatabaseConnection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 public class RankingWorker implements Runnable {
     private Connection con;
     private long lastUpdate = System.currentTimeMillis();
-    private static final Logger log = LoggerFactory.getLogger(RankingWorker.class);
+    //private static final Logger log = LoggerFactory.getLogger(RankingWorker.class);
 
     public void run() {
         try {
@@ -33,7 +33,8 @@ public class RankingWorker implements Runnable {
             try {
                 con.rollback();
                 con.setAutoCommit(true);
-                log.warn("Could not update rankings", sqle);
+                System.err.println("Could not update rankings");
+                sqle.printStackTrace();
             } catch (final SQLException sqle2) {
                 log.error("Could not rollback unfinished ranking transaction", sqle2);
             }

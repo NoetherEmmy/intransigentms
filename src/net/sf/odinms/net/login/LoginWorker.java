@@ -3,8 +3,8 @@ package net.sf.odinms.net.login;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.MaplePacketCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -14,7 +14,7 @@ public class LoginWorker implements Runnable {
     private final Deque<MapleClient> waiting;
     private final Set<String> waitingNames;
     private final List<Integer> possibleLoginHistory = new LinkedList<>();
-    public static Logger log = LoggerFactory.getLogger(LoginWorker.class);
+    //public static Logger log = LoggerFactory.getLogger(LoginWorker.class);
 
     private LoginWorker() {
         waiting = new LinkedList<>();

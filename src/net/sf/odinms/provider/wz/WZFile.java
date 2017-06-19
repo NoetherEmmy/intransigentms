@@ -5,8 +5,8 @@ import net.sf.odinms.provider.MapleDataDirectoryEntry;
 import net.sf.odinms.provider.MapleDataFileEntry;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.tools.data.input.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
@@ -19,7 +19,7 @@ public class WZFile implements MapleDataProvider {
     private final LittleEndianAccessor lea;
     private final SeekableLittleEndianAccessor slea;
     // private LittleEndianOutputStream leo;
-    private final Logger log = LoggerFactory.getLogger(WZFile.class);
+    //private final Logger log = LoggerFactory.getLogger(WZFile.class);
     private int headerSize;
     private final WZDirectoryEntry root;
     private final boolean provideImages;
@@ -180,7 +180,8 @@ public class WZFile implements MapleDataProvider {
             }
             return imgFile.getRoot();
         } catch (final IOException e) {
-            log.error("THROW", e);
+            System.err.println("THROW");
+            e.printStackTrace();
         }
         return null;
     }

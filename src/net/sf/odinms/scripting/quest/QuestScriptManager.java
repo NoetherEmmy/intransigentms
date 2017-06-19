@@ -31,7 +31,8 @@ public class QuestScriptManager extends AbstractScriptManager {
             scripts.put(c, qs);
             qs.start((byte) 1, (byte) 0, 0);
         } catch (final Exception e) {
-            log.error("Error executing quest script. (" + quest + ")", e);
+            System.err.println("Error executing quest script. (" + quest + ")");
+            e.printStackTrace();
             dispose(c);
         }
     }
@@ -42,7 +43,8 @@ public class QuestScriptManager extends AbstractScriptManager {
             try {
                 qs.start(mode, type, selection);
             } catch (final Exception e) {
-                log.error("Error executing quest script. (" + c.getQM().getQuest() + ")", e);
+                System.err.println("Error executing quest script. (" + c.getQM().getQuest() + ")");
+                e.printStackTrace();
                 dispose(c);
             }
         }
@@ -63,7 +65,8 @@ public class QuestScriptManager extends AbstractScriptManager {
             scripts.put(c, qs);
             qs.end((byte) 1, (byte) 0, 0);
         } catch (final Exception e) {
-            log.error("Error executing quest script. (" + quest + ")", e);
+            System.err.println("Error executing quest script. (" + quest + ")");
+            e.printStackTrace();
             dispose(c);
         }
     }
@@ -74,7 +77,8 @@ public class QuestScriptManager extends AbstractScriptManager {
             try {
                 qs.end(mode, type, selection);
             } catch (final Exception e) {
-                log.error("Error executing quest script. (" + c.getQM().getQuest() + ")", e);
+                System.err.println("Error executing quest script. (" + c.getQM().getQuest() + ")");
+                e.printStackTrace();
                 dispose(c);
             }
         }

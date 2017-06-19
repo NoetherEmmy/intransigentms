@@ -55,7 +55,8 @@ public class NPCScriptManager extends AbstractScriptManager {
             dispose(c);
             cms.remove(c);
         } catch (final Exception e) {
-            log.error("Error executing NPC script. NPC: " + npc + " Script: " + filename, e);
+            System.err.println("Error executing NPC script. NPC: " + npc + " Script: " + filename);
+            e.printStackTrace();
             dispose(c);
             cms.remove(c);
         }
@@ -67,13 +68,13 @@ public class NPCScriptManager extends AbstractScriptManager {
             try {
                 ns.action(mode, type, selection);
             } catch (final Exception e) {
-                log.error(
+                System.err.println(
                     "Error executing NPC script. NPC: " +
                         (cms.containsKey(c) ? cms.get(c).getNpc() : "???") +
                         " Script: " +
-                        (cms.containsKey(c) ? cms.get(c).getFileName() : "???"),
-                    e
+                        (cms.containsKey(c) ? cms.get(c).getFileName() : "???")
                 );
+                e.printStackTrace();
                 dispose(c);
             }
         }

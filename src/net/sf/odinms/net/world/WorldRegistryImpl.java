@@ -10,8 +10,8 @@ import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.net.world.remote.WorldLoginInterface;
 import net.sf.odinms.net.world.remote.WorldRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegistry {
     private static final long serialVersionUID = -5170574938159280746L;
     private static WorldRegistryImpl instance;
-    private static final Logger log = LoggerFactory.getLogger(WorldRegistryImpl.class);
+    //private static final Logger log = LoggerFactory.getLogger(WorldRegistryImpl.class);
     private final Map<Integer, ChannelWorldInterface> channelServer = new LinkedHashMap<>();
     private final List<LoginWorldInterface> loginServer = new LinkedList<>();
     private final Map<Integer, MapleParty> parties = new HashMap<>();
@@ -126,7 +126,8 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
             rs.close();
             ps.close();
         } catch (final SQLException ex) {
-            log.error("Encountered database error while authenticating channelserver", ex);
+            System.err.println("Encountered database error while authenticating channelserver");
+            ex.printStackTrace();
         }
         throw new RuntimeException("Couldn't find a channel with the given key (" + authKey + ")");
     }
@@ -162,7 +163,8 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
             ps.close();
             return new WorldLoginInterfaceImpl();
         } catch (final Exception e) {
-            log.error("Encountered database error while authenticating loginserver", e);
+            System.err.println("Encountered database error while authenticating loginserver");
+            e.printStackTrace();
         }
         return ret;
     }
@@ -282,7 +284,8 @@ public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegis
                 cwi.reloadGuildCharacters();
             }
         } catch (final RemoteException re) {
-            log.error("RemoteException occurred while attempting to reload guilds. ", re);
+            System.err.println("RemoteException occurred while attempting to reload guilds. ");
+            re.printStackTrace();
         }
     }
 

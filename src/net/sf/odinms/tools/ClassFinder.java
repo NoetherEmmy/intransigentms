@@ -9,7 +9,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassFinder {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClassFinder.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClassFinder.class);
 
     final List<JarFile> jars = new ArrayList<>();
     final List<File> dirs = new ArrayList<>();
@@ -25,7 +25,8 @@ public class ClassFinder {
                 try {
                     jars.add(new JarFile(cpeFile));
                 } catch (final IOException e) {
-                    log.error("ERROR", e);
+                    System.err.println("ERROR");
+                    e.printStackTrace();
                 }
             }
         }
@@ -78,7 +79,8 @@ public class ClassFinder {
             try {
                 jar.close();
             } catch (final IOException e) {
-                log.error("THROW", e);
+                System.err.println("THROW");
+                e.printStackTrace();
             }
         }
     }

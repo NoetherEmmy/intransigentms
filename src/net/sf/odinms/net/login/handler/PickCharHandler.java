@@ -6,15 +6,15 @@ import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.login.LoginServer;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 
 public class PickCharHandler extends AbstractMaplePacketHandler {
-    private static final Logger log = LoggerFactory.getLogger(PickCharHandler.class);
+    //private static final Logger log = LoggerFactory.getLogger(PickCharHandler.class);
 
     @Override
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -59,7 +59,8 @@ public class PickCharHandler extends AbstractMaplePacketHandler {
                  );
             }
         } catch (final UnknownHostException uhe) {
-            log.error("Host not found. ", uhe);
+            System.err.println("Host not found. ");
+            uhe.printStackTrace();
         }
     }
 }

@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class CheatingOffensePersister {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CheatingOffensePersister.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CheatingOffensePersister.class);
     private static final CheatingOffensePersister INSTANCE = new CheatingOffensePersister();
     private final Set<CheatingOffenseEntry> toPersist = new LinkedHashSet<>();
 

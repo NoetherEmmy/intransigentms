@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class RangedAttackHandler extends AbstractDealDamageHandler {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RangedAttackHandler.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RangedAttackHandler.class);
 
     @Override
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -233,7 +233,8 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
                 }
                 player.getMap().broadcastMessage(player, packet, false, true);
             } catch (final Exception e) {
-                log.warn("Failed to handle ranged attack", e);
+                System.err.println("Failed to handle ranged attack");
+                e.printStackTrace();
             }
 
             //int basedamage;

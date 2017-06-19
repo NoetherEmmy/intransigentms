@@ -1,8 +1,8 @@
 package net.sf.odinms.net;
 
 import net.sf.odinms.tools.HexTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,10 +17,7 @@ public class ExternalCodeTableGetter {
     }
 
     private static <T extends Enum<? extends IntValueHolder> & IntValueHolder> T valueOf(final String name, final T[] values) {
-        for (final T val : values) {
-            if (val.name().equals(name)) return val;
-        }
-        return null;
+        return Arrays.stream(values).filter(val -> val.name().equals(name)).findFirst().orElse(null);
     }
 
     private <T extends Enum<? extends IntValueHolder> & IntValueHolder> int getValue(final String name,
@@ -73,7 +70,7 @@ public class ExternalCodeTableGetter {
         for (final T code : values) {
             code.setValue(exc.getValue(code.name(), values, -2));
         }
-        final Logger log = LoggerFactory.getLogger(ExternalCodeTableGetter.class);
+        //final Logger log = LoggerFactory.getLogger(ExternalCodeTableGetter.class);
         if (log.isTraceEnabled()) {
             log.trace(getOpcodeTable(values));
         }

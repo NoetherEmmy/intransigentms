@@ -1,8 +1,8 @@
 package net.sf.odinms.net.world;
 
 import net.sf.odinms.database.DatabaseConnection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WorldServer {
     public static final String WZPATH = "net.sf.odinms.wzpath";
     private static WorldServer instance = null;
-    private static final Logger log = LoggerFactory.getLogger(WorldServer.class);
+    //private static final Logger log = LoggerFactory.getLogger(WorldServer.class);
     private int worldId;
     private final Properties dbProp = new Properties();
     private final Properties worldProp = new Properties();
@@ -36,7 +36,8 @@ public class WorldServer {
             worldProp.load(is);
             is.close();
         } catch (final Exception e) {
-            log.error("Could not configuration", e);
+            System.err.println("Could not configuration");
+            e.printStackTrace();
         }
     }
 
@@ -64,7 +65,8 @@ public class WorldServer {
             final Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory());
             registry.rebind("WorldRegistry", WorldRegistryImpl.getInstance());
         } catch (final RemoteException re) {
-            log.error("Could not initialize RMI system", re);
+            System.err.println("Could not initialize RMI system");
+            re.printStackTrace();
         }
     }
 

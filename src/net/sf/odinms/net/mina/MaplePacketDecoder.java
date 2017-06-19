@@ -7,12 +7,12 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MaplePacketDecoder extends CumulativeProtocolDecoder {
     private static final String DECODER_STATE_KEY = MaplePacketDecoder.class.getName() + ".STATE";
-    private static final Logger log = LoggerFactory.getLogger(MaplePacketDecoder.class);
+    //private static final Logger log = LoggerFactory.getLogger(MaplePacketDecoder.class);
 
     private static class DecoderState {
         public int packetlength = -1;
@@ -31,13 +31,13 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         if (in.remaining() >= 4 && decoderState.packetlength == -1) {
             final int packetHeader = in.getInt();
             if (!client.getReceiveCrypto().checkPacket(packetHeader)) {
-                log.warn(MapleClient.getLogMessage(client, "Client failed packet check -> disconnecting"));
+                System.err.println(MapleClient.getLogMessage(client, "Client failed packet check -> disconnecting"));
                 session.close();
                 return false;
             }
             decoderState.packetlength = MapleAESOFB.getPacketLength(packetHeader);
         } else if (in.remaining() < 4 && decoderState.packetlength == -1) {
-            log.trace("decode... not enough data");
+            System.err.println("decode... not enough data");
             return false;
         }
 
@@ -52,7 +52,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
             return true;
         } else {
-            log.trace("decode... not enough data to decode (need {})", decoderState.packetlength);
+            System.err.println("decode... not enough data to decode (need " + decoderState.packetlength + ")");
             return false;
         }
     }

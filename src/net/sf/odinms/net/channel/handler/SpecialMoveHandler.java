@@ -18,7 +18,7 @@ import java.awt.*;
 import java.util.concurrent.ScheduledFuture;
 
 public class SpecialMoveHandler extends AbstractMaplePacketHandler {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SpecialMoveHandler.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SpecialMoveHandler.class);
 
     @Override
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -135,7 +135,8 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                     break;
             }
         } catch (final Exception e) {
-            log.warn("Failed to handle Monster Magnet.", e);
+            System.err.println("Failed to handle Monster Magnet.");
+            e.printStackTrace();
         }
         if (slea.available() == 5) {
             pos = new Point(slea.readShort(), slea.readShort());

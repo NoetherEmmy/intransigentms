@@ -10,7 +10,7 @@ import javax.script.ScriptException;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 public class EventManager {
     private final Invocable iv;
@@ -29,7 +29,7 @@ public class EventManager {
         try {
             iv.invokeFunction("cancelSchedule", (Object) null);
         } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -42,7 +42,7 @@ public class EventManager {
             try {
                 iv.invokeFunction(methodName, eim);
             } catch (ScriptException | NoSuchMethodException ex) {
-                Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }, delay);
     }
@@ -52,7 +52,7 @@ public class EventManager {
             try {
                 iv.invokeFunction(methodName, (Object) null);
             } catch (ScriptException | NoSuchMethodException ex) {
-                Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }, timestamp);
     }
@@ -62,7 +62,7 @@ public class EventManager {
             try {
                 iv.invokeFunction(methodName, (Object) null);
             } catch (ScriptException | NoSuchMethodException ex) {
-                Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }, delay);
     }
@@ -89,7 +89,7 @@ public class EventManager {
         try {
             iv.invokeFunction("dispose", (Object) null);
         } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         instances.remove(name);
     }
@@ -116,7 +116,7 @@ public class EventManager {
             final EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
             eim.registerParty(party, map);
         } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -125,7 +125,7 @@ public class EventManager {
         try {
             iv.invokeFunction("setup", eim);
         } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

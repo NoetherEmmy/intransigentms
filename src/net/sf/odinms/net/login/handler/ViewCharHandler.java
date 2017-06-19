@@ -6,8 +6,8 @@ import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewCharHandler extends AbstractMaplePacketHandler {
-    private static final Logger log = LoggerFactory.getLogger(ViewCharHandler.class);
+    //private static final Logger log = LoggerFactory.getLogger(ViewCharHandler.class);
 
     @Override
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -53,7 +53,8 @@ public class ViewCharHandler extends AbstractMaplePacketHandler {
                 c.getSession().write(MaplePacketCreator.showAllCharacterInfo(w, chrsinworld));
             }
         } catch (final Exception e) {
-            log.error("Viewing all chars failed", e);
+            System.err.println("Viewing all chars failed");
+            e.printStackTrace();
         }
     }
 }

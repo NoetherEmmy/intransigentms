@@ -8,11 +8,11 @@ import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class UseItemEffectHandler extends AbstractMaplePacketHandler {
-    private static final Logger log = LoggerFactory.getLogger(UseItemHandler.class);
+    //private static final Logger log = LoggerFactory.getLogger(UseItemHandler.class);
 
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         c.getPlayer().resetAfkTime();

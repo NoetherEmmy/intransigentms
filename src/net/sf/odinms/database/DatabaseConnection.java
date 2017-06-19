@@ -1,7 +1,7 @@
 package net.sf.odinms.database;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public final class DatabaseConnection {
     private static final ThreadLocal<Connection> con = new ThreadLocalConnection();
-    private static final Logger log = LoggerFactory.getLogger(DatabaseConnection.class);
+    //private static final Logger log = LoggerFactory.getLogger(DatabaseConnection.class);
     private static Properties props;
 
     public static Connection getConnection() {
@@ -48,14 +48,16 @@ public final class DatabaseConnection {
             try {
                 Class.forName(driver); // Touch the MySQL driver.
             } catch (final ClassNotFoundException e) {
-                log.error("ERROR", e);
+                System.err.println("ERROR");
+                e.printStackTrace();
             }
             try {
                 final Connection con = DriverManager.getConnection(url, user, password);
                 allConnections.add(con);
                 return con;
             } catch (final SQLException e) {
-                log.error("ERROR", e);
+                System.err.println("ERROR");
+                e.printStackTrace();
                 return null;
             }
         }

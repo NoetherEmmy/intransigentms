@@ -15,7 +15,7 @@ public class ListWZFile {
     private List<String> entries = new ArrayList<>();
     private static Collection<String> modernImgs = new HashSet<>();
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ListWZFile.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ListWZFile.class);
 
     public static byte[] xorBytes(final byte[] a, final byte[] b) {
         final byte[] wusched = new byte[a.length];
@@ -56,7 +56,8 @@ public class ListWZFile {
                 listwz = new ListWZFile(MapleDataProviderFactory.fileInWZPath("List.wz"));
                 modernImgs = new HashSet<>(listwz.getEntries());
             } catch (final FileNotFoundException e) {
-                log.info("net.sf.odinms.listwz is set but the List.wz could not be found", e);
+                System.err.println("net.sf.odinms.listwz is set but the List.wz could not be found");
+                e.printStackTrace();
             }
         }
     }

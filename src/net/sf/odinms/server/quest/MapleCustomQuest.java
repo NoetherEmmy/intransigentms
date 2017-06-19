@@ -79,7 +79,8 @@ public class MapleCustomQuest extends MapleQuest {
             rs.close();
             ps.close();
         } catch (final Exception e) {
-            log.error("Error loading custom quest. ", e);
+            System.err.println("Error loading custom quest. ");
+            e.printStackTrace();
         }
     }
 }

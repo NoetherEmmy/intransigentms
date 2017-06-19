@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class MapleQuestAction {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleQuestAction.class);
+    //private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MapleQuestAction.class);
     private final MapleQuestActionType type;
     private final MapleData data;
     private final MapleQuest quest;
@@ -113,7 +113,8 @@ public class MapleQuestAction {
                             MapleInventoryManipulator.removeById(c.getClient(), iType, itemId, quantity, true, false);
                         } catch (final InventoryException ie) {
                             // It's better to catch this here so we'll at least try to remove the other items
-                            log.warn("[h4x] Completing " + quest + " without meeting the requirements", ie);
+                            System.err.println("[h4x] Completing " + quest + " without meeting the requirements");
+                            ie.printStackTrace();
                         }
                         c.getClient()
                          .getSession()

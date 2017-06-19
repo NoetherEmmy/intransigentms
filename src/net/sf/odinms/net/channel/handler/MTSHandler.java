@@ -11,8 +11,8 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MTSHandler extends AbstractMaplePacketHandler {
-    private static final Logger log = LoggerFactory.getLogger(MTSHandler.class);
+    //private static final Logger log = LoggerFactory.getLogger(MTSHandler.class);
 
     @Override
     public void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -364,7 +364,8 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     rs1.close();
                     ps1.close();
                 } catch (final SQLException e) {
-                    log.error("SqlErr12: ", e);
+                    System.err.println("SqlErr12: ");
+                    e.printStackTrace();
                 }
             /*c.getSession().write(getMTS(c.getPlayer().getCurrentTab(), c.getPlayer().getCurrentType(), c.getPlayer().getCurrentPage()));
             c.getSession().write(MaplePacketCreator.enableMTS());
@@ -381,7 +382,8 @@ public class MTSHandler extends AbstractMaplePacketHandler {
                     ps.executeUpdate();
                     ps.close();
                 } catch (final SQLException e) {
-                    log.error("SqlErr12: ", e);
+                    System.err.println("SqlErr12: ");
+                    e.printStackTrace();
                 }
             // c.getSession().write(MaplePacketCreator.addToCartMessage(false, true));
              /*   c.getSession().write(getCart(c.getPlayer().getId()));
