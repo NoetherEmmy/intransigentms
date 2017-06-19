@@ -70,11 +70,29 @@ public class MapleMapItem extends AbstractMapleMapObject {
     @Override
     public void sendSpawnData(final MapleClient client) {
         if (meso > 0) {
-            client.getSession().write(MaplePacketCreator.dropMesoFromMapObject(displayMeso, getObjectId(),
-            dropper.getObjectId(), owner.getId(), null, getPosition(), (byte) 2));
+            client.getSession().write(
+                MaplePacketCreator.dropMesoFromMapObject(
+                    displayMeso,
+                    getObjectId(),
+                    dropper.getObjectId(),
+                    owner.getId(),
+                    null,
+                    getPosition(),
+                    (byte) 2
+                )
+            );
         } else {
-            client.getSession().write(MaplePacketCreator.dropItemFromMapObject(item.getItemId(), getObjectId(),
-            0, owner.getId(), null, getPosition(), (byte) 2));
+            client.getSession().write(
+                MaplePacketCreator.dropItemFromMapObject(
+                    item.getItemId(),
+                    getObjectId(),
+                    0,
+                    owner.getId(),
+                    null,
+                    getPosition(),
+                    (byte) 2
+                )
+            );
         }
     }
 }

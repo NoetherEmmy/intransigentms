@@ -64,7 +64,7 @@ public abstract class AbstractScriptManager {
             }
             return (Invocable) engine;
         } catch (final Exception e) {
-            log.error("Error executing script. ", e);
+            e.printStackTrace();
             System.err.println("path1: " + path);
             return null;
         }

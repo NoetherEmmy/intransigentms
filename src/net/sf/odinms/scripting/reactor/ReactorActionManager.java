@@ -14,6 +14,7 @@ import net.sf.odinms.server.maps.MapleReactor;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         final List<DropEntry> items = new ArrayList<>();
         int numItems = 0;
 
-        if (meso && Math.random() < (1 / (double) mesoChance)) {
+        if (meso && Math.random() < (1.0d / (double) mesoChance)) {
             items.add(new DropEntry(0, mesoChance));
         }
 
@@ -62,7 +63,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         }
 
         // Randomize drop order.
-        java.util.Collections.shuffle(items);
+        Collections.shuffle(items);
 
         final Point dropPos = reactor.getPosition();
 

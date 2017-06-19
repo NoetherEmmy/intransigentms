@@ -429,6 +429,9 @@ public class MapleMap {
                     toDrop.removeIf(i -> !i.equals(4031303));
                 }
             }
+            if (isPQMap()) {
+                toDrop.removeIf(i -> i.equals(-1));
+            }
             if (partyevent && dropOwner.getParty() != null) {
                 chance = (int) (Math.random() * 112.0d); // 1/112 droprate
                 if (chance == 61) { // Arbitrary
@@ -2100,7 +2103,7 @@ public class MapleMap {
     }
 
     public MapleCharacter getCharacterById(final int id) {
-        return characters.stream().filter(c -> c.getId() == id).findFirst().orElse(null);
+        return characters.stream().filter(c -> c.getId() == id).findAny().orElse(null);
     }
 
     private void updateMapObjectVisibility(final MapleCharacter chr, final MapleMapObject mo) {

@@ -195,7 +195,7 @@ public class EventInstanceManager {
         try {
             em.getIv().invokeFunction("addKillCount", this, player);
         } catch (ScriptException | NoSuchMethodException e) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
     }
 
@@ -212,14 +212,14 @@ public class EventInstanceManager {
             ps.setInt(4, chr.getClient().getChannel());
             ps.executeUpdate();
         } catch (final SQLException sqle) {
-            Logger.getLogger(EventInstanceManager.class.getName()).log(Level.SEVERE, null, sqle);
+            sqle.printStackTrace();
         }
     }
 
     public MapleMap getMapInstance(final int mapId) {
         final boolean wasLoaded = mapFactory.isMapLoaded(mapId);
         final MapleMap map = mapFactory.getMap(mapId);
-        // in case reactors need shuffling and we are actually loading the map
+        // In case reactors need shuffling and we are actually loading the map:
         if (!wasLoaded) {
             if (em.getProperty("shuffleReactors") != null && em.getProperty("shuffleReactors").equals("true")) {
                 map.shuffleReactors();

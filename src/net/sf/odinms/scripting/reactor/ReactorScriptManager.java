@@ -54,7 +54,7 @@ public class ReactorScriptManager extends AbstractScriptManager {
                 rs.close();
                 ps.close();
             } catch (final Exception e) {
-                log.error("Could not retrieve drops for reactor " + rid, e);
+                System.err.println("Could not retrieve drops for reactor " + rid + ": " + e);
             }
             drops.put(rid, ret);
         }
