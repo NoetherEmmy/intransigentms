@@ -13,8 +13,6 @@ import net.sf.odinms.server.maps.FakeCharacter;
 import net.sf.odinms.server.maps.SavedLocationType;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -23,6 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class EnterMTSHandler extends AbstractMaplePacketHandler {
     //private static final Logger log = LoggerFactory.getLogger(DistributeSPHandler.class);

@@ -9,7 +9,6 @@ import javax.script.Invocable;
 import javax.script.ScriptException;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
-import java.util.logging.Level;
 //import java.util.logging.Logger;
 
 public class EventManager {
@@ -28,8 +27,9 @@ public class EventManager {
     public void cancel() {
         try {
             iv.invokeFunction("cancelSchedule", (Object) null);
-        } catch (ScriptException | NoSuchMethodException ex) {
+        } catch (final ScriptException | NoSuchMethodException ex) {
             //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -41,8 +41,9 @@ public class EventManager {
         TimerManager.getInstance().schedule(() -> {
             try {
                 iv.invokeFunction(methodName, eim);
-            } catch (ScriptException | NoSuchMethodException ex) {
+            } catch (final ScriptException | NoSuchMethodException ex) {
                 //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }, delay);
     }
@@ -51,8 +52,9 @@ public class EventManager {
         return TimerManager.getInstance().scheduleAtTimestamp(() -> {
             try {
                 iv.invokeFunction(methodName, (Object) null);
-            } catch (ScriptException | NoSuchMethodException ex) {
+            } catch (final ScriptException | NoSuchMethodException ex) {
                 //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }, timestamp);
     }
@@ -61,8 +63,9 @@ public class EventManager {
         return TimerManager.getInstance().register(() -> {
             try {
                 iv.invokeFunction(methodName, (Object) null);
-            } catch (ScriptException | NoSuchMethodException ex) {
+            } catch (final ScriptException | NoSuchMethodException ex) {
                 //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }, delay);
     }
@@ -88,8 +91,9 @@ public class EventManager {
     public void disposeInstance(final String name) {
         try {
             iv.invokeFunction("dispose", (Object) null);
-        } catch (ScriptException | NoSuchMethodException ex) {
+        } catch (final ScriptException | NoSuchMethodException ex) {
             //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         instances.remove(name);
     }
@@ -115,8 +119,9 @@ public class EventManager {
         try {
             final EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
             eim.registerParty(party, map);
-        } catch (ScriptException | NoSuchMethodException ex) {
+        } catch (final ScriptException | NoSuchMethodException ex) {
             //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -124,8 +129,9 @@ public class EventManager {
     public void startInstance(final EventInstanceManager eim) {
         try {
             iv.invokeFunction("setup", eim);
-        } catch (ScriptException | NoSuchMethodException ex) {
+        } catch (final ScriptException | NoSuchMethodException ex) {
             //Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 }

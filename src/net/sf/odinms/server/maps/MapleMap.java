@@ -19,8 +19,6 @@ import net.sf.odinms.tools.Direction;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import net.sf.odinms.tools.Vect;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.rmi.RemoteException;
@@ -32,6 +30,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MapleMap {
     private static final int MAX_OID = 20000;
@@ -50,7 +51,7 @@ public class MapleMap {
     private final Map<Integer, MaplePortal> portals = new LinkedHashMap<>();
     private final List<Rectangle> areas = new ArrayList<>();
     private MapleFootholdTree footholds;
-    private final int mapid;
+    private final int mapId;
     private final AtomicInteger runningOid = new AtomicInteger(100);
     private final int returnMapId;
     private final int channel;
@@ -81,9 +82,10 @@ public class MapleMap {
     private Set<FieldLimit> fieldLimits;
     private boolean damageMuted = false;
     private ScheduledFuture<?> damageMuteCancelTask, damageMuteHintTask;
+    private boolean spawnPointsEnabled;
 
-    public MapleMap(final int mapid, final int channel, final int returnMapId, final float monsterRate) {
-        this.mapid = mapid;
+    public MapleMap(final int mapId, final int channel, final int returnMapId, final float monsterRate) {
+        this.mapId = mapId;
         this.channel = channel;
         this.returnMapId = returnMapId;
         if (monsterRate > 0.0f) {
@@ -96,11 +98,12 @@ public class MapleMap {
             } else {
                 this.monsterRate = 1.0f - this.monsterRate;
             }
-            if (hasElevatedSpawn(mapid)) {
+            if (hasElevatedSpawn(mapId)) {
                 this.monsterRate /= 8.0f;
             }
             respawnWorker = TimerManager.getInstance().register(new RespawnWorker(), 5L * 1000L);
         }
+        spawnPointsEnabled = hasEnabledSpawn(mapId);
     }
 
     public static int timeSinceLastLatanica(final int channel) {
@@ -123,6 +126,14 @@ public class MapleMap {
                 return true;
         }
         return false;
+    }
+
+    public static boolean hasEnabledSpawn(final int mapId) {
+        switch (mapId) {
+            case 922010300: // LPQ Stage 3
+                return false;
+        }
+        return true;
     }
 
     public enum FieldLimit {
@@ -237,8 +248,18 @@ public class MapleMap {
         dropsDisabled = dd;
     }
 
+    public boolean areSpawnPointsEnabled() {
+        return spawnPointsEnabled;
+    }
+
+    public boolean setSpawnPointsEnabled(final boolean enabled) {
+        final boolean prev = spawnPointsEnabled;
+        spawnPointsEnabled = enabled;
+        return prev;
+    }
+
     public int getId() {
-        return mapid;
+        return mapId;
     }
 
     public MapleMap getReturnMap() {
@@ -319,7 +340,7 @@ public class MapleMap {
                 }
             }
         }
-        throw new RuntimeException("Out of OIDs on map " + mapid + " (channel: " + channel + ")");
+        throw new RuntimeException("Out of OIDs on map " + mapId + " (channel: " + channel + ")");
     }
 
     public void removeMapObject(final int num) {
@@ -805,7 +826,6 @@ public class MapleMap {
         killMonster(monster, chr, withDrops, secondTime, 1);
     }
 
-    @SuppressWarnings("static-access")
     public void killMonster(final MapleMonster monster,
                             final MapleCharacter chr,
                             final boolean withDrops,
@@ -833,6 +853,10 @@ public class MapleMap {
                 killAllMonsters(false);
             }, 3L * 1000L);
             return;
+        }
+        if (monster.getMap().getId() == 922010700 && monster.getId() != 9300136) { // LPQ stage 7
+            final MapleMonster rombot = MapleLifeFactory.getMonster(9300136);
+            monster.getMap().spawnMonsterOnGroundBelow(rombot, new Point(-11, -308));
         }
         if (monster.getBuffToGive() > -1) {
             broadcastMessage(MaplePacketCreator.showOwnBuffEffect(monster.getBuffToGive(), 11));
@@ -1713,7 +1737,7 @@ public class MapleMap {
                 }
             }
             sendObjectPlacement(chr.getClient());
-            switch (mapid) {
+            switch (mapId) {
                 case 1:
                 case 2:
                 case 809000101:
@@ -2074,7 +2098,7 @@ public class MapleMap {
     }
 
     public void addMonsterSpawn(final MapleMonster monster, final int mobTime) {
-        if (!((monster.getId() == 9400014 || monster.getId() == 9400575) && mapid > 5000)) {
+        if (!((monster.getId() == 9400014 || monster.getId() == 9400575) && mapId > 5000)) {
             Point newpos = calcPointBelow(monster.getPosition());
             if (newpos == null) {
                 final Point adjustedpos = monster.getPosition();
@@ -2441,6 +2465,7 @@ public class MapleMap {
     private class RespawnWorker implements Runnable {
         @Override
         public void run() {
+            if (!MapleMap.this.areSpawnPointsEnabled()) return;
             final int playersOnMap = characters.size();
             if (playersOnMap == 0) return;
 
@@ -2805,7 +2830,7 @@ public class MapleMap {
     }
 
     public boolean isPQMap() {
-        switch (mapid) {
+        switch (mapId) {
             case 103000800:
             case 103000804:
             case 922010100:
@@ -2824,12 +2849,12 @@ public class MapleMap {
             case 922010800:
                 return true;
             default:
-                return mapid / 1000 == 5;
+                return mapId / 1000 == 5;
         }
     }
 
     public boolean isMiniDungeonMap() {
-        switch (mapid) {
+        switch (mapId) {
             case 100020000:
             case 105040304:
             case 105050100:

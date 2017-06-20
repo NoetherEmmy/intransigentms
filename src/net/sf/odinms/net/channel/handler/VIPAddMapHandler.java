@@ -7,12 +7,13 @@ import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class VIPAddMapHandler extends AbstractMaplePacketHandler {
     //private static final Logger log = LoggerFactory.getLogger(VIPAddMapHandler.class);

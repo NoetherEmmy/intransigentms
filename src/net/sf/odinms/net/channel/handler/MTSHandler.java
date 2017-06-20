@@ -11,8 +11,6 @@ import net.sf.odinms.server.MapleItemInformationProvider;
 import net.sf.odinms.tools.HexTool;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MTSHandler extends AbstractMaplePacketHandler {
     //private static final Logger log = LoggerFactory.getLogger(MTSHandler.class);

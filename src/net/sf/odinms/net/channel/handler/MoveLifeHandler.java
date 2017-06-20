@@ -13,13 +13,14 @@ import net.sf.odinms.server.maps.MapleMapObjectType;
 import net.sf.odinms.server.movement.LifeMovementFragment;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Random;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MoveLifeHandler extends AbstractMovementPacketHandler {
     //private static final Logger log = LoggerFactory.getLogger(MoveLifeHandler.class);

@@ -27,8 +27,6 @@ import net.sf.odinms.tools.MapleAESOFB;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.Pair;
 import org.apache.mina.common.IoSession;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
 import java.rmi.RemoteException;
@@ -36,6 +34,9 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MapleClient {
     public static final int

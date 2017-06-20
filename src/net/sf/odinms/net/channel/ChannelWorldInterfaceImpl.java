@@ -14,8 +14,6 @@ import net.sf.odinms.server.ShutdownServer;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.CollectionUtil;
 import net.sf.odinms.tools.MaplePacketCreator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -27,6 +25,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class ChannelWorldInterfaceImpl extends UnicastRemoteObject implements ChannelWorldInterface {
     private static final long serialVersionUID = 7815256899088644192L;

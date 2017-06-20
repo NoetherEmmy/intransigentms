@@ -2,11 +2,12 @@ package net.sf.odinms.server;
 
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.net.channel.ChannelServer;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class ShutdownServer implements Runnable {
     //private static final Logger log = LoggerFactory.getLogger(ShutdownServer.class);

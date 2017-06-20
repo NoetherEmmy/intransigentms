@@ -3,8 +3,6 @@ package net.sf.odinms.scripting.portal;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.scripting.AbstractScriptManager;
 import net.sf.odinms.server.MaplePortal;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import javax.script.*;
 import java.io.File;
@@ -15,6 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class PortalScriptManager {
     //private static final Logger log = LoggerFactory.getLogger(PortalScriptManager.class);

@@ -10,8 +10,6 @@ import net.sf.odinms.net.world.guild.MapleGuildCharacter;
 import net.sf.odinms.net.world.remote.WorldChannelInterface;
 import net.sf.odinms.net.world.remote.WorldLoginInterface;
 import net.sf.odinms.net.world.remote.WorldRegistry;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -25,6 +23,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class WorldRegistryImpl extends UnicastRemoteObject implements WorldRegistry {
     private static final long serialVersionUID = -5170574938159280746L;

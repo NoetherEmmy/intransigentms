@@ -1,6 +1,5 @@
 package net.sf.odinms.server;
 
-import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.database.DatabaseConnection;
 
 import java.sql.Connection;

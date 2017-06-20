@@ -6,12 +6,13 @@ import net.sf.odinms.net.channel.ChannelServer;
 import net.sf.odinms.net.login.LoginServer;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class PickCharHandler extends AbstractMaplePacketHandler {
     //private static final Logger log = LoggerFactory.getLogger(PickCharHandler.class);

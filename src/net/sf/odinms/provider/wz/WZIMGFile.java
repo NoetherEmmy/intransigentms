@@ -3,11 +3,12 @@ package net.sf.odinms.provider.wz;
 import net.sf.odinms.tools.data.input.GenericSeekableLittleEndianAccessor;
 import net.sf.odinms.tools.data.input.RandomAccessByteStream;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.*;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class WZIMGFile {
     //private final Logger log = LoggerFactory.getLogger(WZIMGFile.class);

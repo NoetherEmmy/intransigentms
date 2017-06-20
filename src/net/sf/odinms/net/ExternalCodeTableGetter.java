@@ -1,13 +1,14 @@
 package net.sf.odinms.net;
 
 import net.sf.odinms.tools.HexTool;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class ExternalCodeTableGetter {
     final Properties props;

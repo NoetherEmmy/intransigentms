@@ -1,8 +1,6 @@
 package net.sf.odinms.scripting;
 
 import net.sf.odinms.client.MapleClient;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -14,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public abstract class AbstractScriptManager {
     protected ScriptEngine engine;

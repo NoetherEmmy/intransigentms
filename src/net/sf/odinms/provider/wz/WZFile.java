@@ -5,10 +5,11 @@ import net.sf.odinms.provider.MapleDataDirectoryEntry;
 import net.sf.odinms.provider.MapleDataFileEntry;
 import net.sf.odinms.provider.MapleDataProvider;
 import net.sf.odinms.tools.data.input.*;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.io.*;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class WZFile implements MapleDataProvider {
     static {

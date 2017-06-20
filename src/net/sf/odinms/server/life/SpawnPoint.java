@@ -41,8 +41,14 @@ public class SpawnPoint {
 
     /**
      * Spawns the monster for this spawn point. Creates a new MapleMonster instance for that and returns it.
+     *
+     * @return A reference to the spawn monster, or {@code null} if the map in question has spawn points disabled.
      */
     public MapleMonster spawnMonster(final MapleMap mapleMap) {
+        if (!mapleMap.areSpawnPointsEnabled()) {
+            return null;
+        }
+
         final MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(new Point(pos));
         spawnedMonsters.incrementAndGet();

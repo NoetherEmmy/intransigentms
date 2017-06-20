@@ -1,8 +1,6 @@
 package net.sf.odinms.net.world;
 
 import net.sf.odinms.database.DatabaseConnection;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -15,6 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class WorldServer {
     public static final String WZPATH = "net.sf.odinms.wzpath";

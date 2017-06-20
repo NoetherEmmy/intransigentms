@@ -440,7 +440,7 @@ public class ChannelServer implements Runnable, ChannelServerMBean {
         try {
             return getWorldInterface().getIP(channel);
         } catch (final RemoteException re) {
-            System.err.println("Lost connection to world server: " + re);
+            System.err.println("Lost connection to world server: " + re.getLocalizedMessage());
             throw new RuntimeException("Lost connection to world server");
         }
     }

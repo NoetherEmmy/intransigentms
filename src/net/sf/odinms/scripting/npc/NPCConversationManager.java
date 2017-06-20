@@ -26,10 +26,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
-import java.util.logging.Level;
-//import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+//import java.util.logging.Logger;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
     private final MapleClient c;
@@ -758,6 +758,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.close();
         } catch (final SQLException ex) {
             //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return r;
     }
@@ -788,6 +789,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.close();
         } catch (final SQLException ex) {
             //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return r;
     }
@@ -814,6 +816,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.close();
         } catch (final SQLException ex) {
             //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return r;
     }
@@ -841,6 +844,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.close();
         } catch (final SQLException ex) {
             //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return r;
     }
@@ -868,6 +872,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             ps.close();
         } catch (SQLException ex) {
             //Logger.getLogger(NPCConversationManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
     */

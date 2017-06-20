@@ -801,17 +801,26 @@ public class Admins implements Command {
                 mc.dropMessage("Quest cache has been cleared.");
                 break;
             case "!restarttimermanager":
+                final boolean doRestartRespawnWorkers = splitted.length <= 1 || Boolean.parseBoolean(splitted[1]);
                 final TimerManager tMan = TimerManager.getInstance();
                 tMan.stop();
                 tMan.start();
                 mc.dropMessage("TimerManager restarted.");
+                if (doRestartRespawnWorkers) {
+                    ChannelServer.getAllInstances().forEach(cs ->
+                        cs.getMapFactory()
+                          .viewLoadedMaps()
+                          .forEach(MapleMap::restartRespawnWorker)
+                    );
+                    mc.dropMessage("Respawn workers restarted.");
+                }
                 break;
         }
     }
 
     @Override
     public CommandDefinition[] getDefinition() {
-        return new CommandDefinition[]{
+        return new CommandDefinition[] {
             new CommandDefinition("speakall", 4),
             new CommandDefinition("dcall", 4),
             new CommandDefinition("killnear", 4),

@@ -3,11 +3,12 @@ package net.sf.odinms.net.login;
 import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.server.TimerManager;
 import net.sf.odinms.tools.MaplePacketCreator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.util.*;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class LoginWorker implements Runnable {
     private static final LoginWorker instance = new LoginWorker();

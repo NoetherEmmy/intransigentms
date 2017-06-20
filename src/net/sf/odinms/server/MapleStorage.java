@@ -4,14 +4,15 @@ import net.sf.odinms.client.*;
 import net.sf.odinms.database.DatabaseConnection;
 import net.sf.odinms.database.DatabaseException;
 import net.sf.odinms.tools.MaplePacketCreator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MapleStorage {
     private final int id;

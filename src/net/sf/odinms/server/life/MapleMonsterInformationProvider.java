@@ -1,8 +1,6 @@
 package net.sf.odinms.server.life;
 
 import net.sf.odinms.database.DatabaseConnection;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MapleMonsterInformationProvider {
     public static class DropEntry {

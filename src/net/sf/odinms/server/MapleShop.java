@@ -5,10 +5,7 @@ import net.sf.odinms.client.MapleClient;
 import net.sf.odinms.client.MapleInventoryType;
 import net.sf.odinms.client.MaplePet;
 import net.sf.odinms.database.DatabaseConnection;
-import net.sf.odinms.net.PacketProcessor;
 import net.sf.odinms.tools.MaplePacketCreator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +15,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class MapleShop {
     private static final Set<Integer> rechargeableItems = new HashSet<>();

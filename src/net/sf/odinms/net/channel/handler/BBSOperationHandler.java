@@ -8,13 +8,14 @@ import net.sf.odinms.net.AbstractMaplePacketHandler;
 import net.sf.odinms.net.world.guild.MapleGuild;
 import net.sf.odinms.tools.MaplePacketCreator;
 import net.sf.odinms.tools.data.input.SeekableLittleEndianAccessor;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class BBSOperationHandler extends AbstractMaplePacketHandler {
     //private static final Logger log = LoggerFactory.getLogger(BBSOperationHandler.class);

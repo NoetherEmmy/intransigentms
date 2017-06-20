@@ -1,8 +1,6 @@
 package net.sf.odinms.server;
 
 import net.sf.odinms.client.messages.MessageCallback;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -12,6 +10,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class TimerManager implements TimerManagerMBean {
     //private static final Logger log = LoggerFactory.getLogger(TimerManager.class);
