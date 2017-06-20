@@ -37,7 +37,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             }
             decoderState.packetlength = MapleAESOFB.getPacketLength(packetHeader);
         } else if (in.remaining() < 4 && decoderState.packetlength == -1) {
-            System.err.println("decode... not enough data");
+            //System.err.println("decode... not enough data");
             return false;
         }
 
@@ -52,7 +52,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
             return true;
         } else {
-            System.err.println("decode... not enough data to decode (need " + decoderState.packetlength + ")");
+            //System.err.println("decode... not enough data to decode (need " + decoderState.packetlength + ")");
             return false;
         }
     }
