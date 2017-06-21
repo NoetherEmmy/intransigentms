@@ -97,13 +97,15 @@ public final class MapleLifeFactory {
                     final MapleData hpTagColor = monsterInfoData.getChildByPath("hpTagColor");
                     final MapleData hpTagBgColor = monsterInfoData.getChildByPath("hpTagBgcolor");
                     if (hpTagBgColor == null || hpTagColor == null) {
-                        System.err.println(
+                        /*
+                        System.out.println(
                             "Monster " +
                                 stats.getName() +
                                 " (" +
                                 mid +
                                 ") flagged as boss without boss HP bars."
                         );
+                        */
                         stats.setTagColor(0);
                         stats.setTagBgColor(0);
                     } else {

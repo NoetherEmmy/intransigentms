@@ -857,6 +857,12 @@ public class MapleMap {
         if (monster.getMap().getId() == 922010700 && monster.getId() != 9300136) { // LPQ stage 7
             final MapleMonster rombot = MapleLifeFactory.getMonster(9300136);
             monster.getMap().spawnMonsterOnGroundBelow(rombot, new Point(-11, -308));
+        } else if (
+            monster.getMap().getId() == 922010900 && // LPQ stage 9
+            (monster.getId() == 9300006 || monster.getId() == 9300170)
+        ) {
+            final MapleMonster alishar = MapleLifeFactory.getMonster(9300012);
+            monster.getMap().spawnMonsterOnGroundBelow(alishar, new Point(976, 100));
         }
         if (monster.getBuffToGive() > -1) {
             broadcastMessage(MaplePacketCreator.showOwnBuffEffect(monster.getBuffToGive(), 11));
