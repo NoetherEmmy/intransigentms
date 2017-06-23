@@ -364,15 +364,12 @@ public class MapleClient {
                                 loginok = 4;
                             }
                             if (updatePasswordHash) {
-                                final PreparedStatement pss = con.prepareStatement("UPDATE `accounts` SET `password` = ?, `salt` = ? WHERE id = ?");
-                                try {
+                                try (PreparedStatement pss = con.prepareStatement("UPDATE `accounts` SET `password` = ?, `salt` = ? WHERE id = ?")) {
                                     final String newSalt = LoginCrypto.makeSalt();
                                     pss.setString(1, LoginCrypto.makeSaltedSha512Hash(pwd, newSalt));
                                     pss.setString(2, newSalt);
                                     pss.setInt(3, accId);
                                     pss.executeUpdate();
-                                } finally {
-                                    pss.close();
                                 }
                             }
                         }
@@ -400,7 +397,7 @@ public class MapleClient {
                 final long channelIP = IPAddressTool.dottedQuadToLong(connectionInfo[1]);
                 final int channelNumber = Integer.parseInt(connectionInfo[2]);
 
-                if (((ipAddress & subnet) == (channelIP & subnet)) && (channel == channelNumber)) {
+                if ((ipAddress & subnet) == (channelIP & subnet) && channel == channelNumber) {
                     return connectionInfo[1];
                 }
             }

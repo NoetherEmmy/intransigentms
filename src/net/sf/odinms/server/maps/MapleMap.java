@@ -36,8 +36,8 @@ import java.util.stream.Stream;
 
 public class MapleMap {
     private static final int MAX_OID = 20000;
-    private static final List<MapleMapObjectType> rangedMapObjectTypes =
-        Arrays.asList(
+    private static final List<MapleMapObjectType> RANGED_MAP_OBJECT_TYPES =
+        List.of(
             MapleMapObjectType.ITEM,
             MapleMapObjectType.MONSTER,
             MapleMapObjectType.DOOR,
@@ -1946,7 +1946,7 @@ public class MapleMap {
                 getMapObjectsInRange(
                     chr.getPosition(),
                     MapleCharacter.MAX_VIEW_RANGE_SQ,
-                    rangedMapObjectTypes
+                    RANGED_MAP_OBJECT_TYPES
                 );
             for (final MapleMapObject mmo : mapObjects_) {
                 if (mmo.getType() == MapleMapObjectType.REACTOR) {
@@ -2194,7 +2194,7 @@ public class MapleMap {
                     player.removeVisibleMapObject(mmo);
                 }
             }
-            getMapObjectsInRange(player.getPosition(), MapleCharacter.MAX_VIEW_RANGE_SQ, rangedMapObjectTypes)
+            getMapObjectsInRange(player.getPosition(), MapleCharacter.MAX_VIEW_RANGE_SQ, RANGED_MAP_OBJECT_TYPES)
                 .stream()
                 .filter(mmo -> !player.isMapObjectVisible(mmo))
                 .forEach(mmo -> {
