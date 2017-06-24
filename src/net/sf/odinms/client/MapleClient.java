@@ -565,6 +565,7 @@ public class MapleClient {
             if (cooldowns != null && !cooldowns.isEmpty()) {
                 final Connection con = DatabaseConnection.getConnection();
                 for (final PlayerCoolDownValueHolder cooling : cooldowns) {
+                    if (cooling.length < 0) continue;
                     try {
                         final PreparedStatement ps =
                             con.prepareStatement(

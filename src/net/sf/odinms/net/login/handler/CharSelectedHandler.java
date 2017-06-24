@@ -62,11 +62,20 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
                          )
                  );
             } else {
-                final String[] socket =
-                    LoginServer
-                        .getInstance()
-                        .getIP(c.getChannel())
-                        .split(":");
+                final String chip = LoginServer.getInstance().getIP(c.getChannel());
+                if (chip == null) {
+                    System.err.println(
+                        "cid " +
+                            charId +
+                            " at " +
+                            c.getSession().getRemoteAddress() +
+                            " attempting to select character on channel " +
+                            c.getChannel()
+                    );
+                    c.getSession().close();
+                    return;
+                }
+                final String[] socket = chip.split(":");
                 c.getSession()
                  .write(
                      MaplePacketCreator
@@ -78,7 +87,7 @@ public class CharSelectedHandler extends AbstractMaplePacketHandler {
                  );
             }
         } catch (final UnknownHostException uhe) {
-            System.err.println("Host not found. ");
+            System.err.println("Host not found:");
             uhe.printStackTrace();
         }
     }

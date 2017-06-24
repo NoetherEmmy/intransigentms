@@ -36,7 +36,7 @@ import java.util.Set;
 public class LoginServer implements Runnable, LoginServerMBean {
     public static final int PORT = 8484;
     private IoAcceptor acceptor;
-    private static WorldRegistry worldRegistry = null;
+    private static WorldRegistry worldRegistry;
     private final Map<Integer, String> channelServer = new LinkedHashMap<>();
     private LoginWorldInterface lwi;
     private WorldLoginInterface wli;
@@ -184,7 +184,6 @@ public class LoginServer implements Runnable, LoginServerMBean {
     }
 
     @Override
-    @SuppressWarnings("CallToPrintStackTrace")
     public void run() {
         try {
             FileReader fileReader = new FileReader(System.getProperty("net.sf.odinms.login.config"));
