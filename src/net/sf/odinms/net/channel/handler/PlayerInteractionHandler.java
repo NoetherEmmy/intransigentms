@@ -395,7 +395,12 @@ public class PlayerInteractionHandler extends AbstractMaplePacketHandler {
         } else if (mode == Action.CONFIRM.getCode()) {
             MapleTrade.completeTrade(c.getPlayer());
         } else if (mode == Action.ADD_ITEM.getCode() || mode == Action.PUT_ITEM.getCode()) {
-            final MapleInventoryType type = MapleInventoryType.getByType(slea.readByte());
+            final byte invByte = slea.readByte();
+            final MapleInventoryType type = MapleInventoryType.getByType(invByte);
+            if (type == null) {
+                System.err.println("Bad inventory type: " + invByte);
+                return;
+            }
             final byte slot = (byte) slea.readShort();
             final short bundles = slea.readShort();
             final short perBundle = slea.readShort();
