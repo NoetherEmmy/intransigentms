@@ -21,7 +21,7 @@ public abstract class AbstractScriptManager {
     private final ScriptEngineManager sem;
     //protected static final Logger log = LoggerFactory.getLogger(AbstractScriptManager.class);
     public static final String[] libs = {
-        "ecma6-array-polyfill.min",
+        "ecma6-polyfill.min",
         "intransigentms-utils.min"
     };
     public static final Map<String, String> libContents = new LinkedHashMap<>(3);
